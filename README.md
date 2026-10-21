@@ -19,7 +19,24 @@ npm run build
 npm run preview -- --host 0.0.0.0 --port 4173 --strictPort
 ```
 
-生产部署发布完整 `dist/`。目前未部署到公网，也未推送到 GitHub。
+源码已推送到 `petitmort/memory` 的 `main` 分支。生产构建同时保存在 `docs/`，使用相对资源路径，支持 GitHub Pages 的 `/memory/` 子路径。
+
+## GitHub Pages 发布
+
+在仓库 Settings → Pages 中，将 Source 设为 **Deploy from a branch**，Branch 选择 **main**，目录选择 **/docs**，保存。部署成功后，站点地址为 `https://petitmort.github.io/memory/`。是否已启用与部署状态，以 GitHub Pages 设置页显示为准。
+
+更新源码后重新生成并提交 `docs/`：
+
+```sh
+npm run build
+cp -R dist/. docs/
+touch docs/.nojekyll
+git add docs
+git commit -m "Update published site"
+git push
+```
+
+也可以将完整 `dist/` 发布到其他静态托管服务。
 
 ## 体验
 
