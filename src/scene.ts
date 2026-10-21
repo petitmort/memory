@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { createBouquet } from "./bouquet";
 
 export function createScene(
   container: HTMLElement,
@@ -299,51 +300,11 @@ export function createScene(
   label.rotation.x = -Math.PI / 2;
   label.position.set(0.86, 0.03, 0);
   bookHinge.add(label);
-  // A hand-tied bouquet with small ivory blossoms.
-  const bouquet = new THREE.Group();
-  bouquet.position.set(0.48, 1.77, -0.08);
-  bouquet.rotation.set(0, 0, 0.38);
+  // A compact garden bouquet rests diagonally across the album.
+  const bouquet = createBouquet();
+  bouquet.position.set(0.42, 1.83, 0.49);
+  bouquet.rotation.set(-1.12, -0.25, 0.55);
   table.add(bouquet);
-  const stemMat = mat("#60705a"),
-    petalMat = mat("#efe3c8"),
-    heartMat = mat("#c6a362");
-  for (let i = 0; i < 11; i++) {
-    const angle = i * 2.399;
-    const x = Math.cos(angle) * (0.12 + (i % 3) * 0.06),
-      z = Math.sin(angle) * 0.2;
-    const h = 0.45 + (i % 4) * 0.075;
-    const stem = cylinder(0.009, 0.008, h, stemMat, x, h / 2, z, bouquet, 6);
-    stem.rotation.z = x * 0.6;
-    for (let p = 0; p < 5; p++) {
-      const a = (p * Math.PI * 2) / 5;
-      sphere(
-        0.075,
-        petalMat,
-        x + Math.cos(a) * 0.065,
-        h,
-        z + Math.sin(a) * 0.065,
-        bouquet,
-        1,
-        0.45,
-        1.3,
-      );
-    }
-    sphere(0.038, heartMat, x, h + 0.018, z, bouquet, 1, 0.6, 1);
-    const leaf = sphere(
-      0.08,
-      stemMat,
-      x + 0.065,
-      h * 0.45,
-      z,
-      bouquet,
-      1,
-      0.2,
-      2,
-    );
-    leaf.rotation.z = 0.5;
-  }
-  const ribbon = box(0.32, 0.04, 0.12, mat("#cdb695"), 0, 0.15, 0, bouquet);
-  ribbon.rotation.z = -0.2;
   // Ceramic cup, handwritten letter, and a simple stool.
   cylinder(0.115, 0.09, 0.19, mat("#ded5be"), 1.2, 1.69, -0.5, table);
   cylinder(0.098, 0.098, 0.01, mat("#51402e"), 1.2, 1.79, -0.5, table);
