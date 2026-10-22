@@ -10,12 +10,18 @@ const waves = `
   }
   vec3 surface(vec2 p) {
     vec3 s=vec3(0.);
-    swell(s,p,vec2(.92,.392),.75,.12*(.88+.12*sin(time*.21)),-.7,.3);
-    swell(s,p,vec2(-.45,.893),1.27,.075,.93,2.1);
-    swell(s,p,vec2(.24,.971),2.43,.037,-1.3,4.7);
+    swell(s,p,vec2(.92,.392),.36,.65*(.88+.12*sin(time*.21)),-.7,.3);
+    swell(s,p,vec2(-.45,.893), .69,.32,.93,2.1);
+    swell(s,p,vec2(.24,.971),1.43,.13,-1.3,4.7);
     swell(s,p,vec2(.98,-.199),4.15,.016,1.7,1.4);
     swell(s,p,vec2(.68,.733),7.34,.008,-2.1,3.8);
     swell(s,p,vec2(-.85,.527),11.13,.005,2.6,5.2);
+    vec2 q=p-vec2(-27.,-68.);
+    float radius=length(q);
+    float funnel=exp(-dot(q,q)/23.);
+    s.x-=1.7*funnel;
+    s.yz+=q*(3.4/23.)*funnel;
+    s.x+=.16*sin(atan(q.y,q.x)*3.+radius*2.+time*1.2)*exp(-dot(q,q)/95.);
     return s;
   }
 `;
@@ -60,7 +66,7 @@ export function createOcean() {
     material,
   );
   ocean.rotation.x = -Math.PI / 2;
-  ocean.position.set(0, -0.32, -122.9);
+  ocean.position.set(0, -8, -122.9);
   ocean.frustumCulled = false; // Shader displacement is not represented by the flat CPU bounds.
   return ocean;
 }

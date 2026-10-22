@@ -106,7 +106,18 @@ export function createExterior(materials?: {
     return o;
   }
   // Low sculpted courtyard wall, a built-in bench and handmade planters.
-  box(0.2, 0.62, 3.5, -2.4, 0.31, 4.4);
+  // A sheltered entrance garden: the ocean is revealed only after entering.
+  for(const side of [-1,1]) {
+    box(.24,2.8,4.8,side*2.4,1.4,4.95);
+    box(.32,.08,4.8,side*2.4,2.84,4.95);
+    for(const z of [3.2,4.7,6.2]) {
+      box(.11,2.65,.11,side*2.24,1.325,z,blue);
+    }
+  }
+  box(4.9,.12,.8,0,2.86,3.1);
+  for(let z=3.7;z<7.4;z+=.48)box(4.9,.13,.12,0,2.85,z,new THREE.MeshStandardMaterial({color:'#72664d',roughness:1}));
+  box(4.8,2.8,.2,0,1.4,7.4);
+  box(.32,.08,3.6,-2.4,2.86,4.4);
   box(0.32, 0.08, 3.6, -2.4, 0.66, 4.4);
   box(1.08, 0.4, 0.4, -1.42, 0.2, 2.98);
   box(1.12, 0.05, 0.44, -1.42, 0.425, 2.98);
@@ -198,7 +209,7 @@ export function createExterior(materials?: {
   // A distant island hamlet is scenery at its actual metre scale.
   const village = new THREE.Group();
   village.name = "aegean-village";
-  village.position.set(-65, -0.05, -85);
+  village.position.set(-65, -7.73, -85);
   group.add(village);
   const rock = new THREE.Mesh(
     new THREE.SphereGeometry(1, 24, 12),

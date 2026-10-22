@@ -253,6 +253,10 @@ function closeBook() {
   el("reader").classList.add("hidden");
   document.body.classList.remove("reading");
   el("room-ui").classList.remove("hidden");
+  el("open-book").innerHTML = '继续翻阅纪念册 <span class="button-arrow">↗</span>';
+  el("scene-hint").innerHTML = '<span class="pulse-dot"></span> 点击桌上的画册，继续我们的故事';
+  el("scene-hint").classList.remove("hidden");
+  el("room-ui").querySelector("p")!.textContent = "花留在桌边，故事还在画册里。";
   scene?.returnToRoom();
   step(1);
   (lastFocus?.isConnected ? lastFocus : el("open-book")).focus();

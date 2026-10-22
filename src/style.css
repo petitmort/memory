@@ -1247,3 +1247,10 @@ button svg {
     bottom: 12%;
   }
 }
+
+/* The mobile scene keeps its centre available for direct object interaction. */
+@media (max-width: 759px) {
+  .room-ui { position:fixed; left:16px; right:16px; bottom:calc(65px + env(safe-area-inset-bottom)); max-width:none; width:auto; pointer-events:none; transform:none; text-align:center; }
+  .room-ui .eyebrow, .room-ui h2, .room-ui p, .scene-hint { display:none; }
+  .room-ui .primary-button { pointer-events:auto; padding:12px 18px; min-height:44px; width:auto; font-size:12px; background:rgba(245,239,222,.92); }
+}

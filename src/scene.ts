@@ -10,6 +10,7 @@ import {
   createExterior,
 } from "./architecture";
 import { createCurtains } from "./curtains";
+import { createMythology, mythTextile } from "./mythology";
 import { createDecor } from "./decor";
 
 export function createScene(
@@ -255,6 +256,8 @@ export function createScene(
   const ocean = createOcean();
   const seaMat = ocean.material;
   scene.add(ocean);
+  const mythology = createMythology();
+  scene.add(mythology.group);
   const skyMat = new THREE.ShaderMaterial({
     side: THREE.BackSide,
     vertexShader:
@@ -272,14 +275,14 @@ export function createScene(
       islandMat,
     );
     island.scale.set(5 + i * 1.3, 0.9 + i * 0.12, 2);
-    island.position.set(17 + i * 3, -0.05, -37 - i * 3);
+    island.position.set(17 + i * 3, -7.7, -37 - i * 3);
     scene.add(island);
   }
   const rug = box(
     D.rug.width,
     D.rug.thickness,
     D.rug.depth,
-    palette.rug,
+    mythTextile(),
     0.1,
     D.rug.thickness / 2,
     -0.65,
@@ -300,6 +303,19 @@ export function createScene(
     table,
   );
   tabletop.name = "tabletop";
+  const outline=new THREE.Shape();
+  outline.moveTo(-.65,-.375);outline.bezierCurveTo(-.71,-.37,-.7,-.25,-.7,-.22);
+  outline.lineTo(-.695,.27);outline.quadraticCurveTo(-.69,.375,-.59,.375);
+  outline.bezierCurveTo(-.15,.363,.3,.375,.62,.368);outline.quadraticCurveTo(.7,.36,.7,.28);
+  outline.lineTo(.695,-.27);outline.quadraticCurveTo(.69,-.375,.59,-.375);outline.closePath();
+  const wornTop=new THREE.ExtrudeGeometry(outline,{depth:.027,bevelEnabled:true,bevelSize:.004,bevelThickness:.004,bevelSegments:3,curveSegments:20});
+  wornTop.rotateX(-Math.PI/2);
+  wornTop.computeBoundingBox();
+  const topBounds=wornTop.boundingBox!,topSize=topBounds.getSize(new THREE.Vector3());
+  wornTop.translate(-topBounds.getCenter(new THREE.Vector3()).x,-topBounds.getCenter(new THREE.Vector3()).y,-topBounds.getCenter(new THREE.Vector3()).z);
+  wornTop.scale(D.desk.width/topSize.x,D.desk.top/topSize.y,D.desk.depth/topSize.z);
+  tabletop.geometry.dispose();(tabletop as THREE.Mesh<THREE.BufferGeometry>).geometry=wornTop;
+
   for (const z of [-0.3, 0.3])
     box(1.27, 0.08, 0.025, darkWood, 0, 0.675, z, table);
   const legProfile = [
@@ -472,18 +488,17 @@ export function createScene(
     stool,
     32,
   );
-  for (const x of [-0.115, 0.115])
-    for (const z of [-0.115, 0.115])
-      box(
-        0.035,
-        D.stool.height - D.stool.seat - 0.025,
-        0.035,
-        darkWood,
-        x,
-        (D.stool.height - D.stool.seat - 0.025) / 2,
-        z,
-        stool,
-      );
+  const stoolLegGeometry=new THREE.LatheGeometry([
+    new THREE.Vector2(.017,0),new THREE.Vector2(.019,.025),new THREE.Vector2(.012,.09),
+    new THREE.Vector2(.014,.25),new THREE.Vector2(.023,.31),new THREE.Vector2(.02,.35),
+    new THREE.Vector2(.017,.39),
+  ],16);
+  for(const x of [-.115,.115])for(const z of [-.115,.115]){
+    const leg=new THREE.Mesh(stoolLegGeometry,wood);leg.position.set(x,0,z);leg.castShadow=true;stool.add(leg);
+  }
+  for(const z of [-.115,.115]){
+    const rail=cylinder(.008,.009,.23,wood,0,.14,z,stool,12);rail.rotation.z=Math.PI/2;
+  }
   cylinder(0.174, 0.176, 0.025, mat("#86a9b1"), 0, 0.4375, 0, stool, 40);
   const piping = new THREE.Mesh(
     new THREE.TorusGeometry(0.169, 0.0016, 6, 48),
@@ -729,7 +744,7 @@ export function createScene(
     mobile()
       ? {
           p: new THREE.Vector3(0.55, D.eye, 1.15),
-          t: new THREE.Vector3(0, 1.05, -1.4),
+          t: new THREE.Vector3(0.15, 1.05, -1.4),
         }
       : {
           p: new THREE.Vector3(1.1, D.eye, 0.75),
@@ -830,6 +845,7 @@ export function createScene(
       dust.position.y = Math.sin(t * 0.1) * 0.06;
     }
     curtains.update(t, reducedMotion);
+    mythology.update(t, reducedMotion);
     if (walking) {
       const a = Math.min(1, (now - walking.start) / walking.duration),
         ease = a * a * (3 - 2 * a);
@@ -896,7 +912,7 @@ export function createScene(
     );
     ray.setFromCamera(pointer, camera);
     return (
-      ray.intersectObject(current === "entry" ? door : bouquet, true).length > 0
+      ray.intersectObject(current === "entry" ? door : bouquetParked ? book : bouquet, true).length > 0
     );
   }
   renderer.domElement.addEventListener("pointerup", (e) => {
