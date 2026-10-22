@@ -415,11 +415,12 @@ button svg {
   align-items: center;
   justify-content: center;
   padding: 70px 7% 56px;
-  animation: appear 0.65s both;
   outline: none;
 }
 .reading .header,
-.reading .footer {
+.reading .footer,
+.book-transition .header,
+.book-transition .footer {
   opacity: 0;
   pointer-events: none;
 }
@@ -467,10 +468,18 @@ button svg {
     0 30px 70px #001e1b88;
   min-height: 460px;
   height: min(65vh, 650px);
-  transform: rotateX(3deg);
+  transform: none;
   transition:
     opacity 0.18s,
     transform 0.25s;
+}
+.reader.is-transitioning {
+  background: transparent;
+  backdrop-filter: blur(0px);
+  pointer-events: none;
+}
+.reader.is-transitioning .book {
+  transition: none;
 }
 .book:after {
   content: "";

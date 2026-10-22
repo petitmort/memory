@@ -20,17 +20,21 @@ export function sampleWaterHeight(x: number, z: number, time: number) {
 export function waterSurfaceGLSL() {
   const f = (n: number) => n.toFixed(3);
   const calls = swells.map(([dx, dz, k, amplitude, speed, phase], i) =>
-    `swell(s,p,vec2(${f(dx)},${f(dz)}),${f(k)},${f(amplitude)}${i === 0 ? '*(.88+.12*sin(time*.21))' : ''},${f(speed)},${f(phase)});`).join('\n');
+    `swell(s,p,vec2(${f(dx)},${f(dz)}),${f(k)},${f(amplitude)}${i === 0 ? '*(.88+.12*sin(time*.21))' : ''},${f(speed)},${f(phase)},footprint);`).join('\n');
   return `
     uniform float time;
-    void swell(inout vec3 s, vec2 p, vec2 direction, float k, float amplitude, float speed, float phase) {
+    void swell(inout vec3 s, vec2 p, vec2 direction, float k, float amplitude, float speed, float phase, float footprint) {
       float a=dot(p,direction)*k+time*speed+phase;
-      s+=vec3(amplitude*sin(a),amplitude*k*direction.x*cos(a),amplitude*k*direction.y*cos(a));
+      // Subpixel ripples contribute roughness instead of unresolved bright dots.
+      // Height remains unchanged, so the boat and displaced mesh share one sea.
+      float slope=amplitude*k*cos(a)*(1.-smoothstep(.45,2.4,k*footprint));
+      s+=vec3(amplitude*sin(a),slope*direction.x,slope*direction.y);
     }
-    vec3 surface(vec2 p) {
+    vec3 surface(vec2 p, float footprint) {
       vec3 s=vec3(0.);
       ${calls}
       return s;
     }
+    vec3 surface(vec2 p) { return surface(p,0.); }
   `;
 }

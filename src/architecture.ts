@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { createCourtyardDetails } from "./courtyard-details";
 
 /** Rectangular 90×210 cm envelope, with a rounded Cycladic head. */
 export function archedDoorGeometry(
@@ -73,22 +75,9 @@ export function createExterior(materials?: {
   const white =
     materials?.plaster ??
     new THREE.MeshStandardMaterial({ color: "#f5f3e9", roughness: 0.91 });
-  const clay = new THREE.MeshStandardMaterial({
-    color: "#b47a5e",
-    roughness: 0.91,
-  });
   const blue =
     materials?.blue ??
     new THREE.MeshStandardMaterial({ color: "#215a8b", roughness: 0.71 });
-  const leafMat = new THREE.MeshStandardMaterial({
-    color: "#537156",
-    roughness: 0.9,
-  });
-  const bractMat = new THREE.MeshStandardMaterial({
-    color: "#bd4778",
-    roughness: 0.85,
-    side: THREE.DoubleSide,
-  });
   function box(
     w: number,
     h: number,
@@ -115,97 +104,14 @@ export function createExterior(materials?: {
     }
   }
   box(4.9,.12,.8,0,2.86,3.1);
-  for(let z=3.7;z<7.4;z+=.48)box(4.9,.13,.12,0,2.85,z,new THREE.MeshStandardMaterial({color:'#72664d',roughness:1}));
+  const pergolaWood = new THREE.MeshStandardMaterial({color:'#72664d',roughness:1});
+  for(let z=3.7;z<7.4;z+=.48)box(4.9,.13,.12,0,2.85,z,pergolaWood);
   box(4.8,2.8,.2,0,1.4,7.4);
   box(.32,.08,3.6,-2.4,2.86,4.4);
   box(0.32, 0.08, 3.6, -2.4, 0.66, 4.4);
   box(1.08, 0.4, 0.4, -1.42, 0.2, 2.98);
   box(1.12, 0.05, 0.44, -1.42, 0.425, 2.98);
-  const cushion = box(
-    0.78,
-    0.07,
-    0.33,
-    -1.42,
-    0.485,
-    2.98,
-    new THREE.MeshStandardMaterial({ color: "#d3e4e0", roughness: 1 }),
-  );
-  cushion.rotation.y = 0.02;
-  const pot = new THREE.Mesh(
-    new THREE.LatheGeometry(
-      [
-        new THREE.Vector2(0, 0),
-        new THREE.Vector2(0.12, 0),
-        new THREE.Vector2(0.17, 0.12),
-        new THREE.Vector2(0.155, 0.32),
-        new THREE.Vector2(0.17, 0.34),
-        new THREE.Vector2(0.15, 0.36),
-        new THREE.Vector2(0.135, 0.33),
-      ],
-      28,
-    ),
-    clay,
-  );
-  pot.position.set(-1.98, 0, 3.13);
-  pot.castShadow = true;
-  group.add(pot);
-  const stemMat = new THREE.MeshStandardMaterial({
-    color: "#72664a",
-    roughness: 1,
-  });
-  const branchCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-1.98, 0.3, 3.13),
-    new THREE.Vector3(-2.02, 0.8, 2.96),
-    new THREE.Vector3(-2.13, 1.4, 2.93),
-    new THREE.Vector3(-1.87, 1.98, 2.89),
-    new THREE.Vector3(-1.42, 2.4, 2.89),
-  ]);
-  const stem = new THREE.Mesh(
-    new THREE.TubeGeometry(branchCurve, 30, 0.012, 6, false),
-    stemMat,
-  );
-  stem.castShadow = true;
-  group.add(stem);
-  function bractGeometry() {
-    const s = new THREE.Shape();
-    s.moveTo(0, -0.9);
-    s.bezierCurveTo(-0.45, -0.5, -0.85, 0.45, 0, 0.85);
-    s.bezierCurveTo(0.85, 0.45, 0.45, -0.5, 0, -0.9);
-    return new THREE.ShapeGeometry(s, 10);
-  }
-  const leaf = new THREE.InstancedMesh(
-      new THREE.SphereGeometry(1, 10, 6),
-      leafMat,
-      86,
-    ),
-    flowers = new THREE.InstancedMesh(bractGeometry(), bractMat, 95),
-    dummy = new THREE.Object3D();
-  for (let i = 0; i < 86; i++) {
-    const t = (i + 0.5) / 86,
-      p = branchCurve.getPoint(t);
-    p.x += Math.sin(i * 2.4) * 0.12;
-    p.y += Math.cos(i * 1.3) * 0.07;
-    p.z += Math.sin(i * 1.7) * 0.07;
-    dummy.position.copy(p);
-    dummy.rotation.set(i * 0.7, i * 1.3, i * 0.4);
-    dummy.scale.set(0.022, 0.0018, 0.035);
-    dummy.updateMatrix();
-    leaf.setMatrixAt(i, dummy.matrix);
-  }
-  for (let i = 0; i < 95; i++) {
-    const t = 0.38 + (i / 95) * 0.62,
-      p = branchCurve.getPoint(t);
-    p.x += Math.sin(i * 2.4) * 0.15;
-    p.y += Math.cos(i * 1.3) * 0.1;
-    p.z += 0.03 + Math.sin(i * 1.7) * 0.09;
-    dummy.position.copy(p);
-    dummy.rotation.set(i * 0.4, i * 0.9, i * 0.8);
-    dummy.scale.set(0.032, 0.032, 0.032);
-    dummy.updateMatrix();
-    flowers.setMatrixAt(i, dummy.matrix);
-  }
-  leaf.castShadow = flowers.castShadow = true;
-  group.add(leaf, flowers);
+  group.add(createCourtyardDetails(white));
   // A distant island hamlet is scenery at its actual metre scale.
   const village = new THREE.Group();
   village.name = "aegean-village";
@@ -235,5 +141,26 @@ export function createExterior(materials?: {
   village.add(dome);
   box(0.035, 0.36, 0.035, -0.4, 3.5, -1.6, white, village);
   box(0.2, 0.035, 0.035, -0.4, 3.56, -1.6, white, village);
+  // Broad courtyard masonry and village details share a few static material batches.
+  for (const parent of [group, village]) {
+    const batches = new Map<THREE.Material, THREE.Mesh[]>();
+    for (const child of [...parent.children]) {
+      if (!(child instanceof THREE.Mesh) || Array.isArray(child.material) || child.name) continue;
+      const meshes = batches.get(child.material) ?? []; meshes.push(child); batches.set(child.material, meshes);
+    }
+    for (const [material, meshes] of batches) {
+      if (meshes.length < 2) continue;
+      const parts = meshes.map(mesh => {
+        mesh.updateMatrix();
+        return (mesh.geometry.index ? mesh.geometry.toNonIndexed() : mesh.geometry.clone()).applyMatrix4(mesh.matrix);
+      });
+      const geometry = mergeGeometries(parts);
+      if (geometry) {
+        const merged = new THREE.Mesh(geometry, material); merged.castShadow = merged.receiveShadow = true; parent.add(merged);
+        for (const mesh of meshes) { parent.remove(mesh); mesh.geometry.dispose(); }
+      }
+      for (const part of parts) part.dispose();
+    }
+  }
   return group;
 }

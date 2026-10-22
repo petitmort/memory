@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { createBouquet } from "./bouquet";
+import { createAlbum } from "./album-model";
 import { createOcean } from "./ocean";
 import { dimensions as D } from "./dimensions";
 import { createPalette } from "./materials";
@@ -331,58 +332,12 @@ export function createScene(
     }
   for (const z of [-0.315, 0.315])
     box(1.27, 0.012, 0.012, wood, 0, 0.706, z, table);
-  const book = new THREE.Group();
-  book.name = "album";
+  const album = createAlbum();
+  const book = album.group;
   book.position.set(-0.13, D.desk.height, -0.03);
   book.rotation.y = -0.1;
   table.add(book);
-  box(D.album.width, 0.003, D.album.depth, green, 0, 0.0015, 0, book);
-  box(0.31, 0.029, 0.25, paper, 0, 0.0175, 0, book);
-  const bookHinge = new THREE.Group();
-  bookHinge.position.set(-D.album.width / 2, 0.0335, 0);
-  book.add(bookHinge);
-  box(
-    D.album.width,
-    0.003,
-    D.album.depth,
-    green,
-    D.album.width / 2,
-    0,
-    0,
-    bookHinge,
-  );
-  const pageEdge = mat("#b8b09c");
-  for (let i = 0; i < 18; i++)
-    box(0.3102, 0.0002, 0.2502, pageEdge, 0, 0.005 + i * 0.0015, 0, book);
-  function labelTexture() {
-    const c = document.createElement("canvas");
-    c.width = 512;
-    c.height = 384;
-    const ctx = c.getContext("2d")!;
-    ctx.fillStyle = "#295a72";
-    ctx.fillRect(0, 0, 512, 384);
-    ctx.strokeStyle = "#b4a17a";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(30, 30, 452, 324);
-    ctx.fillStyle = "#d5c5a0";
-    ctx.textAlign = "center";
-    ctx.font = "18px Georgia";
-    ctx.fillText("BETWEEN THE TIDES", 256, 148);
-    ctx.font = "42px serif";
-    ctx.fillText("潮 汐 之 间", 256, 212);
-    ctx.font = "13px Georgia";
-    ctx.fillText("A COLLECTION OF LITTLE MOMENTS", 256, 278);
-    const t = new THREE.CanvasTexture(c);
-    t.colorSpace = THREE.SRGBColorSpace;
-    return t;
-  }
-  const label = new THREE.Mesh(
-    new THREE.PlaneGeometry(D.album.width - 0.002, D.album.depth - 0.002),
-    new THREE.MeshStandardMaterial({ map: labelTexture(), roughness: 0.9 }),
-  );
-  label.rotation.x = -Math.PI / 2;
-  label.position.set(D.album.width / 2, 0.0016, 0);
-  bookHinge.add(label);
+  const bookHinge = album.hinge;
   const bouquet = createBouquet();
   bouquet.name = "bouquet";
   bouquet.scale.setScalar(D.bouquet.scale);
@@ -638,63 +593,6 @@ export function createScene(
     0.04,
     facade,
   );
-  box(0.08, 0.11, 0.008, brass, 1.2, 1.52, 0.1, facade);
-  const lanternMat = new THREE.MeshStandardMaterial({
-    color: "#f8dfaa",
-    emissive: "#eec28a",
-    emissiveIntensity: 0.6,
-    roughness: 0.6,
-  });
-  box(0.12, 0.2, 0.1, lanternMat, 1.31, 1.9, 0.14, facade);
-  for (const y of [1.79, 2.01])
-    box(0.15, 0.018, 0.13, darkWood, 1.31, y, 0.14, facade);
-  const oliveLeaf = mat("#738265"),
-    oliveTwig = mat("#7a7152");
-  const plant = new THREE.Group();
-  plant.name = "olive-planter";
-  plant.position.set(1.5, 0, 0.28);
-  facade.add(plant);
-  cylinder(0.12, 0.085, 0.28, mat("#a78368"), 0, 0.14, 0, plant);
-  cylinder(0.011, 0.016, 0.62, darkWood, 0, 0.58, 0, plant);
-  const oliveLeaves = new THREE.InstancedMesh(
-    new THREE.SphereGeometry(1, 10, 6),
-    oliveLeaf,
-    150,
-  );
-  const leafTransform = new THREE.Object3D();
-  for (let i = 0; i < 15; i++) {
-    const a = i * 2.4,
-      y = 0.49 + (i % 6) * 0.065;
-    const branch = cylinder(
-      0.0025,
-      0.004,
-      0.25,
-      oliveTwig,
-      Math.cos(a) * 0.09,
-      y,
-      Math.sin(a) * 0.07,
-      plant,
-      6,
-    );
-    branch.rotation.set(Math.sin(a) * 0.8, 0, -Math.cos(a) * 0.9);
-    for (let j = 0; j < 10; j++) {
-      leafTransform.position.set(
-        Math.cos(a) * (0.05 + j * 0.023),
-        y + j * 0.013,
-        Math.sin(a) * (0.05 + j * 0.023),
-      );
-      leafTransform.rotation.set(
-        Math.sin(i + j) * 0.65,
-        a,
-        Math.cos(i * 0.7 + j) * 0.55,
-      );
-      leafTransform.scale.set(0.006, 0.001, 0.029);
-      leafTransform.updateMatrix();
-      oliveLeaves.setMatrixAt(i * 10 + j, leafTransform.matrix);
-    }
-  }
-  oliveLeaves.castShadow = true;
-  plant.add(oliveLeaves);
   scene.add(createExterior({ plaster, blue: palette.blue }));
   scene.add(createDecor());
   // Floating dust is one draw call, deliberately sparse.
@@ -737,7 +635,6 @@ export function createScene(
   let current: "entry" | "room" | "book" = "entry";
   let animating = false,
     doorOpen = 0,
-    albumOpen = 0,
     disposed = false;
   const initial = entryPose();
   camera.position.copy(initial.p);
@@ -761,6 +658,56 @@ export function createScene(
   } | null = null;
   let bouquetParked = false;
   let readerBackdropFrozen = false;
+  let singleRenderRequested = false;
+  let coverProgress = 0, leafProgress = 0;
+  type ReadingPose = Pose & { fov: number };
+  let roomBeforeReading: (ReadingPose & { mobile: boolean }) | null = null;
+  let readingMotion: {
+    kind: "opening" | "closing";
+    from: ReadingPose;
+    to: ReadingPose;
+    path: THREE.CatmullRomCurve3;
+    elapsed: number;
+    duration: number;
+    phaseStart: number;
+    done: () => void;
+  } | null = null;
+  album.setInvalidation(() => { singleRenderRequested = true; });
+
+  function bookReadingPose(): ReadingPose {
+    book.updateWorldMatrix(true, false);
+    const centre = album.spreadCenter.clone().applyMatrix4(book.matrixWorld);
+    return mobile()
+      ? { p: centre.clone().add(new THREE.Vector3(0, .87, 1.65)), t: centre, fov: 54 }
+      : { p: centre.clone().add(new THREE.Vector3(0, .82, .64)), t: centre, fov: 36 };
+  }
+  function getBookProjection() {
+    book.updateWorldMatrix(true, false);
+    camera.lookAt(target);
+    camera.updateMatrixWorld(true);
+    return {
+      corners: album.paperCorners.map(point => {
+        const projected = point.clone().applyMatrix4(book.matrixWorld).project(camera);
+        return { x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2 };
+      }),
+    };
+  }
+  function moveToBook(kind: "opening" | "closing") {
+    return new Promise<void>(done => {
+      const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
+      const saved = roomBeforeReading;
+      const to = kind === "opening" ? bookReadingPose() : saved && saved.mobile === mobile()
+        ? { p: saved.p.clone(), t: saved.t.clone(), fov: saved.fov }
+        : { ...roomPose(), fov: 50 };
+      const shoulder = from.p.clone().lerp(to.p, .5); shoulder.y += .035;
+      readingMotion = {
+        kind, from, to,
+        path: new THREE.CatmullRomCurve3([from.p, shoulder, to.p], false, "centripetal"),
+        elapsed: 0, duration: reducedMotion ? 140 : kind === "opening" ? 1950 : 1450,
+        phaseStart: 0, done,
+      };
+    });
+  }
   function walkIntoRoom() {
     return new Promise<void>((done) => {
       const end = roomPose();
@@ -808,8 +755,8 @@ export function createScene(
   function tick(now: number) {
     if (disposed) return;
     frame = requestAnimationFrame(tick);
-    if (document.hidden || readerBackdropFrozen) return;
-    if (low && now - lastDraw < 31) return;
+    if (document.hidden || (readerBackdropFrozen && !singleRenderRequested)) return;
+    if (low && now - lastDraw < 31 && !singleRenderRequested) return;
     const delta = now - lastDraw;
     lastDraw = now;
     if (delta > 0 && delta < 2000) {
@@ -863,6 +810,39 @@ export function createScene(
         done();
       }
     }
+    let finishReadingFrame: (() => void) | null = null;
+    if (readingMotion) {
+      const motion = readingMotion;
+      // Keep the cover and leaf visible through slow shader/resize frames.
+      // Normal frame rates retain the intended duration; a stall cannot skip a turn.
+      motion.elapsed = Math.min(motion.duration, motion.elapsed + THREE.MathUtils.clamp(delta, 0, 100));
+      const a = motion.elapsed / motion.duration;
+      const phase = THREE.MathUtils.lerp(motion.phaseStart, 1, a);
+      const ease = a * a * (3 - 2 * a);
+      camera.position.copy(motion.path.getPoint(ease));
+      target.lerpVectors(motion.from.t, motion.to.t, ease);
+      camera.fov = THREE.MathUtils.lerp(motion.from.fov, motion.to.fov, ease);
+      camera.updateProjectionMatrix();
+      if (motion.kind === "opening") {
+        coverProgress = THREE.MathUtils.smoothstep(phase, .12, .72);
+        leafProgress = THREE.MathUtils.smoothstep(phase, .55, 1);
+      } else {
+        leafProgress = 1 - THREE.MathUtils.smoothstep(phase, 0, .48);
+        coverProgress = 1 - THREE.MathUtils.smoothstep(phase, .3, .95);
+      }
+      album.setOpening(coverProgress, leafProgress);
+      if (a === 1) {
+        camera.position.copy(motion.to.p);
+        target.copy(motion.to.t);
+        readingMotion = null;
+        finishReadingFrame = () => {
+          animating = false;
+          current = motion.kind === "opening" ? "book" : "room";
+          readerBackdropFrozen = motion.kind === "opening";
+          motion.done();
+        };
+      }
+    }
     const dt = Math.min(Math.max(delta / 1000, 0), 0.1);
     doorPivot.rotation.y = THREE.MathUtils.damp(
       doorPivot.rotation.y,
@@ -870,21 +850,17 @@ export function createScene(
       5,
       dt,
     );
-    bookHinge.rotation.z = THREE.MathUtils.damp(
-      bookHinge.rotation.z,
-      albumOpen,
-      5,
-      dt,
-    );
     if (
       animating ||
       Math.abs(doorOpen - doorPivot.rotation.y) > 0.005 ||
       bouquetMotion !== null ||
-      Math.abs(albumOpen - bookHinge.rotation.z) > 0.005
+      readingMotion !== null
     )
       sun.shadow.needsUpdate = true;
     camera.lookAt(target);
     renderer.render(scene, camera);
+    singleRenderRequested = false;
+    finishReadingFrame?.();
   }
   const ray = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -909,7 +885,28 @@ export function createScene(
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
-    if (!animating && current !== "book") {
+    if (readingMotion) {
+      const previous = readingMotion;
+      const progress = previous.elapsed / previous.duration;
+      const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
+      const saved = roomBeforeReading;
+      const to = previous.kind === "opening" ? bookReadingPose() : saved && saved.mobile === mobile()
+        ? { p: saved.p.clone(), t: saved.t.clone(), fov: saved.fov }
+        : { ...roomPose(), fov: 50 };
+      const shoulder = from.p.clone().lerp(to.p, .5); shoulder.y += .02;
+      readingMotion = {
+        ...previous, from, to,
+        path: new THREE.CatmullRomCurve3([from.p, shoulder, to.p], false, "centripetal"),
+        elapsed: 0, duration: Math.max(100, previous.duration * (1 - progress)),
+        phaseStart: THREE.MathUtils.lerp(previous.phaseStart, 1, progress),
+      };
+      singleRenderRequested = true;
+    } else if (!animating && current === "book") {
+      const pose = bookReadingPose();
+      camera.position.copy(pose.p); target.copy(pose.t); camera.fov = pose.fov;
+      camera.updateProjectionMatrix();
+      singleRenderRequested = true;
+    } else if (!animating) {
       const pose = current === "entry" ? entryPose() : roomPose();
       camera.position.copy(pose.p);
       target.copy(pose.t);
@@ -925,7 +922,10 @@ export function createScene(
   });
   camera.lookAt(target);
   camera.updateMatrixWorld(true);
+  // Warm the two-sided paper shader before its first visible turn.
+  album.leaf.visible = true;
   const ready = renderer.compileAsync(scene, camera).then(() => {
+    album.leaf.visible = false;
     renderer.render(scene, camera);
     clock.start();
     frame = requestAnimationFrame(tick);
@@ -944,18 +944,25 @@ export function createScene(
       await walkIntoRoom();
     },
     async openBook() {
+      if (animating || current !== "room") return getBookProjection();
+      roomBeforeReading = { p: camera.position.clone(), t: target.clone(), fov: camera.fov, mobile: mobile() };
+      animating = true;
+      readerBackdropFrozen = false;
       current = "book";
       await parkBouquet();
-      albumOpen = Math.PI * 0.85;
-      await new Promise((resolve) =>
-        setTimeout(resolve, reducedMotion ? 0 : 650),
-      );
-      readerBackdropFrozen = true;
+      await moveToBook("opening");
+      return getBookProjection();
     },
-    returnToRoom() {
+    getBookProjection,
+    setBookChapter(index: number) {
+      album.setChapter(index);
+    },
+    async returnToRoom() {
+      if (animating || current !== "book") return;
+      animating = true;
       readerBackdropFrozen = false;
-      albumOpen = 0;
-      current = "room";
+      singleRenderRequested = true;
+      await moveToBook("closing");
     },
     setQuality(value: boolean) {
       low = value;

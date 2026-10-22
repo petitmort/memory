@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('mythic courtyard reveal and direct album reopening stay clear of mobile controls', async ({browser}) => {
-  test.setTimeout(180000);
+  test.setTimeout(300000);
   const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
   const page=await context.newPage();
   const errors:string[]=[];
@@ -72,15 +72,16 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
   expect(basket.min[2]).toBeGreaterThan(2.7);
   expect(basket.max[0]).toBeLessThan(-.35);
   await page.screenshot({path:'test-results/mythic-room.png'});
-  await page.locator('#open-book').click();await expect(page.locator('#reader')).toBeVisible();
-  await page.locator('#close-book').click();await expect(page.locator('#open-book')).toContainText('继续翻阅');
+  await page.locator('#open-book').click();await expect(page.locator('#reader')).toBeVisible({timeout:20000});await expect(page.locator('#reader')).toHaveAttribute('data-phase','ready');
+  await page.locator('#close-book').click();await expect(page.locator('#room-ui')).toBeVisible({timeout:20000});await expect(page.locator('#open-book')).toContainText('继续翻阅');
   await page.waitForTimeout(600);
   expect(await page.evaluate(()=>(window as any).__myth.supports)).toEqual(supports);
   const rose=await page.evaluate(()=>(window as any).__myth.rose);
   await page.mouse.click(rose.x,rose.y);await expect(page.locator('#reader')).toBeHidden();
   const book=await page.evaluate(()=>(window as any).__myth.book);
-  await page.mouse.click(book.x,book.y);await expect(page.locator('#reader')).toBeVisible();
+  await page.mouse.click(book.x,book.y);await expect(page.locator('#reader')).toBeVisible({timeout:20000});await expect(page.locator('#reader')).toHaveAttribute('data-phase','ready');
   await page.locator('#close-book').click();
+  await expect(page.locator('#room-ui')).toBeVisible({timeout:20000});
   await page.setViewportSize({width:390,height:844});
   await page.waitForFunction(()=>(window as any).__myth.width===390);
   await page.waitForTimeout(500);

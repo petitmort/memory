@@ -1,9 +1,16 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+import { mkdir, writeFile } from "node:fs/promises";
+
+async function expectReaderReady(page: Page) {
+  await expect(page.locator("#reader")).toBeVisible({ timeout: 20000 });
+  await expect(page.locator("#reader")).toHaveAttribute("data-phase", "ready");
+  await expect(page.locator("#reader")).toHaveAttribute("aria-busy", "false");
+}
 
 test("desktop: deliberate entry, reading, chapter boundaries, sound and return", async ({
   page,
 }) => {
-  test.setTimeout(120000); // Full 3D workflow also runs under CPU-only Chromium.
+  test.setTimeout(240000); // Includes continuous camera/cover transitions under software WebGL.
   await page.setViewportSize({ width: 1440, height: 1000 });
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -47,7 +54,7 @@ test("desktop: deliberate entry, reading, chapter boundaries, sound and return",
     "关闭海浪声",
   );
   await page.locator("#open-book").click();
-  await expect(page.locator("#reader")).toBeVisible();
+  await expectReaderReady(page);
   await expect(page.locator("#chapter-title")).toHaveText("风经过的地方");
   await expect(page.locator("#prev")).toBeDisabled();
   await page.keyboard.press("ArrowRight");
@@ -69,13 +76,14 @@ test("desktop: deliberate entry, reading, chapter boundaries, sound and return",
   await expect(page.locator("#quality")).toHaveText("画质 · 省电");
   await page.waitForTimeout(1200);
   await page.locator("#open-book").click();
-  await expect(page.locator("#reader")).toBeVisible();
+  await expectReaderReady(page);
   expect(errors).toEqual([]);
 });
 
 test("mobile: small-screen layout, swipe chapters and reduced motion", async ({
   browser,
 }) => {
+  test.setTimeout(120000);
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
     isMobile: true,
@@ -86,13 +94,14 @@ test("mobile: small-screen layout, swipe chapters and reduced motion", async ({
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
+  await expect(page.locator("#loading")).toBeHidden();
   await page.screenshot({ path: "test-results/mobile-entry.png" });
   await page.locator("#enter").click();
   await expect(page.locator("#enter")).toBeEnabled();
   await page.locator("#enter").click();
   await expect(page.locator("#room-ui")).toBeVisible();
   await page.locator("#open-book").click();
-  await expect(page.locator("#reader")).toBeVisible();
+  await expectReaderReady(page);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -140,20 +149,24 @@ test("without WebGL: the complete album remains available", async ({
   await page.goto("/");
   await expect(page.locator("#fallback")).toBeVisible();
   await page.locator("#fallback-read").click();
-  await expect(page.locator("#reader")).toBeVisible();
+  await expectReaderReady(page);
   await expect(page.locator("#art-holder canvas")).toBeVisible();
   await page.locator("#next").click();
   await expect(page.locator("#chapter-title")).toHaveText("把日子过成夏天");
   await context.close();
 });
 
-test("physical scene: walk through doorway, park flowers, preserve view and animate sea", async ({
+test("physical scene: enter through doorway, approach and open the album, then restore the room view", async ({
   page,
 }) => {
-  test.setTimeout(120000);
+  test.setTimeout(240000);
   type Sample = {
     p: number[];
     t: number[];
+    fov: number;
+    cover: number;
+    leafHeight: number;
+    leafVisible: boolean;
     flower: number[];
     scale: number[];
     visible: boolean;
@@ -166,6 +179,8 @@ test("physical scene: walk through doorway, park flowers, preserve view and anim
   };
   type Probe = Window & {
     __cameraSamples: Sample[];
+    __openingFrame?: string;
+    __readingResize?: boolean;
     __sceneSizes: Record<string, number[]>;
     __sceneStyle: {
       curtainAlpha: number;
@@ -209,8 +224,12 @@ test("physical scene: walk through doorway, park flowers, preserve view and anim
         window.__sceneStyle={curtainAlpha:ctx.getImageData(100,100,1,1).data[3],laceOpenwork:open&&thread,transparent:curtain.material.transparent,details:['santorini-exterior','mediterranean-furnishings','aged-cobalt-shutters','vintage-framed-seascape','woven-market-basket'].map(name=>!!scene.getObjectByName(name)),calls:renderer.info.render.calls};
       }
       window.__cameraSamples ??= [];
-      window.__cameraSamples.push({p: camera.position.toArray(), t: target.toArray(), flower: bouquet.position.toArray(), scale: bouquet.scale.toArray(), visible: bouquet.visible, wall: facade.visible, door: doorPivot.rotation.y, waveTime: seaMat.uniforms.time.value, seaVertices: ocean.geometry.attributes.position.count,curtainTop:[cloth.getX(0),cloth.getY(0),cloth.getZ(0)],curtainHem:[cloth.getX(cloth.count-1),cloth.getY(cloth.count-1),cloth.getZ(cloth.count-1)]});
+      const cover=scene.getObjectByName('album-cover-hinge'),leaf=scene.getObjectByName('album-opening-leaf');
+      const leafPositions=leaf.geometry.attributes.position;let leafMin=Infinity,leafMax=-Infinity;for(let i=0;i<leafPositions.count;i++){leafMin=Math.min(leafMin,leafPositions.getY(i));leafMax=Math.max(leafMax,leafPositions.getY(i));}
+      if(!window.__readingResize && readingMotion?.kind==='opening' && cover.rotation.z>.2 && cover.rotation.z<2.7){window.__readingResize=true;window.dispatchEvent(new Event('resize'));}
+      window.__cameraSamples.push({p: camera.position.toArray(), t: target.toArray(),fov:camera.fov,cover:cover.rotation.z,leafHeight:leafMax-leafMin,leafVisible:leaf.visible, flower: bouquet.position.toArray(), scale: bouquet.scale.toArray(), visible: bouquet.visible, wall: facade.visible, door: doorPivot.rotation.y, waveTime: seaMat.uniforms.time.value, seaVertices: ocean.geometry.attributes.position.count,curtainTop:[cloth.getX(0),cloth.getY(0),cloth.getZ(0)],curtainHem:[cloth.getX(cloth.count-1),cloth.getY(cloth.count-1),cloth.getZ(cloth.count-1)]});
       renderer.render(scene, camera);
+      if(!window.__openingFrame && current==='book' && leaf.visible && leafMax-leafMin>.06)window.__openingFrame=renderer.domElement.toDataURL('image/png');
     `,
       ),
     });
@@ -303,27 +322,53 @@ test("physical scene: walk through doorway, park flowers, preserve view and anim
     (window as unknown as Probe).__cameraSamples = [];
   });
   await page.locator("#open-book").click();
-  await expect(page.locator("#reader")).toBeVisible();
-  await page.locator("#close-book").click();
-  await expect(page.locator("#room-ui")).toBeVisible();
-  await page.waitForTimeout(400);
-  const reading = await page.evaluate(
+  await expectReaderReady(page);
+  const approach = await page.evaluate(
     () => (window as unknown as Probe).__cameraSamples,
   );
-  expect(reading.length).toBeGreaterThan(0);
-  for (const sample of reading) {
-    expect(sample.p).toEqual(final.p);
-    expect(sample.t).toEqual(final.t);
+  expect(await page.evaluate(() => (window as unknown as Probe).__readingResize)).toBe(true);
+  for (let i = 1; i < approach.length; i++) expect(approach[i].cover).toBeGreaterThanOrEqual(approach[i - 1].cover - .00001);
+  const closeView = approach.at(-1)!;
+  const moved = (a: number[], b: number[]) => Math.hypot(...a.map((n, i) => n - b[i]));
+  const cameraTravel = moved(final.p, closeView.p);
+  expect(cameraTravel).toBeGreaterThan(.3);
+  expect(approach.some(sample => moved(sample.p, final.p) > .05 && moved(sample.p, closeView.p) > .05)).toBe(true);
+  expect(closeView.p[1]).toBeGreaterThan(1.0); // The eye stays safely above the tabletop.
+  expect(closeView.t[1]).toBeGreaterThan(.75);
+  expect(closeView.t[1]).toBeLessThan(.9);
+  expect(closeView.fov).toBeLessThanOrEqual(final.fov);
+  expect(closeView.cover).toBeCloseTo(Math.PI, 4);
+  expect(approach.some(sample => sample.cover > .15 && sample.cover < Math.PI - .15)).toBe(true);
+  expect(approach.some(sample => sample.leafVisible && sample.leafHeight > .06)).toBe(true);
+  const openingFrame = await page.evaluate(() => (window as unknown as Probe).__openingFrame);
+  expect(openingFrame).toMatch(/^data:image\/png;base64,/);
+  await mkdir("test-results", { recursive: true });
+  await writeFile("test-results/album-opening.png", Buffer.from(openingFrame!.split(",")[1], "base64"));
+  await page.screenshot({ path: "test-results/album-reading.png" });
+  await page.evaluate(() => {
+    (window as unknown as Probe).__cameraSamples = [];
+  });
+  await page.locator("#close-book").click();
+  await expect(page.locator("#room-ui")).toBeVisible({ timeout: 20000 });
+  const retreat = await page.evaluate(
+    () => (window as unknown as Probe).__cameraSamples,
+  );
+  const parked = retreat.at(-1)!;
+  expect(retreat.some(sample => moved(sample.p, final.p) > .05 && moved(sample.p, closeView.p) > .05)).toBe(true);
+  expect(parked.p).toEqual(final.p);
+  expect(parked.t).toEqual(final.t);
+  expect(parked.fov).toEqual(final.fov);
+  expect(parked.cover).toBeCloseTo(0, 6);
+  for (const sample of [...approach, ...retreat]) {
     expect(sample.scale).toEqual(final.scale);
     expect(sample.visible).toBe(true);
     expect(sample.flower[1]).toBeGreaterThanOrEqual(0.764);
     expect(sample.flower[1]).toBeLessThanOrEqual(0.837);
   }
-  const parked = reading.at(-1)!;
   expect(parked.flower[0]).toBeGreaterThan(final.flower[0] + 0.3);
   expect(parked.flower[0]).toBeLessThan(0.58);
   expect(parked.flower[2]).toBeLessThan(0.3);
   expect(parked.waveTime).toBeGreaterThan(final.waveTime);
-  const hems = [...entry, ...reading].map((s) => s.curtainHem[2]);
+  const hems = [...entry, ...approach, ...retreat].map((s) => s.curtainHem[2]);
   expect(Math.max(...hems) - Math.min(...hems)).toBeGreaterThan(0.005);
 });

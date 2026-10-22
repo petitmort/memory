@@ -1,6 +1,7 @@
 import "./style.css";
 import { chapters, artwork } from "./content";
 import { createScene } from "./scene";
+import { transitionReader } from "./reader-transition";
 
 const icons = {
   sound:
@@ -30,15 +31,18 @@ document.querySelector("#app")!.innerHTML = `
 
 const el = <T extends HTMLElement = HTMLElement>(id: string) =>
   document.getElementById(id) as T;
-let state: "fog" | "clearing" | "door" | "entering" | "room" | "reading" =
+let state: "fog" | "clearing" | "door" | "entering" | "room" | "opening" | "reading" | "closing" =
   "fog";
 let page = 0,
   turning = false,
   lastFocus: HTMLElement | null = null;
+let pageTurnVersion = 0;
 const reduceMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)",
 ).matches;
 let scene: ReturnType<typeof createScene> | undefined;
+let sceneAvailable = false;
+let readingScene: ReturnType<typeof createScene> | undefined;
 let soundEnabled = true,
   audio: AudioContext | undefined,
   gain: GainNode | undefined;
@@ -59,7 +63,7 @@ function audioVolume() {
   if (!audio || !gain) return;
   gain.gain.cancelScheduledValues(audio.currentTime);
   gain.gain.setTargetAtTime(
-    soundEnabled && (state === "room" || state === "reading") ? 0.16 : 0,
+    soundEnabled && ["room", "opening", "reading", "closing"].includes(state) ? 0.16 : 0,
     audio.currentTime,
     1.2,
   );
@@ -115,7 +119,7 @@ el("sound").onclick = async () => {
     soundEnabled ? "关闭海浪声" : "开启海浪声",
   );
   el("sound").title = soundEnabled ? "关闭海浪声" : "开启海浪声";
-  if (soundEnabled && state !== "room" && state !== "reading")
+  if (soundEnabled && ["fog", "clearing", "door", "entering"].includes(state))
     toast("海浪声将在进入房间后响起");
 };
 el("fullscreen").onclick = async () => {
@@ -198,9 +202,10 @@ function renderPage() {
     .forEach((b) => (b.onclick = () => turn(Number(b.dataset.page))));
 }
 async function turn(target: number) {
-  if (turning || target < 0 || target >= chapters.length || target === page)
+  if (state !== "reading" || turning || target < 0 || target >= chapters.length || target === page)
     return;
   turning = true;
+  const version = ++pageTurnVersion;
   const forward = target > page;
   const desktop = innerWidth >= 760;
   const leaf = document.createElement("div");
@@ -220,9 +225,11 @@ async function turn(target: number) {
     el("book").appendChild(leaf);
   } else el("book").classList.add("turning");
   await new Promise((r) => setTimeout(r, reduceMotion ? 0 : 260));
+  if (version !== pageTurnVersion) return;
   page = target;
   renderPage();
   await new Promise((r) => setTimeout(r, reduceMotion ? 0 : 340));
+  if (version !== pageTurnVersion) return;
   leaf.remove();
   el("book").classList.remove("turning");
   el("book").scrollTo({
@@ -236,34 +243,65 @@ async function openBook() {
     el("fallback").classList.add("hidden");
   else if (state !== "room") return;
   lastFocus = document.activeElement as HTMLElement;
-  state = "reading";
+  state = "opening";
+  const reader = el("reader");
+  reader.dataset.phase = "opening";
+  reader.setAttribute("aria-busy", "true");
+  reader.inert = true;
+  el<HTMLButtonElement>("open-book").disabled = true;
+  document.body.classList.add("book-transition");
   step(2);
   el("room-ui").classList.add("hidden");
   el("scene-hint").classList.add("hidden");
-  await scene?.openBook();
   renderPage();
-  el("reader").classList.remove("hidden");
+  readingScene = sceneAvailable ? scene : undefined;
+  readingScene?.setBookChapter(page);
+  const projection = await readingScene?.openBook();
+  reader.classList.remove("hidden");
   document.body.classList.add("reading");
-  el("reader").focus();
+  await transitionReader(reader, projection, true, reduceMotion);
+  state = "reading";
+  reader.dataset.phase = "ready";
+  reader.setAttribute("aria-busy", "false");
+  reader.inert = false;
+  document.body.classList.remove("book-transition");
+  reader.focus();
   audioVolume();
 }
-function closeBook() {
+async function closeBook() {
   if (state !== "reading") return;
-  state = "room";
-  el("reader").classList.add("hidden");
+  state = "closing";
+  ++pageTurnVersion;
+  turning = false;
+  el("book").querySelectorAll(".turn-leaf").forEach(leaf => leaf.remove());
+  el("book").classList.remove("turning");
+  const reader = el("reader");
+  reader.dataset.phase = "closing";
+  reader.setAttribute("aria-busy", "true");
+  reader.inert = true;
+  document.body.classList.add("book-transition");
+  readingScene?.setBookChapter(page);
+  await transitionReader(reader, readingScene?.getBookProjection(), false, reduceMotion);
   document.body.classList.remove("reading");
+  await readingScene?.returnToRoom();
+  readingScene = undefined;
+  state = "room";
+  reader.dataset.phase = "closed";
+  reader.setAttribute("aria-busy", "false");
+  reader.inert = false;
+  document.body.classList.remove("book-transition");
   el("room-ui").classList.remove("hidden");
+  el<HTMLButtonElement>("open-book").disabled = false;
   el("open-book").innerHTML = '继续翻阅纪念册 <span class="button-arrow">↗</span>';
   el("scene-hint").innerHTML = '<span class="pulse-dot"></span> 点击桌上的画册，继续我们的故事';
   el("scene-hint").classList.remove("hidden");
   el("room-ui").querySelector("p")!.textContent = "花留在桌边，故事还在画册里。";
-  scene?.returnToRoom();
   step(1);
   (lastFocus?.isConnected ? lastFocus : el("open-book")).focus();
 }
 el("open-book").onclick = openBook;
 el("fallback-read").onclick = openBook;
-el("close-book").onclick = closeBook;
+el("close-book").onclick = () => void closeBook();
 el("prev").onclick = () => turn(page - 1);
 el("next").onclick = () => turn(page + 1);
 el("reader").addEventListener("keydown", (e) => {
@@ -333,7 +371,10 @@ try {
     reduceMotion,
   );
   scene.ready
-    .then(() => el("loading").classList.add("hidden"))
+    .then(() => {
+      sceneAvailable = true;
+      el("loading").classList.add("hidden");
+    })
     .catch((error) => {
       console.error(error);
       el("loading").classList.add("hidden");
