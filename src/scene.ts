@@ -15,6 +15,11 @@ import { createCurtains } from "./curtains";
 import { createMythology } from "./mythology";
 import { createDecor } from "./decor";
 import { consoleLayout } from "./interior-layout";
+import { readingBlend } from "./reading-timeline";
+
+export type PageProjection = { corners: { x: number; y: number }[] };
+export type BookProjection = PageProjection & { pages: [PageProjection, PageProjection] };
+export type ReadingFrame = { progress: number; projection: BookProjection };
 
 export function createScene(
   container: HTMLElement,
@@ -670,6 +675,7 @@ export function createScene(
     elapsed: number;
     duration: number;
     phaseStart: number;
+    onFrame?: (frame: ReadingFrame) => void;
     done: () => void;
   } | null = null;
   album.setInvalidation(() => { singleRenderRequested = true; });
@@ -681,18 +687,21 @@ export function createScene(
       ? { p: centre.clone().add(new THREE.Vector3(0, .87, 1.65)), t: centre, fov: 54 }
       : { p: centre.clone().add(new THREE.Vector3(0, .82, .64)), t: centre, fov: 36 };
   }
-  function getBookProjection() {
-    book.updateWorldMatrix(true, false);
+  function getBookProjection(): BookProjection {
+    book.updateWorldMatrix(true, true);
     camera.lookAt(target);
     camera.updateMatrixWorld(true);
+    const screen = (point: THREE.Vector3) => {
+      const projected = point.clone().project(camera);
+      return { x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2 };
+    };
+    const pages = album.pageWorldCorners().map(corners => ({ corners: corners.map(screen) })) as [PageProjection, PageProjection];
     return {
-      corners: album.paperCorners.map(point => {
-        const projected = point.clone().applyMatrix4(book.matrixWorld).project(camera);
-        return { x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2 };
-      }),
+      corners: [pages[0].corners[0], pages[1].corners[1], pages[1].corners[2], pages[0].corners[3]],
+      pages,
     };
   }
-  function moveToBook(kind: "opening" | "closing") {
+  function moveToBook(kind: "opening" | "closing", onFrame?: (frame: ReadingFrame) => void) {
     return new Promise<void>(done => {
       const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
       const saved = roomBeforeReading;
@@ -703,8 +712,8 @@ export function createScene(
       readingMotion = {
         kind, from, to,
         path: new THREE.CatmullRomCurve3([from.p, shoulder, to.p], false, "centripetal"),
-        elapsed: 0, duration: reducedMotion ? 140 : kind === "opening" ? 1950 : 1450,
-        phaseStart: 0, done,
+        elapsed: 0, duration: reducedMotion ? 180 : kind === "opening" ? 2600 : 2000,
+        phaseStart: 0, onFrame, done,
       };
     });
   }
@@ -811,6 +820,7 @@ export function createScene(
       }
     }
     let finishReadingFrame: (() => void) | null = null;
+    let updateReadingFrame: { progress: number; callback: (frame: ReadingFrame) => void } | null = null;
     if (readingMotion) {
       const motion = readingMotion;
       // Keep the cover and leaf visible through slow shader/resize frames.
@@ -824,13 +834,15 @@ export function createScene(
       camera.fov = THREE.MathUtils.lerp(motion.from.fov, motion.to.fov, ease);
       camera.updateProjectionMatrix();
       if (motion.kind === "opening") {
-        coverProgress = THREE.MathUtils.smoothstep(phase, .12, .72);
-        leafProgress = THREE.MathUtils.smoothstep(phase, .55, 1);
+        coverProgress = THREE.MathUtils.smoothstep(phase, .06, .43);
+        leafProgress = THREE.MathUtils.smoothstep(phase, .28, .60);
       } else {
-        leafProgress = 1 - THREE.MathUtils.smoothstep(phase, 0, .48);
-        coverProgress = 1 - THREE.MathUtils.smoothstep(phase, .3, .95);
+        leafProgress = 1 - THREE.MathUtils.smoothstep(phase, .38, .74);
+        coverProgress = 1 - THREE.MathUtils.smoothstep(phase, .60, .98);
       }
       album.setOpening(coverProgress, leafProgress);
+      album.setVisibility(readingBlend(phase, motion.kind === "opening").book, true);
+      if (motion.onFrame) updateReadingFrame = { progress: phase, callback: motion.onFrame };
       if (a === 1) {
         camera.position.copy(motion.to.p);
         target.copy(motion.to.t);
@@ -860,6 +872,8 @@ export function createScene(
     camera.lookAt(target);
     renderer.render(scene, camera);
     singleRenderRequested = false;
+    // Camera, paper and DOM all advance on this same rendered frame, including p=1.
+    if (updateReadingFrame) updateReadingFrame.callback({ progress: updateReadingFrame.progress, projection: getBookProjection() });
     finishReadingFrame?.();
   }
   const ray = new THREE.Raycaster();
@@ -943,26 +957,34 @@ export function createScene(
       );
       await walkIntoRoom();
     },
-    async openBook() {
+    async openBook(onFrame?: (frame: ReadingFrame) => void, paperReady?: Promise<void>) {
       if (animating || current !== "room") return getBookProjection();
       roomBeforeReading = { p: camera.position.clone(), t: target.clone(), fov: camera.fov, mobile: mobile() };
       animating = true;
       readerBackdropFrozen = false;
       current = "book";
-      await parkBouquet();
-      await moveToBook("opening");
+      album.setVisibility(1);
+      await Promise.all([parkBouquet(), paperReady]);
+      await moveToBook("opening", onFrame);
       return getBookProjection();
     },
     getBookProjection,
     setBookChapter(index: number) {
       album.setChapter(index);
     },
-    async returnToRoom() {
+    setBookPageCanvases(pages: [HTMLCanvasElement, HTMLCanvasElement]) {
+      album.setPageCanvases(pages);
+    },
+    setBookVisibility(opacity: number) {
+      album.setVisibility(opacity);
+    },
+    async returnToRoom(onFrame?: (frame: ReadingFrame) => void) {
       if (animating || current !== "book") return;
       animating = true;
       readerBackdropFrozen = false;
       singleRenderRequested = true;
-      await moveToBook("closing");
+      await moveToBook("closing", onFrame);
+      album.setVisibility(1);
     },
     setQuality(value: boolean) {
       low = value;

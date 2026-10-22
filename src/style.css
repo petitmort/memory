@@ -455,6 +455,7 @@ button svg {
   perspective: 1400px;
 }
 .book {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
   color: #405248;
@@ -480,6 +481,29 @@ button svg {
 }
 .reader.is-transitioning .book {
   transition: none;
+}
+.reader.is-preparing {
+  opacity: 0;
+  pointer-events: none;
+}
+.reader.is-tracking {
+  background: transparent;
+  backdrop-filter: blur(0px);
+  pointer-events: none;
+  overflow: hidden;
+}
+.reader.is-tracking .book {
+  background: transparent;
+  box-shadow: none;
+  transition: none;
+}
+.reader.is-tracking .book-wrap {
+  /* Each page already carries the camera's full projective transform. */
+  perspective: none;
+}
+.reader.is-tracking .book:after {
+  opacity: var(--reading-layout, 0);
+  z-index: 2;
 }
 .book:after {
   content: "";

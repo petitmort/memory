@@ -1,7 +1,8 @@
 import "./style.css";
 import { chapters, artwork } from "./content";
 import { createScene } from "./scene";
-import { transitionReader } from "./reader-transition";
+import { createReaderJourney, transitionReader } from "./reader-transition";
+import { captureBookPages } from "./page-raster";
 
 const icons = {
   sound:
@@ -256,10 +257,29 @@ async function openBook() {
   renderPage();
   readingScene = sceneAvailable ? scene : undefined;
   readingScene?.setBookChapter(page);
-  const projection = await readingScene?.openBook();
+  reader.classList.add("is-preparing");
   reader.classList.remove("hidden");
+  el("book").scrollTop = 0;
   document.body.classList.add("reading");
-  await transitionReader(reader, projection, true, reduceMotion);
+  if (readingScene) {
+    const activeScene = readingScene;
+    let journey: ReturnType<typeof createReaderJourney>;
+    const paperReady = (async () => {
+      try {
+        activeScene.setBookPageCanvases(await captureBookPages(reader));
+      } catch {
+        // An unavailable external photo keeps the locally generated paper usable.
+      }
+      journey = createReaderJourney(reader, true);
+      journey.update({progress:0,projection:activeScene.getBookProjection()});
+      reader.classList.remove("is-preparing");
+    })();
+    await activeScene.openBook(frame => journey.update(frame), paperReady);
+    journey!.finish();
+  } else {
+    reader.classList.remove("is-preparing");
+    await transitionReader(reader, undefined, true, reduceMotion);
+  }
   state = "reading";
   reader.dataset.phase = "ready";
   reader.setAttribute("aria-busy", "false");
@@ -281,9 +301,20 @@ async function closeBook() {
   reader.inert = true;
   document.body.classList.add("book-transition");
   readingScene?.setBookChapter(page);
-  await transitionReader(reader, readingScene?.getBookProjection(), false, reduceMotion);
+  if (readingScene) {
+    try {
+      readingScene.setBookPageCanvases(await captureBookPages(reader));
+    } catch {
+      // Keep the fallback paper if a user-supplied photo cannot be rasterized.
+    }
+    const journey = createReaderJourney(reader, false);
+    journey.update({progress:0,projection:readingScene.getBookProjection()});
+    await readingScene.returnToRoom(frame => journey.update(frame));
+    journey.finish();
+  } else {
+    await transitionReader(reader, undefined, false, reduceMotion);
+  }
   document.body.classList.remove("reading");
-  await readingScene?.returnToRoom();
   readingScene = undefined;
   state = "room";
   reader.dataset.phase = "closed";

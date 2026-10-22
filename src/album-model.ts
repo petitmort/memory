@@ -61,9 +61,10 @@ export function createAlbum() {
   rightPage.rotation.x = -Math.PI / 2; rightPage.position.y = .0322;
   const leftGeometry = new THREE.PlaneGeometry(.306, .246, 28, 16);
   const leftVertices = leftGeometry.getAttribute("position"), leftUV = leftGeometry.getAttribute("uv");
-  // The thin endpaper lifts gently at the binding while its outer edge rests on the cover.
+  // A slightly lifted flat sheet joins the cover to the binding. Its print has
+  // one projective surface, shared exactly by the readable DOM paper.
   for (let i = 0; i < leftVertices.count; i++)
-    leftVertices.setZ(i, .0291 * THREE.MathUtils.smoothstep(leftUV.getX(i), .76, 1));
+    leftVertices.setZ(i, .0291 * leftUV.getX(i));
   leftGeometry.computeVertexNormals();
   const leftPage = mesh(leftGeometry, faces[0], hinge);
   leftPage.name = "album-left-page";
@@ -91,10 +92,16 @@ export function createAlbum() {
   leaf.position.set(-.153, .0325, 0); leaf.visible = false;
   const leafUV = leafGeometry.getAttribute("uv"), leafPositions = leafGeometry.getAttribute("position");
   let selected = -1;
+  let pageSourceVersion = 0;
   let invalidate: (() => void) | undefined;
 
   function paintChapter(index: number, photo?: HTMLImageElement) {
     const chapter = chapters[index];
+    // Chapter artwork is the safe fallback until a matching DOM raster is ready.
+    for (const canvas of canvases) {
+      if (canvas.width !== 768) canvas.width = 768;
+      if (canvas.height !== 640) canvas.height = 640;
+    }
     const left = canvases[0].getContext("2d")!, right = canvases[1].getContext("2d")!;
     for (const context of [left, right]) {
       context.fillStyle = "#eee7d5"; context.fillRect(0, 0, 768, 640);
@@ -137,14 +144,64 @@ export function createAlbum() {
     const next = Math.max(0, Math.min(chapters.length - 1, index));
     if (selected === next) return;
     selected = next;
+    const version = ++pageSourceVersion;
     paintChapter(next);
     const path = chapters[next].image;
     if (path) {
       const photo = new Image();
       photo.crossOrigin = "anonymous";
-      photo.onload = () => { if (selected === next) paintChapter(next, photo); };
+      photo.onload = () => { if (selected === next && pageSourceVersion === version) paintChapter(next, photo); };
       photo.src = path;
     }
+  }
+  function setPageCanvases(pages: [HTMLCanvasElement, HTMLCanvasElement]) {
+    // Keep the texture identities: the leaf's reverse-face uniform uses these too.
+    ++pageSourceVersion;
+    for (let side = 0; side < 2; side++) {
+      canvases[side].width = Math.max(1, pages[side].width);
+      canvases[side].height = Math.max(1, pages[side].height);
+      canvases[side].getContext('2d')!.drawImage(pages[side], 0, 0);
+      maps[side].needsUpdate = true;
+    }
+    invalidate?.();
+  }
+
+  const materials = new Set<THREE.Material>();
+  let currentOpacity = 1;
+  let currentPaperOpacity = 1;
+  group.traverse(object => {
+    if (!(object instanceof THREE.Mesh)) return;
+    for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+      material.transparent = true;
+      materials.add(material);
+    }
+  });
+  function setVisibility(opacity: number, preservePaper = false) {
+    const alpha = THREE.MathUtils.clamp(opacity, 0, 1);
+    // DOM ink is composited over this identical opaque print. Fading both
+    // layers with complementary alpha would let the dark room show through.
+    const paperAlpha = preservePaper && alpha > .0001 ? 1 : alpha;
+    if (Math.abs(alpha - currentOpacity) < .00001 && paperAlpha === currentPaperOpacity) return;
+    currentOpacity = alpha;
+    currentPaperOpacity = paperAlpha;
+    group.visible = alpha > .0001;
+    for (const material of materials) {
+      material.opacity = faces.includes(material as THREE.MeshBasicMaterial) || material === leafMaterial ? paperAlpha : alpha;
+      // A fading sheet must not leave an invisible depth mask over its DOM twin.
+      material.depthWrite = material.opacity >= .999;
+    }
+    invalidate?.();
+  }
+
+  function pageCorners(page: THREE.Mesh) {
+    const positions = page.geometry.getAttribute('position'), uv = page.geometry.getAttribute('uv');
+    const corners = [[0, 1], [1, 1], [1, 0], [0, 0]];
+    return corners.map(([u, v]) => {
+      for (let i = 0; i < uv.count; i++)
+        if (Math.abs(uv.getX(i) - u) < .0001 && Math.abs(uv.getY(i) - v) < .0001)
+          return new THREE.Vector3().fromBufferAttribute(positions, i).applyMatrix4(page.matrixWorld);
+      throw new Error('Album page has no corner UV');
+    });
   }
   function setOpening(coverProgress: number, pageProgress: number) {
     hinge.rotation.z = coverProgress * Math.PI;
@@ -158,7 +215,7 @@ export function createAlbum() {
       const u = leafUV.getX(i), v = leafUV.getY(i), distance = u * .306;
       const bend = angle + curl * (u - .35);
       const settling = .0291 * THREE.MathUtils.smoothstep(pageProgress, .75, 1)
-        * THREE.MathUtils.smoothstep(u, 0, .24);
+        * u;
       leafPositions.setXYZ(i, distance * Math.cos(bend), distance * Math.sin(bend) + Math.sin(u * Math.PI) * Math.sin(pageProgress * Math.PI) * .012 - settling, (.5 - v) * .246);
     }
     leafPositions.needsUpdate = true;
@@ -167,7 +224,8 @@ export function createAlbum() {
   setOpening(0, 0);
   setChapter(0);
   return {
-    group, hinge, leaf, setChapter, setOpening,
+    group, hinge, leaf, setChapter, setOpening, setPageCanvases, setVisibility,
+    pageWorldCorners() { return [pageCorners(leftPage), pageCorners(rightPage)] as const; },
     setInvalidation(callback: () => void) { invalidate = callback; },
     // Corners of the entire open paper, in the same order as a DOM rectangle.
     paperCorners: [new THREE.Vector3(-.473, .0031, -.123), new THREE.Vector3(.153, .0322, -.123), new THREE.Vector3(.153, .0322, .123), new THREE.Vector3(-.473, .0031, .123)],

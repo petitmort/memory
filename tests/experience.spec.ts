@@ -3,7 +3,9 @@ import { mkdir, writeFile } from "node:fs/promises";
 
 async function expectReaderReady(page: Page) {
   await expect(page.locator("#reader")).toBeVisible({ timeout: 20000 });
-  await expect(page.locator("#reader")).toHaveAttribute("data-phase", "ready");
+  // SwiftShader can take over a second per drawn frame; wait for the complete
+  // camera journey without changing its frame-by-frame continuity checks.
+  await expect(page.locator("#reader")).toHaveAttribute("data-phase", "ready", { timeout: 60000 });
   await expect(page.locator("#reader")).toHaveAttribute("aria-busy", "false");
 }
 
@@ -69,14 +71,15 @@ test("desktop: deliberate entry, reading, chapter boundaries, sound and return",
   await page.waitForTimeout(700);
   await page.screenshot({ path: "test-results/desktop-reading.png" });
   await page.keyboard.press("Escape");
-  await expect(page.locator("#reader")).toBeHidden();
-  await expect(page.locator("#room-ui")).toBeVisible();
+  await expect(page.locator("#reader")).toBeHidden({ timeout: 60000 });
+  await expect(page.locator("#room-ui")).toBeVisible({ timeout: 60000 });
   await expect(page.locator("#open-book")).toBeFocused();
   await page.locator("#quality").click();
   await expect(page.locator("#quality")).toHaveText("画质 · 省电");
   await page.waitForTimeout(1200);
   await page.locator("#open-book").click();
   await expectReaderReady(page);
+  await expect(page.locator("#chapter-title")).toHaveText("我们看过的远方");
   expect(errors).toEqual([]);
 });
 
@@ -126,7 +129,7 @@ test("mobile: small-screen layout, swipe chapters and reduced motion", async ({
   await expect(page.locator("#chapter-title")).toHaveText("把日子过成夏天");
   await page.screenshot({ path: "test-results/mobile-reading.png" });
   await page.locator("#close-book").click();
-  await expect(page.locator("#room-ui")).toBeVisible();
+  await expect(page.locator("#room-ui")).toBeVisible({ timeout: 60000 });
   expect(errors).toEqual([]);
   await context.close();
 });
@@ -176,6 +179,10 @@ test("physical scene: enter through doorway, approach and open the album, then r
     seaVertices: number;
     curtainTop: number[];
     curtainHem: number[];
+    progress?: number;
+    pageOpacity?: number[];
+    readerBackground?: string;
+    readerBlur?: string;
   };
   type Probe = Window & {
     __cameraSamples: Sample[];
@@ -195,6 +202,7 @@ test("physical scene: enter through doorway, approach and open the album, then r
     const response = await route.fetch();
     const body = await response.text();
     expect(body).toContain("renderer.render(scene, camera);");
+    expect(body).toContain("finishReadingFrame?.();");
     await route.fulfill({
       response,
       body: body.replace(
@@ -231,7 +239,16 @@ test("physical scene: enter through doorway, approach and open the album, then r
       renderer.render(scene, camera);
       if(!window.__openingFrame && current==='book' && leaf.visible && leafMax-leafMin>.06)window.__openingFrame=renderer.domElement.toDataURL('image/png');
     `,
-      ),
+      ).replace("finishReadingFrame?.();", `
+      if(updateReadingFrame){
+        const sample=window.__cameraSamples.at(-1),reader=document.getElementById('reader');
+        sample.progress=updateReadingFrame.progress;
+        sample.pageOpacity=Array.from(reader.querySelectorAll('.page')).map(page=>Number(getComputedStyle(page).opacity));
+        sample.readerBackground=getComputedStyle(reader).backgroundColor;
+        sample.readerBlur=getComputedStyle(reader).backdropFilter;
+      }
+      finishReadingFrame?.();
+      `),
     });
   });
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -321,7 +338,13 @@ test("physical scene: enter through doorway, approach and open the album, then r
   await page.evaluate(() => {
     (window as unknown as Probe).__cameraSamples = [];
   });
+  const handoffScreenshot = page.waitForFunction(() => {
+    const sample = (window as unknown as Probe).__cameraSamples.at(-1);
+    return sample?.pageOpacity?.some(opacity => opacity > .35 && opacity < .85);
+  }, undefined, { timeout: 60000 }).then(() =>
+    page.screenshot({ path: 'test-results/album-handoff.png' }));
   await page.locator("#open-book").click();
+  await handoffScreenshot;
   await expectReaderReady(page);
   const approach = await page.evaluate(
     () => (window as unknown as Probe).__cameraSamples,
@@ -330,6 +353,24 @@ test("physical scene: enter through doorway, approach and open the album, then r
   for (let i = 1; i < approach.length; i++) expect(approach[i].cover).toBeGreaterThanOrEqual(approach[i - 1].cover - .00001);
   const closeView = approach.at(-1)!;
   const moved = (a: number[], b: number[]) => Math.hypot(...a.map((n, i) => n - b[i]));
+  const opening = approach.filter(sample => sample.progress !== undefined);
+  expect(opening.length).toBeGreaterThan(3);
+  for (let i = 1; i < opening.length; i++) {
+    expect(opening[i].progress!).toBeGreaterThanOrEqual(opening[i - 1].progress!);
+  }
+  expect(opening.at(-1)!.progress).toBe(1);
+  // DOM pages take over during the same camera journey, rather than beginning
+  // another animation after the 3D scene has already stopped.
+  const handoff = opening.filter(sample => sample.pageOpacity!.some(opacity => opacity > .01) && sample.progress! < .99);
+  expect(handoff.length).toBeGreaterThan(1);
+  expect(handoff.some(sample => moved(sample.p, closeView.p) > .001)).toBe(true);
+  expect(moved(handoff[0].p, handoff.at(-1)!.p)).toBeGreaterThan(.001);
+  const finalReaderStyle = await page.locator('#reader').evaluate(reader => ({
+    background: getComputedStyle(reader).backgroundColor,
+    blur: getComputedStyle(reader).backdropFilter,
+  }));
+  expect(opening.at(-1)!.readerBackground).toBe(finalReaderStyle.background);
+  expect(opening.at(-1)!.readerBlur).toBe(finalReaderStyle.blur);
   const cameraTravel = moved(final.p, closeView.p);
   expect(cameraTravel).toBeGreaterThan(.3);
   expect(approach.some(sample => moved(sample.p, final.p) > .05 && moved(sample.p, closeView.p) > .05)).toBe(true);
@@ -349,11 +390,17 @@ test("physical scene: enter through doorway, approach and open the album, then r
     (window as unknown as Probe).__cameraSamples = [];
   });
   await page.locator("#close-book").click();
-  await expect(page.locator("#room-ui")).toBeVisible({ timeout: 20000 });
+  await expect(page.locator("#room-ui")).toBeVisible({ timeout: 60000 });
   const retreat = await page.evaluate(
     () => (window as unknown as Probe).__cameraSamples,
   );
   const parked = retreat.at(-1)!;
+  const closing = retreat.filter(sample => sample.progress !== undefined);
+  expect(closing.length).toBeGreaterThan(3);
+  for (let i = 1; i < closing.length; i++) {
+    expect(closing[i].progress!).toBeGreaterThanOrEqual(closing[i - 1].progress!);
+  }
+  expect(closing.at(-1)!.progress).toBe(1);
   expect(retreat.some(sample => moved(sample.p, final.p) > .05 && moved(sample.p, closeView.p) > .05)).toBe(true);
   expect(parked.p).toEqual(final.p);
   expect(parked.t).toEqual(final.t);
