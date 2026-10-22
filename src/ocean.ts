@@ -60,7 +60,7 @@ export function createOcean() {
     material,
   );
   ocean.rotation.x = -Math.PI / 2;
-  ocean.position.set(0, -0.32, -125.5);
+  ocean.position.set(0, -0.32, -122.9);
   ocean.frustumCulled = false; // Shader displacement is not represented by the flat CPU bounds.
   return ocean;
 }

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { createBouquet } from "./bouquet";
 import { createOcean } from "./ocean";
+import { dimensions as D } from "./dimensions";
 
 export function createScene(
   container: HTMLElement,
@@ -24,7 +25,7 @@ export function createScene(
   scene.background = new THREE.Color("#b6c6c1");
   scene.fog = new THREE.FogExp2("#c2cec4", 0.018);
   const camera = new THREE.PerspectiveCamera(
-    42,
+    50,
     innerWidth / innerHeight,
     0.1,
     500,
@@ -33,14 +34,17 @@ export function createScene(
   const ambient = new THREE.HemisphereLight("#e9f0de", "#6e6656", 2.0);
   scene.add(ambient);
   const sun = new THREE.DirectionalLight("#fff0cf", 3.8);
-  sun.position.set(-4, 9, -5);
+  sun.position.set(-3, 4.5, -8);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
-  sun.shadow.camera.left = -12;
-  sun.shadow.camera.right = 12;
-  sun.shadow.camera.top = 12;
-  sun.shadow.camera.bottom = -12;
-  sun.shadow.normalBias = 0.035;
+  sun.shadow.mapSize.set(
+    innerWidth < 760 ? 1024 : 2048,
+    innerWidth < 760 ? 1024 : 2048,
+  );
+  sun.shadow.camera.left = -5;
+  sun.shadow.camera.right = 5;
+  sun.shadow.camera.top = 6;
+  sun.shadow.camera.bottom = -5;
+  sun.shadow.normalBias = 0.003;
   sun.shadow.autoUpdate = false;
   sun.shadow.needsUpdate = true;
   scene.add(sun);
@@ -149,34 +153,117 @@ export function createScene(
     roughness: 0.78,
     color: "#bda480",
   });
-  const floor = box(14, 0.15, 17, wood, 0, -0.1, 3.4);
-  floor.receiveShadow = true;
-  const seams = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(0.009, 0.008, 17),
-    mat("#76624c"),
-    40,
+  // World construction uses metres directly. No non-uniform parent scaling.
+  const front = D.room.depth / 2,
+    back = -front,
+    halfWidth = D.room.width / 2;
+  const floor = box(
+    D.room.width,
+    0.12,
+    D.room.depth + 4.2,
+    wood,
+    0,
+    -0.06,
+    2.1,
   );
-  for (let i = 0; i < 40; i++)
+  const seams = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(0.002, 0.001, D.room.depth + 4.2),
+    mat("#76624c"),
+    33,
+  );
+  for (let i = 0; i < 33; i++)
     seams.setMatrixAt(
       i,
-      new THREE.Matrix4().makeTranslation(-14 + i * 0.7, -0.019, 3.4),
+      new THREE.Matrix4().makeTranslation(-2.24 + i * 0.14, 0.0005, 2.1),
     );
   scene.add(seams);
-  // Room open to the ocean: back wall frames an expansive window.
   const room = new THREE.Group();
+  room.name = "room";
   scene.add(room);
-  room.scale.y = 0.8;
-  box(1.2, 5.8, 0.3, plaster, -5.2, 2.85, -5, room);
-  box(1.2, 5.8, 0.3, plaster, 5.2, 2.85, -5, room);
-  box(9.2, 0.8, 0.3, plaster, 0, 5.35, -5, room);
-  box(9.2, 1.1, 0.3, plaster, 0, 0.5, -5, room);
-  box(0.25, 5.8, 10, plaster, -5.8, 2.85, 0, room);
-  box(0.25, 5.8, 10, plaster, 5.8, 2.85, 0, room);
-  box(9.4, 0.15, 0.6, trim, 0, 1.07, -4.85, room);
-  box(0.1, 4, 0.2, trim, 0, 3, -4.85, room);
-  for (const x of [-4.6, 4.6]) box(0.16, 4.05, 0.3, trim, x, 3.05, -4.86, room);
-  box(9.4, 0.15, 0.3, trim, 0, 5.05, -4.85, room);
-  // Airy curtains, built as soft folded fabric surfaces.
+  box(
+    D.room.width,
+    0.12,
+    D.room.depth,
+    plaster,
+    0,
+    D.room.height + 0.06,
+    0,
+    room,
+  ).name = "ceiling";
+  const windowTop = D.window.sill + D.window.height;
+  for (const side of [-1, 1]) {
+    box(
+      (D.room.width - D.window.width) / 2,
+      D.room.height,
+      D.room.wall,
+      plaster,
+      side * (D.window.width / 2 + (D.room.width - D.window.width) / 4),
+      D.room.height / 2,
+      back,
+      room,
+    ).name = side < 0 ? "back-left" : "back-right";
+    box(
+      D.room.wall,
+      D.room.height,
+      D.room.depth,
+      plaster,
+      side * (halfWidth + D.room.wall / 2),
+      D.room.height / 2,
+      0,
+      room,
+    ).name = side < 0 ? "side-left" : "side-right";
+  }
+  box(
+    D.window.width,
+    D.window.sill,
+    D.room.wall,
+    plaster,
+    0,
+    D.window.sill / 2,
+    back,
+    room,
+  ).name = "back-below";
+  box(
+    D.window.width,
+    D.room.height - windowTop,
+    D.room.wall,
+    plaster,
+    0,
+    (windowTop + D.room.height) / 2,
+    back,
+    room,
+  ).name = "back-above";
+  box(
+    D.window.width + 0.1,
+    0.035,
+    0.2,
+    trim,
+    0,
+    D.window.sill - 0.0175,
+    back + 0.025,
+    room,
+  );
+  for (const x of [-D.window.width / 2, 0, D.window.width / 2])
+    box(
+      D.window.frame,
+      D.window.height,
+      0.08,
+      trim,
+      x,
+      D.window.sill + D.window.height / 2,
+      back + 0.07,
+      room,
+    );
+  box(
+    D.window.width + 0.045,
+    0.045,
+    0.08,
+    trim,
+    0,
+    windowTop,
+    back + 0.07,
+    room,
+  );
   const curtainMat = new THREE.MeshStandardMaterial({
     color: "#eee6d4",
     roughness: 1,
@@ -186,20 +273,21 @@ export function createScene(
   });
   const curtains: THREE.Mesh[] = [];
   for (const side of [-1, 1]) {
-    const g = new THREE.PlaneGeometry(1.55, 4.25, 18, 24);
+    const g = new THREE.PlaneGeometry(0.48, 2.35, 20, 28);
     const pos = g.attributes.position;
-    for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i),
-        y = pos.getY(i);
-      pos.setZ(i, Math.sin(x * 17) * 0.1 + Math.pow((2.1 - y) / 4.2, 2) * 0.17);
-    }
+    for (let i = 0; i < pos.count; i++)
+      pos.setZ(
+        i,
+        Math.sin(pos.getX(i) * 65) * 0.027 +
+          0.018 * Math.pow((1.175 - pos.getY(i)) / 2.35, 2),
+      );
     g.computeVertexNormals();
     const c = new THREE.Mesh(g, curtainMat);
-    c.position.set(side * 4.1, 3, -4.5);
+    c.position.set(side * 1.4, 1.325, back + 0.17);
     room.add(c);
     curtains.push(c);
   }
-  cylinder(0.035, 0.035, 10, brass, 0, 5.25, -4.45, room).rotation.z =
+  cylinder(0.012, 0.012, 3.36, brass, 0, 2.51, back + 0.17, room).rotation.z =
     Math.PI / 2;
   const ocean = createOcean();
   const seaMat = ocean.material;
@@ -224,46 +312,84 @@ export function createScene(
     island.position.set(17 + i * 3, -0.05, -37 - i * 3);
     scene.add(island);
   }
-  // Linen rug and a solid oak writing table.
-  box(5.3, 0.025, 3.65, mat("#bfb7a0"), 0, 0.01, -0.25);
-  const stripes = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(0.025, 0.008, 3.6),
-    mat("#cfc6ad"),
-    53,
+  const rug = box(
+    D.rug.width,
+    D.rug.thickness,
+    D.rug.depth,
+    mat("#bfb7a0"),
+    0.1,
+    D.rug.thickness / 2,
+    -0.65,
   );
-  const matrix = new THREE.Matrix4();
-  for (let i = 0; i < 53; i++)
+  rug.name = "rug";
+  const stripes = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(0.005, 0.0005, D.rug.depth - 0.02),
+    mat("#cfc6ad"),
+    50,
+  );
+  for (let i = 0; i < 50; i++)
     stripes.setMatrixAt(
       i,
-      matrix.makeTranslation((i - 26) * 0.1, 0.028, -0.25),
+      new THREE.Matrix4().makeTranslation(
+        0.1 + (i - 24.5) * 0.04,
+        0.0085,
+        -0.65,
+      ),
     );
   stripes.receiveShadow = true;
   scene.add(stripes);
   const table = new THREE.Group();
-  table.scale.setScalar(0.65);
-  table.position.set(0.25, 0, -0.8);
+  table.name = "desk";
+  table.position.set(0.1, 0, -0.9);
   room.add(table);
-  box(3.8, 0.15, 2.1, wood, 0, 1.52, 0, table);
-  box(3.5, 0.24, 0.12, darkWood, 0, 1.34, 0.87, table);
-  box(3.5, 0.24, 0.12, darkWood, 0, 1.34, -0.87, table);
-  for (const x of [-1.6, 1.6])
-    for (const z of [-0.8, 0.8]) {
-      const leg = box(0.13, 1.4, 0.13, darkWood, x, 0.7, z, table);
-      leg.rotation.z = x > 0 ? -0.035 : 0.035;
-    }
-  // Album, cover embossing, and page edges.
+  const tabletop = box(
+    D.desk.width,
+    D.desk.top,
+    D.desk.depth,
+    wood,
+    0,
+    D.desk.height - D.desk.top / 2,
+    0,
+    table,
+  );
+  tabletop.name = "tabletop";
+  for (const z of [-0.3, 0.3])
+    box(1.27, 0.08, 0.025, darkWood, 0, 0.675, z, table);
+  for (const x of [-0.61, 0.61])
+    for (const z of [-0.29, 0.29])
+      box(
+        0.045,
+        D.desk.height - D.desk.top,
+        0.045,
+        darkWood,
+        x,
+        (D.desk.height - D.desk.top) / 2,
+        z,
+        table,
+      );
   const book = new THREE.Group();
-  book.position.set(-0.25, 1.65, 0.18);
+  book.name = "album";
+  book.position.set(-0.13, D.desk.height, -0.03);
   book.rotation.y = -0.1;
   table.add(book);
-  box(1.65, 0.12, 1.15, paper, 0, 0.015, 0, book);
-  box(1.72, 0.035, 1.21, green, 0, -0.065, 0, book);
+  box(D.album.width, 0.003, D.album.depth, green, 0, 0.0015, 0, book);
+  box(0.31, 0.029, 0.25, paper, 0, 0.0175, 0, book);
   const bookHinge = new THREE.Group();
-  bookHinge.position.set(-0.86, 0.1, 0);
+  bookHinge.position.set(-D.album.width / 2, 0.0335, 0);
   book.add(bookHinge);
-  box(1.72, 0.055, 1.21, green, 0.86, 0, 0, bookHinge);
-  for (let i = 0; i < 9; i++)
-    box(1.63, 0.003, 1.14, mat("#b8b09c"), 0, -0.035 + i * 0.012, 0, book);
+  box(
+    D.album.width,
+    0.003,
+    D.album.depth,
+    green,
+    D.album.width / 2,
+    0,
+    0,
+    bookHinge,
+  );
+  const pageEdge = mat("#b8b09c");
+  for (let i = 0; i < 18; i++)
+    box(0.3102, 0.0002, 0.2502, pageEdge, 0, 0.005 + i * 0.0015, 0, book);
   function labelTexture() {
     const c = document.createElement("canvas");
     c.width = 512;
@@ -287,106 +413,265 @@ export function createScene(
     return t;
   }
   const label = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.68, 1.17),
+    new THREE.PlaneGeometry(D.album.width - 0.002, D.album.depth - 0.002),
     new THREE.MeshStandardMaterial({ map: labelTexture(), roughness: 0.9 }),
   );
   label.rotation.x = -Math.PI / 2;
-  label.position.set(0.86, 0.03, 0);
+  label.position.set(D.album.width / 2, 0.0016, 0);
   bookHinge.add(label);
-  // A compact garden bouquet rests diagonally across the album.
   const bouquet = createBouquet();
-  bouquet.position.set(0.42, 1.83, 0.49);
+  bouquet.name = "bouquet";
+  bouquet.scale.setScalar(D.bouquet.scale);
+  bouquet.position.set(0.07, 0.811, 0.04);
   bouquet.rotation.set(-1.12, -0.25, 0.55);
   table.add(bouquet);
-  // Ceramic cup, handwritten letter, and a simple stool.
-  cylinder(0.115, 0.09, 0.19, mat("#ded5be"), 1.2, 1.69, -0.5, table);
-  cylinder(0.098, 0.098, 0.01, mat("#51402e"), 1.2, 1.79, -0.5, table);
+  // An ordinary ~300 ml mug with a 3 mm wall and a properly sized handle.
+  const cup = new THREE.Group();
+  cup.name = "cup";
+  cup.position.set(0.49, D.desk.height, -0.24);
+  table.add(cup);
+  const ceramic = mat("#ded5be");
+  const profile = [
+    new THREE.Vector2(0.029, 0),
+    new THREE.Vector2(0.032, 0.004),
+    new THREE.Vector2(0.0425, 0.09),
+    new THREE.Vector2(0.0425, 0.095),
+    new THREE.Vector2(0.0395, 0.095),
+    new THREE.Vector2(0.0395, 0.09),
+    new THREE.Vector2(0.029, 0.008),
+    new THREE.Vector2(0, 0.008),
+  ];
+  const cupBody = new THREE.Mesh(new THREE.LatheGeometry(profile, 32), ceramic);
+  cupBody.name = "mug-body";
+  cupBody.castShadow = true;
+  cupBody.receiveShadow = true;
+  cup.add(cupBody);
+  cylinder(0.0385, 0.0385, 0.001, mat("#51402e"), 0, 0.084, 0, cup);
   const handle = new THREE.Mesh(
-    new THREE.TorusGeometry(0.075, 0.018, 8, 16),
-    mat("#ded5be"),
+    new THREE.TorusGeometry(0.021, 0.004, 10, 24),
+    ceramic,
   );
-  handle.position.set(1.33, 1.69, -0.5);
-  table.add(handle);
-  const letter = box(0.5, 0.007, 0.36, paper, -1.21, 1.606, -0.43, table);
-  letter.rotation.y = 0.2;
-  cylinder(0.32, 0.32, 0.08, wood, 0.3, 0.55, 0.6, room);
-  for (const x of [-0.22, 0.22])
-    for (const z of [0.38, 0.82])
-      box(0.06, 0.53, 0.06, darkWood, x + 0.3, 0.265, z, room);
-  // Small console and sunlit ceramics to give the room depth.
-  box(1.5, 0.11, 0.65, wood, -4.4, 1.07, -2.6, room);
-  for (const x of [-5, -3.8]) box(0.07, 1, 0.07, darkWood, x, 0.5, -2.6, room);
-  cylinder(0.15, 0.2, 0.5, mat("#c8b89b"), -4.6, 1.38, -2.6, room);
-  cylinder(0.09, 0.15, 0.35, green, -4.12, 1.31, -2.62, room);
-  // The entry facade and its inset paneled timber door.
+  handle.position.set(0.055, 0.055, 0);
+  handle.castShadow = true;
+  cup.add(handle);
+  const letter = box(
+    0.148,
+    0.0005,
+    0.105,
+    paper,
+    -0.48,
+    D.desk.height + 0.0003,
+    -0.19,
+    table,
+  );
+  letter.rotation.y = 0.12;
+  letter.name = "letter";
+  const stool = new THREE.Group();
+  stool.name = "stool";
+  stool.position.set(0.1, 0, -0.18);
+  room.add(stool);
+  cylinder(
+    D.stool.diameter / 2,
+    D.stool.diameter / 2,
+    D.stool.seat,
+    wood,
+    0,
+    D.stool.height - D.stool.seat / 2,
+    0,
+    stool,
+    32,
+  );
+  for (const x of [-0.115, 0.115])
+    for (const z of [-0.115, 0.115])
+      box(
+        0.035,
+        D.stool.height - D.stool.seat,
+        0.035,
+        darkWood,
+        x,
+        (D.stool.height - D.stool.seat) / 2,
+        z,
+        stool,
+      );
+  const consoleTable = new THREE.Group();
+  consoleTable.name = "console";
+  consoleTable.position.set(-1.72, 0, -1.8);
+  room.add(consoleTable);
+  box(
+    D.console.width,
+    0.025,
+    D.console.depth,
+    wood,
+    0,
+    D.console.height - 0.0125,
+    0,
+    consoleTable,
+  ).name = "console-top";
+  for (const x of [-0.39, 0.39])
+    for (const z of [-0.11, 0.11])
+      box(
+        0.03,
+        D.console.height - 0.025,
+        0.03,
+        darkWood,
+        x,
+        (D.console.height - 0.025) / 2,
+        z,
+        consoleTable,
+      );
+  cylinder(
+    0.045,
+    0.065,
+    0.23,
+    mat("#c8b89b"),
+    -0.2,
+    D.console.height + 0.115,
+    0,
+    consoleTable,
+  );
+  cylinder(
+    0.035,
+    0.05,
+    0.17,
+    green,
+    0.17,
+    D.console.height + 0.085,
+    0,
+    consoleTable,
+  );
+  // A 90 × 210 cm door leaf, 4.5 cm thick, with the handle 1 m above the floor.
   const facade = new THREE.Group();
+  facade.name = "entry-wall";
+  facade.position.z = front;
   scene.add(facade);
-  facade.position.z = 3.5;
-  facade.scale.y = 0.7;
-  box(20, 8, 0.35, plaster, -10.58, 3.95, 0, facade);
-  box(20, 8, 0.35, plaster, 11.88, 3.95, 0, facade);
-  box(2.2, 2.5, 0.35, plaster, 0.6, 4.7, 0, facade);
-  box(0.2, 3.7, 0.35, trim, -0.6, 1.8, 0.07, facade);
-  box(0.2, 3.7, 0.35, trim, 1.8, 1.8, 0.07, facade);
-  box(2.6, 0.2, 0.35, trim, 0.6, 3.65, 0.07, facade);
+  const openingLeft = D.door.centerX - 0.455,
+    openingRight = D.door.centerX + 0.455;
+  const headerBottom = D.door.height + D.door.threshold + 0.07;
+  box(
+    openingLeft + halfWidth,
+    D.room.height,
+    D.room.wall,
+    plaster,
+    (-halfWidth + openingLeft) / 2,
+    D.room.height / 2,
+    0,
+    facade,
+  );
+  box(
+    halfWidth - openingRight,
+    D.room.height,
+    D.room.wall,
+    plaster,
+    (halfWidth + openingRight) / 2,
+    D.room.height / 2,
+    0,
+    facade,
+  );
+  box(
+    0.95,
+    D.room.height - headerBottom,
+    D.room.wall,
+    plaster,
+    D.door.centerX,
+    (D.room.height + headerBottom) / 2,
+    0,
+    facade,
+  );
+  for (const x of [openingLeft - 0.035, openingRight + 0.035])
+    box(0.07, headerBottom, 0.12, trim, x, headerBottom / 2, 0.035, facade);
+  box(
+    1.09,
+    0.07,
+    0.12,
+    trim,
+    D.door.centerX,
+    D.door.height + D.door.threshold + 0.035,
+    0.035,
+    facade,
+  );
   const doorPivot = new THREE.Group();
-  doorPivot.position.set(-0.48, 0, 0.02);
+  doorPivot.position.set(
+    D.door.centerX - D.door.width / 2,
+    D.door.threshold,
+    0.005,
+  );
   facade.add(doorPivot);
-  const door = box(2.16, 3.5, 0.13, wood, 1.08, 1.75, 0, doorPivot);
-  for (const y of [1.05, 2.6]) {
-    box(1.68, 1.1, 0.025, darkWood, 1.08, y, 0.078, doorPivot);
-    box(1.55, 0.97, 0.025, wood, 1.08, y, 0.097, doorPivot);
+  const door = box(
+    D.door.width,
+    D.door.height,
+    D.door.thickness,
+    wood,
+    D.door.width / 2,
+    D.door.height / 2,
+    0,
+    doorPivot,
+  );
+  door.name = "door-leaf";
+  for (const y of [0.53, 1.52]) {
+    box(0.69, 0.7, 0.006, darkWood, 0.45, y, 0.0255, doorPivot);
+    box(0.64, 0.65, 0.007, wood, 0.45, y, 0.032, doorPivot);
   }
-  box(0.08, 3.38, 0.045, darkWood, 0.08, 1.75, 0.09, doorPivot);
-  box(0.08, 3.38, 0.045, darkWood, 2.08, 1.75, 0.09, doorPivot);
-  const plate = box(0.13, 0.35, 0.04, brass, 1.9, 1.63, 0.12, doorPivot);
-  sphere(0.065, brass, 1.9, 1.65, 0.22, doorPivot);
-  box(0.27, 0.035, 0.045, brass, 1.82, 1.66, 0.24, doorPivot);
-  box(2.8, 0.09, 0.6, mat("#a59b81"), 0.6, 0.01, 0.18, facade);
-  box(2.9, 0.08, 0.7, mat("#c3b79a"), 0.6, -0.07, 0.3, facade);
-  // Framed house number, wall lamp, and potted olive branches.
-  box(0.33, 0.4, 0.035, brass, 2.3, 2.75, 0.2, facade);
+  for (const x of [0.025, 0.875])
+    box(0.035, 2.04, 0.009, darkWood, x, 1.05, 0.028, doorPivot);
+  const knobY = D.door.handleHeight - D.door.threshold;
+  box(0.035, 0.15, 0.006, brass, 0.79, knobY, 0.03, doorPivot);
+  sphere(0.014, brass, 0.79, knobY, 0.055, doorPivot);
+  box(0.115, 0.016, 0.022, brass, 0.75, knobY, 0.065, doorPivot).name =
+    "door-handle";
+  box(
+    1.03,
+    D.door.threshold,
+    0.22,
+    mat("#a59b81"),
+    D.door.centerX,
+    D.door.threshold / 2,
+    0.04,
+    facade,
+  );
+  box(0.08, 0.11, 0.008, brass, 1.2, 1.52, 0.1, facade);
   const lanternMat = new THREE.MeshStandardMaterial({
     color: "#f8dfaa",
     emissive: "#eec28a",
     emissiveIntensity: 0.6,
     roughness: 0.6,
   });
-  box(0.22, 0.32, 0.2, lanternMat, 2.45, 3.25, 0.28, facade);
-  box(0.3, 0.04, 0.28, darkWood, 2.45, 3.43, 0.28, facade);
-  box(0.3, 0.04, 0.28, darkWood, 2.45, 3.07, 0.28, facade);
-  const oliveLeaf = mat("#738265");
-  const oliveTwig = mat("#7a7152");
-  const pot = mat("#a78368");
-  cylinder(0.25, 0.17, 0.5, pot, 2.8, 0.23, 0.42, facade);
-  const trunk = cylinder(0.025, 0.04, 1.35, darkWood, 2.8, 1.1, 0.42, facade);
-  trunk.rotation.z = 0.09;
+  box(0.12, 0.2, 0.1, lanternMat, 1.31, 1.9, 0.14, facade);
+  for (const y of [1.79, 2.01])
+    box(0.15, 0.018, 0.13, darkWood, 1.31, y, 0.14, facade);
+  const oliveLeaf = mat("#738265"),
+    oliveTwig = mat("#7a7152");
+  const plant = new THREE.Group();
+  plant.name = "olive-planter";
+  plant.position.set(1.5, 0, 0.28);
+  facade.add(plant);
+  cylinder(0.12, 0.085, 0.28, mat("#a78368"), 0, 0.14, 0, plant);
+  cylinder(0.011, 0.016, 0.62, darkWood, 0, 0.58, 0, plant);
   for (let i = 0; i < 10; i++) {
     const a = i * 2.4,
-      y = 0.85 + (i % 5) * 0.2;
+      y = 0.52 + (i % 5) * 0.075;
     const branch = cylinder(
-      0.008,
-      0.013,
-      0.55,
+      0.0025,
+      0.004,
+      0.25,
       oliveTwig,
-      2.8 + Math.cos(a) * 0.2,
+      Math.cos(a) * 0.09,
       y,
-      0.42 + Math.sin(a) * 0.17,
-      facade,
-      5,
+      Math.sin(a) * 0.07,
+      plant,
+      6,
     );
     branch.rotation.set(Math.sin(a) * 0.8, 0, -Math.cos(a) * 0.9);
     for (let j = 0; j < 5; j++) {
       const leaf = sphere(
-        0.095,
+        0.035,
         oliveLeaf,
-        2.8 + Math.cos(a) * (0.15 + j * 0.06),
-        y + j * 0.05,
-        0.42 + Math.sin(a) * (0.15 + j * 0.06),
-        facade,
-        0.35,
-        0.3,
-        1.4,
+        Math.cos(a) * (0.07 + j * 0.025),
+        y + j * 0.025,
+        Math.sin(a) * (0.07 + j * 0.025),
+        plant,
+        0.16,
+        0.025,
+        0.8,
       );
       leaf.rotation.y = a;
     }
@@ -404,7 +689,7 @@ export function createScene(
     dg,
     new THREE.PointsMaterial({
       color: "#fff0d0",
-      size: 0.018,
+      size: 0.002,
       transparent: true,
       opacity: 0.45,
       depthWrite: false,
@@ -413,20 +698,20 @@ export function createScene(
   scene.add(dust);
   type Pose = { p: THREE.Vector3; t: THREE.Vector3 };
   const mobile = () => innerWidth < 760;
-  // Eye height remains 1.65 m. The path crosses the real doorway at x=.6.
+  // Human eye height, centred on the 91 cm frame opening.
   const entryPose = (): Pose => ({
-    p: new THREE.Vector3(0.6, 1.65, 8),
-    t: new THREE.Vector3(mobile() ? 0.6 : -0.38, 1.55, 3.5),
+    p: new THREE.Vector3(D.door.centerX, D.eye, front + 3.6),
+    t: new THREE.Vector3(mobile() ? D.door.centerX : 0.12, 1.2, front),
   });
   const roomPose = (): Pose =>
     mobile()
       ? {
-          p: new THREE.Vector3(0.6, 1.65, 2.2),
-          t: new THREE.Vector3(0, 1.05, -1.5),
+          p: new THREE.Vector3(0.55, D.eye, 1.15),
+          t: new THREE.Vector3(0, 1.05, -1.4),
         }
       : {
-          p: new THREE.Vector3(1.55, 1.65, 1.5),
-          t: new THREE.Vector3(-0.35, 1.05, -1.9),
+          p: new THREE.Vector3(1.1, D.eye, 0.75),
+          t: new THREE.Vector3(-0.2, 0.95, -1.5),
         };
   let current: "entry" | "room" | "book" = "entry";
   let animating = false,
@@ -461,8 +746,8 @@ export function createScene(
         path: new THREE.CatmullRomCurve3(
           [
             camera.position.clone(),
-            new THREE.Vector3(0.6, 1.65, 4.4),
-            new THREE.Vector3(0.6, 1.65, 2.8),
+            new THREE.Vector3(D.door.centerX, D.eye, front + 0.6),
+            new THREE.Vector3(D.door.centerX, D.eye, front - 0.6),
             end.p,
           ],
           false,
@@ -481,7 +766,7 @@ export function createScene(
     return new Promise<void>((done) => {
       bouquetMotion = {
         from: bouquet.position.clone(),
-        to: new THREE.Vector3(1.27, 1.7, 0.76),
+        to: new THREE.Vector3(0.49, 0.765, 0.2),
         fromQ: bouquet.quaternion.clone(),
         toQ: new THREE.Quaternion().setFromEuler(
           new THREE.Euler(-1.32, 0.15, 0.35),
@@ -540,7 +825,7 @@ export function createScene(
         ),
         ease = a * a * (3 - 2 * a);
       bouquet.position.lerpVectors(bouquetMotion.from, bouquetMotion.to, ease);
-      bouquet.position.y += Math.sin(Math.PI * a) * 0.07;
+      bouquet.position.y += Math.sin(Math.PI * a) * 0.025;
       bouquet.quaternion.slerpQuaternions(
         bouquetMotion.fromQ,
         bouquetMotion.toQ,

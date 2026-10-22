@@ -142,7 +142,10 @@ test("physical scene: walk through doorway, park flowers, preserve view and anim
     waveTime: number;
     seaVertices: number;
   };
-  type Probe = Window & { __cameraSamples: Sample[] };
+  type Probe = Window & {
+    __cameraSamples: Sample[];
+    __sceneSizes: Record<string, number[]>;
+  };
   // Instrument the real rendered camera only in this test, without shipping a debug API.
   await page.route(/\/src\/scene\.ts(?:\?.*)?$/, async (route) => {
     const response = await route.fetch();
@@ -153,6 +156,23 @@ test("physical scene: walk through doorway, park flowers, preserve view and anim
       body: body.replace(
         "renderer.render(scene, camera);",
         `
+      if(!window.__sceneSizes){
+        scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
+        const measure=(name)=>{
+          const object=scene.getObjectByName(name),copy=object.clone();
+          copy.position.set(0,0,0);copy.quaternion.identity();copy.scale.set(1,1,1);
+          return new THREE.Box3().setFromObject(copy).getSize(new THREE.Vector3()).multiply(object.getWorldScale(new THREE.Vector3())).toArray();
+        };
+        const bounds=name=>new THREE.Box3().setFromObject(scene.getObjectByName(name));
+        window.__sceneSizes={
+          door:measure('door-leaf'),desk:measure('tabletop'),album:measure('album'),cup:measure('mug-body'),stool:measure('stool'),rug:measure('rug'),console:measure('console-top'),
+          room:[measure('ceiling')[0],measure('side-left')[1],measure('ceiling')[2]],
+          window:[bounds('back-right').min.x-bounds('back-left').max.x,bounds('back-above').min.y-bounds('back-below').max.y,bounds('back-below').max.y],
+          surfaces:[bounds('tabletop').max.y,bounds('stool').max.y,bounds('console-top').max.y],
+          handle:[scene.getObjectByName('door-handle').getWorldPosition(new THREE.Vector3()).y],
+          doorScreenY:[new THREE.Vector3(D.door.centerX,D.door.threshold,front).project(camera).y,new THREE.Vector3(D.door.centerX,D.door.height+D.door.threshold,front).project(camera).y],
+        };
+      }
       window.__cameraSamples ??= [];
       window.__cameraSamples.push({p: camera.position.toArray(), t: target.toArray(), flower: bouquet.position.toArray(), scale: bouquet.scale.toArray(), visible: bouquet.visible, wall: facade.visible, door: doorPivot.rotation.y, waveTime: seaMat.uniforms.time.value, seaVertices: ocean.geometry.attributes.position.count});
       renderer.render(scene, camera);
@@ -164,6 +184,26 @@ test("physical scene: walk through doorway, park flowers, preserve view and anim
   await page.goto("/");
   await page.locator("#enter").click();
   await expect(page.locator("#enter")).toBeEnabled();
+  const sizes = await page.evaluate(
+    () => (window as unknown as Probe).__sceneSizes,
+  );
+  const expected: Record<string, number[]> = {
+    door: [0.9, 2.1, 0.045],
+    desk: [1.4, 0.035, 0.75],
+    album: [0.32, 0.0351, 0.26],
+    cup: [0.085, 0.095, 0.085],
+    stool: [0.36, 0.45, 0.36],
+    rug: [2, 0.008, 1.4],
+    console: [0.9, 0.025, 0.32],
+    room: [4.6, 2.7, 5.4],
+    window: [3, 1.6, 0.85],
+    surfaces: [0.75, 0.45, 0.78],
+    handle: [1],
+  };
+  for (const [name, values] of Object.entries(expected))
+    values.forEach((value, i) => expect(sizes[name][i]).toBeCloseTo(value, 4));
+  expect(sizes.doorScreenY[0]).toBeGreaterThan(-0.95);
+  expect(sizes.doorScreenY[1]).toBeLessThan(0.95);
   await page.evaluate(() => {
     (window as unknown as Probe).__cameraSamples = [];
   });
@@ -174,25 +214,25 @@ test("physical scene: walk through doorway, park flowers, preserve view and anim
   );
   expect(entry.length).toBeGreaterThan(3);
   const final = entry.at(-1)!;
-  expect(entry[0].p[2]).toBeGreaterThan(3.8);
-  expect(final.p[2]).toBeLessThan(3);
+  expect(entry[0].p[2]).toBeGreaterThan(3.1);
+  expect(final.p[2]).toBeLessThan(2);
   for (const sample of entry) {
     expect(sample.p[1]).toBeCloseTo(1.65, 6);
     expect(sample.wall).toBe(true);
-    if (Math.abs(sample.p[2] - 3.5) < 0.3) {
-      expect(sample.p[0]).toBeGreaterThan(-0.2);
-      expect(sample.p[0]).toBeLessThan(1.4);
+    if (Math.abs(sample.p[2] - 2.7) < 0.3) {
+      expect(sample.p[0]).toBeGreaterThan(0.28);
+      expect(sample.p[0]).toBeLessThan(0.82);
       expect(sample.door).toBeLessThan(-1.25);
     }
   }
   const crossing = entry.findIndex(
-    (sample, i) => i > 0 && sample.p[2] < 3.5 && entry[i - 1].p[2] >= 3.5,
+    (sample, i) => i > 0 && sample.p[2] < 2.7 && entry[i - 1].p[2] >= 2.7,
   );
   expect(crossing).toBeGreaterThan(0);
   const before = entry[crossing - 1].p,
     after = entry[crossing].p;
-  const fraction = (3.5 - before[2]) / (after[2] - before[2]);
-  expect(before[0] + (after[0] - before[0]) * fraction).toBeCloseTo(0.6, 1);
+  const fraction = (2.7 - before[2]) / (after[2] - before[2]);
+  expect(before[0] + (after[0] - before[0]) * fraction).toBeCloseTo(0.55, 1);
   expect(final.seaVertices).toBeGreaterThan(10000);
   const seaA = await page.screenshot({
     clip: { x: 700, y: 330, width: 250, height: 80 },
@@ -227,12 +267,12 @@ test("physical scene: walk through doorway, park flowers, preserve view and anim
     expect(sample.t).toEqual(final.t);
     expect(sample.scale).toEqual(final.scale);
     expect(sample.visible).toBe(true);
-    expect(sample.flower[1]).toBeGreaterThanOrEqual(1.69);
-    expect(sample.flower[1]).toBeLessThanOrEqual(1.91);
+    expect(sample.flower[1]).toBeGreaterThanOrEqual(0.764);
+    expect(sample.flower[1]).toBeLessThanOrEqual(0.837);
   }
   const parked = reading.at(-1)!;
-  expect(parked.flower[0]).toBeGreaterThan(final.flower[0] + 0.5);
-  expect(parked.flower[0]).toBeLessThan(1.7);
-  expect(parked.flower[2]).toBeLessThan(1.0);
+  expect(parked.flower[0]).toBeGreaterThan(final.flower[0] + 0.3);
+  expect(parked.flower[0]).toBeLessThan(0.58);
+  expect(parked.flower[2]).toBeLessThan(0.3);
   expect(parked.waveTime).toBeGreaterThan(final.waveTime);
 });
