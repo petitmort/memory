@@ -16,6 +16,7 @@ import { createMythology } from "./mythology";
 import { createDecor } from "./decor";
 import { consoleLayout } from "./interior-layout";
 import { readingBlend } from "./reading-timeline";
+import { advanceReadingClock, createReadingPath, readingRetargetDuration, retargetReadingPath, type ReadingPath } from "./reading-motion";
 
 export type PageProjection = { corners: { x: number; y: number }[] };
 export type BookProjection = PageProjection & { pages: [PageProjection, PageProjection] };
@@ -671,9 +672,11 @@ export function createScene(
     kind: "opening" | "closing";
     from: ReadingPose;
     to: ReadingPose;
-    path: THREE.CatmullRomCurve3;
+    path: ReadingPath;
     elapsed: number;
     duration: number;
+    lastDrawAt: number | null;
+    mobile: boolean;
     phaseStart: number;
     onFrame?: (frame: ReadingFrame) => void;
     done: () => void;
@@ -708,11 +711,11 @@ export function createScene(
       const to = kind === "opening" ? bookReadingPose() : saved && saved.mobile === mobile()
         ? { p: saved.p.clone(), t: saved.t.clone(), fov: saved.fov }
         : { ...roomPose(), fov: 50 };
-      const shoulder = from.p.clone().lerp(to.p, .5); shoulder.y += .035;
+      const duration = reducedMotion ? 180 : kind === "opening" ? 2600 : 2000;
       readingMotion = {
         kind, from, to,
-        path: new THREE.CatmullRomCurve3([from.p, shoulder, to.p], false, "centripetal"),
-        elapsed: 0, duration: reducedMotion ? 180 : kind === "opening" ? 2600 : 2000,
+        path: createReadingPath(from,to,duration),
+        elapsed: 0, duration, lastDrawAt: null, mobile: mobile(),
         phaseStart: 0, onFrame, done,
       };
     });
@@ -825,13 +828,12 @@ export function createScene(
       const motion = readingMotion;
       // Keep the cover and leaf visible through slow shader/resize frames.
       // Normal frame rates retain the intended duration; a stall cannot skip a turn.
-      motion.elapsed = Math.min(motion.duration, motion.elapsed + THREE.MathUtils.clamp(delta, 0, 100));
-      const a = motion.elapsed / motion.duration;
+      const a = advanceReadingClock(motion,now);
       const phase = THREE.MathUtils.lerp(motion.phaseStart, 1, a);
-      const ease = a * a * (3 - 2 * a);
-      camera.position.copy(motion.path.getPoint(ease));
-      target.lerpVectors(motion.from.t, motion.to.t, ease);
-      camera.fov = THREE.MathUtils.lerp(motion.from.fov, motion.to.fov, ease);
+      const pose = motion.path.sample(a);
+      camera.position.copy(pose.p);
+      target.copy(pose.t);
+      camera.fov = pose.fov;
       camera.updateProjectionMatrix();
       if (motion.kind === "opening") {
         coverProgress = THREE.MathUtils.smoothstep(phase, .06, .43);
@@ -901,20 +903,24 @@ export function createScene(
     renderer.setSize(innerWidth, innerHeight);
     if (readingMotion) {
       const previous = readingMotion;
+      singleRenderRequested = true;
+      // An aspect-ratio change alone does not change either endpoint. Keep the
+      // same trajectory and frame clock instead of braking and starting again.
+      if (previous.mobile === mobile()) return;
       const progress = previous.elapsed / previous.duration;
       const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
+      const velocity = previous.path.sample(progress).velocity;
       const saved = roomBeforeReading;
       const to = previous.kind === "opening" ? bookReadingPose() : saved && saved.mobile === mobile()
         ? { p: saved.p.clone(), t: saved.t.clone(), fov: saved.fov }
         : { ...roomPose(), fov: 50 };
-      const shoulder = from.p.clone().lerp(to.p, .5); shoulder.y += .02;
+      const duration = readingRetargetDuration(previous);
       readingMotion = {
         ...previous, from, to,
-        path: new THREE.CatmullRomCurve3([from.p, shoulder, to.p], false, "centripetal"),
-        elapsed: 0, duration: Math.max(100, previous.duration * (1 - progress)),
+        path: retargetReadingPath({...from,velocity},to,duration),
+        elapsed: 0, duration, mobile: mobile(),
         phaseStart: THREE.MathUtils.lerp(previous.phaseStart, 1, progress),
       };
-      singleRenderRequested = true;
     } else if (!animating && current === "book") {
       const pose = bookReadingPose();
       camera.position.copy(pose.p); target.copy(pose.t); camera.fov = pose.fov;

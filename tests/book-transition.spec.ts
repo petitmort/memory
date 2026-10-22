@@ -9,7 +9,8 @@ test('paper aligns with projected corners and the closed album retains its real 
     const path = '/src/reader-transition.ts';
     const { paperTransform } = await import(path);
     const albumPath = '/src/album-model.ts', threePath = '/node_modules/.vite/deps/three.js';
-    const [{ createAlbum }, THREE] = await Promise.all([import(albumPath), import(threePath)]);
+    const motionPath = '/src/reading-motion.ts';
+    const [{ createAlbum }, THREE, motion] = await Promise.all([import(albumPath), import(threePath),import(motionPath)]);
     const album = createAlbum();
     const closedSize = new THREE.Box3().setFromObject(album.group, true).getSize(new THREE.Vector3()).toArray();
     album.setOpening(1, 1);
@@ -59,13 +60,56 @@ test('paper aligns with projected corners and the closed album retains its real 
       return { x: rect.left, y: rect.top };
     });
     const degenerate = paperTransform(width, height, { corners: Array(4).fill({ x: 4, y: 7 }) }, left, top);
-    return { corners, actual, degenerate, closedSize, open, reclosedSize };
+    // Redirect the same moving eye across a responsive breakpoint without a
+    // renderer. Compare actual displacement around the join, not only a stored velocity.
+    const from = {p:new THREE.Vector3(1.1,1.65,.75),t:new THREE.Vector3(-.2,.95,-1.5),fov:50};
+    const to = {p:new THREE.Vector3(-.2,1.6,-.3),t:new THREE.Vector3(-.2,.78,-.94),fov:36};
+    const duration = 2600, progress = .43, stepMs = .1;
+    const approach = motion.createReadingPath(from,to,duration);
+    const current = approach.sample(progress), beforeJoin = approach.sample(progress-stepMs/duration);
+    const newDestination = {p:new THREE.Vector3(-.2,1.65,.7),t:to.t.clone(),fov:54};
+    const remaining = duration*(1-progress);
+    const redirected = motion.retargetReadingPath(current,newDestination,remaining);
+    const join = redirected.sample(0), afterJoin = redirected.sample(stepMs/remaining), arrived = redirected.sample(1);
+    const lateStart = approach.sample(.99);
+    const lateDuration = motion.readingRetargetDuration({duration,elapsed:duration*.99});
+    const lateRedirect = motion.retargetReadingPath(lateStart,newDestination,lateDuration);
+    const lateFirstFrame = lateRedirect.sample(16/lateDuration);
+    const pose = sample => ({p:sample.p.toArray(),t:sample.t.toArray(),fov:sample.fov});
+    const numericalVelocity = (a,b) => ({p:b.p.clone().sub(a.p).multiplyScalar(1/stepMs).toArray(),
+      t:b.t.clone().sub(a.t).multiplyScalar(1/stepMs).toArray(),fov:(b.fov-a.fov)/stepMs});
+    const clock = {elapsed:0,duration:2000,lastDrawAt:null};
+    const firstDraw = motion.advanceReadingClock(clock,120000);
+    const nextDraw = motion.advanceReadingClock(clock,120016);
+    const slowDraw = motion.advanceReadingClock(clock,120500);
+    const returnClock = {elapsed:0,duration:2000,lastDrawAt:null};
+    const firstReturn = motion.advanceReadingClock(returnClock,360000);
+    return { corners, actual, degenerate, closedSize, open, reclosedSize,
+      motion:{current:pose(current),join:pose(join),destination:pose(newDestination),arrived:pose(arrived),
+        incoming:numericalVelocity(beforeJoin,current),outgoing:numericalVelocity(join,afterJoin),
+        finalVelocity:pose(arrived.velocity),firstDraw,nextDraw,slowDraw,firstReturn,
+        lateDuration,lateFirstDistance:lateFirstFrame.p.distanceTo(lateStart.p),lateRemainingDistance:lateFirstFrame.p.distanceTo(newDestination.p)} };
   });
   for (let i = 0; i < 4; i++) {
     expect(Math.abs(result.actual[i].x - result.corners[i].x)).toBeLessThan(1);
     expect(Math.abs(result.actual[i].y - result.corners[i].y)).toBeLessThan(1);
   }
   expect(result.degenerate).toBeNull();
+  expect(result.motion.join).toEqual(result.motion.current);
+  expect(result.motion.arrived).toEqual(result.motion.destination);
+  expect(result.motion.firstDraw).toBe(0);
+  expect(result.motion.firstReturn).toBe(0);
+  expect(result.motion.nextDraw).toBeCloseTo(.008,8);
+  expect(result.motion.slowDraw).toBeCloseTo(.058,8);
+  expect(result.motion.lateDuration).toBeGreaterThanOrEqual(300);
+  expect(result.motion.lateFirstDistance).toBeLessThan(.05);
+  expect(result.motion.lateRemainingDistance).toBeGreaterThan(.5);
+  for (const vector of ['p','t'] as const) for (let axis=0;axis<3;axis++) {
+    expect(result.motion.outgoing[vector][axis]).toBeCloseTo(result.motion.incoming[vector][axis],6);
+    expect(result.motion.finalVelocity[vector][axis]).toBeCloseTo(0,10);
+  }
+  expect(result.motion.outgoing.fov).toBeCloseTo(result.motion.incoming.fov,5);
+  expect(result.motion.finalVelocity.fov).toBe(0);
   [.32, .0351, .26].forEach((size, axis) => {
     expect(result.closedSize[axis]).toBeCloseTo(size, 4);
     expect(result.reclosedSize[axis]).toBeCloseTo(size, 4);
@@ -148,7 +192,7 @@ test('the same untainted DOM page rasters become both physical paper textures', 
 test('desktop and mobile pages track a moving projection continuously through cleanup', async ({ page }) => {
   await page.route('**/__reader_journey', route => route.fulfill({
     contentType: 'text/html', body: `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/src/style.css"></head><body>
-      <section class="reader" id="reader"><div class="reader-top"><span>THE THINGS WE KEEP</span><button>回到房间</button></div><div class="book-wrap"><div class="book">
+      <div class="vignette"></div><section class="reader" id="reader"><div class="reader-top"><span>THE THINGS WE KEEP</span><button>回到房间</button></div><div class="book-wrap"><div class="book">
         <article class="page page-left"><span class="page-kicker">01 · 海边</span><div class="print" style="height:200px;background:#acd0c7"></div><p class="photo-caption">风经过的地方</p></article>
         <article class="page page-right"><span class="page-kicker">THE THINGS WE KEEP</span><div class="story"><h2>把时光留在这里</h2><p class="poem">The sea remembers.\nWe keep the light.</p></div></article>
       </div><button class="page-nav prev" disabled>←</button><button class="page-nav next">→</button></div><div class="reader-bottom"><span>01 / 04</span></div></section>
@@ -160,7 +204,11 @@ test('desktop and mobile pages track a moving projection continuously through cl
     const resultPromise = page.evaluate(async () => {
       const path = '/src/reader-transition.ts';
       const { createReaderJourney } = await import(path);
+      const timelinePath = '/src/reading-timeline.ts';
+      const { readingBlend } = await import(timelinePath);
       const reader = document.getElementById('reader')!;
+      const vignette = document.querySelector<HTMLElement>('.vignette')!;
+      const baselineVignette = Number(getComputedStyle(vignette).opacity);
       const pages = Array.from(reader.querySelectorAll<HTMLElement>('.page'));
       const paintProbes = pages.map(page => {
         const probe = document.createElement('span');
@@ -199,9 +247,25 @@ test('desktop and mobile pages track a moving projection continuously through cl
       journey.update({ progress: 0, projection: projection(0) });
       const initial = corners();
       const samples = [initial];
+      let fadeDrift = 0, fadeSamples = 0, vignetteDuringFade = 0;
+      const verifyHandoff = (progress: number, opening: boolean, source: ReturnType<typeof projection>) => {
+        const blend = readingBlend(progress, opening);
+        if (blend.paper > 0 && blend.paper < 1) {
+          fadeSamples++;
+          const actual = corners();
+          for (let side = 0; side < 2; side++) for (let corner = 0; corner < 4; corner++) {
+            const target = source.pages[side].corners[corner], shown = actual[side][corner];
+            fadeDrift = Math.max(fadeDrift,Math.hypot(shown.x-target.x,shown.y-target.y));
+          }
+          vignetteDuringFade = Math.max(vignetteDuringFade,Number(getComputedStyle(vignette).opacity));
+        }
+      };
+      const lateBacking: { progress: number; background: string; opacity: number; crease: number }[] = [];
       for (let step = 1; step <= 200; step++) {
         const progress = step / 200;
-        journey.update({ progress, projection: projection(progress) });
+        const source = projection(progress);
+        journey.update({ progress, projection: source });
+        verifyHandoff(progress,true,source);
         samples.push(corners());
         if (step === 150) {
           // A correct DOM bounding box alone does not prove that Chromium's
@@ -213,32 +277,51 @@ test('desktop and mobile pages track a moving projection continuously through cl
           });
           await new Promise<void>(resolve => { (window as any).__resumePaperPaint = resolve; });
         }
+        if (step === 160 || step === 180) {
+          const backing = reader.querySelector<HTMLElement>('.reading-backing')!;
+          lateBacking.push({progress,background:getComputedStyle(backing).backgroundColor,
+            opacity:Number(getComputedStyle(backing).opacity),crease:Number(getComputedStyle(reader.querySelector('.book')!,'::after').opacity)});
+          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+          (window as any).__paperLateStage = progress;
+          await new Promise<void>(resolve => { (window as any).__resumePaperLateStage = resolve; });
+        }
       }
       const end = { corners: corners(), style: style() };
       const activeAnimations = reader.getAnimations({ subtree: true }).length;
       journey.finish();
       const cleaned = { corners: corners(), style: style() };
+      const readingVignette = Number(getComputedStyle(vignette).opacity);
       // Retargeting the same global progress must immediately follow this
       // frame's new camera projection instead of an earlier cached quad.
       const rejoin = createReaderJourney(reader, false);
+      rejoin.update({ progress: 0, projection: projection(0) });
+      const closingVignetteStart = Number(getComputedStyle(vignette).opacity);
       rejoin.update({ progress: .2, projection: projection(.2) });
       const beforeRetarget = corners();
       rejoin.update({ progress: .2, projection: projection(.2, 8) });
       const afterRetarget = corners();
-      rejoin.update({ progress: 1, projection: projection(1) });
+      for (let step = 41; step <= 200; step++) {
+        const progress = step / 200, source = projection(progress,8);
+        rejoin.update({ progress, projection: source });
+        verifyHandoff(progress,false,source);
+      }
       rejoin.finish();
+      const restoredVignette = Number(getComputedStyle(vignette).opacity);
       let maxStep = 0;
       for (let i = 1; i < samples.length; i++) for (let side = 0; side < 2; side++) for (let corner = 0; corner < 4; corner++) {
         const a = samples[i - 1][side][corner], b = samples[i][side][corner];
         maxStep = Math.max(maxStep, Math.hypot(b.x - a.x, b.y - a.y));
       }
-      return { settled, initial, source: projection(0).pages, end, cleaned, maxStep, activeAnimations, beforeRetarget, afterRetarget, hidden: reader.classList.contains('hidden') };
+      return { settled, initial, source: projection(0).pages, end, cleaned, maxStep, activeAnimations, beforeRetarget, afterRetarget,
+        hidden: reader.classList.contains('hidden'),fadeDrift,fadeSamples,vignetteDuringFade,lateBacking,
+        baselineVignette,readingVignette,closingVignetteStart,restoredVignette };
     });
     const paintPromise = (async () => {
       await page.waitForFunction(() => (window as any).__paperPaintProbe?.length === 2);
+      let paintedPixels: number[] = [];
       try {
         const screenshot = await page.screenshot({ path: `test-results/paper-paint-${viewport.width}.png` });
-        return await page.evaluate(async encoded => {
+        paintedPixels = await page.evaluate(async encoded => {
           const image = new Image(); image.src = `data:image/png;base64,${encoded}`;
           await image.decode();
           const canvas = document.createElement('canvas');
@@ -259,6 +342,15 @@ test('desktop and mobile pages track a moving projection continuously through cl
       } finally {
         await page.evaluate(() => (window as any).__resumePaperPaint());
       }
+      for (const stage of [.8,.9]) {
+        await page.waitForFunction(expected => (window as any).__paperLateStage === expected,stage);
+        try {
+          await page.screenshot({path:`test-results/paper-layout-${viewport.width}-${Math.round(stage*100)}.png`});
+        } finally {
+          await page.evaluate(() => (window as any).__resumePaperLateStage());
+        }
+      }
+      return paintedPixels;
     })();
     const [result, paintedPixels] = await Promise.all([resultPromise, paintPromise]);
     expect(paintedPixels).toHaveLength(2);
@@ -266,6 +358,20 @@ test('desktop and mobile pages track a moving projection continuously through cl
       expect(count, `${viewport.width}px page ${side + 1} should paint at its measured center`).toBeGreaterThan(0);
     });
     expect(result.activeAnimations).toBe(0);
+    // Both printed layers must use the same quad throughout their overlap.
+    expect(result.fadeSamples).toBeGreaterThan(20);
+    expect(result.fadeDrift).toBeLessThan(.2);
+    expect(result.vignetteDuringFade).toBe(0);
+    expect(result.readingVignette).toBe(0);
+    expect(result.closingVignetteStart).toBe(0);
+    expect(result.restoredVignette).toBeCloseTo(result.baselineVignette,5);
+    expect(result.baselineVignette).toBeGreaterThan(0);
+    expect(result.lateBacking).toHaveLength(2);
+    for (const backing of result.lateBacking) {
+      expect(backing.background).toBe('rgba(0, 0, 0, 0)');
+      expect(backing.opacity).toBe(0);
+      expect(backing.crease).toBe(0);
+    }
     expect(result.maxStep).toBeGreaterThan(1);
     expect(result.maxStep).toBeLessThan(40);
     for (let side = 0; side < 2; side++) for (let corner = 0; corner < 4; corner++) {
@@ -285,6 +391,27 @@ test('desktop and mobile pages track a moving projection continuously through cl
       expect(result.cleaned.corners[1][0].y).toBeGreaterThan(result.cleaned.corners[0][3].y - 1);
       expect(result.cleaned.corners[1][0].x).toBeCloseTo(result.cleaned.corners[0][0].x, 1);
     }
+
+    // The DOM-only route must keep the same darkening lifecycle, including a
+    // non-default CSS baseline rather than assuming the overlay opacity is one.
+    const fallback = await page.evaluate(async () => {
+      const path = '/src/reader-transition.ts';
+      const { transitionReader } = await import(path);
+      const reader = document.getElementById('reader')!;
+      const vignette = document.querySelector<HTMLElement>('.vignette')!;
+      vignette.style.setProperty('--vignette-opacity','.73');
+      const baseline = Number(getComputedStyle(vignette).opacity);
+      reader.classList.remove('hidden');
+      await transitionReader(reader,undefined,true,true);
+      const reading = Number(getComputedStyle(vignette).opacity);
+      await transitionReader(reader,undefined,false,true);
+      return {baseline,reading,restored:Number(getComputedStyle(vignette).opacity),hidden:reader.classList.contains('hidden')};
+    });
+    expect(fallback.baseline).toBeGreaterThan(0);
+    expect(fallback.baseline).toBeLessThan(1);
+    expect(fallback.reading).toBe(0);
+    expect(fallback.restored).toBeCloseTo(fallback.baseline,5);
+    expect(fallback.hidden).toBe(true);
 
     // Change the real viewport during this journey, including a media-query
     // boundary. A synthetic resize event at one size cannot exercise reflow.

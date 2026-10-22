@@ -188,6 +188,7 @@ test("physical scene: enter through doorway, approach and open the album, then r
     __cameraSamples: Sample[];
     __openingFrame?: string;
     __readingResize?: boolean;
+    __readingResizePreserved?: boolean;
     __sceneSizes: Record<string, number[]>;
     __sceneStyle: {
       curtainAlpha: number;
@@ -234,7 +235,7 @@ test("physical scene: enter through doorway, approach and open the album, then r
       window.__cameraSamples ??= [];
       const cover=scene.getObjectByName('album-cover-hinge'),leaf=scene.getObjectByName('album-opening-leaf');
       const leafPositions=leaf.geometry.attributes.position;let leafMin=Infinity,leafMax=-Infinity;for(let i=0;i<leafPositions.count;i++){leafMin=Math.min(leafMin,leafPositions.getY(i));leafMax=Math.max(leafMax,leafPositions.getY(i));}
-      if(!window.__readingResize && readingMotion?.kind==='opening' && cover.rotation.z>.2 && cover.rotation.z<2.7){window.__readingResize=true;window.dispatchEvent(new Event('resize'));}
+      if(!window.__readingResize && readingMotion?.kind==='opening' && cover.rotation.z>.2 && cover.rotation.z<2.7){const beforeResize=readingMotion;window.__readingResize=true;window.dispatchEvent(new Event('resize'));window.__readingResizePreserved=readingMotion===beforeResize;}
       window.__cameraSamples.push({p: camera.position.toArray(), t: target.toArray(),fov:camera.fov,cover:cover.rotation.z,leafHeight:leafMax-leafMin,leafVisible:leaf.visible, flower: bouquet.position.toArray(), scale: bouquet.scale.toArray(), visible: bouquet.visible, wall: facade.visible, door: doorPivot.rotation.y, waveTime: seaMat.uniforms.time.value, seaVertices: ocean.geometry.attributes.position.count,curtainTop:[cloth.getX(0),cloth.getY(0),cloth.getZ(0)],curtainHem:[cloth.getX(cloth.count-1),cloth.getY(cloth.count-1),cloth.getZ(cloth.count-1)]});
       renderer.render(scene, camera);
       if(!window.__openingFrame && current==='book' && leaf.visible && leafMax-leafMin>.06)window.__openingFrame=renderer.domElement.toDataURL('image/png');
@@ -350,11 +351,16 @@ test("physical scene: enter through doorway, approach and open the album, then r
     () => (window as unknown as Probe).__cameraSamples,
   );
   expect(await page.evaluate(() => (window as unknown as Probe).__readingResize)).toBe(true);
+  expect(await page.evaluate(() => (window as unknown as Probe).__readingResizePreserved)).toBe(true);
   for (let i = 1; i < approach.length; i++) expect(approach[i].cover).toBeGreaterThanOrEqual(approach[i - 1].cover - .00001);
   const closeView = approach.at(-1)!;
   const moved = (a: number[], b: number[]) => Math.hypot(...a.map((n, i) => n - b[i]));
   const opening = approach.filter(sample => sample.progress !== undefined);
   expect(opening.length).toBeGreaterThan(3);
+  expect(opening[0].progress).toBe(0);
+  expect(opening[0].p).toEqual(final.p);
+  expect(opening[0].t).toEqual(final.t);
+  expect(opening[0].fov).toBe(final.fov);
   for (let i = 1; i < opening.length; i++) {
     expect(opening[i].progress!).toBeGreaterThanOrEqual(opening[i - 1].progress!);
   }
@@ -386,6 +392,8 @@ test("physical scene: enter through doorway, approach and open the album, then r
   await mkdir("test-results", { recursive: true });
   await writeFile("test-results/album-opening.png", Buffer.from(openingFrame!.split(",")[1], "base64"));
   await page.screenshot({ path: "test-results/album-reading.png" });
+  // A frozen reading interval must not become motion time on the first return frame.
+  await page.waitForTimeout(250);
   await page.evaluate(() => {
     (window as unknown as Probe).__cameraSamples = [];
   });
@@ -397,6 +405,10 @@ test("physical scene: enter through doorway, approach and open the album, then r
   const parked = retreat.at(-1)!;
   const closing = retreat.filter(sample => sample.progress !== undefined);
   expect(closing.length).toBeGreaterThan(3);
+  expect(closing[0].progress).toBe(0);
+  expect(closing[0].p).toEqual(closeView.p);
+  expect(closing[0].t).toEqual(closeView.t);
+  expect(closing[0].fov).toBe(closeView.fov);
   for (let i = 1; i < closing.length; i++) {
     expect(closing[i].progress!).toBeGreaterThanOrEqual(closing[i - 1].progress!);
   }

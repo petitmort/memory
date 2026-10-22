@@ -46,9 +46,11 @@ button svg {
   height: 100%;
 }
 .vignette {
+  --vignette-opacity: 1;
   position: fixed;
   inset: 0;
   pointer-events: none;
+  opacity: calc(var(--vignette-opacity, 1) * var(--reading-vignette, 1));
   background:
     linear-gradient(
       90deg,
@@ -502,7 +504,7 @@ button svg {
   perspective: none;
 }
 .reader.is-tracking .book:after {
-  opacity: var(--reading-layout, 0);
+  opacity: var(--reading-binding, 0);
   z-index: 2;
 }
 .book:after {

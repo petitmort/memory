@@ -50,6 +50,12 @@ const computedOpacity = (element: HTMLElement) => {
   return Number.isFinite(opacity) ? opacity : 1;
 };
 
+function finishVignette(vignette: HTMLElement | null, opening: boolean) {
+  // Retain the clear reading backdrop; only the completed return restores it.
+  if (opening) vignette?.style.setProperty('--reading-vignette','0');
+  else vignette?.style.removeProperty('--reading-vignette');
+}
+
 function correctionWeight(progress: number, start: number, end: number) {
   if (end <= start || progress >= end) return 0;
   const t = Math.max(0,Math.min(1,(progress-start)/(end-start)));
@@ -71,6 +77,7 @@ function closingLayerEnd(layer: 'paper' | 'shade') {
 /** Follow the physical paper on the camera's clock, then settle into the reading layout. */
 export function createReaderJourney(reader: HTMLElement, opening: boolean) {
   const book = reader.querySelector<HTMLElement>('.book')!;
+  const vignette = document.querySelector<HTMLElement>('.vignette');
   const pages = Array.from(book.querySelectorAll<HTMLElement>(':scope > .page'));
   const controls = Array.from(reader.querySelectorAll<HTMLElement>('.reader-top,.reader-bottom,.page-nav'));
   const readerStyle = reader.style.cssText;
@@ -116,7 +123,7 @@ export function createReaderJourney(reader: HTMLElement, opening: boolean) {
     ]);
     controlOpacities = controls.map(computedOpacity);
     const computedBook = getComputedStyle(book);
-    backing.style.cssText = `position:absolute;inset:0;pointer-events:none;border-radius:${computedBook.borderRadius};background:${computedBook.backgroundColor};box-shadow:${computedBook.boxShadow};`;
+    backing.style.cssText = `position:absolute;inset:0;pointer-events:none;border-radius:${computedBook.borderRadius};background:transparent;box-shadow:${computedBook.boxShadow};`;
     reader.classList.add('is-tracking');
     Object.assign(book.style, {
       width:`${bookRect.width}px`,height:`${bookRect.height}px`,
@@ -180,7 +187,9 @@ export function createReaderJourney(reader: HTMLElement, opening: boolean) {
       reader.style.backgroundColor = blend.shade === 1 && shadeWeight === 0 ? finalShade : `rgba(${shade[0]},${shade[1]},${shade[2]},${Math.max(0,Math.min(1,shade[3]))})`;
       reader.style.backdropFilter = blend.shade === 1 && shadeWeight === 0 ? finalBlur : `blur(${currentBlur}px)`;
       reader.style.setProperty('--reading-layout',String(blend.layout));
-      backing.style.opacity = String(blend.layout);
+      reader.style.setProperty('--reading-binding',String(blend.binding));
+      backing.style.opacity = String(blend.binding);
+      vignette?.style.setProperty('--reading-vignette',String(blend.vignette));
       const shownCorners: Point[][] = [], shownClipFractions: number[][] = [];
       pages.forEach((page,index) => {
         const rect = rects[index];
@@ -213,6 +222,7 @@ export function createReaderJourney(reader: HTMLElement, opening: boolean) {
       pages.forEach((page,index) => { page.style.cssText = pageStyles[index]; });
       controls.forEach((control,index) => { control.style.cssText = controlStyles[index]; });
       book.scrollTop = scrollTop;
+      finishVignette(vignette,opening);
     },
   };
 }
@@ -220,11 +230,19 @@ export function createReaderJourney(reader: HTMLElement, opening: boolean) {
 /** The DOM-only fallback has no camera; use the same responsive shade at both ends. */
 export async function transitionReader(reader: HTMLElement, _projection: BookProjection | undefined, opening: boolean, reducedMotion: boolean) {
   const wrap = reader.querySelector<HTMLElement>('.book-wrap')!;
+  const vignette = document.querySelector<HTMLElement>('.vignette');
   const computed = getComputedStyle(reader);
   const finalShade = computed.backgroundColor, finalBlur = computed.backdropFilter;
   const duration = reducedMotion ? 100 : 500;
   const controls = Array.from(reader.querySelectorAll<HTMLElement>('.reader-top,.reader-bottom,.page-nav'));
   const animations: Animation[] = [];
+  if (vignette) {
+    const normal = Number.parseFloat(getComputedStyle(vignette).getPropertyValue('--vignette-opacity'));
+    const baseline = Number.isFinite(normal) ? normal : 1;
+    animations.push(vignette.animate([{opacity:opening?baseline:0},{opacity:opening?0:baseline}],{
+      duration,easing:'ease-in-out',fill:'both',
+    }));
+  }
   reader.classList.add('is-transitioning');
   animations.push(wrap.animate([{opacity:opening?0:1},{opacity:opening?1:0}],{duration,fill:'both'}));
   animations.push(reader.animate([
@@ -241,6 +259,7 @@ export async function transitionReader(reader: HTMLElement, _projection: BookPro
   } finally {
     if (!opening) reader.classList.add('hidden');
     reader.classList.remove('is-transitioning');
+    finishVignette(vignette,opening);
     for (const animation of animations) animation.cancel();
   }
 }
