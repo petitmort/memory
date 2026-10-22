@@ -216,7 +216,8 @@ export function createDecor(): THREE.Group {
   });
   const basket = new THREE.Group();
   basket.name = "woven-market-basket";
-  basket.position.set(-1.9, 0.005, 0.15);
+  // Beside the entrance bench, with its full silhouette visible from the path.
+  basket.position.set(-0.6, 0.001, 3.02);
   decor.add(basket);
   const basketProfile = [
     new THREE.Vector2(0.145, 0),
@@ -234,6 +235,9 @@ export function createDecor(): THREE.Group {
   basketBody.castShadow = true;
   basketBody.receiveShadow = true;
   basket.add(basketBody);
+  const basketBase = new THREE.Mesh(new THREE.CylinderGeometry(.145,.145,.018,48),straw);
+  basketBase.position.y=.009;
+  basket.add(basketBase);
   const rim = new THREE.Mesh(
     new THREE.TorusGeometry(0.186, 0.009, 8, 48),
     straw,
@@ -252,17 +256,17 @@ export function createDecor(): THREE.Group {
     straw,
     basket,
   );
-  const clothGeometry = new THREE.PlaneGeometry(0.29, 0.39, 18, 24);
+  // A folded liner rests inside the opening instead of cutting through the wicker.
+  const clothGeometry = new THREE.PlaneGeometry(0.25, 0.22, 18, 24);
   const clothPos = clothGeometry.attributes.position;
   for (let i = 0; i < clothPos.count; i++) {
     const x = clothPos.getX(i),
-      v = (clothPos.getY(i) + 0.195) / 0.39;
-    const drape = THREE.MathUtils.smoothstep(v, 0.58, 1);
+      z = clothPos.getY(i);
     clothPos.setXYZ(
       i,
       x,
-      0.272 + 0.012 * Math.cos(x * 72) - drape * 0.19,
-      -0.09 + v * 0.37,
+      0.256 + 0.006 * Math.cos(x * 72) - 0.009 * Math.cos(z * 12),
+      z,
     );
   }
   clothGeometry.computeVertexNormals();
@@ -275,20 +279,19 @@ export function createDecor(): THREE.Group {
       side: THREE.DoubleSide,
     }),
   );
+  cloth.name = "folded-basket-linen";
   cloth.castShadow = true;
   cloth.receiveShadow = true;
   basket.add(cloth);
-  for (const x of [-0.129, 0.129]) {
+  for (const x of [-0.111, 0.111]) {
     const points: THREE.Vector3[] = [];
     for (let i = 0; i < 16; i++) {
-      const v = i / 15;
+      const z = -.11 + i / 15 * .22;
       points.push(
         new THREE.Vector3(
           x,
-          0.275 +
-            0.012 * Math.cos(x * 72) -
-            THREE.MathUtils.smoothstep(v, 0.58, 1) * 0.19,
-          -0.09 + v * 0.37,
+          0.258 + 0.006 * Math.cos(x * 72) - 0.009 * Math.cos(z * 12),
+          z,
         ),
       );
     }

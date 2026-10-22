@@ -269,17 +269,6 @@ export function createScene(
   });
   const sky = new THREE.Mesh(new THREE.SphereGeometry(350, 24, 12), skyMat);
   scene.add(sky);
-  // Far-off island silhouettes.
-  const islandMat = mat("#7c9992");
-  for (let i = 0; i < 5; i++) {
-    const island = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 16, 8),
-      islandMat,
-    );
-    island.scale.set(5 + i * 1.3, 0.9 + i * 0.12, 2);
-    island.position.set(17 + i * 3, -7.7, -37 - i * 3);
-    scene.add(island);
-  }
   const rug = box(
     D.rug.width,
     D.rug.thickness,
