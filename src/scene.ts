@@ -2,6 +2,15 @@ import * as THREE from "three";
 import { createBouquet } from "./bouquet";
 import { createOcean } from "./ocean";
 import { dimensions as D } from "./dimensions";
+import { createPalette } from "./materials";
+import {
+  archedDoorGeometry,
+  archedLintel,
+  archMoulding,
+  createExterior,
+} from "./architecture";
+import { createCurtains } from "./curtains";
+import { createDecor } from "./decor";
 
 export function createScene(
   container: HTMLElement,
@@ -19,11 +28,11 @@ export function createScene(
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.18;
+  renderer.toneMappingExposure = 1.1;
   container.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#b6c6c1");
-  scene.fog = new THREE.FogExp2("#c2cec4", 0.018);
+  scene.background = new THREE.Color("#c6dce5");
+  scene.fog = new THREE.FogExp2("#d2e4e8", 0.008);
   const camera = new THREE.PerspectiveCamera(
     50,
     innerWidth / innerHeight,
@@ -31,9 +40,9 @@ export function createScene(
     500,
   );
   const target = new THREE.Vector3();
-  const ambient = new THREE.HemisphereLight("#e9f0de", "#6e6656", 2.0);
+  const ambient = new THREE.HemisphereLight("#d5e9f7", "#a28b6d", 1.65);
   scene.add(ambient);
-  const sun = new THREE.DirectionalLight("#fff0cf", 3.8);
+  const sun = new THREE.DirectionalLight("#fff2dc", 3.5);
   sun.position.set(-3, 4.5, -8);
   sun.castShadow = true;
   sun.shadow.mapSize.set(
@@ -48,16 +57,17 @@ export function createScene(
   sun.shadow.autoUpdate = false;
   sun.shadow.needsUpdate = true;
   scene.add(sun);
-  const fill = new THREE.DirectionalLight("#c2ded9", 1.1);
+  const fill = new THREE.DirectionalLight("#f9f4e8", 1.1);
   fill.position.set(3, 5, 8);
   scene.add(fill);
   const mat = (color: string, roughness = 0.8, metalness = 0) =>
     new THREE.MeshStandardMaterial({ color, roughness, metalness });
-  const plaster = mat("#d8d0bc"),
-    trim = mat("#e8dfca"),
-    darkWood = mat("#694f37"),
-    brass = mat("#bda16b", 0.35, 0.65),
-    green = mat("#304c46"),
+  const palette = createPalette();
+  const plaster = palette.plaster,
+    trim = palette.trim,
+    darkWood = mat("#6b513a"),
+    brass = mat("#ac8d55", 0.42, 0.65),
+    green = mat("#295a72"),
     paper = mat("#e8dec5");
   function box(
     w: number,
@@ -115,44 +125,7 @@ export function createScene(
     parent.add(o);
     return o;
   }
-  function woodTexture() {
-    const c = document.createElement("canvas");
-    c.width = 256;
-    c.height = 512;
-    const ctx = c.getContext("2d")!;
-    ctx.fillStyle = "#947151";
-    ctx.fillRect(0, 0, 256, 512);
-    let seed = 42;
-    const rand = () => {
-      seed = (seed * 16807) % 2147483647;
-      return seed / 2147483647;
-    };
-    for (let i = 0; i < 850; i++) {
-      ctx.strokeStyle = `rgba(${rand() > 0.5 ? "40,25,15" : "230,200,150"},${rand() * 0.13})`;
-      ctx.lineWidth = rand() * 2;
-      let x = rand() * 256;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.bezierCurveTo(
-        x + rand() * 16,
-        170,
-        x - rand() * 15,
-        340,
-        x + rand() * 9,
-        512,
-      );
-      ctx.stroke();
-    }
-    const t = new THREE.CanvasTexture(c);
-    t.colorSpace = THREE.SRGBColorSpace;
-    t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    return t;
-  }
-  const wood = new THREE.MeshStandardMaterial({
-    map: woodTexture(),
-    roughness: 0.78,
-    color: "#bda480",
-  });
+  const wood = palette.wood;
   // World construction uses metres directly. No non-uniform parent scaling.
   const front = D.room.depth / 2,
     back = -front,
@@ -161,22 +134,11 @@ export function createScene(
     D.room.width,
     0.12,
     D.room.depth + 4.2,
-    wood,
+    palette.stone,
     0,
     -0.06,
     2.1,
   );
-  const seams = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(0.002, 0.001, D.room.depth + 4.2),
-    mat("#76624c"),
-    33,
-  );
-  for (let i = 0; i < 33; i++)
-    seams.setMatrixAt(
-      i,
-      new THREE.Matrix4().makeTranslation(-2.24 + i * 0.14, 0.0005, 2.1),
-    );
-  scene.add(seams);
   const room = new THREE.Group();
   room.name = "room";
   scene.add(room);
@@ -264,31 +226,32 @@ export function createScene(
     back + 0.07,
     room,
   );
-  const curtainMat = new THREE.MeshStandardMaterial({
-    color: "#eee6d4",
-    roughness: 1,
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.87,
+  const curtains = createCurtains({
+    width: D.window.width,
+    height: D.window.height,
+    sill: D.window.sill,
+    back,
   });
-  const curtains: THREE.Mesh[] = [];
-  for (const side of [-1, 1]) {
-    const g = new THREE.PlaneGeometry(0.48, 2.35, 20, 28);
-    const pos = g.attributes.position;
-    for (let i = 0; i < pos.count; i++)
-      pos.setZ(
-        i,
-        Math.sin(pos.getX(i) * 65) * 0.027 +
-          0.018 * Math.pow((1.175 - pos.getY(i)) / 2.35, 2),
-      );
-    g.computeVertexNormals();
-    const c = new THREE.Mesh(g, curtainMat);
-    c.position.set(side * 1.4, 1.325, back + 0.17);
-    room.add(c);
-    curtains.push(c);
-  }
-  cylinder(0.012, 0.012, 3.36, brass, 0, 2.51, back + 0.17, room).rotation.z =
+  room.add(curtains.group);
+  cylinder(0.012, 0.012, 3.64, brass, 0, 2.51, back + 0.3, room).rotation.z =
     Math.PI / 2;
+  for (const x of [-1.62, 1.62]) {
+    box(0.045, 0.075, 0.006, brass, x, 2.49, back + 0.095, room);
+    const support = cylinder(
+      0.0045,
+      0.0045,
+      0.2,
+      brass,
+      x,
+      2.51,
+      back + 0.2,
+      room,
+      10,
+    );
+    support.rotation.x = Math.PI / 2;
+  }
+  for (const x of [-1.84, 1.84])
+    sphere(0.019, brass, x, 2.51, back + 0.3, room);
   const ocean = createOcean();
   const seaMat = ocean.material;
   scene.add(ocean);
@@ -297,7 +260,7 @@ export function createScene(
     vertexShader:
       "varying vec3 vPos;void main(){vPos=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
     fragmentShader:
-      "varying vec3 vPos;void main(){float h=normalize(vPos).y;vec3 col=mix(vec3(.84,.86,.77),vec3(.46,.65,.70),smoothstep(0.,.8,h));gl_FragColor=vec4(col,1.);}",
+      "varying vec3 vPos;void main(){float h=normalize(vPos).y;vec3 col=mix(vec3(.84,.92,.95),vec3(.36,.65,.82),smoothstep(0.,.8,h));gl_FragColor=vec4(col,1.);}",
   });
   const sky = new THREE.Mesh(new THREE.SphereGeometry(350, 24, 12), skyMat);
   scene.add(sky);
@@ -316,28 +279,12 @@ export function createScene(
     D.rug.width,
     D.rug.thickness,
     D.rug.depth,
-    mat("#bfb7a0"),
+    palette.rug,
     0.1,
     D.rug.thickness / 2,
     -0.65,
   );
   rug.name = "rug";
-  const stripes = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(0.005, 0.0005, D.rug.depth - 0.02),
-    mat("#cfc6ad"),
-    50,
-  );
-  for (let i = 0; i < 50; i++)
-    stripes.setMatrixAt(
-      i,
-      new THREE.Matrix4().makeTranslation(
-        0.1 + (i - 24.5) * 0.04,
-        0.0085,
-        -0.65,
-      ),
-    );
-  stripes.receiveShadow = true;
-  scene.add(stripes);
   const table = new THREE.Group();
   table.name = "desk";
   table.position.set(0.1, 0, -0.9);
@@ -355,18 +302,27 @@ export function createScene(
   tabletop.name = "tabletop";
   for (const z of [-0.3, 0.3])
     box(1.27, 0.08, 0.025, darkWood, 0, 0.675, z, table);
+  const legProfile = [
+    new THREE.Vector2(0.0225, 0),
+    new THREE.Vector2(0.0225, 0.04),
+    new THREE.Vector2(0.017, 0.1),
+    new THREE.Vector2(0.014, 0.45),
+    new THREE.Vector2(0.023, 0.51),
+    new THREE.Vector2(0.023, 0.55),
+    new THREE.Vector2(0.018, 0.59),
+    new THREE.Vector2(0.0225, D.desk.height - D.desk.top),
+  ];
+  const legGeometry = new THREE.LatheGeometry(legProfile, 16);
   for (const x of [-0.61, 0.61])
-    for (const z of [-0.29, 0.29])
-      box(
-        0.045,
-        D.desk.height - D.desk.top,
-        0.045,
-        darkWood,
-        x,
-        (D.desk.height - D.desk.top) / 2,
-        z,
-        table,
-      );
+    for (const z of [-0.29, 0.29]) {
+      const leg = new THREE.Mesh(legGeometry, wood);
+      leg.position.set(x, 0, z);
+      leg.castShadow = true;
+      leg.receiveShadow = true;
+      table.add(leg);
+    }
+  for (const z of [-0.315, 0.315])
+    box(1.27, 0.012, 0.012, wood, 0, 0.706, z, table);
   const book = new THREE.Group();
   book.name = "album";
   book.position.set(-0.13, D.desk.height, -0.03);
@@ -395,7 +351,7 @@ export function createScene(
     c.width = 512;
     c.height = 384;
     const ctx = c.getContext("2d")!;
-    ctx.fillStyle = "#304c46";
+    ctx.fillStyle = "#295a72";
     ctx.fillRect(0, 0, 512, 384);
     ctx.strokeStyle = "#b4a17a";
     ctx.lineWidth = 2;
@@ -454,6 +410,41 @@ export function createScene(
   handle.position.set(0.055, 0.055, 0);
   handle.castShadow = true;
   cup.add(handle);
+  const glaze = mat("#326585", 0.28);
+  for (const y of [0.026, 0.07]) {
+    const stripe = new THREE.Mesh(
+      new THREE.TorusGeometry(0.032 + y * 0.11, 0.0014, 6, 36),
+      glaze,
+    );
+    stripe.rotation.x = Math.PI / 2;
+    stripe.position.y = y;
+    cup.add(stripe);
+  }
+  const pen = cylinder(
+    0.0035,
+    0.0035,
+    0.135,
+    green,
+    0.2,
+    0.755,
+    -0.23,
+    table,
+    12,
+  );
+  pen.rotation.z = Math.PI / 2;
+  const penNib = cylinder(
+    0.0025,
+    0,
+    0.018,
+    brass,
+    0.277,
+    0.755,
+    -0.23,
+    table,
+    10,
+  );
+  penNib.rotation.z = Math.PI / 2;
+
   const letter = box(
     0.148,
     0.0005,
@@ -476,7 +467,7 @@ export function createScene(
     D.stool.seat,
     wood,
     0,
-    D.stool.height - D.stool.seat / 2,
+    D.stool.height - D.stool.seat / 2 - 0.025,
     0,
     stool,
     32,
@@ -485,14 +476,22 @@ export function createScene(
     for (const z of [-0.115, 0.115])
       box(
         0.035,
-        D.stool.height - D.stool.seat,
+        D.stool.height - D.stool.seat - 0.025,
         0.035,
         darkWood,
         x,
-        (D.stool.height - D.stool.seat) / 2,
+        (D.stool.height - D.stool.seat - 0.025) / 2,
         z,
         stool,
       );
+  cylinder(0.174, 0.176, 0.025, mat("#86a9b1"), 0, 0.4375, 0, stool, 40);
+  const piping = new THREE.Mesh(
+    new THREE.TorusGeometry(0.169, 0.0016, 6, 48),
+    mat("#cbdad0"),
+  );
+  piping.rotation.x = Math.PI / 2;
+  piping.position.y = 0.448;
+  stool.add(piping);
   const consoleTable = new THREE.Group();
   consoleTable.name = "console";
   consoleTable.position.set(-1.72, 0, -1.8);
@@ -567,28 +566,22 @@ export function createScene(
     0,
     facade,
   );
-  box(
-    0.95,
-    D.room.height - headerBottom,
-    D.room.wall,
+  const spring = D.door.height + D.door.threshold - D.door.width / 2;
+  const lintel = new THREE.Mesh(
+    archedLintel(openingLeft, openingRight, spring, D.room.height, D.room.wall),
     plaster,
-    D.door.centerX,
-    (D.room.height + headerBottom) / 2,
-    0,
-    facade,
   );
+  lintel.castShadow = lintel.receiveShadow = true;
+  facade.add(lintel);
   for (const x of [openingLeft - 0.035, openingRight + 0.035])
-    box(0.07, headerBottom, 0.12, trim, x, headerBottom / 2, 0.035, facade);
-  box(
-    1.09,
-    0.07,
-    0.12,
+    box(0.07, spring, 0.12, trim, x, spring / 2, 0.035, facade);
+  const arch = new THREE.Mesh(
+    archMoulding((openingRight - openingLeft) / 2, 0.545, 0.1),
     trim,
-    D.door.centerX,
-    D.door.height + D.door.threshold + 0.035,
-    0.035,
-    facade,
   );
+  arch.position.set(D.door.centerX, spring, -0.015);
+  arch.castShadow = arch.receiveShadow = true;
+  facade.add(arch);
   const doorPivot = new THREE.Group();
   doorPivot.position.set(
     D.door.centerX - D.door.width / 2,
@@ -596,23 +589,41 @@ export function createScene(
     0.005,
   );
   facade.add(doorPivot);
-  const door = box(
+  const door: THREE.Mesh<THREE.BufferGeometry, THREE.Material> = box(
     D.door.width,
     D.door.height,
     D.door.thickness,
-    wood,
+    palette.blue,
     D.door.width / 2,
     D.door.height / 2,
     0,
     doorPivot,
   );
+  door.geometry.dispose();
+  door.geometry = archedDoorGeometry(
+    D.door.width,
+    D.door.height,
+    D.door.thickness,
+  );
   door.name = "door-leaf";
-  for (const y of [0.53, 1.52]) {
-    box(0.69, 0.7, 0.006, darkWood, 0.45, y, 0.0255, doorPivot);
-    box(0.64, 0.65, 0.007, wood, 0.45, y, 0.032, doorPivot);
+  for (const y of [0.52, 1.27]) {
+    box(0.69, 0.55, 0.006, palette.blue, 0.45, y, 0.0255, doorPivot);
+    for (const x of [0.105, 0.795])
+      box(0.012, 0.56, 0.014, palette.blue, x, y, 0.033, doorPivot);
+    for (const dy of [-0.275, 0.275])
+      box(0.7, 0.012, 0.014, palette.blue, 0.45, y + dy, 0.033, doorPivot);
   }
-  for (const x of [0.025, 0.875])
-    box(0.035, 2.04, 0.009, darkWood, x, 1.05, 0.028, doorPivot);
+  for (let i = 0; i < 9; i++)
+    box(
+      0.0015,
+      1.63,
+      0.001,
+      mat("#173f64"),
+      0.05 + i * 0.1,
+      0.82,
+      0.023,
+      doorPivot,
+    );
   const knobY = D.door.handleHeight - D.door.threshold;
   box(0.035, 0.15, 0.006, brass, 0.79, knobY, 0.03, doorPivot);
   sphere(0.014, brass, 0.79, knobY, 0.055, doorPivot);
@@ -646,9 +657,15 @@ export function createScene(
   facade.add(plant);
   cylinder(0.12, 0.085, 0.28, mat("#a78368"), 0, 0.14, 0, plant);
   cylinder(0.011, 0.016, 0.62, darkWood, 0, 0.58, 0, plant);
-  for (let i = 0; i < 10; i++) {
+  const oliveLeaves = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(1, 10, 6),
+    oliveLeaf,
+    150,
+  );
+  const leafTransform = new THREE.Object3D();
+  for (let i = 0; i < 15; i++) {
     const a = i * 2.4,
-      y = 0.52 + (i % 5) * 0.075;
+      y = 0.49 + (i % 6) * 0.065;
     const branch = cylinder(
       0.0025,
       0.004,
@@ -661,21 +678,26 @@ export function createScene(
       6,
     );
     branch.rotation.set(Math.sin(a) * 0.8, 0, -Math.cos(a) * 0.9);
-    for (let j = 0; j < 5; j++) {
-      const leaf = sphere(
-        0.035,
-        oliveLeaf,
-        Math.cos(a) * (0.07 + j * 0.025),
-        y + j * 0.025,
-        Math.sin(a) * (0.07 + j * 0.025),
-        plant,
-        0.16,
-        0.025,
-        0.8,
+    for (let j = 0; j < 10; j++) {
+      leafTransform.position.set(
+        Math.cos(a) * (0.05 + j * 0.023),
+        y + j * 0.013,
+        Math.sin(a) * (0.05 + j * 0.023),
       );
-      leaf.rotation.y = a;
+      leafTransform.rotation.set(
+        Math.sin(i + j) * 0.65,
+        a,
+        Math.cos(i * 0.7 + j) * 0.55,
+      );
+      leafTransform.scale.set(0.006, 0.001, 0.029);
+      leafTransform.updateMatrix();
+      oliveLeaves.setMatrixAt(i * 10 + j, leafTransform.matrix);
     }
   }
+  oliveLeaves.castShadow = true;
+  plant.add(oliveLeaves);
+  scene.add(createExterior({ plaster, blue: palette.blue }));
+  scene.add(createDecor());
   // Floating dust is one draw call, deliberately sparse.
   const dustPositions = new Float32Array(120 * 3);
   for (let i = 0; i < 120; i++) {
@@ -739,6 +761,7 @@ export function createScene(
     done: () => void;
   } | null = null;
   let bouquetParked = false;
+  let readerBackdropFrozen = false;
   function walkIntoRoom() {
     return new Promise<void>((done) => {
       const end = roomPose();
@@ -786,25 +809,27 @@ export function createScene(
   function tick(now: number) {
     if (disposed) return;
     frame = requestAnimationFrame(tick);
-    if (document.hidden) return;
+    if (document.hidden || readerBackdropFrozen) return;
     if (low && now - lastDraw < 31) return;
     const delta = now - lastDraw;
     lastDraw = now;
-    if (delta < 100) {
-      average = average * 0.98 + delta * 0.02;
-      if (average > 30 && ++slowFrames > 90) {
-        renderer.setPixelRatio(Math.min(devicePixelRatio, 1));
+    if (delta > 0 && delta < 2000) {
+      average = average * 0.9 + Math.min(delta, 250) * 0.1;
+      if (average > 45) slowFrames++;
+      else slowFrames = Math.max(0, slowFrames - 1);
+      if (slowFrames >= 12) {
+        const currentRatio = renderer.getPixelRatio();
+        const next = Math.max(0.75, currentRatio * 0.85);
+        if (next < currentRatio - 0.01) renderer.setPixelRatio(next);
         slowFrames = 0;
       }
     }
     const t = clock.getElapsedTime();
     seaMat.uniforms.time.value = t * (reducedMotion ? 0.15 : 1);
     if (!reducedMotion) {
-      curtains.forEach(
-        (c, i) => (c.rotation.y = Math.sin(t * 0.5 + i) * 0.025),
-      );
       dust.position.y = Math.sin(t * 0.1) * 0.06;
     }
+    curtains.update(t, reducedMotion);
     if (walking) {
       const a = Math.min(1, (now - walking.start) / walking.duration),
         ease = a * a * (3 - 2 * a);
@@ -861,7 +886,6 @@ export function createScene(
     camera.lookAt(target);
     renderer.render(scene, camera);
   }
-  frame = requestAnimationFrame(tick);
   const ray = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   function hit(e: PointerEvent) {
@@ -899,9 +923,17 @@ export function createScene(
     notice.textContent = "画面暂时中断，请刷新页面恢复。纪念册内容仍可阅读。";
     container.appendChild(notice);
   });
+  camera.lookAt(target);
+  camera.updateMatrixWorld(true);
+  const ready = renderer.compileAsync(scene, camera).then(() => {
+    renderer.render(scene, camera);
+    clock.start();
+    frame = requestAnimationFrame(tick);
+  });
   return {
+    ready,
     clearFog() {
-      scene.fog = new THREE.FogExp2("#c2cec4", 0.009);
+      scene.fog = new THREE.FogExp2("#d2e4e8", 0.005);
     },
     async enterRoom() {
       doorOpen = -Math.PI * 0.58;
@@ -918,8 +950,10 @@ export function createScene(
       await new Promise((resolve) =>
         setTimeout(resolve, reducedMotion ? 0 : 650),
       );
+      readerBackdropFrozen = true;
     },
     returnToRoom() {
+      readerBackdropFrozen = false;
       albumOpen = 0;
       current = "room";
     },

@@ -1159,3 +1159,91 @@ button svg {
     aspect-ratio: 1.6;
   }
 }
+/* Aegean palette: limestone, ink blue and faded linen. */
+:root {
+  --ink: #294a5c;
+  --gold: #bca273;
+}
+.vignette {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(16, 38, 55, 0.53),
+      rgba(23, 52, 70, 0.08) 52%,
+      transparent 75%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(18, 37, 51, 0.28),
+      transparent 25%,
+      transparent 82%,
+      rgba(18, 37, 51, 0.1)
+    );
+}
+.primary-button {
+  background: #f1e9d7;
+  color: #2c5268;
+  border-color: #e4d9bc99;
+}
+.primary-button:hover:not(:disabled) {
+  background: #fff7e3;
+}
+.button-arrow {
+  border-left-color: #31566e25;
+}
+.grain {
+  opacity: 0.035;
+}
+.room-ui {
+  top: auto;
+  bottom: 15%;
+  left: 5%;
+  transform: none;
+  max-width: 330px;
+}
+.room-ui h2 {
+  font-size: clamp(28px, 2.6vw, 40px);
+  margin: 14px 0;
+  letter-spacing: 4px;
+}
+.room-ui p {
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  margin-bottom: 22px;
+}
+.room-ui .eyebrow {
+  font-size: 8px;
+}
+.room-ui .primary-button {
+  font-size: 10px;
+  gap: 16px;
+  min-height: 48px;
+}
+@media (max-width: 759px) {
+  .vignette {
+    background: linear-gradient(
+      0deg,
+      rgba(17, 40, 57, 0.91),
+      rgba(17, 40, 57, 0.12) 76%,
+      rgba(17, 40, 57, 0.06)
+    );
+  }
+  .room-ui {
+    bottom: 17%;
+    left: 7%;
+    max-width: 85%;
+  }
+  .room-ui h2 {
+    font-size: 30px;
+    line-height: 1.35;
+  }
+  .room-ui p {
+    font-size: 9px;
+  }
+  .room-ui .primary-button {
+    min-height: 46px;
+  }
+  .scene-hint {
+    bottom: 12%;
+  }
+}

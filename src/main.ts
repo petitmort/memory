@@ -328,7 +328,14 @@ try {
     },
     reduceMotion,
   );
-  el("loading").classList.add("hidden");
+  scene.ready
+    .then(() => el("loading").classList.add("hidden"))
+    .catch((error) => {
+      console.error(error);
+      el("loading").classList.add("hidden");
+      el("intro").classList.add("hidden");
+      el("fallback").classList.remove("hidden");
+    });
 } catch (error) {
   console.error(error);
   el("loading").classList.add("hidden");
