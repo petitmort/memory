@@ -33,6 +33,14 @@ export function createOcean() {
         color+=sun*vec3(.8,.69,.45)*.8;
         float crest=smoothstep(.15,.235,wave.x)*smoothstep(.05,.27,length(wave.yz));
         color=mix(color,vec3(.72,.82,.77),crest*.23);
+        vec2 whirlOffset=vWorld.xz-vec2(${seaComposition.kraken.x.toFixed(1)},${seaComposition.kraken.z.toFixed(1)});
+        float whirlRadius=length(whirlOffset);
+        float whirlFunnel=exp(-dot(whirlOffset,whirlOffset)/32.);
+        float whirlPhase=atan(whirlOffset.y,whirlOffset.x)*3.+whirlRadius*1.8+time*.9;
+        float foamBand=pow(max(0.,sin(whirlPhase+.15*sin(whirlRadius*4.1-time*.4))),18.);
+        foamBand*=smoothstep(1.4,3.,whirlRadius)*(1.-smoothstep(6.,9.,whirlRadius));
+        color=mix(color,vec3(.035,.18,.23),whirlFunnel*.62);
+        color=mix(color,vec3(.77,.88,.84),foamBand*.62);
         float distanceToEye=length(cameraPosition-vWorld);
         color=mix(color,vec3(.60,.76,.81),smoothstep(55.,235.,distanceToEye)*.85);
         gl_FragColor=vec4(color,1.);

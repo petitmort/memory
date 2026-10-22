@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { createKraken } from "./kraken";
 import { sampleWaterHeight } from "./water-surface";
 import { createAntiqueBronze, createAgedTimber } from "./antique-materials";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
@@ -103,118 +104,18 @@ export function createSeascape() {
   for (const x of [-6.1, 6.1]) tube([[0, 10.4, 0], [x, 1.1, .8]], .018, rope, ship);
   for (const x of [-4.25, 4.25]) tube([[x, 9.6, 0], [x * .8, 3.5, .1], [x * 1.3, 1, 1]], .019, rope, ship);
 
-  const monster = new THREE.Group(); monster.name = "distant-kraken";
-  monster.position.copy(seaComposition.kraken); group.add(monster);
-  const skinCanvas = document.createElement("canvas"); skinCanvas.width = skinCanvas.height = 512;
-  const sk = skinCanvas.getContext("2d")!; sk.fillStyle = "#485854"; sk.fillRect(0, 0, 512, 512);
-  let skinSeed = 317;
-  const skinRandom = () => { skinSeed = skinSeed * 16807 % 2147483647; return skinSeed / 2147483647; };
-  for (let i = 0; i < 2300; i++) {
-    sk.fillStyle = i % 3 ? `rgba(24,43,42,${skinRandom() * .22})` : `rgba(156,152,125,${skinRandom() * .18})`;
-    sk.beginPath(); sk.ellipse(skinRandom() * 512, skinRandom() * 512, 1 + skinRandom() * 8, 1 + skinRandom() * 4, skinRandom() * Math.PI, 0, Math.PI * 2); sk.fill();
-  }
-  const skinMap = new THREE.CanvasTexture(skinCanvas); skinMap.colorSpace = THREE.SRGBColorSpace;
-  skinMap.wrapS = skinMap.wrapT = THREE.RepeatWrapping;
-  const skin = new THREE.MeshStandardMaterial({ map: skinMap, bumpMap: skinMap, bumpScale: .1, color: "#88958e", roughness: .6, metalness: .03 });
-  const suckerMaterial = new THREE.MeshStandardMaterial({ color: "#9b9b85", roughness: .84 });
-  const mantleGeometry = new THREE.SphereGeometry(1, 40, 30), mantlePositions = mantleGeometry.attributes.position;
-  for (let i = 0; i < mantlePositions.count; i++) {
-    const x = mantlePositions.getX(i), y = mantlePositions.getY(i), z = mantlePositions.getZ(i);
-    mantlePositions.setXYZ(i, x * (1.6 + .15 * y), y * 1.65 + .08 * Math.sin(z * 6), z * (1.35 + .12 * Math.sin(x * 4 + y * 2)));
-  }
-  mantleGeometry.computeVertexNormals();
-  const head = add(mantleGeometry, skin, monster); head.position.set(0, .85, 0);
-  const arms: THREE.Object3D[] = [];
-  const armProfiles = [
-    [[-1, -.3, .1], [-3.1, .65, .1], [-4.9, 2.7, .6], [-5.2, 4.7, 1], [-3.9, 5.8, 1.2], [-2.9, 5.15, 1.1], [-3.45, 4.4, 1.2]],
-    [[.8, -.2, 0], [2.9, .9, .4], [4.1, 3.6, .7], [5.5, 5.4, .6], [6.5, 4.9, .1], [6, 3.9, -.1], [5.3, 4.15, .1]],
-    [[0, -.2, -1], [-.6, 1.2, -2], [-2, 4.5, -2.2], [-1.4, 6.6, -1.3], [.1, 7.1, -.7], [.7, 6.3, -.6]],
-    [[0, -.5, 1], [2.8, .2, 3], [5, 1.7, 3.1], [5.6, 3.2, 3], [4.6, 3.9, 3.1], [4, 3.2, 3.2]],
-    [[-1, -.3, 1], [-3, .1, 2], [-6, 1, 2.4], [-7, 2.7, 2], [-6.7, 3.7, 2.1], [-5.9, 3.8, 2.2]],
-  ];
-  for (let armIndex = 0; armIndex < armProfiles.length; armIndex++) {
-    const arm = new THREE.Group(); monster.add(arm); arms.push(arm);
-    const path = curve(armProfiles[armIndex]), frames = path.computeFrenetFrames(72, false);
-    const g = new THREE.TubeGeometry(path, 72, 1, 14, false), p = g.attributes.position;
-    const radiusAt = (t: number) => (.86 * Math.pow(1 - t, 1.05) + .035) * (1 + .06 * Math.sin(t * 21 + armIndex));
-    for (let i = 0; i <= 72; i++) {
-      const t = i / 72, center = path.getPointAt(t), radius = radiusAt(t);
-      for (let j = 0; j <= 14; j++) {
-        const a = j / 14 * Math.PI * 2;
-        const v = center.clone().addScaledVector(frames.normals[i], -Math.cos(a) * radius).addScaledVector(frames.binormals[i], Math.sin(a) * radius * (.79 + .06 * Math.sin(t * 11)));
-        p.setXYZ(i * 15 + j, v.x, v.y, v.z);
-      }
-    }
-    g.computeVertexNormals(); add(g, skin, arm);
-    const cups = new THREE.InstancedMesh(new THREE.TorusGeometry(1, .3, 7, 12), suckerMaterial, 44), stamp = new THREE.Object3D();
-    for (let i = 0; i < 22; i++) {
-      const t = .09 + i * .037, tangent = path.getTangentAt(t), forward = new THREE.Vector3(0, 0, 1);
-      forward.addScaledVector(tangent, -forward.dot(tangent)).normalize();
-      const side = tangent.clone().cross(forward).normalize();
-      for (let row = 0; row < 2; row++) {
-        const normal = forward.clone().addScaledVector(side, row ? .30 : -.30).normalize();
-        stamp.position.copy(path.getPointAt(t)).addScaledVector(normal, radiusAt(t) * .82);
-        stamp.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
-        stamp.scale.setScalar(.16 * (1 - t * .9)); stamp.updateMatrix(); cups.setMatrixAt(i * 2 + row, stamp.matrix);
-      }
-    }
-    arm.add(cups);
-  }
+  const kraken = createKraken(seaComposition.kraken);
+  group.add(kraken.group);
   const vortex = new THREE.Group(); vortex.name = "whirlpool"; vortex.position.copy(seaComposition.kraken); group.add(vortex);
-  const foam = new THREE.MeshBasicMaterial({ color: "#b2ccc6", transparent: true, opacity: .42, depthWrite: false });
-  for (let i = 0; i < 3; i++) {
-    const points: number[][] = [];
-    for (let j = 0; j <= 100; j++) { const a = j * .105 + i * Math.PI * 2 / 3, r = 2 + j * .065; points.push([Math.cos(a) * r, -.6 + j * .008, Math.sin(a) * r]); }
-    tube(points, .06, foam, vortex);
-  }
+  // The whirlpool foam is shaded on the displaced water itself.
 
   const helios = new THREE.Group(); helios.name = "helios-radiant-sun";
   helios.position.copy(seaComposition.sun); group.add(helios);
-  // A warm luminous face and corona retain the sculpted features in the sunlight.
-  const solarGold = new THREE.MeshStandardMaterial({
-    color: "#efc982", emissive: "#ffe1a0", emissiveIntensity: .95,
-    metalness: 0, roughness: .72, fog: false,
-  });
-  const darkGold = new THREE.MeshStandardMaterial({
-    color: "#b18c4e", emissive: "#edb96b", emissiveIntensity: .28,
-    metalness: 0, roughness: .8, fog: false,
-  });
-  const faceGeometry = new THREE.SphereGeometry(1, 96, 64), fp = faceGeometry.attributes.position;
-  const bell = (x: number, y: number, cx: number, cy: number, sx: number, sy: number) => Math.exp(-((x - cx) ** 2 / (sx * sx) + (y - cy) ** 2 / (sy * sy)) * 2);
-  for (let i = 0; i < fp.count; i++) {
-    const nx = fp.getX(i), ny = fp.getY(i), nz = fp.getZ(i), x = nx * 1.94, y = ny * 2.48;
-    let z = nz * .64;
-    if (nz > 0) {
-      let relief = .34 * bell(x, y, 0, .1, .23, .8) + .27 * bell(x, y, 0, -.35, .33, .24);
-      relief += .12 * bell(x, y, 0, -1.43, .66, .42);
-      relief += .075 * bell(x, y, 0, -.8, .49, .12) + .075 * bell(x, y, 0, -1.01, .43, .13);
-      relief -= .07 * bell(x, y, 0, -.91, .48, .065);
-      for (const sign of [-1, 1]) {
-        relief -= .14 * bell(x, y, sign * .72, .52, .56, .30);
-        relief += .12 * bell(x, y, sign * .7, .91, .64, .16);
-        relief += .14 * bell(x, y, sign * .96, -.24, .64, .66);
-        relief += .08 * bell(x, y, sign * .23, -.40, .19, .16);
-      }
-      z += relief * Math.pow(nz, .45);
-    }
-    fp.setXYZ(i, x, y, z);
-  }
-  faceGeometry.computeVertexNormals(); add(faceGeometry, solarGold, helios);
-  for (let i = 0; i < 20; i++) {
-    const a = i * Math.PI * 2 / 20 + Math.sin(i * 2.7) * .018, length = (i % 2 ? 2.7 : 3.7) + Math.sin(i * 1.9) * .15;
-    const shape = new THREE.Shape(); shape.moveTo(-.22, 2.06);
-    if (i % 2) { shape.bezierCurveTo(-.6, 3.3, .5, 3.55, -.04, 2.06 + length); shape.bezierCurveTo(.15, 3.7, .52, 2.8, .22, 2.06); }
-    else { shape.quadraticCurveTo(-.09, 3.7, .02, 2.06 + length); shape.quadraticCurveTo(.13, 3.3, .22, 2.06); }
-    shape.closePath();
-    const ray = add(new THREE.ExtrudeGeometry(shape, { depth: .10, bevelEnabled: true, bevelSize: .06, bevelThickness: .06, bevelSegments: 2, curveSegments: 14 }), solarGold, helios);
-    ray.rotation.z = a; ray.position.z = -.15;
-    const hair: number[][] = [];
-    for (let j = 0; j < 10; j++) { const r = 1.75 + j * .14, angle = a + Math.sin(j * .7 + i) * .09; hair.push([Math.sin(angle) * r, Math.cos(angle) * r * 1.08, .25 + Math.sin(j * .7) * .045]); }
-    tube(hair, .095, solarGold, helios);
-  }
-  for (const sign of [-1, 1]) {
-    tube([[sign * .29, .55, .56], [sign * .66, .47, .59], [sign * 1.05, .55, .51]], .025, darkGold, helios);
-  }
+  // A simple sun disc: the light itself is the subject, with no sculpted face or rays.
+  const solarDisc = add(new THREE.CircleGeometry(2.4, 64), new THREE.MeshBasicMaterial({
+    color: "#fffdf3", fog: false, toneMapped: false,
+  }), helios);
+  solarDisc.name = "solar-disc";
   const glowCanvas = document.createElement("canvas"); glowCanvas.width = glowCanvas.height = 256;
   const gc = glowCanvas.getContext("2d")!, gradient = gc.createRadialGradient(128, 128, 26, 128, 128, 128);
   gradient.addColorStop(0, "rgba(255,248,217,.95)");
@@ -229,10 +130,10 @@ export function createSeascape() {
     blending: THREE.AdditiveBlending, fog: false, toneMapped: false, opacity: .62,
   });
   const aura = new THREE.Sprite(auraMaterial);
-  aura.name = "solar-outer-glow"; aura.scale.set(28, 28, 1); aura.position.z = -.8; helios.add(aura);
+  aura.name = "solar-outer-glow"; aura.scale.set(22, 22, 1); aura.position.z = -4.5; helios.add(aura);
   const corona = new THREE.Sprite(auraMaterial.clone());
   corona.name = "solar-inner-corona"; corona.material.opacity = .45;
-  corona.scale.set(15, 15, 1); corona.position.z = -.6; helios.add(corona);
+  corona.scale.set(10, 10, 1); corona.position.z = -3.5; helios.add(corona);
   helios.lookAt(new THREE.Vector3(1.1, 1.65, .75));
 
   // Bake the static parts by material; intricate relief and rigging need only a few draws.
@@ -267,7 +168,6 @@ export function createSeascape() {
     ship.position.y = seaComposition.ship.y + waterline - .12;
     ship.rotation.z = Math.max(-.045, Math.min(.045, (bow - stern) / 8)) * .7;
     ship.rotation.x = Math.sin(a * .41) * .009;
-    vortex.rotation.y = -a * .1;
-    arms.forEach((arm, i) => arm.rotation.z = Math.sin(a * .32 + i) * .025);
+    kraken.update(t, reduced);
   } };
 }
