@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { seaComposition } from "./seascape";
 
 // The same height field drives geometry and lighting. Unequal directions,
 // wavelengths and speeds prevent a repeating, synchronized wallpaper motion.
@@ -16,7 +17,7 @@ const waves = `
     swell(s,p,vec2(.98,-.199),4.15,.016,1.7,1.4);
     swell(s,p,vec2(.68,.733),7.34,.008,-2.1,3.8);
     swell(s,p,vec2(-.85,.527),11.13,.005,2.6,5.2);
-    vec2 q=p-vec2(-27.,-68.);
+    vec2 q=p-vec2(${seaComposition.kraken.x.toFixed(1)},${seaComposition.kraken.z.toFixed(1)});
     float radius=length(q);
     float funnel=exp(-dot(q,q)/23.);
     s.x-=1.7*funnel;
