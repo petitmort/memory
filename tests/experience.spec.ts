@@ -127,3 +127,65 @@ test("without WebGL: the complete album remains available", async ({
   await expect(page.locator("#chapter-title")).toHaveText("把日子过成夏天");
   await context.close();
 });
+
+test("camera: entry never reverses and reading preserves the room viewpoint", async ({
+  page,
+}) => {
+  type Sample = { p: number[]; t: number[] };
+  type Probe = Window & { __cameraSamples: Sample[] };
+  // Instrument the real rendered camera only in this test, without shipping a debug API.
+  await page.route(/\/src\/scene\.ts(?:\?.*)?$/, async (route) => {
+    const response = await route.fetch();
+    const body = await response.text();
+    expect(body).toContain("renderer.render(scene, camera);");
+    await route.fulfill({
+      response,
+      body: body.replace(
+        "renderer.render(scene, camera);",
+        `
+      window.__cameraSamples ??= [];
+      window.__cameraSamples.push({p: camera.position.toArray(), t: target.toArray()});
+      renderer.render(scene, camera);
+    `,
+      ),
+    });
+  });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/");
+  await page.locator("#enter").click();
+  await expect(page.locator("#enter")).toBeEnabled();
+  await page.evaluate(() => {
+    (window as unknown as Probe).__cameraSamples = [];
+  });
+  await page.locator("#enter").click();
+  await expect(page.locator("#room-ui")).toBeVisible({ timeout: 15000 });
+  const entry = await page.evaluate(
+    () => (window as unknown as Probe).__cameraSamples,
+  );
+  expect(entry.length).toBeGreaterThan(3);
+  const final = entry.at(-1)!;
+  const distance = (p: number[]) =>
+    Math.hypot(...p.map((x, i) => x - final.p[i]));
+  let previous = distance(entry[0].p);
+  for (const sample of entry) {
+    const next = distance(sample.p);
+    expect(next).toBeLessThanOrEqual(previous + 1e-6);
+    previous = next;
+  }
+  await page.evaluate(() => {
+    (window as unknown as Probe).__cameraSamples = [];
+  });
+  await page.locator("#open-book").click();
+  await expect(page.locator("#reader")).toBeVisible();
+  await page.locator("#close-book").click();
+  await expect(page.locator("#room-ui")).toBeVisible();
+  await page.waitForTimeout(400);
+  const reading = await page.evaluate(
+    () => (window as unknown as Probe).__cameraSamples,
+  );
+  expect(reading.length).toBeGreaterThan(0);
+  for (const sample of reading) {
+    expect(sample.p).toEqual(final.p);
+    expect(sample.t).toEqual(final.t);
+  }
+});

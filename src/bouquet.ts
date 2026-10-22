@@ -17,53 +17,68 @@ export function createBouquet() {
     return seed / 2147483647;
   };
 
-  // A cupped, gently curled petal, rather than a flattened sphere.
-  const geometry = new THREE.BufferGeometry();
-  const positions: number[] = [],
-    indices: number[] = [],
-    vertexColors: number[] = [];
-  const across = 10,
-    length = 12;
-  for (let row = 0; row <= length; row++) {
-    const v = row / length;
-    for (let col = 0; col <= across; col++) {
-      const u = (col / across) * 2 - 1;
-      const angle = u * 0.77 * Math.pow(v, 0.45);
-      const radius =
-        (0.012 + 0.15 * Math.sin(v * Math.PI * 0.48)) * (1 - 0.2 * u * u * v);
-      const edge = Math.pow(Math.abs(u), 3);
-      positions.push(
-        Math.sin(angle) * radius,
-        0.095 * Math.sin(v * Math.PI * 0.8) + 0.028 * v * v - edge * 0.012 * v,
-        Math.cos(angle) * radius,
-      );
-      const shade = new THREE.Color().setRGB(
-        0.81 + v * 0.19,
-        0.69 + v * 0.26,
-        0.56 + v * 0.34,
-      );
-      vertexColors.push(shade.r, shade.g, shade.b);
-      if (row < length && col < across) {
-        const a = row * (across + 1) + col,
-          b = a + across + 1;
-        indices.push(a, b, a + 1, b, b + 1, a + 1);
+  // Four asymmetrical, spoon-shaped petals. Each ends in a rounded, rolled lip.
+  // These are individual surfaces, not sectors of a circular bowl.
+  function petalGeometry(variant: number) {
+    const geometry = new THREE.BufferGeometry();
+    const positions: number[] = [],
+      indices: number[] = [],
+      vertexColors: number[] = [];
+    const across = 16,
+      length = 18;
+    for (let row = 0; row <= length; row++) {
+      const v = row / length;
+      for (let col = 0; col <= across; col++) {
+        const u = (col / across) * 2 - 1;
+        const end = 1 - 0.19 * u * u + 0.025 * u * Math.sin(variant + 1);
+        const along = v * end;
+        const width = 0.103 * Math.pow(Math.sin(Math.PI * along), 0.63);
+        const sideCurl =
+          Math.pow(Math.abs(u), 3) * 0.021 * Math.sin(Math.PI * along);
+        const lip = Math.pow(Math.max(0, (along - 0.72) / 0.28), 2);
+        const wrinkle =
+          0.0025 * Math.sin(u * 6 + variant * 1.7) * Math.sin(Math.PI * along);
+        positions.push(
+          u * width + 0.012 * Math.sin(variant * 2) * along * along,
+          0.13 * Math.sin(along * 1.55) -
+            0.068 * Math.pow(along, 4) +
+            sideCurl -
+            0.025 * lip +
+            wrinkle,
+          0.009 +
+            0.17 * along +
+            0.016 * lip +
+            0.008 * u * Math.sin(variant + 0.4) * along,
+        );
+        const shade = 0.65 + 0.32 * along - Math.abs(u) * 0.04;
+        vertexColors.push(
+          shade,
+          shade * (0.83 + 0.15 * along),
+          shade * (0.82 + 0.17 * along),
+        );
+        if (row < length && col < across) {
+          const a = row * (across + 1) + col,
+            b = a + across + 1;
+          indices.push(a, b, a + 1, b, b + 1, a + 1);
+        }
       }
     }
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(positions, 3),
+    );
+    geometry.setAttribute(
+      "color",
+      new THREE.Float32BufferAttribute(vertexColors, 3),
+    );
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    return geometry;
   }
-  geometry.setAttribute(
-    "position",
-    new THREE.Float32BufferAttribute(positions, 3),
-  );
-  geometry.setAttribute(
-    "color",
-    new THREE.Float32BufferAttribute(vertexColors, 3),
-  );
-  geometry.setIndex(indices);
-  geometry.computeVertexNormals();
   const petalMaterial = new THREE.MeshStandardMaterial({
-    color: "#fff4df",
+    color: "#fff5f0",
     vertexColors: true,
-    roughness: 0.83,
+    roughness: 0.73,
     side: THREE.DoubleSide,
   });
 
@@ -75,13 +90,13 @@ export function createBouquet() {
     stems.push(dummy.matrix.clone());
   }
   const palette = [
-    "#fff2de",
-    "#f1d5c4",
-    "#fff6e6",
-    "#e9bdaf",
-    "#f4dece",
-    "#fff0dc",
-    "#edd0bd",
+    "#a8344c",
+    "#c44d61",
+    "#b83c51",
+    "#d7757e",
+    "#a9354b",
+    "#bd495e",
+    "#cf6672",
   ];
   const heads = [
     [-0.23, 0.83, 0.05],
@@ -108,23 +123,36 @@ export function createBouquet() {
     );
     temp.scale.setScalar(0.86 + random() * 0.22);
     temp.updateMatrix();
-    for (let layer = 0; layer < 5; layer++) {
-      const count = [9, 8, 7, 5, 4][layer],
-        scale = [1.12, 0.91, 0.72, 0.49, 0.28][layer];
-      for (let p = 0; p < count; p++) {
-        dummy.position.set(0, layer * 0.014, 0);
-        dummy.rotation.set(
-          (random() - 0.5) * 0.09,
-          (p / count) * Math.PI * 2 + layer * 0.72,
-          (random() - 0.5) * 0.08,
-        );
-        dummy.scale.set(scale, 1 + layer * 0.12, scale);
-        dummy.updateMatrix();
-        petals.push(temp.matrix.clone().multiply(dummy.matrix));
-        const color = new THREE.Color(palette[flower]);
-        color.multiplyScalar(0.94 + random() * 0.09);
-        colors.push(color);
-      }
+    // A continuous, irregular spiral: no repeated rings or equal-height tiers.
+    const count = 34 + (flower % 4);
+    const phase = random() * Math.PI * 2;
+    for (let p = 0; p < count; p++) {
+      const t = p / (count - 1),
+        spread = Math.pow(t, 0.8);
+      const angle = phase + p * 2.399963 + (random() - 0.5) * 0.34;
+      const size = 0.18 + spread * 0.92;
+      dummy.position.set(
+        Math.sin(angle) * 0.012 * spread,
+        0.073 * (1 - spread) + (random() - 0.5) * 0.017,
+        Math.cos(angle) * 0.012 * spread,
+      );
+      // Rotate the petal around the bud after giving it its own opening angle.
+      dummy.quaternion.setFromEuler(
+        new THREE.Euler(
+          -0.95 * (1 - spread) + 0.18 * spread + (random() - 0.5) * 0.22,
+          0,
+          (random() - 0.5) * 0.25,
+        ),
+      );
+      dummy.quaternion.premultiply(
+        new THREE.Quaternion().setFromAxisAngle(up, angle),
+      );
+      dummy.scale.set(size * (0.82 + random() * 0.3), 0.64 + size * 0.6, size);
+      dummy.updateMatrix();
+      petals.push(temp.matrix.clone().multiply(dummy.matrix));
+      const color = new THREE.Color(palette[flower]);
+      color.multiplyScalar(0.82 + spread * 0.15 + random() * 0.06);
+      colors.push(color);
     }
     // Pointed leaves branch off the stem, below the blossom cluster.
     for (let l = 0; l < 3; l++) {
@@ -194,8 +222,12 @@ export function createBouquet() {
     bouquet.add(mesh);
     return mesh;
   }
-  const blooms = instances(geometry, petalMaterial, petals);
-  colors.forEach((color, i) => blooms.setColorAt(i, color));
+  for (let variant = 0; variant < 4; variant++) {
+    const matrices = petals.filter((_, i) => i % 4 === variant);
+    const shades = colors.filter((_, i) => i % 4 === variant);
+    const blooms = instances(petalGeometry(variant), petalMaterial, matrices);
+    shades.forEach((color, i) => blooms.setColorAt(i, color));
+  }
   const leafGeo = new THREE.SphereGeometry(1, 10, 6);
   const leafMat = new THREE.MeshStandardMaterial({
     color: "#8a9b83",

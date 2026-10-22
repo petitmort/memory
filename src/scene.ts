@@ -439,6 +439,23 @@ export function createScene(
           p: new THREE.Vector3(6.4, 4.2, 7.4),
           t: new THREE.Vector3(-1.3, 1.8, -1.8),
         };
+  // Give the facade its own materials so its reveal never fades the room.
+  const facadeMaterials = new Map<THREE.Material, THREE.Material>();
+  facade.traverse((o) => {
+    if (!(o instanceof THREE.Mesh)) return;
+    const own = (m: THREE.Material) => {
+      if (!facadeMaterials.has(m)) {
+        const copy = m.clone();
+        copy.transparent = true;
+        facadeMaterials.set(m, copy);
+      }
+      return facadeMaterials.get(m)!;
+    };
+    o.material = Array.isArray(o.material)
+      ? o.material.map(own)
+      : own(o.material);
+  });
+  let facadeFadeStart: number | null = null;
   let current: "entry" | "room" | "book" = "entry";
   let animating = false,
     doorOpen = 0,
@@ -513,8 +530,37 @@ export function createScene(
         done();
       }
     }
-    doorPivot.rotation.y += (doorOpen - doorPivot.rotation.y) * 0.045;
-    bookHinge.rotation.z += (albumOpen - bookHinge.rotation.z) * 0.055;
+    const dt = Math.min(Math.max(delta / 1000, 0), 0.1);
+    doorPivot.rotation.y = THREE.MathUtils.damp(
+      doorPivot.rotation.y,
+      doorOpen,
+      5,
+      dt,
+    );
+    bookHinge.rotation.z = THREE.MathUtils.damp(
+      bookHinge.rotation.z,
+      albumOpen,
+      5,
+      dt,
+    );
+    if (facadeFadeStart !== null) {
+      const opacity =
+        1 -
+        THREE.MathUtils.smoothstep(
+          (now - facadeFadeStart) / (reducedMotion ? 1 : 950),
+          0,
+          1,
+        );
+      facadeMaterials.forEach((m) => {
+        m.opacity = opacity;
+        m.depthWrite = opacity > 0.95;
+      });
+      if (opacity === 0) {
+        facade.visible = false;
+        facadeFadeStart = null;
+        sun.shadow.needsUpdate = true;
+      }
+    }
     if (bouquetOut && bouquet.visible) {
       bouquet.position.y += (2.8 - bouquet.position.y) * 0.06;
       bouquet.scale.multiplyScalar(0.96);
@@ -574,33 +620,28 @@ export function createScene(
     },
     async enterRoom() {
       doorOpen = -Math.PI * 0.58;
-      await move(
-        {
-          p: new THREE.Vector3(1.3, 2.4, 5),
-          t: new THREE.Vector3(0.2, 1.9, -2),
-        },
-        1.5,
+      // Let the door open, then move directly to the room's resting view.
+      // There is no table close-up or reverse camera leg.
+      animating = true;
+      await new Promise((resolve) =>
+        setTimeout(resolve, reducedMotion ? 0 : 650),
       );
-      facade.visible = false;
+      facadeFadeStart = performance.now();
       current = "room";
-      await move(roomPose(), 2.1);
+      await move(roomPose(), 2.4);
     },
     async openBook() {
       bouquetOut = 1;
       albumOpen = Math.PI * 0.85;
       current = "book";
-      await move(
-        {
-          p: new THREE.Vector3(0.25, 4.5, 2.1),
-          t: new THREE.Vector3(0, 1.6, -0.6),
-        },
-        1.1,
+      // Keep exactly the same camera while lifting the bouquet and opening the cover.
+      await new Promise((resolve) =>
+        setTimeout(resolve, reducedMotion ? 0 : 850),
       );
     },
     returnToRoom() {
       albumOpen = 0;
       current = "room";
-      void move(roomPose(), 1.1);
     },
     setQuality(value: boolean) {
       low = value;
