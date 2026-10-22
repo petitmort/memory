@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createSeascape } from './seascape';
+import { createArtifacts } from './artifacts';
 
 // A collector's Aegean: aged bronze indoors, an epic told beyond the window.
 export function mythTextile() {
@@ -24,26 +25,8 @@ export function mythTextile() {
 }
 export function createMythology() {
   const group=new THREE.Group();group.name='aegean-mythology';
-  const bronze=new THREE.MeshStandardMaterial({color:'#887047',metalness:.65,roughness:.55});
-  const patina=new THREE.MeshStandardMaterial({color:'#486b64',metalness:.45,roughness:.72});
-  const wood=new THREE.MeshStandardMaterial({color:'#55402e',roughness:.9});
-  const ivory=new THREE.MeshStandardMaterial({color:'#c4b18a',roughness:.6});
   const mesh=(g:THREE.BufferGeometry,m:THREE.Material,p:THREE.Object3D=group)=>{const o=new THREE.Mesh(g,m);o.castShadow=true;o.receiveShadow=true;p.add(o);return o;};
-  const tube=(pts:number[][],r:number,m:THREE.Material,p=group)=>mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(v=>new THREE.Vector3(...v as [number,number,number]))),40,r,8,false),m,p);
-  const trident=new THREE.Group();trident.name='poseidon-trident';trident.position.set(-2.04,.08,-2.12);trident.rotation.z=-.1;group.add(trident);
-  mesh(new THREE.CylinderGeometry(.014,.019,1.75,12),bronze,trident).position.y=.875;
-  tube([[-.19,1.65,0],[-.18,1.48,0],[0,1.42,0],[.18,1.48,0],[.19,1.65,0]],.016,patina,trident);
-  for(const a of [-.19,0,.19]){const tip=mesh(new THREE.ConeGeometry(.032,.16,8),bronze,trident);tip.position.set(a,a===0?1.86:1.73,0);}
-  for(let i=0;i<5;i++){const ring=mesh(new THREE.TorusGeometry(.021,.004,6,14),bronze,trident);ring.rotation.x=Math.PI/2;ring.position.y=.32+i*.04;}
-  const horn=new THREE.Group();horn.name='mythic-drinking-horn';horn.position.set(-.43,.80,-.73);horn.rotation.set(.2,.8,1.2);group.add(horn);
-  const curve=new THREE.CatmullRomCurve3([new THREE.Vector3(0,0,0),new THREE.Vector3(.04,.08,0),new THREE.Vector3(.06,.18,0),new THREE.Vector3(.02,.25,0)]);
-  const hg=new THREE.TubeGeometry(curve,28,.04,16,false);const hp=hg.attributes.position;
-  for(let i=0;i<hp.count;i++){const t=Math.floor(i/17)/28;const center=curve.getPointAt(t);const v=new THREE.Vector3().fromBufferAttribute(hp,i).sub(center).multiplyScalar(.15+.85*t).add(center);hp.setXYZ(i,v.x,v.y,v.z);}hg.computeVertexNormals();mesh(hg,ivory,horn);
-  const rim=mesh(new THREE.TorusGeometry(.04,.006,8,24),bronze,horn);rim.position.set(.02,.25,0);rim.rotation.y=Math.PI/2;
-  const hammer=new THREE.Group();hammer.name='dwarven-forged-hammer';hammer.position.set(-.36,.79,-1.17);hammer.rotation.y=.3;group.add(hammer);
-  mesh(new THREE.CylinderGeometry(.012,.015,.25,10),wood,hammer).rotation.z=Math.PI/2;
-  const head=mesh(new THREE.BoxGeometry(.075,.075,.14),patina,hammer);head.position.x=-.13;
-  for(const z of [-.075,.075]){const cap=mesh(new THREE.BoxGeometry(.08,.08,.009),bronze,hammer);cap.position.set(-.13,0,z);}
+  group.add(createArtifacts());
   const mural=mesh(new THREE.PlaneGeometry(.83,1.10),mythTextile());mural.position.set(-2.195,1.65,.22);mural.rotation.y=Math.PI/2;mural.name='greek-gods-tapestry';
   const seascape = createSeascape();
   group.add(seascape.group);

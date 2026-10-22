@@ -4,12 +4,16 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
   test.setTimeout(180000);
   const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
   const page=await context.newPage();
+  const errors:string[]=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
   await page.route(/\/src\/scene\.ts(?:\?.*)?$/,async route=>{
     const response=await route.fetch();const body=await response.text();
     await route.fulfill({response,body:body.replace('renderer.render(scene, camera);',`
       scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
       const screen=o=>{const v=o.getWorldPosition(new THREE.Vector3()).project(camera);return {x:(v.x+1)*innerWidth/2,y:(1-v.y)*innerHeight/2};};
-      window.__myth={composition:['helios-radiant-sun','mythic-sailing-ship','distant-kraken'].map(n=>{const o=scene.getObjectByName(n);const top=new THREE.Vector3(0,n==='helios-radiant-sun'?6.4:0,0).applyMatrix4(o.matrixWorld).project(camera);return {...screen(o),top:(1-top.y)*innerHeight/2,distance:o.getWorldPosition(new THREE.Vector3()).distanceTo(camera.position)};}),width:innerWidth,book:screen(book),rose:screen(bouquet),details:['mythic-sailing-ship','distant-kraken','whirlpool','helios-radiant-sun','poseidon-trident','greek-gods-tapestry','mythic-drinking-horn','dwarven-forged-hammer','cliff-foundation'].map(n=>!!scene.getObjectByName(n))};
+      const bounds=name=>{const b=new THREE.Box3().setFromObject(scene.getObjectByName(name),true);return {min:b.min.toArray(),max:b.max.toArray()};};
+      window.__myth={supports:{desk:bounds('tabletop'),horn:bounds('mythic-drinking-horn'),hammer:bounds('dwarven-forged-hammer'),trident:bounds('poseidon-trident')},composition:['helios-radiant-sun','mythic-sailing-ship','distant-kraken'].map(n=>{const o=scene.getObjectByName(n);const top=new THREE.Vector3(0,n==='helios-radiant-sun'?6.4:0,0).applyMatrix4(o.matrixWorld).project(camera);return {...screen(o),top:(1-top.y)*innerHeight/2,distance:o.getWorldPosition(new THREE.Vector3()).distanceTo(camera.position)};}),width:innerWidth,book:screen(book),rose:screen(bouquet),details:['mythic-sailing-ship','distant-kraken','whirlpool','helios-radiant-sun','poseidon-trident','greek-gods-tapestry','mythic-drinking-horn','dwarven-forged-hammer','cliff-foundation'].map(n=>!!scene.getObjectByName(n))};
       if(current==='entry' && !window.__courtyardChecked){
         const probeRay=new THREE.Raycaster();let exposed=0;
         for(const x of [-.95,-.5,0,.5,.95])for(const y of [-.95,-.5,0,.5,.95]){
@@ -28,6 +32,17 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
   await page.screenshot({path:'test-results/mythic-courtyard.png'});
   await page.locator('#enter').click();await expect(page.locator('#room-ui')).toBeVisible();
   expect(await page.evaluate(()=>(window as any).__myth.details.every(Boolean))).toBe(true);
+  const supports=await page.evaluate(()=>(window as any).__myth.supports);
+  for(const key of ['horn','hammer']) {
+    const object=supports[key],desk=supports.desk;
+    expect(object.min[1]).toBeCloseTo(desk.max[1]+.0003,4);
+    expect(object.max[1]-object.min[1]).toBeLessThan(.105);
+    for(const axis of [0,2]) {
+      expect(object.min[axis]).toBeGreaterThan(desk.min[axis]+.015);
+      expect(object.max[axis]).toBeLessThan(desk.max[axis]-.015);
+    }
+  }
+  expect(supports.trident.min[1]).toBeCloseTo(.001,4);
   const composition=await page.evaluate(()=>(window as any).__myth.composition);
   const [sun,ship,kraken]=composition;
   expect(sun.x).toBeGreaterThan(1440*.65);
@@ -40,6 +55,7 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
   await page.locator('#open-book').click();await expect(page.locator('#reader')).toBeVisible();
   await page.locator('#close-book').click();await expect(page.locator('#open-book')).toContainText('继续翻阅');
   await page.waitForTimeout(600);
+  expect(await page.evaluate(()=>(window as any).__myth.supports)).toEqual(supports);
   const rose=await page.evaluate(()=>(window as any).__myth.rose);
   await page.mouse.click(rose.x,rose.y);await expect(page.locator('#reader')).toBeHidden();
   const book=await page.evaluate(()=>(window as any).__myth.book);
@@ -51,5 +67,6 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
   const clear=await page.evaluate(()=>{const {book,rose}=(window as any).__myth;return [book,rose].map(p=>({ ...p,tag:document.elementFromPoint(p.x,p.y)?.tagName,id:document.elementFromPoint(p.x,p.y)?.id }));});
   await page.screenshot({path:'test-results/mythic-mobile.png'});
   expect(clear.map(p=>p.tag)).toEqual(['CANVAS','CANVAS']);
+  expect(errors).toEqual([]);
   await context.close();
 });
