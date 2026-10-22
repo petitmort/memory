@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { createClassicalPainting } from "./classical-gallery";
 
 /** Curated, full-size furnishings; every length is expressed in metres. */
 export function createDecor(): THREE.Group {
@@ -130,101 +131,7 @@ export function createDecor(): THREE.Group {
   louvers.receiveShadow = true;
   shutterSet.add(louvers);
 
-  // A small, faded gouache in a dark timber frame, hung at gallery eye height.
-  const painting = texture(480, 620, (c) => {
-    c.fillStyle = "#dedbca";
-    c.fillRect(0, 0, 480, 620);
-    const sky = c.createLinearGradient(0, 0, 0, 420);
-    sky.addColorStop(0, "#b6c9c9");
-    sky.addColorStop(1, "#e2ddc9");
-    c.fillStyle = sky;
-    c.fillRect(22, 22, 436, 570);
-    c.fillStyle = "#6a9ba6";
-    c.fillRect(22, 280, 436, 312);
-    for (let i = 0; i < 100; i++) {
-      const y = 288 + random() * 280;
-      c.strokeStyle = "rgba(225,230,213,.2)";
-      c.lineWidth = 0.6;
-      c.beginPath();
-      const x = 25 + random() * 390;
-      c.moveTo(x, y);
-      c.lineTo(x + 15 + random() * 65, y);
-      c.stroke();
-    }
-    c.fillStyle = "#c9bea7";
-    c.beginPath();
-    c.moveTo(22, 400);
-    c.lineTo(190, 342);
-    c.lineTo(458, 500);
-    c.lineTo(458, 592);
-    c.lineTo(22, 592);
-    c.fill();
-    const house = (
-      x: number,
-      y: number,
-      w: number,
-      h: number,
-      tint: string,
-    ) => {
-      c.fillStyle = tint;
-      c.fillRect(x, y, w, h);
-      c.beginPath();
-      c.ellipse(x + w / 2, y, w / 2, 13, 0, Math.PI, 0);
-      c.fill();
-      c.fillStyle = "#37698a";
-      c.fillRect(x + w * 0.35, y + h * 0.48, w * 0.26, h * 0.52);
-      c.beginPath();
-      c.arc(x + w * 0.48, y + h * 0.48, w * 0.13, Math.PI, 0);
-      c.fill();
-      c.fillStyle = "#a7b6b0";
-      c.fillRect(x + w * 0.12, y + h * 0.22, w * 0.15, w * 0.2);
-    };
-    house(40, 325, 100, 155, "#f2ecda");
-    house(138, 366, 104, 150, "#e7dfc8");
-    house(220, 309, 118, 218, "#f1ead4");
-    house(326, 408, 114, 157, "#e4d9bf");
-    c.fillStyle = "#396e9b";
-    c.beginPath();
-    c.ellipse(279, 311, 62, 48, 0, Math.PI, 0);
-    c.fill();
-    c.fillRect(217, 307, 124, 7);
-    c.strokeStyle = "#a39170";
-    c.lineWidth = 3;
-    c.beginPath();
-    c.moveTo(38, 480);
-    c.bezierCurveTo(130, 446, 260, 590, 433, 552);
-    c.stroke();
-    for (let i = 0; i < 16000; i++) {
-      c.fillStyle =
-        random() > 0.5 ? "rgba(255,250,222,.075)" : "rgba(72,67,45,.045)";
-      c.fillRect(
-        random() * 480,
-        random() * 620,
-        1 + random() * 2,
-        1 + random() * 2,
-      );
-    }
-  });
-  const frame = new THREE.Group();
-  frame.name = "vintage-framed-seascape";
-  frame.position.set(-2.205, 1.67, -0.88);
-  frame.rotation.y = Math.PI / 2;
-  decor.add(frame);
-  for (const x of [-0.236, 0.236])
-    box(0.035, 0.65, 0.034, walnut, x, 0, 0, frame);
-  for (const y of [-0.3075, 0.3075])
-    box(0.44, 0.035, 0.034, walnut, 0, y, 0, frame);
-  const art = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.437, 0.577),
-    new THREE.MeshStandardMaterial({ map: painting, roughness: 1 }),
-  );
-  art.position.z = 0.019;
-  frame.add(art);
-  const innerLip = material("#c0aa80", 0.75);
-  for (const x of [-0.216, 0.216])
-    box(0.005, 0.58, 0.005, innerLip, x, 0, 0.02, frame);
-  for (const y of [-0.2875, 0.2875])
-    box(0.435, 0.005, 0.005, innerLip, 0, y, 0.02, frame);
+  decor.add(createClassicalPainting());
 
   const tilePattern = texture(256, 256, (c) => {
     c.fillStyle = "#e9e4cf";
@@ -326,7 +233,7 @@ export function createDecor(): THREE.Group {
   });
   const basket = new THREE.Group();
   basket.name = "woven-market-basket";
-  basket.position.set(-1.82, 0.005, -0.74);
+  basket.position.set(-1.9, 0.005, 0.15);
   decor.add(basket);
   const basketProfile = [
     new THREE.Vector2(0.145, 0),

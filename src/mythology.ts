@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createSeascape } from './seascape';
 import { createArtifacts } from './artifacts';
+import { createClassicalCollection } from './classical-gallery';
 
 // A collector's Aegean: aged bronze indoors, an epic told beyond the window.
 export function mythTextile() {
@@ -27,7 +28,8 @@ export function createMythology() {
   const group=new THREE.Group();group.name='aegean-mythology';
   const mesh=(g:THREE.BufferGeometry,m:THREE.Material,p:THREE.Object3D=group)=>{const o=new THREE.Mesh(g,m);o.castShadow=true;o.receiveShadow=true;p.add(o);return o;};
   group.add(createArtifacts());
-  const mural=mesh(new THREE.PlaneGeometry(.83,1.10),mythTextile());mural.position.set(-2.195,1.65,.22);mural.rotation.y=Math.PI/2;mural.name='greek-gods-tapestry';
+  group.add(createClassicalCollection());
+  const mural=mesh(new THREE.PlaneGeometry(.83,1.10),mythTextile());mural.position.set(-2.296,1.65,.22);mural.rotation.y=Math.PI/2;mural.name='greek-gods-tapestry';
   const seascape = createSeascape();
   group.add(seascape.group);
   const cliff=mesh(new THREE.SphereGeometry(1,30,18),new THREE.MeshStandardMaterial({color:'#867d6b',roughness:1}));cliff.name='cliff-foundation';cliff.position.set(0,-5.5,1);cliff.scale.set(4.3,5.3,5.1);

@@ -1254,3 +1254,10 @@ button svg {
   .room-ui .eyebrow, .room-ui h2, .room-ui p, .scene-hint { display:none; }
   .room-ui .primary-button { pointer-events:auto; padding:12px 18px; min-height:44px; width:auto; font-size:12px; background:rgba(245,239,222,.92); }
 }
+
+@media (min-width: 760px) {
+  .room-ui { left:auto; right:4.5%; bottom:9%; max-width:350px; }
+  .room-ui .eyebrow, .room-ui h2, .room-ui p { display:none; }
+  .room-ui .primary-button { background:rgba(245,239,222,.94); }
+  .scene-hint { left:auto; right:4.5%; bottom:15.5%; font-size:9px; }
+}

@@ -543,16 +543,6 @@ export function createScene(
     0,
     consoleTable,
   );
-  cylinder(
-    0.035,
-    0.05,
-    0.17,
-    green,
-    0.17,
-    D.console.height + 0.085,
-    0,
-    consoleTable,
-  );
   // A 90 × 210 cm door leaf, 4.5 cm thick, with the handle 1 m above the floor.
   const facade = new THREE.Group();
   facade.name = "entry-wall";

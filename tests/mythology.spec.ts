@@ -13,7 +13,8 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
       scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
       const screen=o=>{const v=o.getWorldPosition(new THREE.Vector3()).project(camera);return {x:(v.x+1)*innerWidth/2,y:(1-v.y)*innerHeight/2};};
       const bounds=name=>{const b=new THREE.Box3().setFromObject(scene.getObjectByName(name),true);return {min:b.min.toArray(),max:b.max.toArray()};};
-      window.__myth={supports:{desk:bounds('tabletop'),horn:bounds('mythic-drinking-horn'),hammer:bounds('dwarven-forged-hammer'),trident:bounds('poseidon-trident')},composition:['helios-radiant-sun','mythic-sailing-ship','distant-kraken'].map(n=>{const o=scene.getObjectByName(n);const top=new THREE.Vector3(0,n==='helios-radiant-sun'?6.4:0,0).applyMatrix4(o.matrixWorld).project(camera);return {...screen(o),top:(1-top.y)*innerHeight/2,distance:o.getWorldPosition(new THREE.Vector3()).distanceTo(camera.position)};}),width:innerWidth,book:screen(book),rose:screen(bouquet),details:['mythic-sailing-ship','distant-kraken','whirlpool','helios-radiant-sun','poseidon-trident','greek-gods-tapestry','mythic-drinking-horn','dwarven-forged-hammer','cliff-foundation'].map(n=>!!scene.getObjectByName(n))};
+      const painting=scene.getObjectByName('classical-myth-oil-painting');
+      window.__myth={paintingReady:painting?.material.map.image?.naturalWidth===1024,collection:{harp:bounds('classical-carved-harp'),vessel:bounds('classical-relief-amphora'),athena:bounds('athena-collection-statue')},supports:{desk:bounds('tabletop'),horn:bounds('mythic-drinking-horn'),hammer:bounds('dwarven-forged-hammer'),trident:bounds('poseidon-trident')},composition:['helios-radiant-sun','mythic-sailing-ship','distant-kraken'].map(n=>{const o=scene.getObjectByName(n);const top=new THREE.Vector3(0,n==='helios-radiant-sun'?6.4:0,0).applyMatrix4(o.matrixWorld).project(camera);return {...screen(o),top:(1-top.y)*innerHeight/2,distance:o.getWorldPosition(new THREE.Vector3()).distanceTo(camera.position)};}),width:innerWidth,book:screen(book),rose:screen(bouquet),details:['mythic-sailing-ship','distant-kraken','whirlpool','helios-radiant-sun','poseidon-trident','greek-gods-tapestry','mythic-drinking-horn','dwarven-forged-hammer','cliff-foundation','classical-carved-harp','classical-relief-amphora','athena-collection-statue','classical-myth-oil-painting'].map(n=>!!scene.getObjectByName(n))};
       if(current==='entry' && !window.__courtyardChecked){
         const probeRay=new THREE.Raycaster();let exposed=0;
         for(const x of [-.95,-.5,0,.5,.95])for(const y of [-.95,-.5,0,.5,.95]){
@@ -32,6 +33,18 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
   await page.screenshot({path:'test-results/mythic-courtyard.png'});
   await page.locator('#enter').click();await expect(page.locator('#room-ui')).toBeVisible();
   expect(await page.evaluate(()=>(window as any).__myth.details.every(Boolean))).toBe(true);
+  await page.waitForFunction(()=>(window as any).__myth.paintingReady);
+  const collection=await page.evaluate(()=>(window as any).__myth.collection);
+  expect(collection.harp.min[1]).toBeCloseTo(.002,4);
+  expect(collection.athena.min[1]).toBeCloseTo(.002,4);
+  expect(collection.harp.max[1]).toBeGreaterThan(1.4);
+  expect(collection.harp.max[0]).toBeLessThan(-.8); // Leaves room beside the main desk.
+  expect(collection.athena.min[0]).toBeGreaterThan(-2.3);
+  expect(collection.vessel.min[1]).toBeCloseTo(.7803,4);
+  expect(collection.vessel.min[0]).toBeGreaterThan(-2.17);
+  expect(collection.vessel.max[0]).toBeLessThan(-1.27);
+  expect(collection.vessel.min[2]).toBeGreaterThan(-1.96);
+  expect(collection.vessel.max[2]).toBeLessThan(-1.64);
   const supports=await page.evaluate(()=>(window as any).__myth.supports);
   for(const key of ['horn','hammer']) {
     const object=supports[key],desk=supports.desk;
