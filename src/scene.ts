@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { createBouquet } from "./bouquet";
+import { createOcean } from "./ocean";
 
 export function createScene(
   container: HTMLElement,
@@ -26,7 +27,7 @@ export function createScene(
     42,
     innerWidth / innerHeight,
     0.1,
-    120,
+    500,
   );
   const target = new THREE.Vector3();
   const ambient = new THREE.HemisphereLight("#e9f0de", "#6e6656", 2.0);
@@ -148,22 +149,23 @@ export function createScene(
     roughness: 0.78,
     color: "#bda480",
   });
-  const floor = box(28, 0.15, 28, wood, 0, -0.1, 0);
+  const floor = box(14, 0.15, 17, wood, 0, -0.1, 3.4);
   floor.receiveShadow = true;
   const seams = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(0.009, 0.008, 28),
+    new THREE.BoxGeometry(0.009, 0.008, 17),
     mat("#76624c"),
     40,
   );
   for (let i = 0; i < 40; i++)
     seams.setMatrixAt(
       i,
-      new THREE.Matrix4().makeTranslation(-14 + i * 0.7, -0.019, 0),
+      new THREE.Matrix4().makeTranslation(-14 + i * 0.7, -0.019, 3.4),
     );
   scene.add(seams);
   // Room open to the ocean: back wall frames an expansive window.
   const room = new THREE.Group();
   scene.add(room);
+  room.scale.y = 0.8;
   box(1.2, 5.8, 0.3, plaster, -5.2, 2.85, -5, room);
   box(1.2, 5.8, 0.3, plaster, 5.2, 2.85, -5, room);
   box(9.2, 0.8, 0.3, plaster, 0, 5.35, -5, room);
@@ -199,18 +201,8 @@ export function createScene(
   }
   cylinder(0.035, 0.035, 10, brass, 0, 5.25, -4.45, room).rotation.z =
     Math.PI / 2;
-  // Ocean shader: no textures, no network, subtle slowly moving wavelets.
-  const seaMat = new THREE.ShaderMaterial({
-    uniforms: { time: { value: 0 } },
-    vertexShader: `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-    fragmentShader: `varying vec2 vUv;uniform float time;
- float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
- float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
- void main(){vec2 p=vUv*vec2(135.,310.);float n=noise(p+vec2(time*.23,-time*.4));n+=noise(p*2.3+vec2(-time*.14,time*.3))*.45;float wave=smoothstep(.92,1.36,n);float haze=smoothstep(.5,.98,1.-vUv.y);vec3 col=mix(vec3(.19,.40,.43),vec3(.43,.62,.63),n*.65);col=mix(col,vec3(.68,.76,.71),haze*.55);col+=wave*.12;gl_FragColor=vec4(col,1.);}`,
-  });
-  const ocean = new THREE.Mesh(new THREE.PlaneGeometry(180, 110), seaMat);
-  ocean.rotation.x = -Math.PI / 2;
-  ocean.position.set(0, -0.15, -48);
+  const ocean = createOcean();
+  const seaMat = ocean.material;
   scene.add(ocean);
   const skyMat = new THREE.ShaderMaterial({
     side: THREE.BackSide,
@@ -219,7 +211,7 @@ export function createScene(
     fragmentShader:
       "varying vec3 vPos;void main(){float h=normalize(vPos).y;vec3 col=mix(vec3(.84,.86,.77),vec3(.46,.65,.70),smoothstep(0.,.8,h));gl_FragColor=vec4(col,1.);}",
   });
-  const sky = new THREE.Mesh(new THREE.SphereGeometry(95, 24, 12), skyMat);
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(350, 24, 12), skyMat);
   scene.add(sky);
   // Far-off island silhouettes.
   const islandMat = mat("#7c9992");
@@ -248,6 +240,7 @@ export function createScene(
   stripes.receiveShadow = true;
   scene.add(stripes);
   const table = new THREE.Group();
+  table.scale.setScalar(0.65);
   table.position.set(0.25, 0, -0.8);
   room.add(table);
   box(3.8, 0.15, 2.1, wood, 0, 1.52, 0, table);
@@ -316,10 +309,10 @@ export function createScene(
   table.add(handle);
   const letter = box(0.5, 0.007, 0.36, paper, -1.21, 1.606, -0.43, table);
   letter.rotation.y = 0.2;
-  cylinder(0.39, 0.39, 0.1, wood, 0.3, 0.72, 1.08, room);
+  cylinder(0.32, 0.32, 0.08, wood, 0.3, 0.55, 0.6, room);
   for (const x of [-0.22, 0.22])
-    for (const z of [0.86, 1.3])
-      box(0.06, 0.7, 0.06, darkWood, x + 0.3, 0.35, z, room);
+    for (const z of [0.38, 0.82])
+      box(0.06, 0.53, 0.06, darkWood, x + 0.3, 0.265, z, room);
   // Small console and sunlit ceramics to give the room depth.
   box(1.5, 0.11, 0.65, wood, -4.4, 1.07, -2.6, room);
   for (const x of [-5, -3.8]) box(0.07, 1, 0.07, darkWood, x, 0.5, -2.6, room);
@@ -329,6 +322,7 @@ export function createScene(
   const facade = new THREE.Group();
   scene.add(facade);
   facade.position.z = 3.5;
+  facade.scale.y = 0.7;
   box(20, 8, 0.35, plaster, -10.58, 3.95, 0, facade);
   box(20, 8, 0.35, plaster, 11.88, 3.95, 0, facade);
   box(2.2, 2.5, 0.35, plaster, 0.6, 4.7, 0, facade);
@@ -419,75 +413,82 @@ export function createScene(
   scene.add(dust);
   type Pose = { p: THREE.Vector3; t: THREE.Vector3 };
   const mobile = () => innerWidth < 760;
-  const entryPose = (): Pose =>
-    mobile()
-      ? {
-          p: new THREE.Vector3(5.7, 3.0, 12.3),
-          t: new THREE.Vector3(0.3, 1.9, 3.3),
-        }
-      : {
-          p: new THREE.Vector3(5.8, 3.3, 11.9),
-          t: new THREE.Vector3(-1.3, 1.9, 3.3),
-        };
+  // Eye height remains 1.65 m. The path crosses the real doorway at x=.6.
+  const entryPose = (): Pose => ({
+    p: new THREE.Vector3(0.6, 1.65, 8),
+    t: new THREE.Vector3(mobile() ? 0.6 : -0.38, 1.55, 3.5),
+  });
   const roomPose = (): Pose =>
     mobile()
       ? {
-          p: new THREE.Vector3(5.8, 4.2, 7.8),
-          t: new THREE.Vector3(0, 1.8, -1.3),
+          p: new THREE.Vector3(0.6, 1.65, 2.2),
+          t: new THREE.Vector3(0, 1.05, -1.5),
         }
       : {
-          p: new THREE.Vector3(6.4, 4.2, 7.4),
-          t: new THREE.Vector3(-1.3, 1.8, -1.8),
+          p: new THREE.Vector3(1.55, 1.65, 1.5),
+          t: new THREE.Vector3(-0.35, 1.05, -1.9),
         };
-  // Give the facade its own materials so its reveal never fades the room.
-  const facadeMaterials = new Map<THREE.Material, THREE.Material>();
-  facade.traverse((o) => {
-    if (!(o instanceof THREE.Mesh)) return;
-    const own = (m: THREE.Material) => {
-      if (!facadeMaterials.has(m)) {
-        const copy = m.clone();
-        copy.transparent = true;
-        facadeMaterials.set(m, copy);
-      }
-      return facadeMaterials.get(m)!;
-    };
-    o.material = Array.isArray(o.material)
-      ? o.material.map(own)
-      : own(o.material);
-  });
-  let facadeFadeStart: number | null = null;
   let current: "entry" | "room" | "book" = "entry";
   let animating = false,
     doorOpen = 0,
-    bouquetOut = 0,
     albumOpen = 0,
     disposed = false;
   const initial = entryPose();
   camera.position.copy(initial.p);
   target.copy(initial.t);
-  let tween: {
-    fromP: THREE.Vector3;
-    toP: THREE.Vector3;
+  let walking: {
+    path: THREE.CatmullRomCurve3;
     fromT: THREE.Vector3;
     toT: THREE.Vector3;
     start: number;
     duration: number;
     done: () => void;
   } | null = null;
-  function move(pose: Pose, seconds: number) {
-    return new Promise<void>((resolve) => {
-      animating = true;
-      tween = {
-        fromP: camera.position.clone(),
-        toP: pose.p,
+  let bouquetMotion: {
+    from: THREE.Vector3;
+    to: THREE.Vector3;
+    fromQ: THREE.Quaternion;
+    toQ: THREE.Quaternion;
+    start: number;
+    duration: number;
+    done: () => void;
+  } | null = null;
+  let bouquetParked = false;
+  function walkIntoRoom() {
+    return new Promise<void>((done) => {
+      const end = roomPose();
+      walking = {
+        path: new THREE.CatmullRomCurve3(
+          [
+            camera.position.clone(),
+            new THREE.Vector3(0.6, 1.65, 4.4),
+            new THREE.Vector3(0.6, 1.65, 2.8),
+            end.p,
+          ],
+          false,
+          "centripetal",
+        ),
         fromT: target.clone(),
-        toT: pose.t,
+        toT: end.t,
         start: performance.now(),
-        duration: reducedMotion ? 80 : seconds * 1000,
-        done: () => {
-          animating = false;
-          resolve();
-        },
+        duration: reducedMotion ? 120 : 3800,
+        done,
+      };
+    });
+  }
+  function parkBouquet() {
+    if (bouquetParked) return Promise.resolve();
+    return new Promise<void>((done) => {
+      bouquetMotion = {
+        from: bouquet.position.clone(),
+        to: new THREE.Vector3(1.27, 1.7, 0.76),
+        fromQ: bouquet.quaternion.clone(),
+        toQ: new THREE.Quaternion().setFromEuler(
+          new THREE.Euler(-1.32, 0.15, 0.35),
+        ),
+        start: performance.now(),
+        duration: reducedMotion ? 80 : 1100,
+        done,
       };
     });
   }
@@ -512,21 +513,43 @@ export function createScene(
       }
     }
     const t = clock.getElapsedTime();
-    seaMat.uniforms.time.value = reducedMotion ? 0 : t;
+    seaMat.uniforms.time.value = t * (reducedMotion ? 0.15 : 1);
     if (!reducedMotion) {
       curtains.forEach(
         (c, i) => (c.rotation.y = Math.sin(t * 0.5 + i) * 0.025),
       );
       dust.position.y = Math.sin(t * 0.1) * 0.06;
     }
-    if (tween) {
-      const a = Math.min(1, (now - tween.start) / tween.duration);
-      const s = a * a * (3 - 2 * a);
-      camera.position.lerpVectors(tween.fromP, tween.toP, s);
-      target.lerpVectors(tween.fromT, tween.toT, s);
+    if (walking) {
+      const a = Math.min(1, (now - walking.start) / walking.duration),
+        ease = a * a * (3 - 2 * a);
+      camera.position.copy(walking.path.getPoint(ease));
+      target.lerpVectors(walking.fromT, walking.toT, ease);
       if (a === 1) {
-        const done = tween.done;
-        tween = null;
+        const done = walking.done;
+        walking = null;
+        animating = false;
+        current = "room";
+        done();
+      }
+    }
+    if (bouquetMotion) {
+      const a = Math.min(
+          1,
+          (now - bouquetMotion.start) / bouquetMotion.duration,
+        ),
+        ease = a * a * (3 - 2 * a);
+      bouquet.position.lerpVectors(bouquetMotion.from, bouquetMotion.to, ease);
+      bouquet.position.y += Math.sin(Math.PI * a) * 0.07;
+      bouquet.quaternion.slerpQuaternions(
+        bouquetMotion.fromQ,
+        bouquetMotion.toQ,
+        ease,
+      );
+      if (a === 1) {
+        const done = bouquetMotion.done;
+        bouquetMotion = null;
+        bouquetParked = true;
         done();
       }
     }
@@ -543,33 +566,10 @@ export function createScene(
       5,
       dt,
     );
-    if (facadeFadeStart !== null) {
-      const opacity =
-        1 -
-        THREE.MathUtils.smoothstep(
-          (now - facadeFadeStart) / (reducedMotion ? 1 : 950),
-          0,
-          1,
-        );
-      facadeMaterials.forEach((m) => {
-        m.opacity = opacity;
-        m.depthWrite = opacity > 0.95;
-      });
-      if (opacity === 0) {
-        facade.visible = false;
-        facadeFadeStart = null;
-        sun.shadow.needsUpdate = true;
-      }
-    }
-    if (bouquetOut && bouquet.visible) {
-      bouquet.position.y += (2.8 - bouquet.position.y) * 0.06;
-      bouquet.scale.multiplyScalar(0.96);
-      if (bouquet.scale.x < 0.02) bouquet.visible = false;
-    }
     if (
       animating ||
       Math.abs(doorOpen - doorPivot.rotation.y) > 0.005 ||
-      (bouquetOut && bouquet.visible) ||
+      bouquetMotion !== null ||
       Math.abs(albumOpen - bookHinge.rotation.z) > 0.005
     )
       sun.shadow.needsUpdate = true;
@@ -620,23 +620,18 @@ export function createScene(
     },
     async enterRoom() {
       doorOpen = -Math.PI * 0.58;
-      // Let the door open, then move directly to the room's resting view.
-      // There is no table close-up or reverse camera leg.
       animating = true;
       await new Promise((resolve) =>
-        setTimeout(resolve, reducedMotion ? 0 : 650),
+        setTimeout(resolve, reducedMotion ? 0 : 800),
       );
-      facadeFadeStart = performance.now();
-      current = "room";
-      await move(roomPose(), 2.4);
+      await walkIntoRoom();
     },
     async openBook() {
-      bouquetOut = 1;
-      albumOpen = Math.PI * 0.85;
       current = "book";
-      // Keep exactly the same camera while lifting the bouquet and opening the cover.
+      await parkBouquet();
+      albumOpen = Math.PI * 0.85;
       await new Promise((resolve) =>
-        setTimeout(resolve, reducedMotion ? 0 : 850),
+        setTimeout(resolve, reducedMotion ? 0 : 650),
       );
     },
     returnToRoom() {

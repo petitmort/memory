@@ -128,10 +128,20 @@ test("without WebGL: the complete album remains available", async ({
   await context.close();
 });
 
-test("camera: entry never reverses and reading preserves the room viewpoint", async ({
+test("physical scene: walk through doorway, park flowers, preserve view and animate sea", async ({
   page,
 }) => {
-  type Sample = { p: number[]; t: number[] };
+  type Sample = {
+    p: number[];
+    t: number[];
+    flower: number[];
+    scale: number[];
+    visible: boolean;
+    wall: boolean;
+    door: number;
+    waveTime: number;
+    seaVertices: number;
+  };
   type Probe = Window & { __cameraSamples: Sample[] };
   // Instrument the real rendered camera only in this test, without shipping a debug API.
   await page.route(/\/src\/scene\.ts(?:\?.*)?$/, async (route) => {
@@ -144,7 +154,7 @@ test("camera: entry never reverses and reading preserves the room viewpoint", as
         "renderer.render(scene, camera);",
         `
       window.__cameraSamples ??= [];
-      window.__cameraSamples.push({p: camera.position.toArray(), t: target.toArray()});
+      window.__cameraSamples.push({p: camera.position.toArray(), t: target.toArray(), flower: bouquet.position.toArray(), scale: bouquet.scale.toArray(), visible: bouquet.visible, wall: facade.visible, door: doorPivot.rotation.y, waveTime: seaMat.uniforms.time.value, seaVertices: ocean.geometry.attributes.position.count});
       renderer.render(scene, camera);
     `,
       ),
@@ -164,6 +174,34 @@ test("camera: entry never reverses and reading preserves the room viewpoint", as
   );
   expect(entry.length).toBeGreaterThan(3);
   const final = entry.at(-1)!;
+  expect(entry[0].p[2]).toBeGreaterThan(3.8);
+  expect(final.p[2]).toBeLessThan(3);
+  for (const sample of entry) {
+    expect(sample.p[1]).toBeCloseTo(1.65, 6);
+    expect(sample.wall).toBe(true);
+    if (Math.abs(sample.p[2] - 3.5) < 0.3) {
+      expect(sample.p[0]).toBeGreaterThan(-0.2);
+      expect(sample.p[0]).toBeLessThan(1.4);
+      expect(sample.door).toBeLessThan(-1.25);
+    }
+  }
+  const crossing = entry.findIndex(
+    (sample, i) => i > 0 && sample.p[2] < 3.5 && entry[i - 1].p[2] >= 3.5,
+  );
+  expect(crossing).toBeGreaterThan(0);
+  const before = entry[crossing - 1].p,
+    after = entry[crossing].p;
+  const fraction = (3.5 - before[2]) / (after[2] - before[2]);
+  expect(before[0] + (after[0] - before[0]) * fraction).toBeCloseTo(0.6, 1);
+  expect(final.seaVertices).toBeGreaterThan(10000);
+  const seaA = await page.screenshot({
+    clip: { x: 700, y: 330, width: 250, height: 80 },
+  });
+  await page.waitForTimeout(1000);
+  const seaB = await page.screenshot({
+    clip: { x: 700, y: 330, width: 250, height: 80 },
+  });
+  expect(seaB.equals(seaA)).toBe(false);
   const distance = (p: number[]) =>
     Math.hypot(...p.map((x, i) => x - final.p[i]));
   let previous = distance(entry[0].p);
@@ -187,5 +225,14 @@ test("camera: entry never reverses and reading preserves the room viewpoint", as
   for (const sample of reading) {
     expect(sample.p).toEqual(final.p);
     expect(sample.t).toEqual(final.t);
+    expect(sample.scale).toEqual(final.scale);
+    expect(sample.visible).toBe(true);
+    expect(sample.flower[1]).toBeGreaterThanOrEqual(1.69);
+    expect(sample.flower[1]).toBeLessThanOrEqual(1.91);
   }
+  const parked = reading.at(-1)!;
+  expect(parked.flower[0]).toBeGreaterThan(final.flower[0] + 0.5);
+  expect(parked.flower[0]).toBeLessThan(1.7);
+  expect(parked.flower[2]).toBeLessThan(1.0);
+  expect(parked.waveTime).toBeGreaterThan(final.waveTime);
 });

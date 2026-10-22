@@ -19,7 +19,7 @@ document.querySelector("#app")!.innerHTML = `
 <main>
 <section class="intro" id="intro"><div class="eyebrow"><span></span> A LITTLE PLACE FOR OUR MEMORIES</div><h1>把时光，<br>留在<span>潮汐之间。</span></h1><p class="intro-copy">有些瞬间，值得慢慢想起。<br>推开这扇门，让海风替你翻开回忆。</p><button id="enter" class="primary-button"><span id="enter-label">让风吹散迷雾</span><span class="button-arrow">${svg("arrow")}</span></button><p class="enter-note" id="enter-note">戴上耳机，给自己一小段安静的时间</p></section>
 <div class="door-caption" id="door-caption"><span class="tiny-star">✦</span><span>回忆一直都在<br><small>只等你轻轻推开</small></span></div>
-<section class="room-ui hidden" id="room-ui"><div class="eyebrow">SOMEWHERE, BY THE SEA</div><h2>海风如旧，<br>故事等你。</h2><p>取下花束，翻开属于我们的时光。</p><button class="primary-button" id="open-book">取下花束 · 打开纪念册 <span class="button-arrow">${svg("arrow")}</span></button></section>
+<section class="room-ui hidden" id="room-ui"><div class="eyebrow">SOMEWHERE, BY THE SEA</div><h2>海风如旧，<br>故事等你。</h2><p>把花束放到一旁，翻开属于我们的时光。</p><button class="primary-button" id="open-book">把花放到一旁 · 打开纪念册 <span class="button-arrow">${svg("arrow")}</span></button></section>
 <div class="scene-hint hidden" id="scene-hint"><span class="pulse-dot"></span> 点击桌上的花束，或轻触按钮</div>
 <div class="loading" id="loading"><span></span> 正在把海风装进房间</div>
 <div class="fog" id="fog"></div>
