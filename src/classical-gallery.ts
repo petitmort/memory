@@ -1,25 +1,16 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { createAntiqueBronze, createAgedTimber } from "./antique-materials";
-import { createClassicalInstrument } from "./classical-instrument";
 import { createClassicalVessel } from "./classical-vessel";
-import { createAthenaSculpture } from "./classical-sculpture";
-import { dimensions as D } from "./dimensions";
+import { consoleLayout, consolePoint } from "./interior-layout";
 
 export function createClassicalCollection() {
   const group = new THREE.Group(); group.name = "classical-collector-corner";
-  function place(object: THREE.Object3D, x: number, z: number, surface: number, rotation: number) {
-    object.position.set(x, 0, z); object.rotation.y = rotation; group.add(object);
-    object.updateMatrixWorld(true);
-    object.position.y += surface - new THREE.Box3().setFromObject(object, true).min.y;
-    object.updateMatrixWorld(true);
-  }
-  place(createClassicalInstrument(), -1.18, -1.13, .002, .65);
-  place(createClassicalVessel(), -1.465, -1.80, D.console.height + .0003, .38);
-  place(createAthenaSculpture(), -2.0, -1.17, .002, .75);
-  // A soft, warm bounce gives the bronze and carved stone depth in the shaded corner.
-  const accent = new THREE.PointLight("#ffe7bc", 4, 5.5, 2);
-  accent.position.set(-.8, 2.25, .65); group.add(accent);
+  const vessel = createClassicalVessel();
+  vessel.scale.setScalar(.78);
+  vessel.position.copy(consolePoint(.23, 0));
+  vessel.rotation.y = .92;
+  group.add(vessel);
   return group;
 }
 
@@ -27,7 +18,7 @@ export function createClassicalCollection() {
 export function createClassicalPainting() {
   const frame = new THREE.Group();
   frame.name = "vintage-framed-seascape"; // Existing scene identifier retained for the gallery wall.
-  frame.position.set(-2.294, 1.57, -1.52); frame.rotation.y = Math.PI / 2;
+  frame.position.set(-2.294, 1.48, consoleLayout.z); frame.scale.setScalar(.9); frame.rotation.y = Math.PI / 2;
   const wood = createAgedTimber(), gilt = createAntiqueBronze();
   const dark = new THREE.MeshStandardMaterial({color:"#4a3c2c",roughness:.9});
   const add = (geometry: THREE.BufferGeometry, material: THREE.Material) => {

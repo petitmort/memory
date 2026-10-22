@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { createAntiqueBronze, createAgedTimber } from "./antique-materials";
-import { dimensions as D } from "./dimensions";
 
 /** Collector's objects are authored in metres and seated on their actual support. */
 export function createArtifacts() {
@@ -41,7 +40,7 @@ export function createArtifacts() {
 
   const horn = new THREE.Group();
   horn.name = "mythic-drinking-horn";
-  horn.position.set(-.405, 0, -.665);
+  horn.position.set(-1.32, 0, 2.48);
   horn.rotation.set(0, -.17, .09);
   group.add(horn);
   const hornCanvas = document.createElement("canvas");
@@ -102,11 +101,11 @@ export function createArtifacts() {
   const lip = add(new THREE.RingGeometry(.041, .0455, 48), bronze, horn);
   lip.position.copy(centerline.getPointAt(1));
   lip.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), centerline.getTangentAt(1));
-  seat(horn, D.desk.height + .0003);
+  seat(horn, 1.1828);
 
   const hammer = new THREE.Group();
   hammer.name = "dwarven-forged-hammer";
-  hammer.position.set(-.39, 0, -1.15); hammer.rotation.y = -.12;
+  hammer.position.set(-.92, 0, 2.48); hammer.rotation.y = -.12;
   group.add(hammer);
   const handle = add(new THREE.LatheGeometry([
     new THREE.Vector2(.013, -.025), new THREE.Vector2(.015, 0),
@@ -124,10 +123,10 @@ export function createArtifacts() {
     wrap.rotation.y = Math.PI / 2; wrap.position.set(.035 + i * .007, .04, 0);
   }
   tube([[.12, .037, 0], [.15, .026, .02], [.16, .015, .045], [.13, .01, .061], [.11, .018, .044]], .002, leather, hammer);
-  seat(hammer, D.desk.height + .0003);
+  seat(hammer, 1.1828);
 
   const trident = new THREE.Group(); trident.name = "poseidon-trident";
-  trident.position.set(-1.945, 0, -2.12); trident.rotation.z = .075; group.add(trident);
+  trident.position.set(1.92, 0, 2.19); trident.rotation.z = -.075; group.add(trident);
   const shaft = add(new THREE.LatheGeometry([
     new THREE.Vector2(.014, 0), new THREE.Vector2(.016, .035), new THREE.Vector2(.011, .07),
     new THREE.Vector2(.010, 1.38), new THREE.Vector2(.016, 1.44), new THREE.Vector2(.019, 1.49),
@@ -148,5 +147,10 @@ export function createArtifacts() {
     ring.rotation.x = Math.PI / 2; ring.position.y = .35 + i * .022;
   }
   seat(trident, .001);
+  const shelf = add(chamferBox(.84,.025,.22,.003),wood,group);
+  shelf.name="entry-collection-shelf-top";shelf.position.set(-1.12,1.17,2.48);
+  for(const x of [-1.43,-.81]){
+    const bracket=add(new THREE.BoxGeometry(.018,.10,.15),bronze,group);bracket.position.set(x,1.112,2.51);
+  }
   return group;
 }

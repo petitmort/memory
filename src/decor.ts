@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { createClassicalPainting } from "./classical-gallery";
+import { consolePoint } from "./interior-layout";
 
 /** Curated, full-size furnishings; every length is expressed in metres. */
 export function createDecor(): THREE.Group {
@@ -170,24 +171,6 @@ export function createDecor(): THREE.Group {
       new THREE.Matrix4().makeTranslation((i - 14.5) * 0.15, 0.105, -2.603),
     );
   decor.add(tiles);
-  // A single traditional blue-and-white plate balances the framed painting.
-  const plate = new THREE.Group();
-  plate.name = "antique-ceramic-wall-plate";
-  plate.position.set(-2.208, 1.77, 0.05);
-  plate.rotation.y = Math.PI / 2;
-  decor.add(plate);
-  const disk = new THREE.Mesh(
-    new THREE.CircleGeometry(0.125, 48),
-    new THREE.MeshStandardMaterial({ map: tilePattern, roughness: 0.52 }),
-  );
-  plate.add(disk);
-  const plateRim = new THREE.Mesh(
-    new THREE.TorusGeometry(0.124, 0.006, 8, 48),
-    material("#ddd7be", 0.55),
-  );
-  plateRim.position.z = 0.003;
-  plate.add(plateRim);
-
   const weave = texture(512, 512, (c) => {
     c.fillStyle = "#b3986c";
     c.fillRect(0, 0, 512, 512);
@@ -312,166 +295,12 @@ export function createDecor(): THREE.Group {
     tube(points, 0.0012, material("#628a95"), basket);
   }
 
-  const serving = new THREE.Group();
-  serving.name = "vintage-console-serving-tray";
-  serving.position.set(-1.735, 0.784, -1.8);
-  decor.add(serving);
-  const tray = new THREE.Mesh(
-    new THREE.CylinderGeometry(1, 1, 0.006, 48),
-    material("#a98a58", 0.48, 0.35),
-  );
-  tray.scale.set(0.118, 1, 0.086);
-  tray.receiveShadow = true;
-  serving.add(tray);
-  const trayEdge = new THREE.Mesh(
-    new THREE.TorusGeometry(1, 0.028, 6, 48),
-    brass,
-  );
-  trayEdge.scale.set(0.115, 0.083, 0.11);
-  trayEdge.rotation.x = -Math.PI / 2;
-  trayEdge.position.y = 0.006;
-  serving.add(trayEdge);
-  const glass = new THREE.MeshStandardMaterial({
-    color: "#e4efe9",
-    roughness: 0.12,
-    metalness: 0.06,
-    depthWrite: false,
-    transparent: true,
-    opacity: 0.22,
-  });
-  const carafe = new THREE.Group();
-  carafe.name = "glass-water-carafe";
-  carafe.position.set(-0.035, 0.006, -0.026);
-  serving.add(carafe);
-  const glassProfile = [
-    new THREE.Vector2(0.034, 0),
-    new THREE.Vector2(0.041, 0.008),
-    new THREE.Vector2(0.043, 0.12),
-    new THREE.Vector2(0.041, 0.15),
-    new THREE.Vector2(0.022, 0.18),
-    new THREE.Vector2(0.019, 0.225),
-    new THREE.Vector2(0.023, 0.235),
-    new THREE.Vector2(0.02, 0.236),
-    new THREE.Vector2(0.016, 0.225),
-    new THREE.Vector2(0.019, 0.18),
-    new THREE.Vector2(0.038, 0.15),
-    new THREE.Vector2(0.04, 0.12),
-    new THREE.Vector2(0.038, 0.009),
-    new THREE.Vector2(0, 0.009),
-  ];
-  carafe.add(new THREE.Mesh(new THREE.LatheGeometry(glassProfile, 40), glass));
-  const water = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.039, 0.035, 0.117, 32),
-    new THREE.MeshStandardMaterial({
-      color: "#b2cecb",
-      roughness: 0.08,
-      depthWrite: false,
-      transparent: true,
-      opacity: 0.16,
-    }),
-  );
-  water.position.y = 0.069;
-  carafe.add(water);
-  const rimGlass = new THREE.MeshStandardMaterial({
-    color: "#e8f1eb",
-    roughness: 0.18,
-    metalness: 0.15,
-    transparent: true,
-    opacity: 0.48,
-    depthWrite: false,
-  });
-  const carafeRim = new THREE.Mesh(
-    new THREE.TorusGeometry(0.0215, 0.0012, 6, 32),
-    rimGlass,
-  );
-  carafeRim.rotation.x = Math.PI / 2;
-  carafeRim.position.y = 0.235;
-  carafe.add(carafeRim);
-  const waterSurface = new THREE.Mesh(
-    new THREE.CircleGeometry(0.0388, 32),
-    new THREE.MeshStandardMaterial({
-      color: "#bfd9d2",
-      roughness: 0.12,
-      metalness: 0.12,
-      transparent: true,
-      opacity: 0.25,
-      depthWrite: false,
-    }),
-  );
-  waterSurface.rotation.x = -Math.PI / 2;
-  waterSurface.position.y = 0.1276;
-  carafe.add(waterSurface);
-  const tumbler = new THREE.Group();
-  tumbler.name = "small-drinking-glass";
-  tumbler.position.set(0.064, 0.006, 0.028);
-  serving.add(tumbler);
-  const drinkingProfile = [
-    new THREE.Vector2(0.022, 0),
-    new THREE.Vector2(0.027, 0.072),
-    new THREE.Vector2(0.025, 0.074),
-    new THREE.Vector2(0.02, 0.007),
-    new THREE.Vector2(0, 0.007),
-  ];
-  tumbler.add(
-    new THREE.Mesh(new THREE.LatheGeometry(drinkingProfile, 32), glass),
-  );
-
-  const tumblerRim = new THREE.Mesh(
-    new THREE.TorusGeometry(0.026, 0.001, 6, 32),
-    rimGlass,
-  );
-  tumblerRim.rotation.x = Math.PI / 2;
-  tumblerRim.position.y = 0.073;
-  tumbler.add(tumblerRim);
-
-  // Fine olive sprigs in the existing cream vase, never in the doorway or main view.
-  const sprigs = new THREE.Group();
-  sprigs.name = "olive-sprigs-on-console";
-  sprigs.position.set(-1.92, 1.0, -1.8);
-  decor.add(sprigs);
-  const leafMatrices: THREE.Matrix4[] = [];
-  const stemMatrices: THREE.Matrix4[] = [];
-  for (let branch = 0; branch < 5; branch++) {
-    const angle = branch * 2.399,
-      height = 0.25 + random() * 0.17,
-      tip = new THREE.Vector3(
-        Math.cos(angle) * 0.15,
-        height,
-        Math.sin(angle) * 0.11,
-      );
-    helper.position.copy(tip).multiplyScalar(0.5);
-    helper.quaternion.setFromUnitVectors(
-      new THREE.Vector3(0, 1, 0),
-      tip.clone().normalize(),
-    );
-    helper.scale.set(0.002, tip.length(), 0.002);
-    helper.updateMatrix();
-    stemMatrices.push(helper.matrix.clone());
-    for (let j = 0; j < 6; j++)
-      for (const side of [-1, 1]) {
-        const f = 0.25 + j * 0.12;
-        helper.position.copy(tip).multiplyScalar(f);
-        helper.position.x += side * 0.017;
-        helper.rotation.set(0.2, angle + side * 0.6, side * 0.35);
-        helper.scale.set(0.008, 0.002, 0.032);
-        helper.updateMatrix();
-        leafMatrices.push(helper.matrix.clone());
-      }
-  }
-  const branches = new THREE.InstancedMesh(
-    new THREE.CylinderGeometry(1, 1, 1, 5),
-    material("#83795a"),
-    stemMatrices.length,
-  );
-  stemMatrices.forEach((m, i) => branches.setMatrixAt(i, m));
-  sprigs.add(branches);
-  const foliage = new THREE.InstancedMesh(
-    new THREE.SphereGeometry(1, 8, 5),
-    material("#7b8d73"),
-    leafMatrices.length,
-  );
-  leafMatrices.forEach((m, i) => foliage.setMatrixAt(i, m));
-  foliage.castShadow = true;
-  sprigs.add(foliage);
+  const tray = new THREE.Group();tray.name="vintage-console-serving-tray";
+  tray.position.copy(consolePoint(-.25,0));decor.add(tray);
+  const dish = new THREE.Mesh(new THREE.LatheGeometry([
+    new THREE.Vector2(0,0),new THREE.Vector2(.047,0),new THREE.Vector2(.071,.006),
+    new THREE.Vector2(.073,.011),new THREE.Vector2(.069,.013),new THREE.Vector2(.045,.006),new THREE.Vector2(0,.006),
+  ],48),material("#d6ccb5",.72));
+  dish.castShadow=dish.receiveShadow=true;tray.add(dish);
   return decor;
 }

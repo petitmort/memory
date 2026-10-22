@@ -217,6 +217,7 @@ test("physical scene: walk through doorway, park flowers, preserve view and anim
   });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
+  await expect(page.locator("#loading")).toBeHidden();
   await page.locator("#enter").click();
   await expect(page.locator("#enter")).toBeEnabled();
   const sizes = await page.evaluate(

@@ -1,160 +1,110 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
-import { createAntiqueBronze } from "./antique-materials";
 
-/** A 41 cm collector's amphora: chased figures are part of the vessel surface. */
+/** A quiet cast-bronze vessel: its silhouette and finish carry the detail. All units are metres. */
 export function createClassicalVessel(): THREE.Group {
   const vessel = new THREE.Group();
   vessel.name = "classical-relief-amphora";
-  const bronze = createAntiqueBronze();
-  bronze.roughness = .66;
-  bronze.bumpScale = .0008;
-  const worn = bronze.clone(); worn.color.set("#e0c99c"); worn.roughness = .57;
-  const recess = bronze.clone(); recess.color.set("#87917a"); recess.roughness = .8;
-  function add(geometry: THREE.BufferGeometry, material: THREE.Material = bronze) {
+  const finishCanvas = document.createElement("canvas");
+  const roughCanvas = document.createElement("canvas");
+  const grainCanvas = document.createElement("canvas");
+  for (const canvas of [finishCanvas, roughCanvas, grainCanvas]) canvas.width = canvas.height = 512;
+  const finish = finishCanvas.getContext("2d")!;
+  const rough = roughCanvas.getContext("2d")!;
+  const grain = grainCanvas.getContext("2d")!;
+  let seed = 34217;
+  const random = () => { seed = seed * 16807 % 2147483647; return seed / 2147483647; };
+  finish.fillStyle = "#b6a27b"; finish.fillRect(0, 0, 512, 512);
+  rough.fillStyle = "#eeeeee"; rough.fillRect(0, 0, 512, 512);
+  grain.fillStyle = "#808080"; grain.fillRect(0, 0, 512, 512);
+  // Oxidation is sparse and low contrast; it does not become a second decorative pattern.
+  for (let i = 0; i < 26; i++) {
+    const x = random() * 512, y = random() * 512;
+    finish.fillStyle = `rgba(91,113,95,${.018 + random() * .024})`;
+    finish.beginPath(); finish.ellipse(x, y, 9 + random() * 30, 7 + random() * 19, random() * Math.PI, 0, Math.PI * 2); finish.fill();
+    rough.fillStyle = "rgba(255,255,255,.14)";
+    rough.beginPath(); rough.ellipse(x, y, 10 + random() * 25, 8 + random() * 20, 0, 0, Math.PI * 2); rough.fill();
+  }
+  for (let i = 0; i < 16000; i++) {
+    const x = random() * 512, y = random() * 512;
+    finish.fillStyle = i % 2 ? "rgba(242,222,183,.055)" : "rgba(80,72,54,.04)";
+    finish.fillRect(x, y, .45 + random() * 1.1, .45 + random() * 1.1);
+    grain.fillStyle = i % 2 ? "rgba(255,255,255,.10)" : "rgba(0,0,0,.10)";
+    grain.fillRect(x, y, .55, .55);
+  }
+  const map = new THREE.CanvasTexture(finishCanvas); map.colorSpace = THREE.SRGBColorSpace;
+  const roughnessMap = new THREE.CanvasTexture(roughCanvas), bumpMap = new THREE.CanvasTexture(grainCanvas);
+  for (const texture of [map, roughnessMap, bumpMap]) {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping; texture.anisotropy = 4;
+  }
+  const bronze = new THREE.MeshStandardMaterial({
+    map, color: "#ffffff", roughnessMap, bumpMap, bumpScale: .00007,
+    metalness: .40, roughness: .58,
+  });
+  const polished = bronze.clone(); polished.roughness = .47; polished.metalness = .44;
+  const inside = new THREE.MeshStandardMaterial({ color: "#786c52", metalness: .30, roughness: .74 });
+  const add = (geometry: THREE.BufferGeometry, material: THREE.Material = bronze) => {
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.castShadow = mesh.receiveShadow = true;
-    vessel.add(mesh);
-    return mesh;
-  }
-  function tube(points: number[][], radius: number, material: THREE.Material = worn, segments = 42) {
-    return add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(p[0], p[1], p[2]))), segments, radius, 8, false), material);
-  }
+    mesh.castShadow = mesh.receiveShadow = true; vessel.add(mesh); return mesh;
+  };
   const profile = [
-    [0, 0], [.044, 0], [.050, .004], [.051, .011], [.044, .018], [.035, .024],
-    [.038, .034], [.050, .049], [.062, .069], [.074, .100], [.084, .143],
-    [.087, .181], [.082, .225], [.071, .264], [.059, .286], [.053, .299],
-    [.051, .313], [.054, .326], [.063, .333], [.066, .340], [.064, .348],
-    [.060, .353], [.057, .350], [.057, .343], [.052, .336], [.047, .327], [.046, .313],
+    [0, 0], [.043, 0], [.049, .003], [.050, .009], [.045, .015], [.034, .020],
+    [.031, .028], [.039, .044], [.055, .070], [.073, .115], [.085, .162],
+    [.087, .194], [.083, .230], [.074, .266], [.062, .292], [.051, .308],
+    [.049, .321], [.052, .335], [.062, .344], [.065, .349], [.065, .354],
+    [.061, .358], [.057, .356], [.056, .350],
   ];
-  // A softly rounded profile avoids stacks of independent cylindrical bands.
   const outline = new THREE.SplineCurve(profile.map(p => new THREE.Vector2(p[0], p[1])));
-  const bodyGeometry = new THREE.LatheGeometry(outline.getPoints(184), 160);
-  const position = bodyGeometry.attributes.position;
-  function ellipse(x: number, y: number, cx: number, cy: number, rx: number, ry: number, height: number, tilt = 0) {
-    const dx = x - cx, dy = y - cy, c = Math.cos(tilt), s = Math.sin(tilt);
-    const u = (dx * c + dy * s) / rx, v = (dy * c - dx * s) / ry;
-    return Math.pow(Math.max(0, 1 - u * u - v * v), .7) * height;
-  }
-  function stroke(x: number, y: number, points: number[][], radius: number, height: number) {
-    let distance = Infinity;
-    for (let i = 1; i < points.length; i++) {
-      const [ax, ay] = points[i - 1], [bx, by] = points[i];
-      const dx = bx - ax, dy = by - ay;
-      const t = THREE.MathUtils.clamp(((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy), 0, 1);
-      distance = Math.min(distance, Math.hypot(x - ax - dx * t, y - ay - dy * t));
-    }
-    return Math.exp(-Math.pow(distance / radius, 2) * 2) * height;
-  }
-  function figures(x: number, y: number) {
-    // A seated muse with a lyre and a standing companion, in shallow repousse.
-    let h = ellipse(x, y, -.006, .245, .010, .014, .0027, -.1);
-    h += ellipse(x, y, -.005, .227, .004, .011, .0014);
-    h += ellipse(x, y, -.003, .201, .014, .026, .0018, -.25);
-    h += ellipse(x, y, .009, .169, .025, .012, .002, .2);
-    h += ellipse(x, y, .023, .139, .013, .032, .0015, -.18);
-    h += stroke(x, y, [[-.014, .218], [-.026, .203], [-.019, .185], [.006, .194]], .0031, .0021);
-    h += stroke(x, y, [[.008, .218], [.023, .204], [.036, .222]], .0033, .0021);
-    for (let i = 0; i < 6; i++) {
-      const offset = (i - 2.5) * .0038;
-      h += stroke(x, y, [[-.008 + offset, .204], [-.012 + offset, .181], [.013 + offset, .163], [.019 + offset, .111]], .0008, .0012);
-    }
-    h += ellipse(x, y, -.044, .218, .0083, .0115, .0022, .15);
-    h += ellipse(x, y, -.041, .181, .0115, .026, .0015, -.12);
-    h += ellipse(x, y, -.037, .142, .014, .032, .0011);
-    h += stroke(x, y, [[-.048, .199], [-.056, .183], [-.041, .173]], .0025, .0016);
-    h += stroke(x, y, [[-.034, .197], [-.026, .186], [-.016, .191]], .0024, .0017);
-    for (let i = 0; i < 5; i++) {
-      const offset = (i - 2) * .0035;
-      h += stroke(x, y, [[-.043 + offset, .185], [-.037 + offset, .164], [-.044 + offset, .116]], .00065, .001);
-    }
-    // Tiny lyre, foliage and an irregular ground frieze join the figures.
-    h += stroke(x, y, [[.031, .196], [.027, .216], [.031, .234]], .0012, .0014);
-    h += stroke(x, y, [[.039, .196], [.043, .216], [.039, .234]], .0012, .0014);
-    h += stroke(x, y, [[.028, .229], [.041, .229]], .001, .0012);
-    for (let i = 0; i < 4; i++) h += stroke(x, y, [[.031 + i * .0024, .199], [.031 + i * .0024, .229]], .00045, .0007);
-    h += stroke(x, y, [[-.06, .102], [-.035, .109], [-.006, .099], [.018, .108], [.048, .103], [.061, .119]], .0012, .001);
-    return h;
-  }
-  for (let i = 0; i < position.count; i++) {
-    const x = position.getX(i), y = position.getY(i), z = position.getZ(i);
-    const radius = Math.hypot(x, z);
-    if (radius < .001 || y < .078 || y > .272) continue;
-    const angle = Math.atan2(x, z), front = Math.max(0, Math.cos(angle));
-    const relief = figures(x, y) * Math.pow(front, 7);
-    position.setXYZ(i, x * (1 + relief / radius), y, z * (1 + relief / radius));
-  }
-  bodyGeometry.computeVertexNormals();
-  add(bodyGeometry).name = "amphora-repousse-body";
-
-  function ring(radius: number, y: number, thickness: number, material: THREE.Material = worn) {
-    const mesh = add(new THREE.TorusGeometry(radius, thickness, 8, 112), material);
+  add(new THREE.LatheGeometry(outline.getPoints(96), 96)).name = "amphora-smooth-cast-body";
+  // A real dark interior continues below the lip rather than a flat plug at the mouth.
+  const innerProfile = [
+    [.056, .350], [.051, .340], [.045, .324], [.046, .310], [.057, .289],
+    [.070, .264], [.079, .228], [.083, .194], [.081, .163], [.069, .117],
+    [.051, .073], [.036, .049], [.026, .038], [0, .038],
+  ];
+  const innerOutline = new THREE.SplineCurve(innerProfile.map(p => new THREE.Vector2(p[0], p[1])));
+  add(new THREE.LatheGeometry(innerOutline.getPoints(64), 80), inside).name = "amphora-open-interior";
+  function line(radius: number, y: number, thickness: number) {
+    const mesh = add(new THREE.TorusGeometry(radius, thickness, 10, 96), polished);
     mesh.rotation.x = Math.PI / 2; mesh.position.y = y;
   }
-  ring(.050, .007, .0012); ring(.042, .019, .0009, recess);
-  ring(.053, .299, .0011); ring(.062, .332, .0018); ring(.063, .347, .0012);
-  ring(.071, .263, .0011, recess); ring(.073, .258, .0009);
-  // Egg-and-dart shoulder moulding and a chased bead edge.
-  for (let i = 0; i < 42; i++) {
-    const a = i * Math.PI * 2 / 42;
-    const egg = add(new THREE.SphereGeometry(1, 10, 8), i % 7 === 0 ? recess : worn);
-    egg.position.set(Math.sin(a) * .068, .277 + Math.sin(i * 2.8) * .0005, Math.cos(a) * .068);
-    egg.scale.set(.0034, .0087, .0017); egg.rotation.y = a;
+  line(.0475, .010, .0009);
+  line(.0512, .308, .00065);
+  line(.0626, .352, .0016);
+  function handle(points: number[][], radius: number, segments: number) {
+    const path = new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(p[0], p[1], p[2])));
+    const geometry = new THREE.TubeGeometry(path, segments, radius, 16, false);
+    geometry.scale(1, 1, .67); // Rounded ribbon casting, not an octagonal pipe.
+    return add(geometry, polished);
   }
-  for (let i = 0; i < 40; i++) {
-    const a = i * Math.PI * 2 / 40;
-    const bead = add(new THREE.SphereGeometry(.0014, 8, 6), worn);
-    bead.position.set(Math.sin(a) * .0608, .352, Math.cos(a) * .0608);
-  }
-
   for (const sign of [-1, 1]) {
-    const handle = [
-      [.071, .228, 0], [.103, .243, 0], [.121, .281, -.002], [.128, .334, -.002],
-      [.123, .383, 0], [.105, .406, .003], [.086, .392, .004], [.086, .368, .003], [.104, .361, .002],
-    ].map(p => [p[0] * sign, p[1], p[2]]);
-    tube(handle, .0048);
-    tube([[.081 * sign, .245, .002], [.107 * sign, .276, .004], [.112 * sign, .318, .005], [.103 * sign, .349, .006]], .0012, recess);
-    // A continuous little cameo, not separate spherical eyes and mouth parts.
-    const medal = new THREE.SphereGeometry(1, 48, 32), p = medal.attributes.position;
-    for (let i = 0; i < p.count; i++) {
-      const x = p.getX(i), y = p.getY(i), nz = p.getZ(i);
-      const gaussian = (cx: number, cy: number, sx: number, sy: number) => Math.exp(-((x - cx) ** 2 / sx ** 2 + (y - cy) ** 2 / sy ** 2) * 2);
-      let relief = .0013 * gaussian(0, .05, .16, .62) + .0007 * gaussian(0, -.3, .24, .18);
-      relief -= .0005 * (gaussian(-.34, .3, .3, .18) + gaussian(.34, .3, .3, .18));
-      relief += .0005 * gaussian(0, -.58, .35, .18);
-      p.setXYZ(i, x * .023, y * .025, nz * .003 + (nz > 0 ? relief : 0));
-    }
-    medal.computeVertexNormals();
-    const cameo = add(medal, worn); cameo.position.set(sign * .103, .383, .005);
-    const border = add(new THREE.TorusGeometry(.026, .0016, 8, 64), bronze); border.position.set(sign * .103, .383, .005);
-    const inner = add(new THREE.TorusGeometry(.0238, .0006, 6, 64), recess); inner.position.copy(border.position); inner.position.z += .001;
-    // Acanthus scrolls curl back onto the shoulder rather than floating beside it.
-    tube([[sign * .076, .251, .011], [sign * .089, .268, .013], [sign * .087, .287, .014], [sign * .077, .293, .014], [sign * .073, .283, .014], [sign * .080, .279, .014]], .0019);
+    handle([
+      [.071, .249, 0], [.107, .260, 0], [.124, .293, 0], [.128, .339, 0],
+      [.120, .383, 0], [.102, .402, 0], [.087, .393, 0], [.085, .376, 0], [.096, .368, 0],
+    ].map(p => [p[0] * sign, p[1], p[2]]), .0044, 64);
+    handle([[.085 * sign, .376, 0], [.076 * sign, .363, 0], [.062 * sign, .353, 0]], .0031, 20);
+    const joint = add(new THREE.SphereGeometry(1, 16, 12), polished);
+    joint.position.set(sign * .078, .249, 0); joint.scale.set(.0027, .010, .007);
   }
 
-  // Merge by finish: the intricate metalwork renders in three draw calls.
-  const buckets = new Map<THREE.Material, THREE.Mesh[]>();
-  for (const child of [...vessel.children]) {
-    if (!(child instanceof THREE.Mesh) || Array.isArray(child.material)) continue;
-    const list = buckets.get(child.material) ?? []; list.push(child); buckets.set(child.material, list);
+  // Three finishes, three draw calls; no tiny figure geometry competes with the room.
+  const batches = new Map<THREE.Material, THREE.Mesh[]>();
+  for (const child of [...vessel.children]) if (child instanceof THREE.Mesh && !Array.isArray(child.material)) {
+    const list = batches.get(child.material) ?? []; list.push(child); batches.set(child.material, list);
   }
-  for (const [material, meshes] of buckets) {
-    const parts = meshes.map(mesh => {
-      mesh.updateMatrix();
-      return mesh.geometry.clone().applyMatrix4(mesh.matrix);
-    });
-    const combined = mergeGeometries(parts);
-    if (combined) {
-      const mesh = add(combined, material); mesh.name = material === bronze ? "amphora-sculpted-body" : material === worn ? "amphora-raised-ornament" : "amphora-patinated-recesses";
-      for (const old of meshes) { vessel.remove(old); old.geometry.dispose(); }
+  for (const [material, meshes] of batches) {
+    const pieces = meshes.map(mesh => { mesh.updateMatrix(); return mesh.geometry.clone().applyMatrix4(mesh.matrix); });
+    const geometry = mergeGeometries(pieces);
+    if (geometry) {
+      const combined = add(geometry, material);
+      combined.name = material === inside ? "amphora-shadowed-interior" : material === polished ? "amphora-cast-handles-and-lip" : "amphora-quiet-bronze-body";
+      for (const mesh of meshes) { vessel.remove(mesh); mesh.geometry.dispose(); }
     }
-    for (const part of parts) part.dispose();
+    for (const piece of pieces) piece.dispose();
   }
   vessel.updateMatrixWorld(true);
   const bounds = new THREE.Box3().setFromObject(vessel, true);
-  for (const child of vessel.children) {
-    if (child instanceof THREE.Mesh) child.geometry.translate(0, -bounds.min.y, 0);
-  }
+  for (const child of vessel.children) if (child instanceof THREE.Mesh) child.geometry.translate(0, -bounds.min.y, 0);
   vessel.userData.displayHeight = bounds.max.y - bounds.min.y;
   return vessel;
 }

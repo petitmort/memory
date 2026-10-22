@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { createBouquet } from "./bouquet";
 import { createOcean } from "./ocean";
 import { dimensions as D } from "./dimensions";
@@ -10,8 +11,9 @@ import {
   createExterior,
 } from "./architecture";
 import { createCurtains } from "./curtains";
-import { createMythology, mythTextile } from "./mythology";
+import { createMythology } from "./mythology";
 import { createDecor } from "./decor";
+import { consoleLayout } from "./interior-layout";
 
 export function createScene(
   container: HTMLElement,
@@ -282,7 +284,7 @@ export function createScene(
     D.rug.width,
     D.rug.thickness,
     D.rug.depth,
-    mythTextile(),
+    palette.rug,
     0.1,
     D.rug.thickness / 2,
     -0.65,
@@ -303,6 +305,7 @@ export function createScene(
     table,
   );
   tabletop.name = "tabletop";
+  tabletop.material = palette.tableWood;
   const outline=new THREE.Shape();
   outline.moveTo(-.65,-.375);outline.bezierCurveTo(-.71,-.37,-.7,-.25,-.7,-.22);
   outline.lineTo(-.695,.27);outline.quadraticCurveTo(-.69,.375,-.59,.375);
@@ -499,7 +502,11 @@ export function createScene(
   for(const z of [-.115,.115]){
     const rail=cylinder(.008,.009,.23,wood,0,.14,z,stool,12);rail.rotation.z=Math.PI/2;
   }
-  cylinder(0.174, 0.176, 0.025, mat("#86a9b1"), 0, 0.4375, 0, stool, 40);
+  const cushion = new THREE.Mesh(new THREE.LatheGeometry([
+    new THREE.Vector2(0,0),new THREE.Vector2(.16,0),new THREE.Vector2(.174,.004),
+    new THREE.Vector2(.175,.009),new THREE.Vector2(.17,.019),new THREE.Vector2(.14,.024),new THREE.Vector2(0,.025),
+  ],64),mat("#9db1ad",.98));
+  cushion.position.y=.425; cushion.castShadow=cushion.receiveShadow=true;stool.add(cushion);
   const piping = new THREE.Mesh(
     new THREE.TorusGeometry(0.169, 0.0016, 6, 48),
     mat("#cbdad0"),
@@ -509,7 +516,8 @@ export function createScene(
   stool.add(piping);
   const consoleTable = new THREE.Group();
   consoleTable.name = "console";
-  consoleTable.position.set(-1.72, 0, -1.8);
+  consoleTable.position.set(consoleLayout.x, 0, consoleLayout.z);
+  consoleTable.rotation.y = consoleLayout.rotation;
   room.add(consoleTable);
   box(
     D.console.width,
@@ -521,28 +529,25 @@ export function createScene(
     0,
     consoleTable,
   ).name = "console-top";
-  for (const x of [-0.39, 0.39])
-    for (const z of [-0.11, 0.11])
-      box(
-        0.03,
-        D.console.height - 0.025,
-        0.03,
-        darkWood,
-        x,
-        (D.console.height - 0.025) / 2,
-        z,
-        consoleTable,
-      );
-  cylinder(
-    0.045,
-    0.065,
-    0.23,
-    mat("#c8b89b"),
-    -0.2,
-    D.console.height + 0.115,
-    0,
-    consoleTable,
-  );
+  const consoleTop = consoleTable.getObjectByName("console-top") as THREE.Mesh;
+  consoleTop.geometry.dispose();consoleTop.geometry = new RoundedBoxGeometry(D.console.width,.025,D.console.depth,4,.004);
+  consoleTop.material=palette.tableWood;
+  const consoleLegGeometry = new THREE.LatheGeometry([
+    new THREE.Vector2(.015,0),new THREE.Vector2(.017,.025),new THREE.Vector2(.011,.07),
+    new THREE.Vector2(.012,.50),new THREE.Vector2(.018,.56),new THREE.Vector2(.017,.60),
+    new THREE.Vector2(.015,D.console.height-.025),
+  ],24);
+  for(const x of [-.39,.39])for(const z of [-.11,.11]) {
+    const leg=new THREE.Mesh(consoleLegGeometry,wood);leg.position.set(x,0,z);
+    leg.castShadow=leg.receiveShadow=true;consoleTable.add(leg);
+  }
+  for(const z of [-.12,.12])box(.80,.085,.022,wood,0,.705,z,consoleTable);
+  for(const x of [-.39,.39])box(.022,.085,.25,wood,x,.705,0,consoleTable);
+  const drawer=box(.68,.059,.012,palette.tableWood,0,.706,.139,consoleTable);
+  drawer.name="console-front-drawer";drawer.geometry.dispose();
+  (drawer as THREE.Mesh<THREE.BufferGeometry>).geometry=new RoundedBoxGeometry(.68,.059,.012,3,.003);
+  const drawerPull = new THREE.Mesh(new THREE.TorusGeometry(.010,.0018,8,24),brass);
+  drawerPull.position.set(0,.701,.153); consoleTable.add(drawerPull);
   // A 90 × 210 cm door leaf, 4.5 cm thick, with the handle 1 m above the floor.
   const facade = new THREE.Group();
   facade.name = "entry-wall";

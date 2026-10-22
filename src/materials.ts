@@ -76,28 +76,13 @@ export function createPalette() {
     ctx.strokeRect(1, 1, 510, 510);
   });
   stone.repeat.set(7.67, 16);
-  const timber = canvasTexture((ctx, r) => {
-    ctx.fillStyle = "#947252";
-    ctx.fillRect(0, 0, 512, 512);
-    for (let i = 0; i < 950; i++) {
-      const x = r() * 512;
-      ctx.strokeStyle =
-        r() > 0.5
-          ? `rgba(53,37,24,${r() * 0.11})`
-          : `rgba(242,221,175,${r() * 0.09})`;
-      ctx.lineWidth = 0.2 + r() * 1.6;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.bezierCurveTo(x + Math.sin(x) * 7, 180, x - 7, 320, x + 4, 512);
-      ctx.stroke();
-    }
-    ctx.strokeStyle = "rgba(60,37,21,.09)";
-    for (let i = 0; i < 12; i++) {
-      ctx.beginPath();
-      ctx.ellipse(340, 240, 2 + i * 2, 10 + i * 11, 0.07, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-  });
+  const timber = new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}materials/quiet-oak.webp`, () => { horizontalTimber.needsUpdate = true; });
+  timber.colorSpace = THREE.SRGBColorSpace;
+  timber.wrapS = timber.wrapT = THREE.RepeatWrapping;
+  timber.anisotropy = 8;
+  const horizontalTimber = timber.clone();
+  // Both textures share the asynchronously loaded image, including the cloned variant.
+  horizontalTimber.center.set(.5,.5);horizontalTimber.rotation = Math.PI/2;
   const painted = canvasTexture((ctx, r) => {
     ctx.fillStyle = "#276190";
     ctx.fillRect(0, 0, 512, 512);
@@ -153,10 +138,10 @@ export function createPalette() {
       roughness: 0.84,
     }),
     wood: new THREE.MeshStandardMaterial({
-      map: timber,
-      bumpMap: timber,
-      bumpScale: 0.001,
-      roughness: 0.66,
+      map: timber, bumpMap: timber, bumpScale: .00035, roughness: .76,
+    }),
+    tableWood: new THREE.MeshStandardMaterial({
+      map: horizontalTimber, bumpMap: horizontalTimber, bumpScale: .00035, roughness: .76,
     }),
     blue: new THREE.MeshStandardMaterial({
       map: painted,
