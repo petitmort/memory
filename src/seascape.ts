@@ -170,10 +170,15 @@ export function createSeascape() {
 
   const helios = new THREE.Group(); helios.name = "helios-radiant-sun";
   helios.position.copy(seaComposition.sun); group.add(helios);
-  // A single continuous bronze relief, with anatomy in its surface rather than separate eyeballs.
-  const solarGold = createAntiqueBronze(); solarGold.fog = false;
-  solarGold.emissive.set("#b38c47"); solarGold.emissiveIntensity = .12;
-  const darkGold = solarGold.clone(); darkGold.color.set("#77694d"); darkGold.emissiveIntensity = .035;
+  // A warm luminous face and corona retain the sculpted features in the sunlight.
+  const solarGold = new THREE.MeshStandardMaterial({
+    color: "#efc982", emissive: "#ffe1a0", emissiveIntensity: .95,
+    metalness: 0, roughness: .72, fog: false,
+  });
+  const darkGold = new THREE.MeshStandardMaterial({
+    color: "#b18c4e", emissive: "#edb96b", emissiveIntensity: .28,
+    metalness: 0, roughness: .8, fog: false,
+  });
   const faceGeometry = new THREE.SphereGeometry(1, 96, 64), fp = faceGeometry.attributes.position;
   const bell = (x: number, y: number, cx: number, cy: number, sx: number, sy: number) => Math.exp(-((x - cx) ** 2 / (sx * sx) + (y - cy) ** 2 / (sy * sy)) * 2);
   for (let i = 0; i < fp.count; i++) {
@@ -212,10 +217,22 @@ export function createSeascape() {
   }
   const glowCanvas = document.createElement("canvas"); glowCanvas.width = glowCanvas.height = 256;
   const gc = glowCanvas.getContext("2d")!, gradient = gc.createRadialGradient(128, 128, 26, 128, 128, 128);
-  gradient.addColorStop(0, "rgba(255,228,170,.27)"); gradient.addColorStop(.45, "rgba(255,221,155,.07)"); gradient.addColorStop(1, "rgba(255,213,131,0)");
+  gradient.addColorStop(0, "rgba(255,248,217,.95)");
+  gradient.addColorStop(.22, "rgba(255,235,181,.8)");
+  gradient.addColorStop(.48, "rgba(255,215,135,.32)");
+  gradient.addColorStop(.76, "rgba(255,201,105,.075)");
+  gradient.addColorStop(1, "rgba(255,201,105,0)");
   gc.fillStyle = gradient; gc.fillRect(0, 0, 256, 256);
-  const aura = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(glowCanvas), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
-  aura.scale.set(16, 16, 1); helios.add(aura);
+  const glowMap = new THREE.CanvasTexture(glowCanvas);
+  const auraMaterial = new THREE.SpriteMaterial({
+    map: glowMap, transparent: true, depthWrite: false,
+    blending: THREE.AdditiveBlending, fog: false, toneMapped: false, opacity: .62,
+  });
+  const aura = new THREE.Sprite(auraMaterial);
+  aura.name = "solar-outer-glow"; aura.scale.set(28, 28, 1); aura.position.z = -.8; helios.add(aura);
+  const corona = new THREE.Sprite(auraMaterial.clone());
+  corona.name = "solar-inner-corona"; corona.material.opacity = .45;
+  corona.scale.set(15, 15, 1); corona.position.z = -.6; helios.add(corona);
   helios.lookAt(new THREE.Vector3(1.1, 1.65, .75));
 
   // Bake the static parts by material; intricate relief and rigging need only a few draws.
