@@ -41,6 +41,10 @@ export function createOcean() {
       }
       float shoreBreak(vec2 p, vec2 centre, float radius, float height) {
         vec2 q=(p-centre)/radius;
+        // Edge distortion is bounded by .22. Outside this conservative ring,
+        // the original shallows mask is zero without evaluating its three sines.
+        float radius2=dot(q,q);
+        if(radius2>2.5921 || radius2<.1156) return 0.;
         float edge=length(q)+.13*sin(q.x*4.+q.y*3.)+.09*sin(q.y*7.-q.x*2.);
         float shallows=smoothstep(.57,.82,edge)*(1.-smoothstep(.95,1.38,edge));
         float broken=smoothstep(.24,.84,.5+.5*sin(q.x*13.+q.y*8.-time*1.1));
@@ -98,12 +102,15 @@ export function createOcean() {
       }
     `,
   });
-  const ocean = new THREE.Mesh(
-    new THREE.PlaneGeometry(260, 240, 320, 288),
-    material,
-  );
+  const geometry = new THREE.PlaneGeometry(260, 240, 208, 192);
+  // The plane's local Z becomes world Y after rotation. Include all six waves'
+  // maximum combined displacement (less than 1.1 m) in its CPU culling bounds.
+  geometry.computeBoundingBox();
+  geometry.boundingBox!.min.z = -1.2;
+  geometry.boundingBox!.max.z = 1.2;
+  geometry.boundingSphere = geometry.boundingBox!.getBoundingSphere(new THREE.Sphere());
+  const ocean = new THREE.Mesh(geometry, material);
   ocean.rotation.x = -Math.PI / 2;
   ocean.position.set(0, -8, -122.9);
-  ocean.frustumCulled = false; // Shader displacement is not represented by the flat CPU bounds.
   return ocean;
 }

@@ -139,12 +139,12 @@ test('the same untainted DOM page rasters become both physical paper textures', 
     contentType: 'text/html', body: `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/src/style.css"></head><body>
       <section class="reader" id="reader"><div class="book-wrap"><div class="book">
         <article class="page page-left"><span class="page-kicker">01 · 海边</span><div class="print"><canvas width="160" height="100"></canvas></div><p class="photo-caption">风经过的地方</p><span class="page-number">01</span></article>
-        <article class="page page-right"><span class="page-kicker">THE THINGS WE KEEP</span><div class="story"><h2>把时光留在这里</h2><p class="poem">The sea remembers.\nWe keep the light.</p><img width="32" height="32" src="/__page_photo.svg"><p class="story-note">不同的文字和照片，共用实际页面的布局。</p></div><span class="page-number">02</span></article>
+        <article class="page page-right"><span class="page-kicker">THE THINGS WE KEEP</span><div class="story"><h2>把时光留在这里</h2><p class="poem">The sea remembers.\nWe keep the light.</p><img width="32" height="32" style="object-fit:cover" src="/__page_photo.svg"><p class="story-note">不同的文字和照片，共用实际页面的布局。</p></div><span class="page-number">02</span></article>
       </div></div></section></body></html>`,
   }));
   await page.route('**/__page_photo.svg', route => route.fulfill({
     contentType: 'image/svg+xml',
-    body: '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path fill="#d52c81" d="M0 0h32v32H0z"/></svg>',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="4032" height="3024"><path fill="#d52c81" d="M0 0h4032v3024H0z"/></svg>',
   }));
   await page.goto('/__page_raster');
   const result = await page.evaluate(async () => {
@@ -160,7 +160,36 @@ test('the same untainted DOM page rasters become both physical paper textures', 
     for (const element of reader.querySelectorAll<HTMLElement>('.page')) {
       element.style.opacity = '0'; element.style.transform = 'scale(.2)';
     }
-    const pages = await captureBookPages(reader);
+    const photo = reader.querySelector<HTMLImageElement>('img')!;
+    await photo.decode();
+    const photoStyle = getComputedStyle(photo);
+    const photoAllocation = {
+      source: { width: photo.naturalWidth, height: photo.naturalHeight },
+      frame: { width: parseFloat(photoStyle.width), height: parseFloat(photoStyle.height) },
+      resolution: Math.min(devicePixelRatio || 1, 1.5),
+      temporary: [] as { width: number; height: number }[],
+      encoded: [] as { width: number; height: number }[],
+    };
+    // Observe actual browser Canvas allocations during capture. Pixel equality
+    // alone would also pass if a camera-size photograph were needlessly copied.
+    const originalDraw = CanvasRenderingContext2D.prototype.drawImage;
+    const originalEncode = HTMLCanvasElement.prototype.toDataURL;
+    CanvasRenderingContext2D.prototype.drawImage = function(...args) {
+      if (args[0] === photo)
+        photoAllocation.temporary.push({ width: this.canvas.width, height: this.canvas.height });
+      return originalDraw.apply(this,args as Parameters<typeof originalDraw>);
+    };
+    HTMLCanvasElement.prototype.toDataURL = function(...args) {
+      photoAllocation.encoded.push({ width: this.width, height: this.height });
+      return originalEncode.apply(this,args);
+    };
+    let pages: [HTMLCanvasElement, HTMLCanvasElement];
+    try {
+      pages = await captureBookPages(reader);
+    } finally {
+      CanvasRenderingContext2D.prototype.drawImage = originalDraw;
+      HTMLCanvasElement.prototype.toDataURL = originalEncode;
+    }
     const album = createAlbum();
     album.setPageCanvases(pages);
     const faces = ['album-left-page', 'album-right-page'].map(name => album.group.getObjectByName(name).material.map.image);
@@ -175,7 +204,20 @@ test('the same untainted DOM page rasters become both physical paper textures', 
       }
       return { width: canvas.width, height: canvas.height, blue, magenta, ink, opaque, url: canvas.toDataURL() };
     };
-    return { pages: pages.map(describe), identical: pages.map((canvas, i) => canvas.toDataURL() === faces[i].toDataURL()) };
+    return { pages: pages.map(describe), identical: pages.map((canvas, i) => canvas.toDataURL() === faces[i].toDataURL()), photoAllocation };
+  });
+  expect(result.photoAllocation.source).toEqual({ width: 4032, height: 3024 });
+  expect(result.photoAllocation.temporary).toHaveLength(1);
+  const temporary = result.photoAllocation.temporary[0];
+  // The square frame requires enough height for cover cropping; neither axis
+  // should retain the original 12MP photograph's dimensions.
+  const targetHeight = Math.ceil(result.photoAllocation.frame.height * result.photoAllocation.resolution);
+  expect(temporary.height).toBe(targetHeight);
+  expect(temporary.width).toBe(Math.ceil(result.photoAllocation.frame.height * result.photoAllocation.resolution * 4032 / 3024));
+  expect(temporary.width * temporary.height).toBeLessThan(10000);
+  expect(Math.max(...result.photoAllocation.encoded.map(size => size.width * size.height))).toBeLessThan(100000);
+  await test.info().attach('photo-raster-allocation', {
+    body: JSON.stringify(result.photoAllocation,null,2), contentType: 'application/json',
   });
   expect(result.identical).toEqual([true, true]);
   expect(result.pages[0].blue).toBeGreaterThan(1000);

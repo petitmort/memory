@@ -647,6 +647,12 @@ export function createScene(
           t: new THREE.Vector3(-0.2, 0.95, -1.5),
         };
   let current: "entry" | "room" | "book" = "entry";
+  // These objects sit behind the closed entrance. Reveal them before the door
+  // starts moving, rather than drawing their hidden triangles in the courtyard.
+  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet];
+  shelteredDetails.forEach(object => { object.visible = false; });
+  let roomRevealed = false;
+  let simulationTime = 0;
   let animating = false,
     doorOpen = 0,
     disposed = false;
@@ -716,7 +722,7 @@ export function createScene(
     onFrame?: (frame: ReadingFrame) => void;
     done: () => void;
   } | null = null;
-  album.setInvalidation(() => { singleRenderRequested = true; });
+  album.setInvalidation(requestRender);
 
   function setAlbumVisibility(opacity: number, preservePaper = false) {
     const wasVisible = album.group.visible;
@@ -728,6 +734,7 @@ export function createScene(
     if (unavailableError) return;
     unavailableError = new SceneUnavailableError();
     cancelAnimationFrame(frame);
+    frame = 0;
     walking = null;
     bouquetMotion = null;
     readingMotion = null;
@@ -792,7 +799,7 @@ export function createScene(
         ),
         fromT: target.clone(),
         toT: end.t,
-        start: performance.now(),
+        start: simulationTime * 1000,
         duration: reducedMotion ? 120 : 3800,
         done,
       };
@@ -809,24 +816,49 @@ export function createScene(
         toQ: new THREE.Quaternion().setFromEuler(
           new THREE.Euler(-1.32, 0.15, 0.35),
         ),
-        start: performance.now(),
+        start: simulationTime * 1000,
         duration: reducedMotion ? 80 : 1100,
         done,
       };
     }));
   }
-  const clock = new THREE.Clock();
   let frame = 0,
-    lastDraw = 0,
     low = false;
+  let lastDraw: number | null = null;
+  let prepared = false;
+  let drawing = false;
   let average = 16,
     slowFrames = 0;
+  function scheduleFrame() {
+    if (!frame && !drawing && prepared && !disposed && !unavailableError && !document.hidden)
+      frame = requestAnimationFrame(tick);
+  }
+  function requestRender() {
+    singleRenderRequested = true;
+    scheduleFrame();
+  }
+  function pauseFrames() {
+    cancelAnimationFrame(frame);
+    frame = 0;
+    lastDraw = null;
+    if (readingMotion) readingMotion.lastDrawAt = null;
+  }
+  function visibilityChanged() {
+    if (document.hidden) pauseFrames();
+    else if (!readerBackdropFrozen || singleRenderRequested) scheduleFrame();
+  }
+  document.addEventListener("visibilitychange", visibilityChanged);
   function tick(now: number) {
+    frame = 0;
     if (disposed || unavailableError) return;
-    frame = requestAnimationFrame(tick);
     if (document.hidden || (readerBackdropFrozen && !singleRenderRequested)) return;
-    if (low && now - lastDraw < 31 && !singleRenderRequested) return;
-    const delta = now - lastDraw;
+    const interval = low || (current === "entry" && !animating) ? 1000 / 30 : 0;
+    if (lastDraw !== null && now - lastDraw < interval - 1 && !singleRenderRequested) {
+      scheduleFrame();
+      return;
+    }
+    drawing = true;
+    const delta = lastDraw === null ? 0 : now - lastDraw;
     lastDraw = now;
     if (delta > 0 && delta < 2000) {
       average = average * 0.9 + Math.min(delta, 250) * 0.1;
@@ -839,15 +871,19 @@ export function createScene(
         slowFrames = 0;
       }
     }
-    const t = clock.getElapsedTime();
-    seaMat.uniforms.time.value = t * (reducedMotion ? 0.15 : 1);
+    // Hidden tabs and reading pauses do not advance the sea or a walking eye.
+    simulationTime += Math.max(delta, 0) / 1000;
+    const t = simulationTime;
     if (!reducedMotion) {
       dust.position.y = Math.sin(t * 0.1) * 0.06;
     }
-    curtains.update(t, reducedMotion);
-    mythology.update(t, reducedMotion);
+    if (roomRevealed) {
+      seaMat.uniforms.time.value = t * (reducedMotion ? 0.15 : 1);
+      curtains.update(t, reducedMotion);
+      mythology.update(t, reducedMotion);
+    }
     if (walking) {
-      const a = Math.min(1, (now - walking.start) / walking.duration),
+      const a = Math.min(1, (t * 1000 - walking.start) / walking.duration),
         ease = a * a * (3 - 2 * a);
       camera.position.copy(walking.path.getPoint(ease));
       target.lerpVectors(walking.fromT, walking.toT, ease);
@@ -864,7 +900,7 @@ export function createScene(
       const previousRotation = bouquet.quaternion.clone();
       const a = Math.min(
           1,
-          (now - bouquetMotion.start) / bouquetMotion.duration,
+          (t * 1000 - bouquetMotion.start) / bouquetMotion.duration,
         ),
         ease = a * a * (3 - 2 * a);
       bouquet.position.lerpVectors(bouquetMotion.from, bouquetMotion.to, ease);
@@ -939,6 +975,9 @@ export function createScene(
     // Camera, paper and DOM all advance on this same rendered frame, including p=1.
     if (updateReadingFrame) updateReadingFrame.callback({ progress: updateReadingFrame.progress, projection: getBookProjection() });
     finishReadingFrame?.();
+    drawing = false;
+    if (readerBackdropFrozen && !singleRenderRequested) lastDraw = null;
+    else scheduleFrame();
   }
   const ray = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -964,6 +1003,7 @@ export function createScene(
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
+    requestRender();
     if (readingMotion) {
       const previous = readingMotion;
       singleRenderRequested = true;
@@ -1007,8 +1047,8 @@ export function createScene(
     requireAvailable();
     album.leaf.visible = false;
     renderer.render(scene, camera);
-    clock.start();
-    frame = requestAnimationFrame(tick);
+    prepared = true;
+    requestRender();
   });
   return {
     ready,
@@ -1018,8 +1058,14 @@ export function createScene(
     },
     async enterRoom() {
       requireAvailable();
+      if (!roomRevealed) {
+        roomRevealed = true;
+        shelteredDetails.forEach(object => { object.visible = true; });
+        sun.shadow.needsUpdate = true;
+      }
       doorOpen = -Math.PI * 0.58;
       animating = true;
+      requestRender();
       await whileAvailable(new Promise<void>((resolve) =>
         setTimeout(resolve, reducedMotion ? 0 : 800),
       ));
@@ -1056,7 +1102,9 @@ export function createScene(
       if (animating || current !== "book") return;
       animating = true;
       readerBackdropFrozen = false;
+      lastDraw = null;
       singleRenderRequested = true;
+      scheduleFrame();
       await moveToBook("closing", onFrame);
       requireAvailable();
       setAlbumVisibility(1);
@@ -1064,7 +1112,7 @@ export function createScene(
     setQuality(value: boolean) {
       if (unavailableError) return;
       low = value;
-      renderer.setPixelRatio(value ? 1 : Math.min(devicePixelRatio, 1.5));
+      renderer.setPixelRatio(value ? Math.min(renderer.getPixelRatio(), 1) : Math.min(devicePixelRatio, 1.5));
       renderer.shadowMap.enabled = !value;
       if (!value) sun.shadow.needsUpdate = true;
       scene.traverse((o) => {
@@ -1075,12 +1123,14 @@ export function createScene(
           materials.forEach((m) => (m.needsUpdate = true));
         }
       });
+      requestRender();
     },
     dispose() {
       if (disposed) return;
       makeUnavailable(false);
       disposed = true;
       cancelAnimationFrame(frame);
+      document.removeEventListener("visibilitychange", visibilityChanged);
       renderer.dispose();
     },
   };

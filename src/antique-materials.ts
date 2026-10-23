@@ -1,5 +1,9 @@
 import * as THREE from "three";
 
+// Share deterministic images while each caller keeps an independent material.
+let bronzeSurface: THREE.CanvasTexture | undefined;
+let timberSurface: THREE.CanvasTexture | undefined;
+
 function surface(draw: (ctx: CanvasRenderingContext2D, random: () => number) => void) {
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = 512;
@@ -15,7 +19,7 @@ function surface(draw: (ctx: CanvasRenderingContext2D, random: () => number) => 
 
 /** Muted old brass, with oxidation held in recesses rather than a bright gold toy finish. */
 export function createAntiqueBronze() {
-  const map = surface((ctx, random) => {
+  const map = bronzeSurface ??= surface((ctx, random) => {
     ctx.fillStyle = "#a38a61"; ctx.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 320; i++) {
       ctx.fillStyle = i % 3 ? `rgba(68,83,70,${.025 + random() * .06})` : `rgba(221,193,137,${random() * .09})`;
@@ -32,7 +36,7 @@ export function createAntiqueBronze() {
 }
 
 export function createAgedTimber() {
-  const map = surface((ctx, random) => {
+  const map = timberSurface ??= surface((ctx, random) => {
     ctx.fillStyle = "#665443"; ctx.fillRect(0, 0, 512, 512);
     for (let y = 0; y < 512; y += 64) {
       ctx.fillStyle = y % 128 ? "rgba(175,145,107,.1)" : "rgba(43,34,27,.08)"; ctx.fillRect(0, y, 512, 63);

@@ -91,6 +91,8 @@ export function createAlbum() {
   leaf.name = "album-opening-leaf";
   leaf.position.set(-.153, .0325, 0); leaf.visible = false;
   const leafUV = leafGeometry.getAttribute("uv"), leafPositions = leafGeometry.getAttribute("position");
+  if (leafPositions instanceof THREE.BufferAttribute) leafPositions.setUsage(THREE.DynamicDrawUsage);
+  let previousPageProgress: number | undefined;
   let selected = -1;
   let pageSourceVersion = 0;
   let invalidate: (() => void) | undefined;
@@ -206,6 +208,8 @@ export function createAlbum() {
   function setOpening(coverProgress: number, pageProgress: number) {
     hinge.rotation.z = coverProgress * Math.PI;
     hinge.position.y = .0335 - .032 * THREE.MathUtils.smoothstep(coverProgress, .55, 1);
+    if (pageProgress === previousPageProgress) return;
+    previousPageProgress = pageProgress;
     leaf.userData.turnProgress = pageProgress;
     leaf.visible = pageProgress > .001 && pageProgress < .999;
     const angle = pageProgress * Math.PI, curl = Math.sin(pageProgress * Math.PI) * .82;
@@ -219,7 +223,7 @@ export function createAlbum() {
       leafPositions.setXYZ(i, distance * Math.cos(bend), distance * Math.sin(bend) + Math.sin(u * Math.PI) * Math.sin(pageProgress * Math.PI) * .012 - settling, (.5 - v) * .246);
     }
     leafPositions.needsUpdate = true;
-    leafGeometry.computeVertexNormals();
+    // The unlit duplex sheet and its depth shadow do not consume normals.
   }
   setOpening(0, 0);
   setChapter(0);

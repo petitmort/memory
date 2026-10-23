@@ -228,36 +228,44 @@ async function enter() {
   audioVolume();
 }
 el("enter").onclick = enter;
+let renderedContent = "";
 function renderPage() {
   const focused = document.activeElement instanceof HTMLElement && el("reader").contains(document.activeElement)
     ? document.activeElement : null;
   const c = chapters[page];
-  el("chapter-date").textContent = c.date;
-  el("chapter-subtitle").textContent = c.subtitle;
-  el("chapter-title").textContent = c.title;
-  el("chapter-text").textContent = c.text;
-  el("chapter-note").textContent = c.note;
-  el("photo-caption").textContent = c.caption;
-  const art = artwork(c.scene);
-  art.setAttribute("role", "img");
-  art.setAttribute(
-    "aria-label",
-    `${c.title}：${c.scene === "mountain" ? "层叠青山" : "海岸风景"}原创插画`,
-  );
-  if (c.image) {
-    const photo = new Image();
-    photo.alt = c.caption;
-    photo.src = c.image;
-    photo.decoding = "async";
-    photo.onerror = () => {
-      if (chapters[page] === c) el("art-holder").replaceChildren(art);
+  // Reopening an unchanged chapter can reuse its existing image and canvas.
+  // Compare the content too, so editing or replacing a chapter still updates it.
+  const contentKey = JSON.stringify([page,chapters.length,c.date,c.subtitle,c.title,c.text,c.note,c.caption,c.scene,c.image]);
+  if (contentKey !== renderedContent) {
+    el("chapter-date").textContent = c.date;
+    el("chapter-subtitle").textContent = c.subtitle;
+    el("chapter-title").textContent = c.title;
+    el("chapter-text").textContent = c.text;
+    el("chapter-note").textContent = c.note;
+    el("photo-caption").textContent = c.caption;
+    const makeArtwork = () => {
+      const art = artwork(c.scene);
+      art.setAttribute("role", "img");
+      art.setAttribute("aria-label", `${c.title}：${c.scene === "mountain" ? "层叠青山" : "海岸风景"}原创插画`);
+      return art;
     };
-    el("art-holder").replaceChildren(photo);
-  } else el("art-holder").replaceChildren(art);
-  el("left-number").textContent = String(page * 2 + 1).padStart(2, "0");
-  el("right-number").textContent = String(page * 2 + 2).padStart(2, "0");
-  el("chapter-count").textContent =
-    `${String(page + 1).padStart(2, "0")} / ${String(chapters.length).padStart(2, "0")} 章`;
+    if (c.image) {
+      const photo = new Image();
+      photo.alt = c.caption;
+      photo.decoding = "async";
+      photo.onerror = () => {
+        if (renderedContent === contentKey && photo.parentElement === el("art-holder"))
+          el("art-holder").replaceChildren(makeArtwork());
+      };
+      photo.src = c.image;
+      el("art-holder").replaceChildren(photo);
+    } else el("art-holder").replaceChildren(makeArtwork());
+    el("left-number").textContent = String(page * 2 + 1).padStart(2, "0");
+    el("right-number").textContent = String(page * 2 + 2).padStart(2, "0");
+    el("chapter-count").textContent =
+      `${String(page + 1).padStart(2, "0")} / ${String(chapters.length).padStart(2, "0")} 章`;
+    renderedContent = contentKey;
+  }
   el<HTMLButtonElement>("prev").disabled = page === 0;
   el<HTMLButtonElement>("next").disabled = page === chapters.length - 1;
   const dots = el("chapter-dots");

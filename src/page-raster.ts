@@ -13,12 +13,21 @@ function copyStyle(source: CSSStyleDeclaration, target: CSSStyleDeclaration) {
   target.removeProperty('will-change');
 }
 
-async function embeddedImage(source: HTMLImageElement) {
+async function embeddedImage(source: HTMLImageElement, style: CSSStyleDeclaration) {
+  const resolution = Math.min(devicePixelRatio || 1, 1.5);
+  const width = parseFloat(style.width) || 0, height = parseFloat(style.height) || 0;
   if (!source.complete || !source.naturalWidth) await source.decode();
   if (!source.naturalWidth || !source.naturalHeight) throw new Error('The page photograph is not ready');
+  // Keep enough pixels for the real CSS frame, including object-fit:cover,
+  // without allocating and PNG-encoding a full-resolution camera photograph.
+  const fittedScale = Math.max(width * resolution / source.naturalWidth, height * resolution / source.naturalHeight);
+  const scale = Math.min(1, fittedScale > 0 ? fittedScale : 1);
   const canvas = document.createElement('canvas');
-  canvas.width = source.naturalWidth; canvas.height = source.naturalHeight;
-  canvas.getContext('2d')!.drawImage(source, 0, 0);
+  canvas.width = Math.max(1, Math.ceil(source.naturalWidth * scale));
+  canvas.height = Math.max(1, Math.ceil(source.naturalHeight * scale));
+  const context = canvas.getContext('2d')!;
+  context.imageSmoothingQuality = 'high';
+  context.drawImage(source, 0, 0, canvas.width, canvas.height);
   // A non-CORS external photograph intentionally rejects, leaving the existing
   // procedural page available instead of supplying an unsafe WebGL texture.
   return canvas.toDataURL('image/png');
@@ -35,7 +44,7 @@ async function clonePageNode(source: Node, pseudoRules: string[]): Promise<Node>
   if (source instanceof HTMLCanvasElement) {
     (clone as HTMLImageElement).src = source.toDataURL('image/png');
   } else if (source instanceof HTMLImageElement) {
-    (clone as HTMLImageElement).src = await embeddedImage(source);
+    (clone as HTMLImageElement).src = await embeddedImage(source, computed);
     clone.removeAttribute('srcset');
     clone.removeAttribute('crossorigin');
     clone.removeAttribute('loading');

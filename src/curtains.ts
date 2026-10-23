@@ -35,6 +35,7 @@ export function createCurtains({ width, height, sill, back }: CurtainWindow) {
     side: number;
     mesh: THREE.Mesh<THREE.BufferGeometry, THREE.MeshPhysicalMaterial>;
     coordinates: Float32Array;
+    rest: Float64Array;
   }[] = [];
   const columns = 28;
   const rows = 54;
@@ -61,7 +62,22 @@ export function createCurtains({ width, height, sill, back }: CurtainWindow) {
         }
       }
     }
-    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    // Rest positions and freedom depend only on the cloth coordinates. Keep
+    // their double precision so the animated positions retain the same formula.
+    const rest = new Float64Array(positions.length / 3 * 4);
+    for (let i = 0; i < positions.length / 3; i++) {
+      const u = coordinates[i * 2];
+      const v = coordinates[i * 2 + 1];
+      const fabricWidth = 0.56 + 0.16 * Math.sin(v * Math.PI * 0.5);
+      const folds = Math.sin(u * Math.PI * 12 + v * 0.7) * (0.029 + v * 0.009);
+      const scallop = Math.pow(v, 16) * 0.009 * (0.5 + 0.5 * Math.cos(u * Math.PI * 16));
+      rest[i * 4] = side * (width / 2 - 0.035) + (u - 0.5) * fabricWidth;
+      rest[i * 4 + 1] = rodHeight - v * length + scallop;
+      rest[i * 4 + 2] = back + 0.3 + folds + 0.06 * v * v;
+      rest[i * 4 + 3] = Math.pow(v, 1.65);
+    }
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+    geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(positions.length), 3).setUsage(THREE.DynamicDrawUsage));
     geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
     geometry.setIndex(indices);
     const mesh = new THREE.Mesh(geometry, material);
@@ -71,7 +87,7 @@ export function createCurtains({ width, height, sill, back }: CurtainWindow) {
     mesh.frustumCulled = false;
     mesh.renderOrder = 3;
     group.add(mesh);
-    panels.push({ side, mesh, coordinates });
+    panels.push({ side, mesh, coordinates, rest });
   }
 
   let lastTime = -1;
@@ -80,32 +96,24 @@ export function createCurtains({ width, height, sill, back }: CurtainWindow) {
     const t = time * (reducedMotion ? 0.16 : 1);
     if (Math.abs(t - lastTime) < 1 / 65 && lastTime >= 0) return;
     lastTime = t;
-    for (const { side, mesh, coordinates } of panels) {
+    for (const { side, mesh, coordinates, rest } of panels) {
       const positions = mesh.geometry.attributes.position;
       for (let i = 0; i < positions.count; i++) {
         const u = coordinates[i * 2];
         const v = coordinates[i * 2 + 1];
-        const free = Math.pow(v, 1.65);
+        const free = rest[i * 4 + 3];
         const phase = side * 1.9;
-        const fabricWidth = 0.56 + 0.16 * Math.sin(v * Math.PI * 0.5);
-        const folds =
-          Math.sin(u * Math.PI * 12 + v * 0.7) * (0.029 + v * 0.009);
         const breath =
           (0.064 * Math.sin(t * 0.74 + v * 4.1 + u * 2.2 + phase) +
             0.025 * Math.sin(t * 1.31 - v * 3.7 + u * 8.7 - phase)) *
           free;
         const drift =
           0.022 * free * Math.sin(t * 0.93 + u * 5.4 + v * 2.1 + phase);
-        const scallop =
-          Math.pow(v, 16) * 0.009 * (0.5 + 0.5 * Math.cos(u * Math.PI * 16));
         positions.setXYZ(
           i,
-          side * (width / 2 - 0.035) + (u - 0.5) * fabricWidth + drift,
-          rodHeight -
-            v * length +
-            scallop +
-            0.006 * free * Math.sin(t * 1.2 + u * 9 + phase),
-          back + 0.3 + folds + 0.06 * v * v + breath,
+          rest[i * 4] + drift,
+          rest[i * 4 + 1] + 0.006 * free * Math.sin(t * 1.2 + u * 9 + phase),
+          rest[i * 4 + 2] + breath,
         );
       }
       positions.needsUpdate = true;

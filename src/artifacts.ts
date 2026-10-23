@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { createAntiqueBronze, createAgedTimber } from "./antique-materials";
 
 /** Collector's objects are authored in metres and seated on their actual support. */
@@ -151,6 +152,39 @@ export function createArtifacts() {
   shelf.name="entry-collection-shelf-top";shelf.position.set(-1.12,1.17,2.48);
   for(const x of [-1.43,-.81]){
     const bracket=add(new THREE.BoxGeometry(.018,.10,.15),bronze,group);bracket.position.set(x,1.112,2.51);
+  }
+  // Each object stays a semantic group; fixed fittings share a material batch.
+  for (const object of [horn, hammer, trident]) {
+    const batches = new Map<THREE.Material, THREE.Mesh[]>();
+    for (const child of object.children) {
+      if (!(child instanceof THREE.Mesh) || Array.isArray(child.material)) continue;
+      const meshes = batches.get(child.material) ?? [];
+      meshes.push(child);
+      batches.set(child.material, meshes);
+    }
+    for (const [material, meshes] of batches) {
+      if (meshes.length < 2) continue;
+      const pieces = meshes.map(mesh => {
+        mesh.updateMatrix();
+        const geometry = mesh.geometry.clone().applyMatrix4(mesh.matrix);
+        // Extrusions have no index; keep other parts indexed without expanding
+        // their shared vertices just to combine the two representations.
+        if (!geometry.index)
+          geometry.setIndex(Array.from({ length: geometry.getAttribute("position").count }, (_, index) => index));
+        return geometry;
+      });
+      const geometry = mergeGeometries(pieces);
+      if (geometry) {
+        const combined = add(geometry, material, object);
+        const finish = material === bronze ? "bronze" : material === leather ? "leather" : "fixed";
+        combined.name = `${object.name}-${finish}-fittings`;
+        for (const mesh of meshes) {
+          object.remove(mesh);
+          mesh.geometry.dispose();
+        }
+      }
+      for (const piece of pieces) piece.dispose();
+    }
   }
   return group;
 }
