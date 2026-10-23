@@ -22,7 +22,8 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
         for(;first;first=first.parent)if(first===cat.group)catVisible=true;
         let meshes=0,triangles=0;
         lounge.group.traverse(object=>{if(object.isMesh){meshes++;triangles+=(object.geometry.index?.count??object.geometry.attributes.position.count)/3;}});
-        return{position:camera.position.toArray(),target:target.toArray(),lounge:bounds(lounge.group),cat:bounds(cat.group),pad:bounds(lounge.group.getObjectByName('beanbag-yielding-seat-cushion')),console:bounds(consoleTable),desk:bounds(tabletop),catScreen,catVisible,meshes,triangles,book:screen(book),rose:screen(bouquet),visible:lounge.group.visible};
+        const textures=[];cat.group.traverse(o=>{if(o.isMesh&&o.material.map)textures.push([o.material.map.image.width,o.material.map.image.height]);});
+        return{textures,position:camera.position.toArray(),target:target.toArray(),lounge:bounds(lounge.group),cat:bounds(cat.group),pad:bounds(lounge.group.getObjectByName('beanbag-yielding-seat-cushion')),console:bounds(consoleTable),desk:bounds(tabletop),catScreen,catVisible,meshes,triangles,book:screen(book),rose:screen(bouquet),visible:lounge.group.visible};
       };
       const ray = new THREE.Raycaster();
     `);
@@ -41,10 +42,15 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
     await expect(page.locator('#room-ui')).toBeVisible({timeout:30000});
     const room=await snapshot();expect(room.visible).toBe(true);
     expect(room.lounge.size[0]).toBeGreaterThan(.9);expect(room.lounge.size[0]).toBeLessThan(1.15);
-    expect(room.lounge.size[1]).toBeLessThan(.8);expect(room.lounge.min[1]).toBeGreaterThan(-.002);
+    expect(room.lounge.size[1]).toBeLessThan(.85);expect(room.lounge.min[1]).toBeGreaterThan(-.002);
     expect(room.desk.min[0]-room.lounge.max[0]).toBeGreaterThan(.15);
-    expect(room.lounge.min[0]-room.console.max[0]).toBeGreaterThan(.06);
-    expect(room.meshes).toBeLessThanOrEqual(14);expect(room.triangles).toBeLessThan(22000);
+    // The chair now sits beside the left wall and forward of the console.
+    expect(room.lounge.min[0]).toBeLessThan(-2.15);
+    expect(room.lounge.min[0]+2.3).toBeGreaterThan(.05);
+    const floorGap=(a:any,b:any)=>Math.max(...[0,2].flatMap(axis=>[a.min[axis]-b.max[axis],b.min[axis]-a.max[axis]]));
+    expect(floorGap(room.lounge,room.console)).toBeGreaterThan(.12);
+    expect(room.meshes).toBeLessThanOrEqual(10);expect(room.triangles).toBeLessThan(36000);
+    expect(room.textures).toEqual([[1024,1024]]);
     expect(room.cat.min[1]-room.pad.max[1]).toBeGreaterThan(-.012);
     expect(room.cat.min[1]-room.pad.max[1]).toBeLessThan(.008);
     for(const axis of [0,2]){
@@ -55,6 +61,8 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
     await page.evaluate(()=>{(window as any).__cozyFrames=[];});
     await page.locator('#cozy-view').click();await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','true',{timeout:15000});
     const nook=await snapshot();expect(nook.catVisible).toBe(true);
+    await expect(page.locator('#cozy-credit')).toBeVisible();
+    await expect(page.locator('#cozy-credit')).toHaveAttribute('href','credits.html');
     const frames=await page.evaluate(()=>(window as any).__cozyFrames);
     const distance=(a:number[],b:number[])=>Math.hypot(...a.map((v,i)=>v-b[i]));
     expect(frames.length).toBeGreaterThanOrEqual(3);
@@ -75,6 +83,7 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
     await page.screenshot({path:'test-results/cozy-cat-mobile.png'});
     await page.locator('#cozy-view').click();await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','false',{timeout:15000});
     const desk=await snapshot();expect(distance(desk.position,mobile.position)).toBeLessThan(.000001);
+    await expect(page.locator('#cozy-credit')).toBeHidden();
     for(const point of [desk.book,desk.rose])expect(await page.evaluate(({x,y})=>document.elementFromPoint(x,y)?.tagName,point)).toBe('CANVAS');
     await test.info().attach('cozy-corner-layout',{body:JSON.stringify({room,nook,mobile},null,2),contentType:'application/json'});
     await page.locator('#cozy-view').evaluate(button=>button.addEventListener('click',()=>setTimeout(()=>{
@@ -84,4 +93,35 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
     await page.locator('#fallback-read').click();await ready();
     expect(errors).toEqual([]);
   }finally{await context.close();}
+});
+
+test('a model download interrupted by WebGL loss cannot restart the room',async ({page})=>{
+  test.setTimeout(60000);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+  let requested!:()=>void,release!:()=>void;
+  const started=new Promise<void>(resolve=>{requested=resolve;});
+  const held=new Promise<void>(resolve=>{release=resolve;});
+  await page.route('**/models/sleeping-tabby.glb',async route=>{
+    requested();await held;
+    // The browser may already have cancelled the held request.
+    try{await route.continue();}catch{}
+  });
+  try{
+    await page.goto('/');await started;
+    await expect(page.locator('#loading')).toBeVisible();
+    await page.locator('#world canvas').evaluate(canvas=>{
+      (canvas as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext();
+    });
+    await expect(page.locator('#fallback')).toBeVisible({timeout:10000});
+    release();
+    await page.locator('#fallback-read').click();
+    await expect(page.locator('#reader')).toHaveAttribute('data-phase','ready',{timeout:10000});
+    await page.locator('#next').click();
+    await expect(page.locator('#chapter-title')).toHaveText('把日子过成夏天');
+    await page.waitForTimeout(300);
+    await expect(page.locator('#room-ui')).toBeHidden();
+    await expect(page.locator('#loading')).toBeHidden();
+    expect(errors).toEqual([]);
+  }finally{release();}
 });

@@ -509,8 +509,9 @@ export function createScene(
   const drawerPull = new THREE.Mesh(new THREE.TorusGeometry(.010,.0018,8,24),brass);
   drawerPull.position.set(0,.701,.153); consoleTable.add(drawerPull);
   const lounge = createCozySeating();
-  lounge.group.position.set(-1.35, 0, -.75);
-  lounge.group.rotation.y = .35;
+  // Left of the desk, forward of the console: about 10 cm from the side wall.
+  lounge.group.position.set(-1.7, 0, -.32);
+  lounge.group.rotation.y = .13;
   room.add(lounge.group);
   const cat = createSleepingCat();
   lounge.catNest.add(cat.group);
@@ -750,6 +751,7 @@ export function createScene(
   function makeUnavailable(notify: boolean) {
     if (unavailableError) return;
     unavailableError = new SceneUnavailableError();
+    cat.dispose();
     cancelAnimationFrame(frame);
     frame = 0;
     walking = null;
@@ -1075,7 +1077,10 @@ export function createScene(
   camera.updateMatrixWorld(true);
   // Warm the two-sided paper shader before its first visible turn.
   album.leaf.visible = true;
-  const ready = whileAvailable(renderer.compileAsync(scene, camera)).then(() => {
+  const ready = whileAvailable(cat.ready).then(() => {
+    requireAvailable();
+    return whileAvailable(renderer.compileAsync(scene, camera));
+  }).then(() => {
     requireAvailable();
     album.leaf.visible = false;
     renderer.render(scene, camera);

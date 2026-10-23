@@ -1349,3 +1349,10 @@ button svg {
     margin-top: 12px;
   }
 }
+
+.room-ui .cozy-credit {
+  display: block; width: max-content; margin: 6px 0 0 auto; padding: 2px 5px;
+  color: #fff5df; font-size: 10px; text-underline-offset: 3px;
+  text-shadow: 0 1px 4px #233b32; pointer-events: auto;
+}
+@media (max-width: 759px) { .room-ui .cozy-credit { margin: 6px auto 0; } }
