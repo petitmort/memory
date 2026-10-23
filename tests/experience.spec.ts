@@ -113,6 +113,12 @@ test("mobile: small-screen layout, swipe chapters and reduced motion", async ({
   await page.locator("#book").evaluate((el) => {
     el.dispatchEvent(
       new TouchEvent("touchstart", {
+        touches: [
+          new Touch({ identifier: 1, target: el, clientX: 300, clientY: 300 }),
+        ],
+        targetTouches: [
+          new Touch({ identifier: 1, target: el, clientX: 300, clientY: 300 }),
+        ],
         changedTouches: [
           new Touch({ identifier: 1, target: el, clientX: 300, clientY: 300 }),
         ],
@@ -183,6 +189,7 @@ test("physical scene: enter through doorway, approach and open the album, then r
     pageOpacity?: number[];
     readerBackground?: string;
     readerBlur?: string;
+    shadowUpdate?: boolean;
   };
   type Probe = Window & {
     __cameraSamples: Sample[];
@@ -236,7 +243,7 @@ test("physical scene: enter through doorway, approach and open the album, then r
       const cover=scene.getObjectByName('album-cover-hinge'),leaf=scene.getObjectByName('album-opening-leaf');
       const leafPositions=leaf.geometry.attributes.position;let leafMin=Infinity,leafMax=-Infinity;for(let i=0;i<leafPositions.count;i++){leafMin=Math.min(leafMin,leafPositions.getY(i));leafMax=Math.max(leafMax,leafPositions.getY(i));}
       if(!window.__readingResize && readingMotion?.kind==='opening' && cover.rotation.z>.2 && cover.rotation.z<2.7){const beforeResize=readingMotion;window.__readingResize=true;window.dispatchEvent(new Event('resize'));window.__readingResizePreserved=readingMotion===beforeResize;}
-      window.__cameraSamples.push({p: camera.position.toArray(), t: target.toArray(),fov:camera.fov,cover:cover.rotation.z,leafHeight:leafMax-leafMin,leafVisible:leaf.visible, flower: bouquet.position.toArray(), scale: bouquet.scale.toArray(), visible: bouquet.visible, wall: facade.visible, door: doorPivot.rotation.y, waveTime: seaMat.uniforms.time.value, seaVertices: ocean.geometry.attributes.position.count,curtainTop:[cloth.getX(0),cloth.getY(0),cloth.getZ(0)],curtainHem:[cloth.getX(cloth.count-1),cloth.getY(cloth.count-1),cloth.getZ(cloth.count-1)]});
+      window.__cameraSamples.push({p: camera.position.toArray(), t: target.toArray(),fov:camera.fov,cover:cover.rotation.z,leafHeight:leafMax-leafMin,leafVisible:leaf.visible, flower: bouquet.position.toArray(), scale: bouquet.scale.toArray(), visible: bouquet.visible, wall: facade.visible, door: doorPivot.rotation.y, waveTime: seaMat.uniforms.time.value, seaVertices: ocean.geometry.attributes.position.count,shadowUpdate:sun.shadow.needsUpdate,curtainTop:[cloth.getX(0),cloth.getY(0),cloth.getZ(0)],curtainHem:[cloth.getX(cloth.count-1),cloth.getY(cloth.count-1),cloth.getZ(cloth.count-1)]});
       renderer.render(scene, camera);
       if(!window.__openingFrame && current==='book' && leaf.visible && leafMax-leafMin>.06)window.__openingFrame=renderer.domElement.toDataURL('image/png');
     `,
@@ -371,6 +378,8 @@ test("physical scene: enter through doorway, approach and open the album, then r
   expect(handoff.length).toBeGreaterThan(1);
   expect(handoff.some(sample => moved(sample.p, closeView.p) > .001)).toBe(true);
   expect(moved(handoff[0].p, handoff.at(-1)!.p)).toBeGreaterThan(.001);
+  const cameraOnly = opening.filter(sample => sample.progress! > .8 && sample.progress! < 1);
+  expect(cameraOnly.some(sample => sample.shadowUpdate === false)).toBe(true);
   const finalReaderStyle = await page.locator('#reader').evaluate(reader => ({
     background: getComputedStyle(reader).backgroundColor,
     blur: getComputedStyle(reader).backdropFilter,

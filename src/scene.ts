@@ -22,10 +22,18 @@ export type PageProjection = { corners: { x: number; y: number }[] };
 export type BookProjection = PageProjection & { pages: [PageProjection, PageProjection] };
 export type ReadingFrame = { progress: number; projection: BookProjection };
 
+export class SceneUnavailableError extends Error {
+  constructor() {
+    super("The 3D scene is no longer available.");
+    this.name = "SceneUnavailableError";
+  }
+}
+
 export function createScene(
   container: HTMLElement,
   onInteract: () => void,
   reducedMotion: boolean,
+  onUnavailable?: () => void,
 ) {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -642,6 +650,33 @@ export function createScene(
   let animating = false,
     doorOpen = 0,
     disposed = false;
+  let unavailableError: SceneUnavailableError | null = null;
+  const pending = new Set<(error: SceneUnavailableError) => void>();
+
+  function requireAvailable() {
+    if (unavailableError) throw unavailableError;
+  }
+
+  function whileAvailable<T>(operation: PromiseLike<T>): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const cancel = (error: SceneUnavailableError) => {
+        pending.delete(cancel);
+        reject(error);
+      };
+      pending.add(cancel);
+      // Observe both outcomes even after cancellation. A late image or shader
+      // completion must neither revive the scene nor cause an unhandled reject.
+      Promise.resolve(operation).then(value => {
+        pending.delete(cancel);
+        if (unavailableError) reject(unavailableError);
+        else resolve(value);
+      }, error => {
+        pending.delete(cancel);
+        reject(error);
+      });
+      if (unavailableError) cancel(unavailableError);
+    });
+  }
   const initial = entryPose();
   camera.position.copy(initial.p);
   target.copy(initial.t);
@@ -683,6 +718,25 @@ export function createScene(
   } | null = null;
   album.setInvalidation(() => { singleRenderRequested = true; });
 
+  function setAlbumVisibility(opacity: number, preservePaper = false) {
+    const wasVisible = album.group.visible;
+    album.setVisibility(opacity, preservePaper);
+    if (wasVisible !== album.group.visible) sun.shadow.needsUpdate = true;
+  }
+
+  function makeUnavailable(notify: boolean) {
+    if (unavailableError) return;
+    unavailableError = new SceneUnavailableError();
+    cancelAnimationFrame(frame);
+    walking = null;
+    bouquetMotion = null;
+    readingMotion = null;
+    animating = false;
+    for (const cancel of pending) cancel(unavailableError);
+    pending.clear();
+    if (notify) onUnavailable?.();
+  }
+
   function bookReadingPose(): ReadingPose {
     book.updateWorldMatrix(true, false);
     const centre = album.spreadCenter.clone().applyMatrix4(book.matrixWorld);
@@ -705,7 +759,8 @@ export function createScene(
     };
   }
   function moveToBook(kind: "opening" | "closing", onFrame?: (frame: ReadingFrame) => void) {
-    return new Promise<void>(done => {
+    requireAvailable();
+    return whileAvailable(new Promise<void>(done => {
       const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
       const saved = roomBeforeReading;
       const to = kind === "opening" ? bookReadingPose() : saved && saved.mobile === mobile()
@@ -718,10 +773,11 @@ export function createScene(
         elapsed: 0, duration, lastDrawAt: null, mobile: mobile(),
         phaseStart: 0, onFrame, done,
       };
-    });
+    }));
   }
   function walkIntoRoom() {
-    return new Promise<void>((done) => {
+    requireAvailable();
+    return whileAvailable(new Promise<void>((done) => {
       const end = roomPose();
       walking = {
         path: new THREE.CatmullRomCurve3(
@@ -740,11 +796,12 @@ export function createScene(
         duration: reducedMotion ? 120 : 3800,
         done,
       };
-    });
+    }));
   }
   function parkBouquet() {
+    requireAvailable();
     if (bouquetParked) return Promise.resolve();
-    return new Promise<void>((done) => {
+    return whileAvailable(new Promise<void>((done) => {
       bouquetMotion = {
         from: bouquet.position.clone(),
         to: new THREE.Vector3(0.49, 0.765, 0.2),
@@ -756,7 +813,7 @@ export function createScene(
         duration: reducedMotion ? 80 : 1100,
         done,
       };
-    });
+    }));
   }
   const clock = new THREE.Clock();
   let frame = 0,
@@ -765,7 +822,7 @@ export function createScene(
   let average = 16,
     slowFrames = 0;
   function tick(now: number) {
-    if (disposed) return;
+    if (disposed || unavailableError) return;
     frame = requestAnimationFrame(tick);
     if (document.hidden || (readerBackdropFrozen && !singleRenderRequested)) return;
     if (low && now - lastDraw < 31 && !singleRenderRequested) return;
@@ -803,6 +860,8 @@ export function createScene(
       }
     }
     if (bouquetMotion) {
+      const previousPosition = bouquet.position.clone();
+      const previousRotation = bouquet.quaternion.clone();
       const a = Math.min(
           1,
           (now - bouquetMotion.start) / bouquetMotion.duration,
@@ -815,6 +874,8 @@ export function createScene(
         bouquetMotion.toQ,
         ease,
       );
+      if (!bouquet.position.equals(previousPosition) || !bouquet.quaternion.equals(previousRotation))
+        sun.shadow.needsUpdate = true;
       if (a === 1) {
         const done = bouquetMotion.done;
         bouquetMotion = null;
@@ -826,6 +887,7 @@ export function createScene(
     let updateReadingFrame: { progress: number; callback: (frame: ReadingFrame) => void } | null = null;
     if (readingMotion) {
       const motion = readingMotion;
+      const previousCover = coverProgress, previousLeaf = leafProgress;
       // Keep the cover and leaf visible through slow shader/resize frames.
       // Normal frame rates retain the intended duration; a stall cannot skip a turn.
       const a = advanceReadingClock(motion,now);
@@ -843,7 +905,9 @@ export function createScene(
         coverProgress = 1 - THREE.MathUtils.smoothstep(phase, .60, .98);
       }
       album.setOpening(coverProgress, leafProgress);
-      album.setVisibility(readingBlend(phase, motion.kind === "opening").book, true);
+      setAlbumVisibility(readingBlend(phase, motion.kind === "opening").book, true);
+      if (album.group.visible && (coverProgress !== previousCover || leafProgress !== previousLeaf))
+        sun.shadow.needsUpdate = true;
       if (motion.onFrame) updateReadingFrame = { progress: phase, callback: motion.onFrame };
       if (a === 1) {
         camera.position.copy(motion.to.p);
@@ -858,18 +922,16 @@ export function createScene(
       }
     }
     const dt = Math.min(Math.max(delta / 1000, 0), 0.1);
+    const previousDoor = doorPivot.rotation.y;
     doorPivot.rotation.y = THREE.MathUtils.damp(
       doorPivot.rotation.y,
       doorOpen,
       5,
       dt,
     );
-    if (
-      animating ||
-      Math.abs(doorOpen - doorPivot.rotation.y) > 0.005 ||
-      bouquetMotion !== null ||
-      readingMotion !== null
-    )
+    // The light is fixed. Moving only the eye can reuse its world-space depth
+    // map; rebuild it only when a caster actually moves or changes visibility.
+    if (Math.abs(doorPivot.rotation.y - previousDoor) > .000001)
       sun.shadow.needsUpdate = true;
     camera.lookAt(target);
     renderer.render(scene, camera);
@@ -881,7 +943,7 @@ export function createScene(
   const ray = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   function hit(e: PointerEvent) {
-    if (animating || current === "book") return false;
+    if (disposed || unavailableError || animating || current === "book") return false;
     pointer.set(
       (e.clientX / innerWidth) * 2 - 1,
       (-e.clientY / innerHeight) * 2 + 1,
@@ -898,6 +960,7 @@ export function createScene(
     renderer.domElement.style.cursor = hit(e) ? "pointer" : "default";
   });
   window.addEventListener("resize", () => {
+    if (disposed || unavailableError) return;
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
@@ -934,17 +997,14 @@ export function createScene(
   });
   renderer.domElement.addEventListener("webglcontextlost", (e) => {
     e.preventDefault();
-    cancelAnimationFrame(frame);
-    const notice = document.createElement("div");
-    notice.className = "context-notice";
-    notice.textContent = "画面暂时中断，请刷新页面恢复。纪念册内容仍可阅读。";
-    container.appendChild(notice);
+    makeUnavailable(true);
   });
   camera.lookAt(target);
   camera.updateMatrixWorld(true);
   // Warm the two-sided paper shader before its first visible turn.
   album.leaf.visible = true;
-  const ready = renderer.compileAsync(scene, camera).then(() => {
+  const ready = whileAvailable(renderer.compileAsync(scene, camera)).then(() => {
+    requireAvailable();
     album.leaf.visible = false;
     renderer.render(scene, camera);
     clock.start();
@@ -953,25 +1013,32 @@ export function createScene(
   return {
     ready,
     clearFog() {
+      if (unavailableError) return;
       scene.fog = new THREE.FogExp2("#d2e4e8", 0.005);
     },
     async enterRoom() {
+      requireAvailable();
       doorOpen = -Math.PI * 0.58;
       animating = true;
-      await new Promise((resolve) =>
+      await whileAvailable(new Promise<void>((resolve) =>
         setTimeout(resolve, reducedMotion ? 0 : 800),
-      );
+      ));
+      requireAvailable();
       await walkIntoRoom();
+      requireAvailable();
     },
     async openBook(onFrame?: (frame: ReadingFrame) => void, paperReady?: Promise<void>) {
+      requireAvailable();
       if (animating || current !== "room") return getBookProjection();
       roomBeforeReading = { p: camera.position.clone(), t: target.clone(), fov: camera.fov, mobile: mobile() };
       animating = true;
       readerBackdropFrozen = false;
       current = "book";
-      album.setVisibility(1);
-      await Promise.all([parkBouquet(), paperReady]);
+      setAlbumVisibility(1);
+      await whileAvailable(Promise.all([parkBouquet(), paperReady]));
+      requireAvailable();
       await moveToBook("opening", onFrame);
+      requireAvailable();
       return getBookProjection();
     },
     getBookProjection,
@@ -982,20 +1049,24 @@ export function createScene(
       album.setPageCanvases(pages);
     },
     setBookVisibility(opacity: number) {
-      album.setVisibility(opacity);
+      setAlbumVisibility(opacity);
     },
     async returnToRoom(onFrame?: (frame: ReadingFrame) => void) {
+      requireAvailable();
       if (animating || current !== "book") return;
       animating = true;
       readerBackdropFrozen = false;
       singleRenderRequested = true;
       await moveToBook("closing", onFrame);
-      album.setVisibility(1);
+      requireAvailable();
+      setAlbumVisibility(1);
     },
     setQuality(value: boolean) {
+      if (unavailableError) return;
       low = value;
       renderer.setPixelRatio(value ? 1 : Math.min(devicePixelRatio, 1.5));
       renderer.shadowMap.enabled = !value;
+      if (!value) sun.shadow.needsUpdate = true;
       scene.traverse((o) => {
         if (o instanceof THREE.Mesh) {
           const materials = Array.isArray(o.material)
@@ -1006,6 +1077,8 @@ export function createScene(
       });
     },
     dispose() {
+      if (disposed) return;
+      makeUnavailable(false);
       disposed = true;
       cancelAnimationFrame(frame);
       renderer.dispose();

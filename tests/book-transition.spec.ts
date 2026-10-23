@@ -198,7 +198,7 @@ test('desktop and mobile pages track a moving projection continuously through cl
       </div><button class="page-nav prev" disabled>←</button><button class="page-nav next">→</button></div><div class="reader-bottom"><span>01 / 04</span></div></section>
     </body></html>`,
   }));
-  for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
+  for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport);
     await page.goto('/__reader_journey');
     const resultPromise = page.evaluate(async () => {
