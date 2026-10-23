@@ -1298,6 +1298,26 @@ button svg {
   .scene-hint { left:auto; right:4.5%; bottom:15.5%; font-size:9px; }
 }
 
+.room-ui .cozy-view {
+  justify-content: center;
+  min-height: 36px;
+  margin: 9px 0 0 auto;
+  padding: 7px 15px;
+  border: 1px solid #f2e7d44d;
+  border-radius: 24px;
+  background: #344e48c9;
+  color: #f4ecda;
+  font-size: 11px;
+  pointer-events: auto;
+}
+.room-ui .cozy-view:hover:not(:disabled) { background: #455d50e6; }
+@media (min-width: 760px) {
+  .scene-hint { bottom: calc(9% + 118px); }
+}
+@media (max-width: 759px) {
+  .room-ui .cozy-view { margin: 9px auto 0; }
+}
+
 /* In a short landscape viewport, keep the controls outside the scrollable spread. */
 @media (min-width: 760px) and (max-height: 500px) {
   .reader {

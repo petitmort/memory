@@ -15,6 +15,8 @@ import { createCurtains } from "./curtains";
 import { createMythology } from "./mythology";
 import { createDecor } from "./decor";
 import { consoleLayout } from "./interior-layout";
+import { createCozySeating } from "./cozy-seating";
+import { createSleepingCat } from "./sleeping-cat";
 import { readingBlend } from "./reading-timeline";
 import { advanceReadingClock, createReadingPath, readingRetargetDuration, retargetReadingPath, type ReadingPath } from "./reading-motion";
 
@@ -58,7 +60,7 @@ export function createScene(
     500,
   );
   const target = new THREE.Vector3();
-  const ambient = new THREE.HemisphereLight("#d5e9f7", "#a28b6d", 1.65);
+  const ambient = new THREE.HemisphereLight("#e1e8e5", "#aa9273", 1.65);
   scene.add(ambient);
   const sun = new THREE.DirectionalLight("#fff2dc", 3.5);
   sun.position.set(-3, 4.5, -8);
@@ -75,7 +77,7 @@ export function createScene(
   sun.shadow.autoUpdate = false;
   sun.shadow.needsUpdate = true;
   scene.add(sun);
-  const fill = new THREE.DirectionalLight("#f9f4e8", 1.1);
+  const fill = new THREE.DirectionalLight("#ffe9cd", 1.05);
   fill.position.set(3, 5, 8);
   scene.add(fill);
   const mat = (color: string, roughness = 0.8, metalness = 0) =>
@@ -506,6 +508,12 @@ export function createScene(
   (drawer as THREE.Mesh<THREE.BufferGeometry>).geometry=new RoundedBoxGeometry(.68,.059,.012,3,.003);
   const drawerPull = new THREE.Mesh(new THREE.TorusGeometry(.010,.0018,8,24),brass);
   drawerPull.position.set(0,.701,.153); consoleTable.add(drawerPull);
+  const lounge = createCozySeating();
+  lounge.group.position.set(-1.35, 0, -.75);
+  lounge.group.rotation.y = .35;
+  room.add(lounge.group);
+  const cat = createSleepingCat();
+  lounge.catNest.add(cat.group);
   // A 90 × 210 cm door leaf, 4.5 cm thick, with the handle 1 m above the floor.
   const facade = new THREE.Group();
   facade.name = "entry-wall";
@@ -649,7 +657,7 @@ export function createScene(
   let current: "entry" | "room" | "book" = "entry";
   // These objects sit behind the closed entrance. Reveal them before the door
   // starts moving, rather than drawing their hidden triangles in the courtyard.
-  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet];
+  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group];
   shelteredDetails.forEach(object => { object.visible = false; });
   let roomRevealed = false;
   let simulationTime = 0;
@@ -694,6 +702,15 @@ export function createScene(
     duration: number;
     done: () => void;
   } | null = null;
+  let nookFocused = false;
+  let lookMotion: {
+    from: THREE.Vector3;
+    to: THREE.Vector3;
+    elapsed: number;
+    duration: number;
+    lastDrawAt: number | null;
+    done: () => void;
+  } | null = null;
   let bouquetMotion: {
     from: THREE.Vector3;
     to: THREE.Vector3;
@@ -736,6 +753,7 @@ export function createScene(
     cancelAnimationFrame(frame);
     frame = 0;
     walking = null;
+    lookMotion = null;
     bouquetMotion = null;
     readingMotion = null;
     animating = false;
@@ -770,6 +788,7 @@ export function createScene(
     return whileAvailable(new Promise<void>(done => {
       const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
       const saved = roomBeforeReading;
+      if (kind === "closing" && saved && saved.mobile !== mobile()) nookFocused = false;
       const to = kind === "opening" ? bookReadingPose() : saved && saved.mobile === mobile()
         ? { p: saved.p.clone(), t: saved.t.clone(), fov: saved.fov }
         : { ...roomPose(), fov: 50 };
@@ -842,6 +861,7 @@ export function createScene(
     frame = 0;
     lastDraw = null;
     if (readingMotion) readingMotion.lastDrawAt = null;
+    if (lookMotion) lookMotion.lastDrawAt = null;
   }
   function visibilityChanged() {
     if (document.hidden) pauseFrames();
@@ -881,6 +901,17 @@ export function createScene(
       seaMat.uniforms.time.value = t * (reducedMotion ? 0.15 : 1);
       curtains.update(t, reducedMotion);
       mythology.update(t, reducedMotion);
+      cat.update(t, reducedMotion);
+    }
+    let finishLookFrame: (() => void) | undefined;
+    if (lookMotion) {
+      const motion = lookMotion;
+      const a = advanceReadingClock(motion, now), ease = a * a * (3 - 2 * a);
+      target.lerpVectors(motion.from, motion.to, ease);
+      if (a === 1) {
+        lookMotion = null;
+        finishLookFrame = () => { animating = false; motion.done(); };
+      }
     }
     if (walking) {
       const a = Math.min(1, (t * 1000 - walking.start) / walking.duration),
@@ -974,6 +1005,7 @@ export function createScene(
     singleRenderRequested = false;
     // Camera, paper and DOM all advance on this same rendered frame, including p=1.
     if (updateReadingFrame) updateReadingFrame.callback({ progress: updateReadingFrame.progress, projection: getBookProjection() });
+    finishLookFrame?.();
     finishReadingFrame?.();
     drawing = false;
     if (readerBackdropFrozen && !singleRenderRequested) lastDraw = null;
@@ -1032,7 +1064,7 @@ export function createScene(
     } else if (!animating) {
       const pose = current === "entry" ? entryPose() : roomPose();
       camera.position.copy(pose.p);
-      target.copy(pose.t);
+      if (!nookFocused || current === "entry") target.copy(pose.t);
     }
   });
   renderer.domElement.addEventListener("webglcontextlost", (e) => {
@@ -1087,6 +1119,24 @@ export function createScene(
       requireAvailable();
       return getBookProjection();
     },
+    async focusCozyCorner(focus: boolean) {
+      requireAvailable();
+      if (animating || current !== "room") return nookFocused;
+      const to = focus
+        ? lounge.catNest.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, .09, 0))
+        : roomPose().t;
+      animating = true;
+      await whileAvailable(new Promise<void>(done => {
+        lookMotion = {
+          from: target.clone(), to, elapsed: 0,
+          duration: reducedMotion ? 180 : 1100, lastDrawAt: null, done,
+        };
+        requestRender();
+      }));
+      nookFocused = focus;
+      return nookFocused;
+    },
+    isCozyFocused() { return nookFocused; },
     getBookProjection,
     setBookChapter(index: number) {
       album.setChapter(index);
