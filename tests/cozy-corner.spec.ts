@@ -23,7 +23,13 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
         let meshes=0,triangles=0;
         lounge.group.traverse(object=>{if(object.isMesh){meshes++;triangles+=(object.geometry.index?.count??object.geometry.attributes.position.count)/3;}});
         const textures=[];cat.group.traverse(o=>{if(o.isMesh&&o.material.map)textures.push([o.material.map.image.width,o.material.map.image.height]);});
-        return{textures,position:camera.position.toArray(),target:target.toArray(),lounge:bounds(lounge.group),cat:bounds(cat.group),pad:bounds(lounge.group.getObjectByName('beanbag-yielding-seat-cushion')),console:bounds(consoleTable),desk:bounds(tabletop),catScreen,catVisible,meshes,triangles,book:screen(book),rose:screen(bouquet),visible:lounge.group.visible};
+        const front=new THREE.Vector3(0,0,1).transformDirection(lounge.group.matrixWorld).toArray();
+        const shell=lounge.group.getObjectByName('beanbag-soft-linen-shell'),positions=shell.geometry.getAttribute('position'),backWall=[];
+        for(let i=0;i<positions.count;i++){
+          const p=new THREE.Vector3().fromBufferAttribute(positions,i);
+          if(p.y>.45&&p.z<-.39&&Math.abs(p.x)<.23)backWall.push(p.applyMatrix4(shell.matrixWorld).x+2.3);
+        }
+        return{front,backWall,textures,position:camera.position.toArray(),target:target.toArray(),lounge:bounds(lounge.group),cat:bounds(cat.group),pad:bounds(lounge.group.getObjectByName('beanbag-yielding-seat-cushion')),console:bounds(consoleTable),desk:bounds(tabletop),catScreen,catVisible,meshes,triangles,book:screen(book),rose:screen(bouquet),visible:lounge.group.visible};
       };
       const ray = new THREE.Raycaster();
     `);
@@ -44,7 +50,12 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
     expect(room.lounge.size[0]).toBeGreaterThan(.9);expect(room.lounge.size[0]).toBeLessThan(1.15);
     expect(room.lounge.size[1]).toBeLessThan(.85);expect(room.lounge.min[1]).toBeGreaterThan(-.002);
     expect(room.desk.min[0]-room.lounge.max[0]).toBeGreaterThan(.15);
-    // The chair now sits beside the left wall and forward of the console.
+    // The back sits near the left wall and the seat opens into the room.
+    expect(room.front[0]).toBeGreaterThan(.97);
+    expect(room.front[2]).toBeGreaterThan(.05);expect(room.front[2]).toBeLessThan(.25);
+    expect(room.backWall.length).toBeGreaterThan(20);
+    expect(Math.min(...room.backWall)).toBeGreaterThan(.05);
+    expect(Math.max(...room.backWall)).toBeLessThan(.24);
     expect(room.lounge.min[0]).toBeLessThan(-2.15);
     expect(room.lounge.min[0]+2.3).toBeGreaterThan(.05);
     const floorGap=(a:any,b:any)=>Math.max(...[0,2].flatMap(axis=>[a.min[axis]-b.max[axis],b.min[axis]-a.max[axis]]));
@@ -102,7 +113,9 @@ test('a model download interrupted by WebGL loss cannot restart the room',async 
   let requested!:()=>void,release!:()=>void;
   const started=new Promise<void>(resolve=>{requested=resolve;});
   const held=new Promise<void>(resolve=>{release=resolve;});
-  await page.route('**/models/sleeping-tabby.glb',async route=>{
+  await page.route(/\/sleeping-tabby[^/?]*\.glb(?:\?.*)?$/,async route=>{
+    // Let Vite's URL-export module load; hold only the binary fetch.
+    if(route.request().resourceType()!=="fetch"){await route.continue();return;}
     requested();await held;
     // The browser may already have cancelled the held request.
     try{await route.continue();}catch{}

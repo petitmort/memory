@@ -509,11 +509,12 @@ export function createScene(
   const drawerPull = new THREE.Mesh(new THREE.TorusGeometry(.010,.0018,8,24),brass);
   drawerPull.position.set(0,.701,.153); consoleTable.add(drawerPull);
   const lounge = createCozySeating();
-  // Left of the desk, forward of the console: about 10 cm from the side wall.
-  lounge.group.position.set(-1.7, 0, -.32);
-  lounge.group.rotation.y = .13;
+  // The back follows the left wall, with a slight angle opening into the room.
+  lounge.group.position.set(-1.77, 0, -.27);
+  lounge.group.rotation.y = Math.PI / 2 - .16;
   room.add(lounge.group);
   const cat = createSleepingCat();
+  cat.group.rotation.y = Math.PI / 2;
   lounge.catNest.add(cat.group);
   // A 90 × 210 cm door leaf, 4.5 cm thick, with the handle 1 m above the floor.
   const facade = new THREE.Group();

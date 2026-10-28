@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import catModelUrl from "./assets/sleeping-tabby.glb?url";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 /** A cleaned, locally hosted tabby scan. Attribution: public/models/README.md. */
@@ -21,9 +22,9 @@ export function createSleepingCat() {
     }
     for(const texture of textures)texture.dispose();
   }
-  // Relative URL is also valid on GitHub Pages' /memory/ subpath. A single GLB
-  // contains the mesh and compressed colour texture; no third-party requests.
-  const ready=fetch(`${import.meta.env.BASE_URL}models/sleeping-tabby.glb`,{signal:controller.signal})
+  // Vite versions the local GLB by content, so a new pose never reuses a
+  // cached older model. The relative build URL also works on /memory/.
+  const ready=fetch(catModelUrl,{signal:controller.signal})
     .then(response=>{
       if(!response.ok)throw new Error(`Cat model: HTTP ${response.status}`);
       return response.arrayBuffer();
