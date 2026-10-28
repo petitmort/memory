@@ -14,6 +14,10 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
         const bounds=object=>{const b=new THREE.Box3().setFromObject(object,true);return{min:b.min.toArray(),max:b.max.toArray(),size:b.getSize(new THREE.Vector3()).toArray()}};
         const screen=object=>{const v=object.getWorldPosition(new THREE.Vector3()).project(camera);return{x:(v.x+1)*innerWidth/2,y:(1-v.y)*innerHeight/2}};
         const point=lounge.catNest.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0,.09,0));
+        // The cloth rises into the arms; measure its support under the cat,
+        // rather than treating the highest sewn edge as a flat seat plane.
+        const supportRay=new THREE.Raycaster(lounge.catNest.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0,1,0)),new THREE.Vector3(0,-1,0));
+        const seatSupport=supportRay.intersectObject(lounge.group.getObjectByName('beanbag-yielding-seat-cushion'),false)[0]?.point.y;
         const projected=point.project(camera);
         const catScreen={x:(projected.x+1)*innerWidth/2,y:(1-projected.y)*innerHeight/2};
         const sight=new THREE.Raycaster();sight.setFromCamera(new THREE.Vector2(projected.x,projected.y),camera);
@@ -29,7 +33,7 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
           const p=new THREE.Vector3().fromBufferAttribute(positions,i);
           if(p.y>.45&&p.z<-.39&&Math.abs(p.x)<.23)backWall.push(p.applyMatrix4(shell.matrixWorld).x+2.3);
         }
-        return{front,backWall,textures,position:camera.position.toArray(),target:target.toArray(),lounge:bounds(lounge.group),cat:bounds(cat.group),pad:bounds(lounge.group.getObjectByName('beanbag-yielding-seat-cushion')),console:bounds(consoleTable),desk:bounds(tabletop),catScreen,catVisible,meshes,triangles,book:screen(book),rose:screen(bouquet),visible:lounge.group.visible};
+        return{front,backWall,textures,seatSupport,position:camera.position.toArray(),target:target.toArray(),lounge:bounds(lounge.group),cat:bounds(cat.group),pad:bounds(lounge.group.getObjectByName('beanbag-yielding-seat-cushion')),console:bounds(consoleTable),desk:bounds(tabletop),catScreen,catVisible,meshes,triangles,book:screen(book),rose:screen(bouquet),visible:lounge.group.visible};
       };
       const ray = new THREE.Raycaster();
     `);
@@ -62,8 +66,9 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
     expect(floorGap(room.lounge,room.console)).toBeGreaterThan(.12);
     expect(room.meshes).toBeLessThanOrEqual(10);expect(room.triangles).toBeLessThan(36000);
     expect(room.textures).toEqual([[1024,1024]]);
-    expect(room.cat.min[1]-room.pad.max[1]).toBeGreaterThan(-.012);
-    expect(room.cat.min[1]-room.pad.max[1]).toBeLessThan(.008);
+    expect(room.seatSupport).toBeGreaterThan(.32);
+    expect(room.cat.min[1]-room.seatSupport).toBeGreaterThan(-.012);
+    expect(room.cat.min[1]-room.seatSupport).toBeLessThan(.008);
     for(const axis of [0,2]){
       expect(room.cat.min[axis]).toBeGreaterThan(room.pad.min[axis]+.01);
       expect(room.cat.max[axis]).toBeLessThan(room.pad.max[axis]-.01);
@@ -106,22 +111,26 @@ test('a sleeping tabby rests on a soft lounge and can be viewed without moving t
   }finally{await context.close();}
 });
 
-test('a model download interrupted by WebGL loss cannot restart the room',async ({page})=>{
+for (const asset of [
+  { name: 'cat model', url: /\/sleeping-tabby[^/?]*\.glb(?:\?.*)?$/, type: 'fetch' },
+  { name: 'cotton cloth', url: /\/beanbag-cotton-albedo[^/?]*\.webp(?:\?.*)?$/, type: 'image' },
+]) test(`a ${asset.name} download interrupted by WebGL loss cannot restart the room`,async ({page})=>{
   test.setTimeout(60000);
   await page.emulateMedia({reducedMotion:'reduce'});
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   let requested!:()=>void,release!:()=>void;
   const started=new Promise<void>(resolve=>{requested=resolve;});
   const held=new Promise<void>(resolve=>{release=resolve;});
-  await page.route(/\/sleeping-tabby[^/?]*\.glb(?:\?.*)?$/,async route=>{
-    // Let Vite's URL-export module load; hold only the binary fetch.
-    if(route.request().resourceType()!=="fetch"){await route.continue();return;}
+  await page.route(asset.url,async route=>{
+    // Let Vite's URL-export modules load; hold only the actual asset.
+    if(route.request().resourceType()!==asset.type){await route.continue();return;}
     requested();await held;
     // The browser may already have cancelled the held request.
     try{await route.continue();}catch{}
   });
   try{
-    await page.goto('/');await started;
+    // An intentionally held HTML image delays the window load event.
+    await page.goto('/',{waitUntil:'domcontentloaded'});await started;
     await expect(page.locator('#loading')).toBeVisible();
     await page.locator('#world canvas').evaluate(canvas=>{
       (canvas as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext();

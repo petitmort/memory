@@ -763,6 +763,7 @@ export function createScene(
     if (unavailableError) return;
     unavailableError = new SceneUnavailableError();
     cat.dispose();
+    lounge.dispose();
     courtyardFog.dispose();
     fogMotion = null;
     cancelAnimationFrame(frame);
@@ -1113,7 +1114,7 @@ export function createScene(
   camera.updateMatrixWorld(true);
   // Warm the two-sided paper shader before its first visible turn.
   album.leaf.visible = true;
-  const ready = whileAvailable(cat.ready).then(() => {
+  const ready = whileAvailable(Promise.all([cat.ready, lounge.ready])).then(() => {
     requireAvailable();
     return whileAvailable(renderer.compileAsync(scene, camera));
   }).then(() => whileAvailable(warmSceneResources(renderer, scene, camera, shelteredDetails, requireAvailable))).then(() => {
