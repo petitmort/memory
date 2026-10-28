@@ -18,6 +18,7 @@ import { consoleLayout } from "./interior-layout";
 import { createCozySeating } from "./cozy-seating";
 import { createSleepingCat } from "./sleeping-cat";
 import { createCourtyardFog } from "./courtyard-fog";
+import { warmSceneResources } from "./scene-warmup";
 import { readingBlend } from "./reading-timeline";
 import { advanceReadingClock, createReadingPath, readingRetargetDuration, retargetReadingPath, type ReadingPath } from "./reading-motion";
 
@@ -910,6 +911,7 @@ export function createScene(
     simulationTime += Math.max(delta, 0) / 1000;
     const t = simulationTime;
     let finishFogFrame: (() => void) | undefined;
+    let updateFog = false;
     if (current === "entry" && fogClearance < 1) {
       if (fogMotion) {
         const motion = fogMotion;
@@ -921,7 +923,7 @@ export function createScene(
           finishFogFrame = () => { animating = false; motion.done(); };
         }
       }
-      courtyardFog.update(t, fogClearance, reducedMotion);
+      updateFog = true;
       sceneFog.density = THREE.MathUtils.lerp(.27, .005, fogClearance);
       sceneFog.color.lerpColors(fogColor, clearColor, fogClearance);
     }
@@ -1032,6 +1034,10 @@ export function createScene(
     if (Math.abs(doorPivot.rotation.y - previousDoor) > .000001)
       sun.shadow.needsUpdate = true;
     camera.lookAt(target);
+    if (updateFog) {
+      camera.updateMatrixWorld();
+      courtyardFog.update(t, fogClearance, reducedMotion, camera);
+    }
     renderer.render(scene, camera);
     singleRenderRequested = false;
     // Camera, paper and DOM all advance on this same rendered frame, including p=1.
@@ -1110,7 +1116,7 @@ export function createScene(
   const ready = whileAvailable(cat.ready).then(() => {
     requireAvailable();
     return whileAvailable(renderer.compileAsync(scene, camera));
-  }).then(() => {
+  }).then(() => whileAvailable(warmSceneResources(renderer, scene, camera, shelteredDetails, requireAvailable))).then(() => {
     requireAvailable();
     album.leaf.visible = false;
     renderer.render(scene, camera);

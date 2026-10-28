@@ -3,6 +3,7 @@ import { chapters, artwork } from "./content";
 import { createScene, SceneUnavailableError } from "./scene";
 import { createReaderJourney, transitionReader } from "./reader-transition";
 import { captureBookPages } from "./page-raster";
+import { prepareAmbientNoise } from "./ambient-audio";
 
 const icons = {
   sound:
@@ -104,9 +105,14 @@ el("loading").inert = false;
 let soundEnabled = true,
   audio: AudioContext | undefined,
   gain: GainNode | undefined;
-el("sound").innerHTML = svg("sound");
-el("sound").setAttribute("aria-label", "关闭海浪声");
-el("sound").title = "关闭海浪声";
+let audioPreparation: Promise<void> | undefined;
+let audioUnlocked = false;
+function updateSoundControl() {
+  el("sound").innerHTML = svg(soundEnabled ? "sound" : "mute");
+  el("sound").setAttribute("aria-label", soundEnabled ? "关闭海浪声" : "开启海浪声");
+  el("sound").title = soundEnabled ? "关闭海浪声" : "开启海浪声";
+}
+updateSoundControl();
 function toast(message: string) {
   el("toast").textContent = message;
   el("toast").classList.add("show");
@@ -126,57 +132,58 @@ function audioVolume() {
     1.2,
   );
 }
+function prepareAudio() {
+  if (audio) return audio;
+  const context = new AudioContext();
+  audio = context;
+  const destination = context.createGain();
+  gain = destination;
+  destination.gain.value = 0;
+  destination.connect(context.destination);
+  // Preparing under the loading screen must never start playback. A later
+  // gesture resumes this same context after the expensive device setup.
+  const suspended = context.suspend();
+  audioPreparation = Promise.all([prepareAmbientNoise(context), suspended]).then(([buffer]) => {
+    if (context.state === "closed") throw new DOMException("Audio context closed", "AbortError");
+    const source = context.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    const filter = context.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 650;
+    source.connect(filter);
+    filter.connect(destination);
+    source.start();
+    const lfo = context.createOscillator();
+    const depth = context.createGain();
+    lfo.frequency.value = 0.09;
+    depth.gain.value = 240;
+    lfo.connect(depth);
+    depth.connect(filter.frequency);
+    lfo.start();
+  });
+  // Observe a background failure immediately; the gesture path can still
+  // report it through the existing sound control instead of an unhandled error.
+  void audioPreparation.catch(() => {});
+  return context;
+}
 async function unlockAudio() {
   try {
-    if (!audio) {
-      audio = new AudioContext();
-      gain = audio.createGain();
-      gain.gain.value = 0;
-      gain.connect(audio.destination);
-      const buffer = audio.createBuffer(
-        1,
-        audio.sampleRate * 8,
-        audio.sampleRate,
-      );
-      const data = buffer.getChannelData(0);
-      let brown = 0;
-      for (let i = 0; i < data.length; i++) {
-        brown = (brown + Math.random() * 0.04 - 0.02) / 1.02;
-        data[i] = brown * 5;
-      }
-      const source = audio.createBufferSource();
-      source.buffer = buffer;
-      source.loop = true;
-      const filter = audio.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.value = 650;
-      source.connect(filter);
-      filter.connect(gain);
-      source.start();
-      const lfo = audio.createOscillator();
-      const depth = audio.createGain();
-      lfo.frequency.value = 0.09;
-      depth.gain.value = 240;
-      lfo.connect(depth);
-      depth.connect(filter.frequency);
-      lfo.start();
-    }
-    await audio.resume();
+    const context = prepareAudio();
+    const resumed = context.resume().then(() => { audioUnlocked = true; });
+    await Promise.all([resumed, audioPreparation]);
     audioVolume();
   } catch {
     toast("此浏览器暂时无法播放环境声");
     soundEnabled = false;
+    updateSoundControl();
   }
 }
 el("sound").onclick = async () => {
   soundEnabled = !soundEnabled;
-  await unlockAudio();
-  el("sound").innerHTML = svg(soundEnabled ? "sound" : "mute");
-  el("sound").setAttribute(
-    "aria-label",
-    soundEnabled ? "关闭海浪声" : "开启海浪声",
-  );
-  el("sound").title = soundEnabled ? "关闭海浪声" : "开启海浪声";
+  updateSoundControl();
+  audioVolume();
+  if (soundEnabled) await unlockAudio();
   if (soundEnabled && ["fog", "clearing", "door", "entering"].includes(state))
     toast("海浪声将在进入房间后响起");
 };
@@ -192,13 +199,14 @@ async function enter() {
   if (!sceneAvailable) return;
   const generation = sceneVersion;
   if (state === "fog") {
-    if (soundEnabled) void unlockAudio();
     state = "clearing";
     el<HTMLButtonElement>("enter").disabled = true;
     el("enter-label").textContent = "风正在经过…";
     el("fog").classList.add("cleared");
     try {
-      await scene?.clearFog();
+      const clearing = scene?.clearFog();
+      if (soundEnabled) void unlockAudio();
+      await clearing;
     } catch (error) {
       onSceneUnavailable(error);
       return;
@@ -546,6 +554,9 @@ try {
     reduceMotion,
     () => onSceneUnavailable(),
   );
+  // Prepare alongside GPU loading, before continuous scene drawing starts.
+  // Browsers requiring gesture-time construction retain the lazy fallback.
+  if (soundEnabled) { try { prepareAudio(); } catch {} }
   scene.ready
     .then(() => {
       if (sceneInvalidated || generation !== sceneVersion) return;
@@ -560,5 +571,5 @@ try {
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     void audio?.suspend();
-  } else if (soundEnabled) void audio?.resume();
+  } else if (soundEnabled && audioUnlocked) void audio?.resume();
 });
