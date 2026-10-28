@@ -105,7 +105,7 @@ function mockScene(_container: HTMLElement,_interact: () => void,_reduced: boole
   };
   return {
     ready:mode==='late-ready'?initial:Promise.race([initial,loss]),
-    clearFog(){},setQuality(){},setBookChapter(){},setBookPageCanvases(){},setBookVisibility(){},dispose(){},
+    async clearFog(){assert();if(mode==='clearing')await wait('clearing');},setQuality(){},setBookChapter(){},setBookPageCanvases(){},setBookVisibility(){},dispose(){},
     getBookProjection:projection,
     async enterRoom(){assert();await wait('entering');},
     async openBook(onFrame:any,paperReady?:Promise<void>){
@@ -139,13 +139,16 @@ test('scene failure settles pending UI states and keeps the current album usable
   test.setTimeout(60000);
   const context=await browser.newContext({viewport:{width:1024,height:768},reducedMotion:'reduce'});
   try {
-    for(const phase of ['initializing','late-ready','room','entering','opening','reading','closing']) {
+    for(const phase of ['initializing','late-ready','clearing','room','entering','opening','reading','closing']) {
       const page=await context.newPage(); const errors:string[]=[];
       page.on('pageerror',error=>errors.push(error.message));
       await mockRenderer(page);
       await page.goto('/?review='+phase);
       await page.waitForFunction(()=>Boolean((window as any).__sceneProbe));
-      if(phase==='entering') {
+      if(phase==='clearing') {
+        await page.locator('#enter').click();
+        await page.waitForFunction(()=>(window as any).__sceneProbe.pending==='clearing');
+      } else if(phase==='entering') {
         await page.locator('#enter').click();await expect(page.locator('#enter')).toBeEnabled();await page.locator('#enter').click();
         await page.waitForFunction(()=>(window as any).__sceneProbe.pending==='entering');
       } else if(!['initializing','late-ready'].includes(phase)) {

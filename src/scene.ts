@@ -17,6 +17,7 @@ import { createDecor } from "./decor";
 import { consoleLayout } from "./interior-layout";
 import { createCozySeating } from "./cozy-seating";
 import { createSleepingCat } from "./sleeping-cat";
+import { createCourtyardFog } from "./courtyard-fog";
 import { readingBlend } from "./reading-timeline";
 import { advanceReadingClock, createReadingPath, readingRetargetDuration, retargetReadingPath, type ReadingPath } from "./reading-motion";
 
@@ -52,13 +53,18 @@ export function createScene(
   container.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color("#c6dce5");
-  scene.fog = new THREE.FogExp2("#d2e4e8", 0.008);
+  const fogColor = new THREE.Color("#c5d0d1"), clearColor = new THREE.Color("#d2e4e8");
+  const sceneFog = new THREE.FogExp2(fogColor, .27);
+  scene.fog = sceneFog;
   const camera = new THREE.PerspectiveCamera(
     50,
     innerWidth / innerHeight,
     0.1,
     500,
   );
+  const courtyardFog = createCourtyardFog();
+  courtyardFog.update(0, 0, reducedMotion);
+  scene.add(courtyardFog.group);
   const target = new THREE.Vector3();
   const ambient = new THREE.HemisphereLight("#e1e8e5", "#aa9273", 1.65);
   scene.add(ambient);
@@ -657,6 +663,9 @@ export function createScene(
           t: new THREE.Vector3(-0.2, 0.95, -1.5),
         };
   let current: "entry" | "room" | "book" = "entry";
+  let fogClearance = 0;
+  let fogClearing: Promise<void> | null = null;
+  let fogMotion: { elapsed: number; duration: number; lastDrawAt: number | null; done: () => void } | null = null;
   // These objects sit behind the closed entrance. Reveal them before the door
   // starts moving, rather than drawing their hidden triangles in the courtyard.
   const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group];
@@ -753,6 +762,8 @@ export function createScene(
     if (unavailableError) return;
     unavailableError = new SceneUnavailableError();
     cat.dispose();
+    courtyardFog.dispose();
+    fogMotion = null;
     cancelAnimationFrame(frame);
     frame = 0;
     walking = null;
@@ -865,6 +876,7 @@ export function createScene(
     lastDraw = null;
     if (readingMotion) readingMotion.lastDrawAt = null;
     if (lookMotion) lookMotion.lastDrawAt = null;
+    if (fogMotion) fogMotion.lastDrawAt = null;
   }
   function visibilityChanged() {
     if (document.hidden) pauseFrames();
@@ -897,6 +909,22 @@ export function createScene(
     // Hidden tabs and reading pauses do not advance the sea or a walking eye.
     simulationTime += Math.max(delta, 0) / 1000;
     const t = simulationTime;
+    let finishFogFrame: (() => void) | undefined;
+    if (current === "entry" && fogClearance < 1) {
+      if (fogMotion) {
+        const motion = fogMotion;
+        // Clearing begins on an actual draw and pauses with a hidden tab.
+        const a = advanceReadingClock(motion, now);
+        fogClearance = a * a * (3 - 2 * a);
+        if (a === 1) {
+          fogMotion = null;
+          finishFogFrame = () => { animating = false; motion.done(); };
+        }
+      }
+      courtyardFog.update(t, fogClearance, reducedMotion);
+      sceneFog.density = THREE.MathUtils.lerp(.27, .005, fogClearance);
+      sceneFog.color.lerpColors(fogColor, clearColor, fogClearance);
+    }
     if (!reducedMotion) {
       dust.position.y = Math.sin(t * 0.1) * 0.06;
     }
@@ -1008,6 +1036,7 @@ export function createScene(
     singleRenderRequested = false;
     // Camera, paper and DOM all advance on this same rendered frame, including p=1.
     if (updateReadingFrame) updateReadingFrame.callback({ progress: updateReadingFrame.progress, projection: getBookProjection() });
+    finishFogFrame?.();
     finishLookFrame?.();
     finishReadingFrame?.();
     drawing = false;
@@ -1091,8 +1120,14 @@ export function createScene(
   return {
     ready,
     clearFog() {
-      if (unavailableError) return;
-      scene.fog = new THREE.FogExp2("#d2e4e8", 0.005);
+      requireAvailable();
+      if (fogClearing) return fogClearing;
+      animating = true;
+      fogClearing = whileAvailable(new Promise<void>(done => {
+        fogMotion = { elapsed: 0, duration: reducedMotion ? 100 : 1850, lastDrawAt: null, done };
+      }));
+      requestRender();
+      return fogClearing;
     },
     async enterRoom() {
       requireAvailable();

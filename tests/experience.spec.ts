@@ -19,7 +19,8 @@ test("desktop: deliberate entry, reading, chapter boundaries, sound and return",
   await page.goto("/");
   await expect(page.locator("#loading")).toBeHidden();
   // Record the short-lived guard in the click event, before a slow software
-  // renderer can delay the browser protocol beyond the 1.85 s fog transition.
+  // renderer can delay browser messages; clearing now waits for actual drawn
+  // frames, with the same generous completion budget as the book journey.
   await page.evaluate(() => {
     const button = document.getElementById("enter") as HTMLButtonElement;
     button.addEventListener(
@@ -41,7 +42,7 @@ test("desktop: deliberate entry, reading, chapter boundaries, sound and return",
     ),
   ).toBe(true);
   await expect(page.locator("#enter")).toHaveText("推开这扇门", {
-    timeout: 10000,
+    timeout: 60000,
   });
   await page.keyboard.press("Enter");
   await expect(page.locator("#room-ui")).toBeVisible({ timeout: 15000 });
@@ -100,7 +101,7 @@ test("mobile: small-screen layout, swipe chapters and reduced motion", async ({
   await expect(page.locator("#loading")).toBeHidden();
   await page.screenshot({ path: "test-results/mobile-entry.png" });
   await page.locator("#enter").click();
-  await expect(page.locator("#enter")).toBeEnabled();
+  await expect(page.locator("#enter")).toBeEnabled({ timeout: 60000 });
   await page.locator("#enter").click();
   await expect(page.locator("#room-ui")).toBeVisible();
   await page.locator("#open-book").click();
@@ -263,7 +264,7 @@ test("physical scene: enter through doorway, approach and open the album, then r
   await page.goto("/");
   await expect(page.locator("#loading")).toBeHidden();
   await page.locator("#enter").click();
-  await expect(page.locator("#enter")).toBeEnabled();
+  await expect(page.locator("#enter")).toBeEnabled({ timeout: 60000 });
   const sizes = await page.evaluate(
     () => (window as unknown as Probe).__sceneSizes,
   );

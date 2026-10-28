@@ -24,7 +24,7 @@ document.querySelector("#app")!.innerHTML = `
 <section class="room-ui hidden" id="room-ui"><div class="eyebrow">SOMEWHERE, BY THE SEA</div><h2>海风如旧，<br>故事等你。</h2><p>猫咪在身旁睡着，海风替你翻开回忆。</p><button class="primary-button" id="open-book">把花放到一旁 · 打开纪念册 <span class="button-arrow">${svg("arrow")}</span></button><button class="cozy-view text-button" id="cozy-view" aria-pressed="false">看看睡着的小猫 <span aria-hidden="true">↖</span></button><a class="cozy-credit hidden" id="cozy-credit" href="credits.html" target="_blank" rel="noopener">猫咪模型鸣谢</a></section>
 <div class="scene-hint hidden" id="scene-hint"><span class="pulse-dot"></span> 点击桌上的花束，或轻触按钮</div>
 <div class="loading" id="loading" role="status"><span></span> 正在把海风装进房间</div>
-<div class="fog" id="fog"></div>
+<div class="fog" id="fog" aria-hidden="true"></div>
 <section class="reader hidden" id="reader" role="dialog" aria-modal="true" aria-label="回忆纪念册" tabindex="-1"><div class="reader-top"><span class="eyebrow">THE THINGS WE KEEP</span><button id="close-book" class="text-button">回到房间 ${svg("close")}</button></div><div class="book-wrap"><div class="book" id="book"><article class="page page-left"><span class="page-kicker" id="chapter-date"></span><div class="print" id="art-holder"></div><p class="photo-caption" id="photo-caption"></p><span class="page-number" id="left-number"></span></article><article class="page page-right"><span class="page-kicker" id="chapter-subtitle"></span><div class="story"><span class="small-flower">✳&#xfe0e;</span><h2 id="chapter-title"></h2><p class="poem" id="chapter-text"></p><div class="small-rule"></div><p class="story-note" id="chapter-note"></p></div><span class="page-number" id="right-number"></span></article></div><button class="page-nav prev" id="prev" aria-label="上一章">${svg("arrow")}</button><button class="page-nav next" id="next" aria-label="下一章">${svg("arrow")}</button></div><div class="reader-bottom"><span id="chapter-count"></span><div class="chapter-dots" id="chapter-dots"></div><span class="keyboard-hint">← → 翻页 <span>·</span> ESC 返回</span></div></section>
 </main>
 <footer class="footer"><div class="journey"><span class="active" data-step="0">01 <i></i> 门前</span><b></b><span data-step="1">02 <i></i> 海边房间</span><b></b><span data-step="2">03 <i></i> 回忆</span></div><span class="footer-note">MADE OF MOMENTS <span>✦</span> KEPT BY THE SEA</span><button id="quality" class="quality-button" title="切换渲染画质">画质 · 自适应</button></footer>
@@ -197,10 +197,15 @@ async function enter() {
     el<HTMLButtonElement>("enter").disabled = true;
     el("enter-label").textContent = "风正在经过…";
     el("fog").classList.add("cleared");
-    scene?.clearFog();
-    await new Promise((r) => setTimeout(r, reduceMotion ? 100 : 1850));
+    try {
+      await scene?.clearFog();
+    } catch (error) {
+      onSceneUnavailable(error);
+      return;
+    }
     if (!sceneAvailable || generation !== sceneVersion || state !== "clearing") return;
     state = "door";
+    el("fog").classList.add("hidden");
     el<HTMLButtonElement>("enter").disabled = false;
     el("enter-label").textContent = "推开这扇门";
     el("enter-note").textContent = "门的另一边，是一整个夏天";
