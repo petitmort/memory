@@ -1,6 +1,6 @@
-import purrUrl from "./assets/cat-purr.mp3";
+import voiceUrl from "./assets/cat-purr.mp3";
 
-/** A prepared, optional one-shot voice sharing the room's audio context. */
+/** One prepared purr-then-meow recording sharing the room's audio context. */
 export function createCatVoice(context: AudioContext) {
   const controller = new AbortController();
   let buffer: AudioBuffer | null = null;
@@ -25,7 +25,8 @@ export function createCatVoice(context: AudioContext) {
   function stop() {
     const voice = active;
     if (!voice) return;
-    // A suspended or hidden page must not resume an old purr later.
+    // Stopping the shared recording also cancels its trailing meow; nothing
+    // can resume later when the page becomes visible or sound is re-enabled.
     if (context.state !== "running" || (typeof document !== "undefined" && document.hidden)) {
       stopImmediately();
       return;
@@ -55,7 +56,7 @@ export function createCatVoice(context: AudioContext) {
 
   // Decoding is allowed while suspended. Nothing starts here, and neither a
   // late success nor an optional download failure queues a future vocalization.
-  const ready: Promise<void> = fetch(purrUrl, { signal: controller.signal })
+  const ready: Promise<void> = fetch(voiceUrl, { signal: controller.signal })
     .then(response => {
       if (!response.ok) throw new Error(`Cat voice: HTTP ${response.status}`);
       return response.arrayBuffer();
