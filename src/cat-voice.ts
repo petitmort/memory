@@ -5,7 +5,7 @@ export function createCatVoice(context: AudioContext) {
   const controller = new AbortController();
   let buffer: AudioBuffer | null = null;
   let enabled = true, disposed = false;
-  type Voice = { source: AudioBufferSourceNode; gain: GainNode; stopping: boolean; released: boolean };
+  type Voice = { source: AudioBufferSourceNode; gain: GainNode; startedAt: number; stopping: boolean; released: boolean };
   let active: Voice | null = null;
 
   function release(voice: Voice) {
@@ -77,9 +77,9 @@ export function createCatVoice(context: AudioContext) {
       let voice: Voice | undefined;
       try {
         const source = context.createBufferSource(), gain = context.createGain();
-        const currentVoice: Voice = { source, gain, stopping: false, released: false };
-        voice = currentVoice;
         const now = context.currentTime, duration = buffer.duration;
+        const currentVoice: Voice = { source, gain, startedAt: now, stopping: false, released: false };
+        voice = currentVoice;
         source.buffer = buffer;
         gain.gain.setValueAtTime(0, now);
         gain.gain.linearRampToValueAtTime(.5, now + Math.min(.045, duration / 4));
@@ -94,6 +94,24 @@ export function createCatVoice(context: AudioContext) {
         if (voice) release(voice);
         return false;
       }
+    },
+    captureClock(): (() => number) | undefined {
+      if (!active) return;
+      // Capture this play, including its quiet settling tail after onended.
+      // Reading `active` later could attach an old gesture to a newer sound.
+      const startedAt = active.startedAt;
+      let elapsed = 0, interruptedAt: number | undefined, interruptedElapsed = 0;
+      return () => {
+        const now = performance.now();
+        if (context.state !== "running" && interruptedAt === undefined) {
+          interruptedAt = now;
+          interruptedElapsed = Math.max(elapsed, context.currentTime - startedAt);
+        }
+        const sample = interruptedAt === undefined ? context.currentTime - startedAt
+          : interruptedElapsed + (now - interruptedAt) / 1000;
+        elapsed = Math.max(elapsed, sample);
+        return elapsed;
+      };
     },
     setEnabled(value: boolean) {
       enabled = value;

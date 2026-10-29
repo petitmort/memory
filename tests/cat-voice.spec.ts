@@ -69,8 +69,10 @@ test('a complete purr-and-meow is one optional voice; interrupted pets cannot le
   Object.defineProperty(globalThis, 'document', { configurable: true, value: visibility });
   const context = new RecordingContext(), voice = createCatVoice(context.audio);
   try {
+    expect(voice.captureClock()).toBeUndefined();
     expect(voice.play()).toBe(false);
     await voice.ready;
+    expect(voice.captureClock()).toBeUndefined();
     expect(context.starts).toBe(0);
     expect(voice.play()).toBe(false); // Preparing in a suspended context is silent.
     context.changeState('running');
@@ -133,6 +135,7 @@ test('unavailable or late voice preparation never starts or queues a pet sound',
     globalThis.fetch = (async () => { throw new Error('Optional recording is offline'); }) as typeof fetch;
     const offline = create(); await offline.voice.ready;
     expect(offline.voice.play()).toBe(false);
+    expect(offline.voice.captureClock()).toBeUndefined();
     offline.voice.setEnabled(false); offline.voice.setEnabled(true);
 
     globalThis.fetch = (async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) })) as typeof fetch;
@@ -144,6 +147,7 @@ test('unavailable or late voice preparation never starts or queues a pet sound',
     for (let turn = 0; !finishDecode && turn < 20; turn++) await Promise.resolve();
     expect(finishDecode).toBeDefined();
     expect(late.play()).toBe(false);
+    expect(late.captureClock()).toBeUndefined();
     late.dispose();
     finishDecode({ duration: 3.6 }); await late.ready;
     expect(late.play()).toBe(false);
@@ -151,5 +155,77 @@ test('unavailable or late voice preparation never starts or queues a pet sound',
   } finally {
     for (const voice of voices) voice.dispose();
     globalThis.fetch = originalFetch;
+  }
+});
+
+test('a captured reaction clock follows its own sound through the quiet settle and a later pet', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) })) as typeof fetch;
+  const context = new RecordingContext();
+  context.currentTime = 12;
+  context.changeState('running');
+  const voice = createCatVoice(context.audio);
+  try {
+    await voice.ready;
+    expect(voice.captureClock()).toBeUndefined();
+    expect(voice.play()).toBe(true);
+    const first = voice.captureClock()!;
+    expect(first()).toBe(0);
+    context.advance(2.8);
+    expect(first()).toBeCloseTo(2.8, 8);
+    expect(voice.play()).toBe(false);
+    expect(first()).toBeCloseTo(2.8, 8);
+
+    context.advance(.9); // Natural source.onended occurs before the pose settles.
+    expect(context.audible).toBe(0);
+    expect(voice.captureClock()).toBeUndefined();
+    expect(first()).toBeCloseTo(3.7, 8);
+
+    expect(voice.play()).toBe(true);
+    const second = voice.captureClock()!;
+    expect(second()).toBe(0);
+    context.advance(.2);
+    expect(first()).toBeCloseTo(3.9, 8);
+    expect(second()).toBeCloseTo(.2, 8);
+    expect(context.starts).toBe(2);
+    expect(context.decodes).toBe(1);
+  } finally {
+    voice.dispose();
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('a device interruption lets the captured pose settle monotonically without restarting audio', async () => {
+  const originalFetch = globalThis.fetch;
+  const originalNow = Object.getOwnPropertyDescriptor(performance, 'now');
+  globalThis.fetch = (async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) })) as typeof fetch;
+  const context = new RecordingContext(); context.changeState('running');
+  const voice = createCatVoice(context.audio);
+  let wallTime = 10000;
+  try {
+    await voice.ready;
+    Object.defineProperty(performance, 'now', { configurable: true, value: () => wallTime });
+    expect(voice.play()).toBe(true);
+    const clock = voice.captureClock()!;
+    context.advance(1.2);
+    expect(clock()).toBeCloseTo(1.2, 8);
+    context.changeState('suspended');
+    expect(context.audible).toBe(0);
+    expect(clock()).toBeCloseTo(1.2, 8);
+    wallTime += 250;
+    expect(clock()).toBeCloseTo(1.45, 8);
+
+    context.changeState('running');
+    context.advance(.01); // Resuming the device cannot rewind the quiet settle.
+    wallTime += 550;
+    expect(clock()).toBeCloseTo(2, 8);
+    wallTime += 2200;
+    expect(clock()).toBeCloseTo(4.2, 8);
+    expect(context.starts).toBe(1);
+  } finally {
+    voice.dispose();
+    globalThis.fetch = originalFetch;
+    if (originalNow) Object.defineProperty(performance, 'now', originalNow);
+    else Reflect.deleteProperty(performance, 'now');
   }
 });

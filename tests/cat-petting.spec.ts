@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { prepareCatPetting } from '../src/cat-petting';
+import { CAT_REACTION_DURATION, sampleCatReaction } from '../src/cat-choreography';
 
 /** Read geometry only: the material's photograph is exercised by the room test. */
 function catGeometry() {
@@ -77,6 +78,9 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     AudioBufferSourceNode.prototype.start=function(...args:any[]){
       if(this.buffer&&this.buffer.duration<4){
         state.starts++;state.active++;
+        const context=this.context,startedAt=args[0]??context.currentTime;
+        const gesture=(window as any).__petAccepted;
+        (window as any).__petSoundClock=()=>({gesture,elapsed:context.currentTime-startedAt});
         this.addEventListener('ended',()=>{state.active--;state.ends++;},{once:true});
       }
       return(start as any).apply(this,args);
@@ -86,10 +90,17 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
   await page.route(/\/src\/scene\.ts(?:\?.*)?$/,async route=>{
     const response=await route.fetch();let body=await response.text();
     body=body.replace('const ray = new THREE.Raycaster();',`
-      window.__petAccepted=0;window.__petFrames=[];
+      window.__petAccepted=0;window.__petFrames=[];window.__petMeowFrames={};window.__petFinishedFrames={};
       window.__petClock=()=>({active:cat.isPetting(),time:simulationTime});
       const originalPet=cat.pet.bind(cat);
       cat.pet=(...args)=>{const accepted=originalPet(...args);if(accepted)window.__petAccepted++;return accepted;};
+      const originalUpdate=cat.update.bind(cat);
+      cat.update=(...args)=>{
+        const before=window.__petSoundClock?.();
+        const changed=originalUpdate(...args);
+        window.__petSampleClock={before,after:window.__petSoundClock?.()};
+        return changed;
+      };
       renderer.domElement.addEventListener('pointerdown',event=>{window.__lastPetPointer=event.pointerId;});
       window.__petSnapshot=()=>{
         scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
@@ -116,7 +127,25 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
       renderer.render(scene, camera);
       if(window.__petSnapshot){
         let weights;cat.group.traverse(object=>{if(object.isMesh&&object.morphTargetInfluences)weights=[...object.morphTargetInfluences];});
-        const active=cat.isPetting();window.__petFrames.push({active,weights});
+        const active=cat.isPetting(),accepted=window.__petAccepted;
+        const clock=window.__petSampleClock;
+        const frame={accepted,active,weights,clock};
+        window.__petFrames.push(frame);
+        // Preserve the actually drawn meow pose and first resting frame. The
+        // sample time is taken around cat.update, before a slow GPU draw can
+        // advance the audio clock while leaving these weights unchanged.
+        if(clock?.before?.gesture===accepted&&clock?.after?.gesture===accepted){
+          const elapsed=(clock.before.elapsed+clock.after.elapsed)/2;
+          if(active&&clock.before.elapsed>=2.760&&clock.after.elapsed<=3.312){
+            const previous=window.__petMeowFrames[accepted];
+            if(!previous||Math.abs(elapsed-2.88)<Math.abs(previous.elapsed-2.88))
+              window.__petMeowFrames[accepted]={...frame,elapsed};
+          }
+          const previous=window.__petPreviousFrame;
+          if(!active&&previous?.active&&previous.accepted===accepted)
+            window.__petFinishedFrames[accepted]={...frame,previous};
+        }
+        window.__petPreviousFrame=frame;
         // Capture the actual drawn pose once per accepted gesture. Polling a
         // short reduced-motion reaction after an input round trip can miss it.
         if(active&&weights[0]>.08&&window.__petObserved?.accepted!==window.__petAccepted)
@@ -132,6 +161,22 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await page.waitForFunction(time=>(window as any).__petClock().time>time+.25,time,{timeout:10000});
   };
   const ready=()=>expect(page.locator('#reader')).toHaveAttribute('data-phase','ready',{timeout:60000});
+  const expectSynchronizedResponse=async(gesture:number)=>{
+    const observed=await page.evaluate(gesture=>({
+      meow:(window as any).__petMeowFrames[gesture],
+      finished:(window as any).__petFinishedFrames[gesture],
+    }),gesture);
+    expect(observed.meow,'A real rendered frame must keep the head raised during the meow').toBeDefined();
+    expect(observed.meow.active).toBe(true);
+    expect(observed.meow.weights[0]).toBeGreaterThan(.10);
+    const expected=sampleCatReaction(observed.meow.elapsed,true);
+    expect(Math.abs(observed.meow.weights[0]-expected.head)).toBeLessThan(.004);
+    expect(Math.abs(observed.meow.weights[1]-expected.ears)).toBeLessThan(.004);
+    expect(observed.finished,'The same audio clock must include the quiet settling tail').toBeDefined();
+    expect(observed.finished.weights).toEqual([0,0]);
+    expect(observed.finished.clock.before.elapsed).toBeGreaterThanOrEqual(CAT_REACTION_DURATION-.005);
+    expect(observed.finished.previous.clock.after.elapsed).toBeLessThan(CAT_REACTION_DURATION+.02);
+  };
   try {
     await page.goto('/');await expect(page.locator('#loading')).toBeHidden({timeout:60000});
     expect(await page.evaluate(()=>(window as any).__petAudio.starts)).toBe(0);
@@ -152,6 +197,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     expect(reacting.gpu).toEqual(before.gpu);
     await page.screenshot({path:'test-results/cat-pet-reaction.png'});
     await settled();
+    await expectSynchronizedResponse(1);
     const resting=await snapshot();expect(resting.weights).toEqual([0,0]);expect(resting.headDelta).toBe(0);
     expect(await page.evaluate(()=>(window as any).__petFrames.some((frame:any)=>frame.weights?.[1]>0))).toBe(true);
     expect(resting.gpu).toEqual(before.gpu);
@@ -219,6 +265,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await expect(page.locator('#reader')).toBeHidden();await page.screenshot({path:'test-results/cat-pet-mobile.png'});
     await settled();
     await expect.poll(()=>page.evaluate(()=>(window as any).__petAudio.active),{timeout:10000}).toBe(0);
+    await expectSynchronizedResponse(5);
     const voiceBeforeHidden=await page.evaluate(()=>({...((window as any).__petAudio)}));
     // Fence visibility loss directly after the next native pet activation,
     // while its source is verifiably playing, rather than after a screenshot.

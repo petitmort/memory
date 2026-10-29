@@ -2,6 +2,7 @@ import * as THREE from "three";
 import catModelUrl from "./assets/sleeping-tabby.glb?url";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { prepareCatPetting } from "./cat-petting";
+import { sampleCatReaction } from "./cat-choreography";
 
 /** A cleaned, locally hosted tabby scan. Attribution: public/models/README.md. */
 export function createSleepingCat() {
@@ -11,7 +12,7 @@ export function createSleepingCat() {
   const controller=new AbortController();
   let disposed=false;
   const petMeshes:THREE.Mesh[]=[];
-  let reaction:{elapsed:number;lastFrameTime:number|null;duration:number;gentle:boolean}|null=null;
+  let reaction:{elapsed:number;startedAt:number|null;clock?:()=>number;gentle:boolean}|null=null;
   let cooldownUntil=-Infinity,lastTime=0;
   function pose(head:number,ears:number) {
     let changed=false;
@@ -65,9 +66,10 @@ export function createSleepingCat() {
     group,ready,
     pet(time:number,reduced:boolean) {
       if(disposed||!petMeshes.length||reaction||!Number.isFinite(time)||time<cooldownUntil)return false;
-      reaction={elapsed:0,lastFrameTime:null,duration:reduced?.65:2.15,gentle:reduced};
+      reaction={elapsed:0,startedAt:null,gentle:reduced};
       return true;
     },
+    setReactionClock(clock: (()=>number)|undefined) { if(reaction)reaction.clock=clock; },
     isPetting(){return reaction!==null;},
     cancelPet() {
       reaction=null;cooldownUntil=lastTime+.12;
@@ -80,21 +82,16 @@ export function createSleepingCat() {
       // frozen together with the room while reading or in a background tab.
       breathing.scale.y=1+Math.sin(time*.95)*(reduced?.0012:.0045);
       if(!reaction)return false;
-      // Start on a drawn frame and retain intermediate poses after a slow draw,
-      // rather than skipping a short response during a main-thread stall.
-      const delta=reaction.lastFrameTime===null?0:THREE.MathUtils.clamp(time-reaction.lastFrameTime,0,.1);
-      reaction.lastFrameTime=time;
-      reaction.elapsed=Math.min(reaction.duration,reaction.elapsed+delta);
-      const phase=reaction.elapsed/reaction.duration;
-      if(phase===1) {
+      // Sounding gestures sample their own audio clock. Muted gestures use
+      // scene time from the first draw; neither clock stretches on slow frames.
+      if(reaction.startedAt===null)reaction.startedAt=time;
+      reaction.elapsed=Math.max(reaction.elapsed,reaction.clock?.()??time-reaction.startedAt);
+      const frame=sampleCatReaction(reaction.elapsed,reaction.gentle);
+      if(frame.done) {
         reaction=null;cooldownUntil=time+.20;
         return pose(0,0);
       }
-      const smooth=THREE.MathUtils.smoothstep;
-      const lift=smooth(phase,0,.25)*(1-smooth(phase,.56,1));
-      const pulse=(start:number,end:number)=>phase<=start||phase>=end?0:Math.sin((phase-start)/(end-start)*Math.PI)**2;
-      const ears=pulse(.20,.38)*.85+pulse(.45,.59)*.38;
-      return pose(lift*(reaction.gentle?.16:1),ears*(reaction.gentle?.22:1));
+      return pose(frame.head,frame.ears);
     },
     dispose() {
       if(disposed)return;

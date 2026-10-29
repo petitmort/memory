@@ -5,6 +5,7 @@ import { createReaderJourney, transitionReader } from "./reader-transition";
 import { captureBookPages } from "./page-raster";
 import { prepareAmbientNoise } from "./ambient-audio";
 import { createCatVoice } from "./cat-voice";
+import { CAT_REACTION_DURATION } from "./cat-choreography";
 
 const icons = {
   sound:
@@ -192,16 +193,14 @@ let petHintTimer: number | undefined;
 function onCatPet() {
   el("pet-hint").textContent = "小猫舒服地蹭了蹭";
   window.clearTimeout(petHintTimer);
-  petHintTimer = window.setTimeout(() => { el("pet-hint").textContent = "轻触或轻划小猫"; }, 2300);
+  petHintTimer = window.setTimeout(() => { el("pet-hint").textContent = "轻触或轻划小猫"; }, (CAT_REACTION_DURATION + .2) * 1000);
   if (!soundEnabled || state !== "room" || !sceneAvailable) return;
-  const triggered = performance.now();
   try {
     const context = prepareAudio();
-    if (context.state === "running") { catVoice?.play(); return; }
-    void unlockAudio().then(() => {
-      if (soundEnabled && state === "room" && sceneAvailable && performance.now() - triggered < 400)
-        catVoice?.play();
-    });
+    if (context.state === "running" && catVoice?.play()) return catVoice.captureClock();
+    // Resume under the native gesture for a future pet. A late sound would
+    // begin midway through this gesture's pose, so this reaction stays silent.
+    if (context.state !== "running") void unlockAudio();
   } catch { /* Petting remains available when audio is unsupported. */ }
 }
 function updateCozyControls(focused: boolean) {

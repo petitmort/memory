@@ -38,7 +38,7 @@ export function createScene(
   onInteract: () => void,
   reducedMotion: boolean,
   onUnavailable?: () => void,
-  onPet?: () => void,
+  onPet?: () => (() => number) | undefined,
 ) {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -891,7 +891,10 @@ export function createScene(
     if (fogMotion) fogMotion.lastDrawAt = null;
   }
   function visibilityChanged() {
-    if (document.hidden) pauseFrames();
+    if (document.hidden) {
+      if (cat.cancelPet()) sun.shadow.needsUpdate = true;
+      pauseFrames();
+    }
     else if (!readerBackdropFrozen || singleRenderRequested) scheduleFrame();
   }
   document.addEventListener("visibilitychange", visibilityChanged);
@@ -1075,7 +1078,7 @@ export function createScene(
   }
   function performPet() {
     if (!canPet() || !cat.pet(simulationTime, reducedMotion)) return false;
-    onPet?.();
+    cat.setReactionClock(onPet?.());
     requestRender();
     return true;
   }
