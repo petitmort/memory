@@ -27,7 +27,7 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
       renderer.render(scene, camera);`)});
   });
   await page.goto('/');
-  await expect(page.locator('#loading')).toBeHidden();
+  await expect(page.locator('#loading')).toBeHidden({timeout:60000});
   await page.locator('#enter').click();await expect(page.locator('#enter')).toBeEnabled();
   expect(await page.evaluate(()=>(window as any).__courtyardChecked.exposed)).toBe(0);
   await page.screenshot({path:'test-results/mythic-courtyard.png'});

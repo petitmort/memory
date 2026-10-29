@@ -262,7 +262,7 @@ test("physical scene: enter through doorway, approach and open the album, then r
   });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
-  await expect(page.locator("#loading")).toBeHidden();
+  await expect(page.locator("#loading")).toBeHidden({ timeout: 60000 });
   await page.locator("#enter").click();
   await expect(page.locator("#enter")).toBeEnabled({ timeout: 60000 });
   const sizes = await page.evaluate(

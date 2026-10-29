@@ -6,8 +6,13 @@ import { captureBookPages } from "./page-raster";
 import { prepareAmbientNoise } from "./ambient-audio";
 import { createCatVoice } from "./cat-voice";
 import { CAT_REACTION_DURATION } from "./cat-choreography";
+import { createRecordMusic, type RecordMusicState } from "./record-music";
+import { initialRecord } from "./music-library";
 
 const icons = {
+  play: '<path d="m9 5 10 7-10 7V5Z"/>',
+  pause: '<path d="M8 5v14M16 5v14"/>',
+  record: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/><path d="M8 6a7 7 0 0 0-3 6m11 6a7 7 0 0 0 3-6"/>',
   sound:
     '<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>',
   mute: '<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/>',
@@ -20,11 +25,12 @@ const svg = (name: keyof typeof icons) =>
 document.querySelector("#app")!.innerHTML = `
 <div id="world" aria-label="海边房间互动场景"></div>
 <div class="vignette"></div><div class="grain"></div>
-<header class="header"><a href="#" class="brand" aria-label="潮汐之间首页"><span class="brand-mark">≈</span><span>潮汐之间<small>BETWEEN THE TIDES</small></span></a><div class="header-right"><span class="private-note">一间房间，一些值得珍藏的时光</span><button class="icon-button" id="sound" aria-label="开启海浪声" title="开启海浪声">${svg("mute")}</button><button class="icon-button" id="fullscreen" aria-label="全屏浏览" title="全屏浏览">${svg("fullscreen")}</button></div></header>
+<header class="header"><a href="#" class="brand" aria-label="潮汐之间首页"><span class="brand-mark">≈</span><span>潮汐之间<small>BETWEEN THE TIDES</small></span></a><div class="header-right"><span class="private-note">一间房间，一些值得珍藏的时光</span><button class="icon-button hidden" id="record-toggle" aria-label="放入音乐" aria-pressed="false" aria-describedby="record-status">${svg("record")}</button><button class="icon-button" id="sound" aria-label="开启海浪声" title="开启海浪声">${svg("mute")}</button><button class="icon-button" id="fullscreen" aria-label="全屏浏览" title="全屏浏览">${svg("fullscreen")}</button></div></header>
+<input type="file" id="record-file" accept="audio/*,.mp3,.m4a,.ogg,.wav,.flac" hidden><span id="record-status" class="sr-only" role="status" aria-live="polite"></span>
 <main>
 <section class="intro" id="intro"><div class="eyebrow"><span></span> A LITTLE PLACE FOR OUR MEMORIES</div><h1>把时光，<br>留在<span>潮汐之间。</span></h1><p class="intro-copy">有些瞬间，值得慢慢想起。<br>推开这扇门，让海风替你翻开回忆。</p><button id="enter" class="primary-button"><span id="enter-label">让风吹散迷雾</span><span class="button-arrow">${svg("arrow")}</span></button><p class="enter-note" id="enter-note">戴上耳机，给自己一小段安静的时间</p></section>
 <div class="door-caption" id="door-caption"><span class="tiny-star">✦</span><span>回忆一直都在<br><small>只等你轻轻推开</small></span></div>
-<section class="room-ui hidden" id="room-ui"><div class="eyebrow">SOMEWHERE, BY THE SEA</div><h2>海风如旧，<br>故事等你。</h2><p>猫咪在身旁睡着，海风替你翻开回忆。</p><button class="primary-button" id="open-book">把花放到一旁 · 打开纪念册 <span class="button-arrow">${svg("arrow")}</span></button><div class="cozy-actions"><button class="cozy-view text-button" id="cozy-view" aria-pressed="false">看看睡着的小猫 <span aria-hidden="true">↖</span></button><button class="cozy-view text-button hidden" id="pet-cat" aria-describedby="pet-hint">抚摸小猫</button></div><div class="cozy-notes hidden" id="cozy-details"><span id="pet-hint" role="status" aria-live="polite">轻触或轻划小猫</span><a class="cozy-credit" id="cozy-credit" href="credits.html" target="_blank" rel="noopener">猫咪素材鸣谢</a></div></section>
+<section class="room-ui hidden" id="room-ui"><div class="eyebrow">SOMEWHERE, BY THE SEA</div><h2>海风如旧，<br>故事等你。</h2><p>猫咪在身旁睡着，海风替你翻开回忆。</p><button class="primary-button" id="open-book">把花放到一旁 · 打开纪念册 <span class="button-arrow">${svg("arrow")}</span></button><div class="cozy-actions"><button class="cozy-view text-button" id="cozy-view" aria-pressed="false">看看睡着的小猫 <span aria-hidden="true">↖</span></button><button class="cozy-view text-button hidden" id="pet-cat" aria-describedby="pet-hint">抚摸小猫</button><button class="cozy-view text-button" id="choose-record">放入音乐</button></div><div class="cozy-notes hidden" id="cozy-details"><span id="pet-hint" role="status" aria-live="polite">轻触或轻划小猫</span><a class="cozy-credit" id="cozy-credit" href="credits.html" target="_blank" rel="noopener">猫咪素材鸣谢</a></div></section>
 <div class="scene-hint hidden" id="scene-hint"><span class="pulse-dot"></span> 点击桌上的花束，或轻触按钮</div>
 <div class="loading" id="loading" role="status"><span></span> 正在把海风装进房间</div>
 <div class="fog" id="fog" aria-hidden="true"></div>
@@ -77,6 +83,7 @@ function onSceneUnavailable(error?: unknown) {
   sceneInvalidated = true;
   sceneAvailable = false;
   catVoice?.dispose();
+  recordMusic.pause();
   ++sceneVersion;
   releaseSceneWait();
   readingScene = undefined;
@@ -111,6 +118,10 @@ let soundEnabled = true,
 let audioPreparation: Promise<void> | undefined;
 let audioUnlocked = false;
 let catVoice: ReturnType<typeof createCatVoice> | undefined;
+let recordState: RecordMusicState = { status: "empty", title: initialRecord.title };
+let recordObjectUrl: string | undefined;
+const recordMusic = createRecordMusic(onRecordState);
+recordMusic.load(initialRecord.source, initialRecord.title);
 function updateSoundControl() {
   el("sound").innerHTML = svg(soundEnabled ? "sound" : "mute");
   el("sound").setAttribute("aria-label", soundEnabled ? "关闭声音" : "开启声音");
@@ -131,14 +142,64 @@ function step(n: number) {
 }
 function audioVolume() {
   catVoice?.setEnabled(soundEnabled && state === "room" && !document.hidden);
+  recordMusic.setMuted(!soundEnabled);
   if (!audio || !gain) return;
   gain.gain.cancelScheduledValues(audio.currentTime);
   gain.gain.setTargetAtTime(
-    soundEnabled && ["room", "opening", "reading", "closing"].includes(state) ? 0.16 : 0,
+    soundEnabled && ["room", "opening", "reading", "closing"].includes(state) ? (recordState.status === "playing" ? .032 : .065) : 0,
     audio.currentTime,
     1.2,
   );
 }
+function onRecordState(next: RecordMusicState) {
+  recordState = next;
+  const playing = next.status === "playing";
+  const action = next.status === "empty" ? "放入音乐" : playing || next.status === "loading" ? "暂停唱片" : "播放唱片";
+  const button = el<HTMLButtonElement>("record-toggle");
+  button.innerHTML = svg(next.status === "empty" ? "record" : playing || next.status === "loading" ? "pause" : "play");
+  button.setAttribute("aria-label", action);
+  button.setAttribute("aria-pressed", String(playing || next.status === "loading"));
+  button.title = `${action} · ${next.title}`;
+  el("choose-record").textContent = next.status === "empty" ? "放入音乐" : "换一张唱片";
+  el("choose-record").title = next.title;
+  el("record-status").textContent = next.error ?? (next.status === "empty"
+    ? `放入《${next.title}》或你喜欢的音乐，轻触唱片机播放。`
+    : `${next.title} · ${playing ? "播放中" : next.status === "loading" ? "正在落针" : "已暂停"}`);
+  scene?.setRecordPlaying(playing);
+  audioVolume();
+  if (next.error) toast(next.error);
+}
+function chooseRecord() {
+  if (!["room", "fallback"].includes(state)) return;
+  const input = el<HTMLInputElement>("record-file");
+  input.value = "";
+  input.click();
+}
+function toggleRecord() {
+  if (state !== "room") return;
+  if (recordState.status === "empty") chooseRecord();
+  else void recordMusic.toggle();
+}
+el("record-toggle").onclick = toggleRecord;
+el("choose-record").onclick = chooseRecord;
+el<HTMLInputElement>("record-file").onchange = () => {
+  const file = el<HTMLInputElement>("record-file").files?.[0];
+  if (!file || state !== "room") return;
+  if (!file.size) { toast("这份音频是空的，请换一份文件。"); return; }
+  const previous = recordObjectUrl;
+  recordObjectUrl = URL.createObjectURL(file);
+  const title = file.name.replace(/\.[^.]+$/, "").trim() || initialRecord.title;
+  recordMusic.load(recordObjectUrl, title);
+  if (previous) URL.revokeObjectURL(previous);
+  void recordMusic.toggle();
+};
+window.addEventListener("pagehide", event => {
+  recordMusic.setPageVisible(false);
+  if (event.persisted) return;
+  recordMusic.dispose();
+  if (recordObjectUrl) URL.revokeObjectURL(recordObjectUrl);
+});
+window.addEventListener("pageshow", () => recordMusic.setPageVisible(!document.hidden));
 function prepareAudio() {
   if (audio) return audio;
   const context = new AudioContext();
@@ -185,8 +246,8 @@ async function unlockAudio() {
     audioVolume();
   } catch {
     toast("此浏览器暂时无法播放环境声");
-    soundEnabled = false;
-    updateSoundControl();
+    audioUnlocked = false;
+    catVoice?.setEnabled(false);
   }
 }
 let petHintTimer: number | undefined;
@@ -266,6 +327,7 @@ async function enter() {
   if (!sceneAvailable || generation !== sceneVersion) return;
   state = "room";
   step(1);
+  el("record-toggle").classList.remove("hidden");
   el("intro").classList.add("hidden");
   el("room-ui").classList.remove("hidden");
   el("scene-hint").classList.remove("hidden");
@@ -587,6 +649,7 @@ try {
     reduceMotion,
     () => onSceneUnavailable(),
     onCatPet,
+    toggleRecord,
   );
   // Prepare alongside GPU loading, before continuous scene drawing starts.
   // Browsers requiring gesture-time construction retain the lazy fallback.
@@ -603,12 +666,16 @@ try {
   onSceneUnavailable(error);
 }
 document.addEventListener("visibilitychange", () => {
+  recordMusic.setPageVisible(!document.hidden);
   if (document.hidden) {
     audioVolume();
     catVoice?.stop();
-    void audio?.suspend();
+    void audio?.suspend().catch(() => {});
   } else {
     audioVolume();
-    if (soundEnabled && audioUnlocked) void audio?.resume();
+    if (soundEnabled && audioUnlocked) void audio?.resume().catch(() => {
+      audioUnlocked = false;
+      catVoice?.setEnabled(false);
+    });
   }
 });

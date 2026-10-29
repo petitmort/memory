@@ -17,6 +17,7 @@ import { createDecor } from "./decor";
 import { consoleLayout } from "./interior-layout";
 import { createCozySeating } from "./cozy-seating";
 import { createSleepingCat } from "./sleeping-cat";
+import { createRecordPlayer } from "./record-player";
 import { createCourtyardFog } from "./courtyard-fog";
 import { warmSceneResources } from "./scene-warmup";
 import { readingBlend } from "./reading-timeline";
@@ -39,6 +40,7 @@ export function createScene(
   reducedMotion: boolean,
   onUnavailable?: () => void,
   onPet?: () => (() => number) | undefined,
+  onRecord?: () => void,
 ) {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -361,6 +363,9 @@ export function createScene(
   book.position.set(-0.13, D.desk.height, -0.03);
   book.rotation.y = -0.1;
   table.add(book);
+  const recordPlayer = createRecordPlayer();
+  recordPlayer.group.position.set(.34, D.desk.height, -.16);
+  table.add(recordPlayer.group);
   const bookHinge = album.hinge;
   const bouquet = createBouquet();
   bouquet.name = "bouquet";
@@ -371,7 +376,7 @@ export function createScene(
   // An ordinary ~300 ml mug with a 3 mm wall and a properly sized handle.
   const cup = new THREE.Group();
   cup.name = "cup";
-  cup.position.set(0.49, D.desk.height, -0.24);
+  cup.position.set(-.49, D.desk.height, .23);
   table.add(cup);
   const ceramic = mat("#ded5be");
   const profile = [
@@ -412,9 +417,9 @@ export function createScene(
     0.0035,
     0.135,
     green,
-    0.2,
+    0.025,
     0.755,
-    -0.23,
+    -0.27,
     table,
     12,
   );
@@ -424,9 +429,9 @@ export function createScene(
     0,
     0.018,
     brass,
-    0.277,
+    0.102,
     0.755,
-    -0.23,
+    -0.27,
     table,
     10,
   );
@@ -439,7 +444,7 @@ export function createScene(
     paper,
     -0.48,
     D.desk.height + 0.0003,
-    -0.19,
+    -0.28,
     table,
   );
   letter.rotation.y = 0.12;
@@ -677,7 +682,7 @@ export function createScene(
   let fogMotion: { elapsed: number; duration: number; lastDrawAt: number | null; done: () => void } | null = null;
   // These objects sit behind the closed entrance. Reveal them before the door
   // starts moving, rather than drawing their hidden triangles in the courtyard.
-  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group];
+  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group, recordPlayer.group];
   shelteredDetails.forEach(object => { object.visible = false; });
   let roomRevealed = false;
   let simulationTime = 0;
@@ -773,6 +778,7 @@ export function createScene(
     if (unavailableError) return;
     unavailableError = new SceneUnavailableError();
     cat.dispose();
+    recordPlayer.dispose();
     lounge.dispose();
     courtyardFog.dispose();
     fogMotion = null;
@@ -856,11 +862,10 @@ export function createScene(
     return whileAvailable(new Promise<void>((done) => {
       bouquetMotion = {
         from: bouquet.position.clone(),
-        to: new THREE.Vector3(0.49, 0.765, 0.2),
+        to: new THREE.Vector3(.51, .805, .13),
         fromQ: bouquet.quaternion.clone(),
-        toQ: new THREE.Quaternion().setFromEuler(
-          new THREE.Euler(-1.32, 0.15, 0.35),
-        ),
+        toQ: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2)
+          .multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-1.32, .15, .35))),
         start: simulationTime * 1000,
         duration: reducedMotion ? 80 : 1100,
         done,
@@ -949,6 +954,7 @@ export function createScene(
       curtains.update(t, reducedMotion);
       mythology.update(t, reducedMotion);
       if (cat.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
+      if (recordPlayer.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
     }
     let finishLookFrame: (() => void) | undefined;
     if (lookMotion) {
@@ -987,6 +993,7 @@ export function createScene(
         ease = a * a * (3 - 2 * a);
       bouquet.position.lerpVectors(bouquetMotion.from, bouquetMotion.to, ease);
       bouquet.position.y += Math.sin(Math.PI * a) * 0.025;
+      bouquet.position.z += Math.sin(Math.PI * a) * .06;
       bouquet.quaternion.slerpQuaternions(
         bouquetMotion.fromQ,
         bouquetMotion.toQ,
@@ -1072,6 +1079,7 @@ export function createScene(
   const pointer = new THREE.Vector2();
   const canvas = renderer.domElement;
   let petStroke: { id: number; x: number; y: number; length: number; stroked: boolean } | null = null;
+  let recordPress: { id: number; x: number; y: number; moved: boolean } | null = null;
   const activePointers = new Set<number>(), cancelledPointers = new Set<number>();
   function canPet() {
     return !disposed && !unavailableError && !animating && current === "room" && !document.hidden;
@@ -1087,10 +1095,9 @@ export function createScene(
     ray.far = Infinity;
     ray.setFromCamera(pointer, camera);
   }
-  function catHit(e: PointerEvent) {
-    if (!canPet()) return false;
+  function visibleHit(root: THREE.Object3D, e: PointerEvent) {
     pointRay(e);
-    const candidate = ray.intersectObject(cat.group, true)[0];
+    const candidate = ray.intersectObject(root, true)[0];
     if (!candidate) return false;
     // Only do the wider occlusion check after hitting the small cat bounds.
     // A hand cannot reach through furniture to a hidden part of the model.
@@ -1098,13 +1105,15 @@ export function createScene(
     const blocked = ray.intersectObjects(scene.children, true).some(hit => {
       if (!(hit.object instanceof THREE.Mesh)) return false;
       for (let object: THREE.Object3D | null = hit.object; object; object = object.parent) {
-        if (!object.visible || object === cat.group) return false;
+        if (!object.visible || object === root) return false;
       }
       return true;
     });
     ray.far = Infinity;
     return !blocked;
   }
+  function catHit(e: PointerEvent) { return canPet() && visibleHit(cat.group, e); }
+  function recordHit(e: PointerEvent) { return canPet() && visibleHit(recordPlayer.group, e); }
   function hit(e: PointerEvent) {
     if (disposed || unavailableError || animating || current === "book") return false;
     pointRay(e);
@@ -1117,15 +1126,29 @@ export function createScene(
     if (!e.isPrimary || activePointers.size > 1) {
       for (const id of activePointers) cancelledPointers.add(id);
       petStroke = null;
+      recordPress = null;
       return;
     }
-    if (e.button !== 0 || !catHit(e)) return;
+    if (e.button !== 0) return;
+    if (recordHit(e)) {
+      recordPress = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+      canvas.setPointerCapture(e.pointerId);
+      return;
+    }
+    if (!catHit(e)) return;
     petStroke = { id: e.pointerId, x: e.clientX, y: e.clientY, length: 0, stroked: false };
     canvas.setPointerCapture(e.pointerId);
   });
   canvas.addEventListener("pointerup", e => {
     activePointers.delete(e.pointerId);
     if (cancelledPointers.delete(e.pointerId) || !e.isPrimary || e.button !== 0) return;
+    if (recordPress?.id === e.pointerId) {
+      const press = recordPress;
+      recordPress = null;
+      if (!press.moved && recordHit(e)) onRecord?.();
+      if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+      return;
+    }
     if (petStroke?.id === e.pointerId) {
       const stroke = petStroke;
       petStroke = null;
@@ -1136,7 +1159,10 @@ export function createScene(
     if (hit(e)) onInteract();
   });
   canvas.addEventListener("pointermove", e => {
-    if (petStroke?.id === e.pointerId) {
+    if (recordPress?.id === e.pointerId) {
+      recordPress.moved ||= Math.hypot(e.clientX - recordPress.x, e.clientY - recordPress.y) >= 10;
+      canvas.style.cursor = "pointer";
+    } else if (petStroke?.id === e.pointerId) {
       petStroke.length += Math.hypot(e.clientX - petStroke.x, e.clientY - petStroke.y);
       petStroke.x = e.clientX; petStroke.y = e.clientY;
       if (!petStroke.stroked && petStroke.length >= 10 && catHit(e)) {
@@ -1146,24 +1172,30 @@ export function createScene(
       canvas.style.cursor = "grabbing";
     } else if (e.pointerType !== "touch" && e.timeStamp - lastPointerHint > 40) {
       lastPointerHint = e.timeStamp;
-      canvas.style.cursor = catHit(e) ? "grab" : hit(e) ? "pointer" : "default";
+      canvas.style.cursor = catHit(e) ? "grab" : recordHit(e) || hit(e) ? "pointer" : "default";
     }
   });
   canvas.addEventListener("pointercancel", e => {
     activePointers.delete(e.pointerId);
     cancelledPointers.delete(e.pointerId);
     if (petStroke?.id === e.pointerId) petStroke = null;
+    if (recordPress?.id === e.pointerId) recordPress = null;
   });
   canvas.addEventListener("lostpointercapture", e => {
     if (petStroke?.id === e.pointerId) {
       cancelledPointers.add(e.pointerId);
       petStroke = null;
     }
+    if (recordPress?.id === e.pointerId) {
+      cancelledPointers.add(e.pointerId);
+      recordPress = null;
+    }
   });
   let lastPointerHint = -Infinity;
   function finishPointer(e: PointerEvent) {
     activePointers.delete(e.pointerId); cancelledPointers.delete(e.pointerId);
     if (petStroke?.id === e.pointerId) petStroke = null;
+    if (recordPress?.id === e.pointerId) recordPress = null;
   }
   window.addEventListener("pointerup", finishPointer);
   window.addEventListener("pointercancel", finishPointer);
@@ -1302,6 +1334,11 @@ export function createScene(
     },
     isCozyFocused() { return nookFocused; },
     petCat: performPet,
+    setRecordPlaying(playing: boolean) {
+      if (disposed || unavailableError) return;
+      recordPlayer.setPlaying(playing);
+      requestRender();
+    },
     getBookProjection,
     setBookChapter(index: number) {
       album.setChapter(index);
