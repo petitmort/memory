@@ -12,7 +12,9 @@ export function createCozySeating() {
   const smooth = (a:number,b:number,x:number) => THREE.MathUtils.smoothstep(x,a,b);
   const gaussian = (x:number,centre:number,width:number) => Math.exp(-(((x-centre)/width)**2));
   const signedPower = (x:number,power:number) => Math.sign(x)*Math.abs(x)**power;
-  const outlinePower = .74;
+  const outlinePower = .56;
+  const shoulderWidth = (back:number) => .400-.040*back;
+  const outlineDepth = (front:boolean) => front?.366:.401;
   const add = (geometry:THREE.BufferGeometry,material:THREE.Material,name:string) => {
     const mesh=new THREE.Mesh(geometry,material);mesh.name=name;
     mesh.castShadow=mesh.receiveShadow=true;group.add(mesh);return mesh;
@@ -21,25 +23,25 @@ export function createCozySeating() {
   function outline(angle:number,floor=false) {
     const s=Math.sin(angle),back=Math.max(0,-s);
     // The front slopes outward into a broad weighted base. It is not a tall
-    // vertical bucket wall: the sitting edge is 10 cm behind the floor hem.
-    return v((floor?.479:.390-.050*back)*signedPower(Math.cos(angle),outlinePower),0,
-      (floor?.440:s>0?.337:.401)*signedPower(s,outlinePower));
+    // vertical bucket wall: the sitting edge sits behind the weighted hem.
+    return v((floor?.479:shoulderWidth(back))*signedPower(Math.cos(angle),outlinePower),0,
+      (floor?.433:outlineDepth(s>0))*signedPower(s,outlinePower));
   }
   function topPoint(radius:number,angle:number) {
     const r=radius;
     const edge=outline(angle),x=edge.x*r,z=edge.z*r;
     const back=smooth(.035,.365,-z);
-    const side=smooth(.232,.388,Math.abs(x));
-    let y=.335+.433*back+.159*side*(.72+.28*back)*(1-.89*back);
-    // Loose filling forms a rounded crown, with shoulders falling away from
-    // the middle instead of a level, clipped top edge.
-    y-=.049*back**2*(Math.abs(x)/.35)**2;
-    y-=.006*back*gaussian(x,-.19,.12);
-    y-=.027*smooth(.79,1,r)*(back+.72*side*(1-back));
+    const side=smooth(.239,.398,Math.abs(x));
+    let y=.335+.433*back+.130*side*(.52+.48*back)*(1-.89*back);
+    // A broad, almost level rectangular back defines the reference chair.
+    // Only the outer corners yield; rounding the whole crest makes an egg.
+    y-=.042*back**2*smooth(.235,.355,Math.abs(x));
+    y-=.004*back*gaussian(x,-.20,.11);
+    y-=.024*smooth(.82,1,r)*(back+.68*side*(1-back));
     y+=.009*gaussian(x,-.025,.24)*gaussian(z,-.26,.14);
     // The lower and upper back are one cloth panel. A shallow compressed fold
     // gives its loose filling somewhere to settle, without floating pillows.
-    y-=.011*gaussian(z,-.250,.022)*(1-smooth(.26,.36,Math.abs(x)));
+    y-=.005*gaussian(z,-.180,.026)*(1-smooth(.27,.36,Math.abs(x)));
     y-=.008*gaussian(Math.abs(x),.302,.018)*smooth(.10,.28,-z);
     const left=gaussian(angle,2.48-.22*(1-r),.046);
     const right=gaussian(angle,.65+.18*(1-r),.043);
@@ -48,26 +50,38 @@ export function createCozySeating() {
     y+=.003*Math.sin(angle*3+.8)*smooth(.6,1,r);
     // On the steep back, cloth gathers displace along its outward normal,
     // rather than merely sliding vertices vertically along the same surface.
-    const backFace=smooth(.11,.22,-z)*(1-smooth(.365,.402,-z));
-    const pinch=.027*gaussian(z,-.249,.021)*(1-smooth(.25,.35,Math.abs(x)));
-    const leftTuck=.023*gaussian(x,-.254+.43*(z+.35),.017)*gaussian(z,-.322,.069);
-    const rightTuck=.019*gaussian(x,.245-.32*(z+.35),.020)*gaussian(z,-.324,.072);
+    const backFace=smooth(.07,.13,-z)*(1-smooth(.365,.402,-z));
+    const panel=1-smooth(.270,.345,Math.abs(x));
+    const pinch=.023*gaussian(z,-.180,.022);
+    const upperFill=.045*gaussian(z,-.285,.078);
+    const lumbarFill=.032*gaussian(z,-.120,.051);
+    const leftTuck=.016*gaussian(x,-.276+.34*(z+.35),.020)*gaussian(z,-.322,.069);
+    const rightTuck=.014*gaussian(x,.268-.28*(z+.35),.022)*gaussian(z,-.324,.072);
     const branching=.010*gaussian(x,-.192+.67*(z+.32),.015)*gaussian(z,-.29,.055);
-    const relax=.012*gaussian(x,-.04,.18)*gaussian(z,-.32,.047);
-    const clothDepth=(relax-pinch-leftTuck-rightTuck-branching)*backFace;
+    // Two wide, shallow filled zones share one continuous cover, with a
+    // compressed waist between them instead of separate rigid cushions.
+    const clothDepth=((upperFill+lumbarFill-pinch)*panel-leftTuck-rightTuck-branching)*backFace;
     return v(x,y,z+clothDepth);
   }
-  function bodyHeightAt(x:number,z:number) {
-    // Invert the rounded-square outline to fit the sitting panel to the same
-    // continuous filled surface, with no intersecting triangular edges.
-    let angle=Math.atan2(signedPower(z/.401,1/outlinePower),signedPower(x/.39,1/outlinePower));
-    for(let i=0;i<3;i++) {
+  function backPointAt(x:number,rawZ:number) {
+    let angle=Math.atan2(signedPower(rawZ/.401,1/outlinePower),signedPower(x/.40,1/outlinePower));
+    for(let i=0;i<5;i++) {
       const back=Math.max(0,-Math.sin(angle));
-      angle=Math.atan2(signedPower(z/(z>0?.337:.401),1/outlinePower),
-        signedPower(x/(.390-.050*back),1/outlinePower));
+      angle=Math.atan2(signedPower(rawZ/outlineDepth(rawZ>0),1/outlinePower),
+        signedPower(x/shoulderWidth(back),1/outlinePower));
     }
-    const edge=outline(angle),radius=Math.abs(edge.x)>.02?x/edge.x:z/edge.z;
-    return topPoint(radius,angle).y;
+    const edge=outline(angle),radius=Math.abs(edge.x)>.02?x/edge.x:rawZ/edge.z;
+    return topPoint(radius,angle);
+  }
+  function bodyHeightAt(x:number,z:number) {
+    // Account for the puffed back's real depth when fitting the seat. This
+    // authoring calculation runs once, never during animation or a click.
+    let low=z-.075,high=z+.075;
+    for(let i=0;i<14;i++) {
+      const middle=(low+high)/2;
+      if(backPointAt(x,middle).z<z)low=middle;else high=middle;
+    }
+    return backPointAt(x,(low+high)/2).y;
   }
   function sidePoint(t:number,angle:number) {
     const top=topPoint(1,angle),floor=outline(angle,true);
@@ -76,7 +90,7 @@ export function createCozySeating() {
     point.y=.001+(top.y-.001)*Math.cos(t*Math.PI/2)**1.55;
     // Modest broad bulges describe beads spreading under the weight. The few
     // narrower creases start at sewn corners and taper out within their panel.
-    const spread=.032*(1-.42*Math.max(0,-Math.sin(angle)));
+    const spread=.024*(1-.36*Math.max(0,-Math.sin(angle)));
     point.addScaledVector(normal,spread*Math.sin(t*Math.PI));
     const gathers=(gaussian(angle,.65+.20*t,.042)
       +gaussian(angle,2.49-.16*t,.044))*.024*Math.sin(t*Math.PI)**.8;
@@ -145,15 +159,15 @@ export function createCozySeating() {
     }
     return geometry;
   }
-  add(radialSurface(112,24,28,topPoint,sidePoint),linen,"beanbag-soft-linen-shell");
+  const bodyMesh=add(radialSurface(112,28,24,topPoint,sidePoint),linen,"beanbag-soft-linen-shell");
 
   // A low, supple sitting panel sinks into the same filling. Its rolled front
   // is broad and drops gently, rather than a narrow rim above a hollow shell.
   function seatTop(radius:number,angle:number) {
-    const x=.330*signedPower(Math.cos(angle),.78)*radius;
-    const z=.100+.234*signedPower(Math.sin(angle),.78)*radius;
+    const x=.332*signedPower(Math.cos(angle),.56)*radius;
+    const z=.140+.240*signedPower(Math.sin(angle),.56)*radius;
     const front=smooth(.14,.37,z),edge=smooth(.70,1,radius);
-    const pressure=.006*gaussian(x,-.025,.20)*gaussian(z,.107,.21);
+    const pressure=.006*gaussian(x,-.025,.20)*gaussian(z,.142,.21);
     const floating=.348-pressure-.009*front*edge;
     const fitted=bodyHeightAt(x,z)+.0035;
     const difference=floating-fitted;
@@ -183,6 +197,17 @@ export function createCozySeating() {
   for(let i=0;i<112;i++)hem.push(sidePoint(.91,i/112*Math.PI*2));
   for(let i=0;i<64;i++)seatJoin.push(seatSide(.63,i/64*Math.PI*2));
   seam(hem,true,.00085,80);seam(seatJoin,true,.00055,72);
+  // The reference has one quiet horizontal join dividing upper and lumbar
+  // filling. Fit the thread to the actual tessellated cover, not a floating pad.
+  const waist:THREE.Vector3[]=[],seamRay=new THREE.Raycaster();
+  bodyMesh.updateMatrixWorld(true);
+  for(let i=0;i<=40;i++) {
+    const x=-.274+i/40*.548,p=backPointAt(x,-.180+.0015*Math.sin(x*13));
+    seamRay.set(v(x,p.y,.60),v(0,0,-1));
+    const hit=seamRay.intersectObject(bodyMesh,false)[0];
+    if(hit)waist.push(hit.point.addScaledVector(hit.face!.normal,.0007));
+  }
+  if(waist.length>2)seam(waist,false,.00055,40);
   for(const angle of [.65,2.49]) {
     const points:THREE.Vector3[]=[];
     for(let i=0;i<=28;i++) {
@@ -195,6 +220,6 @@ export function createCozySeating() {
   for(const geometry of seams)geometry.dispose();
 
   const catNest=new THREE.Group();catNest.name="beanbag-cat-nest";
-  catNest.position.set(-.025,.342,.107);group.add(catNest);
+  catNest.position.set(-.025,.342,.142);group.add(catNest);
   return {group,catNest,ready:fabric.ready,dispose:fabric.dispose};
 }
