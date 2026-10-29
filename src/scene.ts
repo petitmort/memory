@@ -663,6 +663,13 @@ export function createScene(
           p: new THREE.Vector3(1.1, D.eye, 0.75),
           t: new THREE.Vector3(-0.2, 0.95, -1.5),
         };
+  // Approach through the clear space in front of the desk and stool. Keep a
+  // standing eye, with enough distance to see the whole curled cat on a phone.
+  const cozyPose = () => ({
+    p: new THREE.Vector3(-.65, D.eye, .65),
+    t: lounge.catNest.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, .09, 0)),
+    fov: mobile() ? 54 : 46,
+  });
   let current: "entry" | "room" | "book" = "entry";
   let fogClearance = 0;
   let fogClearing: Promise<void> | null = null;
@@ -716,8 +723,10 @@ export function createScene(
   } | null = null;
   let nookFocused = false;
   let lookMotion: {
-    from: THREE.Vector3;
-    to: THREE.Vector3;
+    path: ReadingPath;
+    to: Pose & { fov: number };
+    focus: boolean;
+    mobile: boolean;
     elapsed: number;
     duration: number;
     lastDrawAt: number | null;
@@ -940,9 +949,13 @@ export function createScene(
     let finishLookFrame: (() => void) | undefined;
     if (lookMotion) {
       const motion = lookMotion;
-      const a = advanceReadingClock(motion, now), ease = a * a * (3 - 2 * a);
-      target.lerpVectors(motion.from, motion.to, ease);
+      const a = advanceReadingClock(motion, now), pose = motion.path.sample(a);
+      camera.position.copy(pose.p);
+      target.copy(pose.t);
+      camera.fov = pose.fov;
+      camera.updateProjectionMatrix();
       if (a === 1) {
+        camera.position.copy(motion.to.p); target.copy(motion.to.t);
         lookMotion = null;
         finishLookFrame = () => { animating = false; motion.done(); };
       }
@@ -1075,6 +1088,19 @@ export function createScene(
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
     requestRender();
+    if (lookMotion) {
+      const previous = lookMotion;
+      if (previous.mobile === mobile()) return;
+      const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
+      const velocity = previous.path.sample(previous.elapsed / previous.duration).velocity;
+      const to = previous.focus ? cozyPose() : { ...roomPose(), fov: 50 };
+      const duration = readingRetargetDuration(previous);
+      lookMotion = {
+        ...previous, to, path: retargetReadingPath({ ...from, velocity }, to, duration),
+        elapsed: 0, duration, lastDrawAt: null, mobile: mobile(),
+      };
+      return;
+    }
     if (readingMotion) {
       const previous = readingMotion;
       singleRenderRequested = true;
@@ -1085,6 +1111,7 @@ export function createScene(
       const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
       const velocity = previous.path.sample(progress).velocity;
       const saved = roomBeforeReading;
+      if (previous.kind === "closing" && saved && saved.mobile !== mobile()) nookFocused = false;
       const to = previous.kind === "opening" ? bookReadingPose() : saved && saved.mobile === mobile()
         ? { p: saved.p.clone(), t: saved.t.clone(), fov: saved.fov }
         : { ...roomPose(), fov: 50 };
@@ -1101,9 +1128,12 @@ export function createScene(
       camera.updateProjectionMatrix();
       singleRenderRequested = true;
     } else if (!animating) {
-      const pose = current === "entry" ? entryPose() : roomPose();
+      const pose = current === "entry" ? { ...entryPose(), fov: 50 }
+        : nookFocused ? cozyPose() : { ...roomPose(), fov: 50 };
       camera.position.copy(pose.p);
-      if (!nookFocused || current === "entry") target.copy(pose.t);
+      target.copy(pose.t);
+      camera.fov = pose.fov;
+      camera.updateProjectionMatrix();
     }
   });
   renderer.domElement.addEventListener("webglcontextlost", (e) => {
@@ -1170,14 +1200,15 @@ export function createScene(
     async focusCozyCorner(focus: boolean) {
       requireAvailable();
       if (animating || current !== "room") return nookFocused;
-      const to = focus
-        ? lounge.catNest.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, .09, 0))
-        : roomPose().t;
+      const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
+      const to = focus ? cozyPose() : { ...roomPose(), fov: 50 };
+      const duration = reducedMotion ? 180 : 1800;
       animating = true;
       await whileAvailable(new Promise<void>(done => {
         lookMotion = {
-          from: target.clone(), to, elapsed: 0,
-          duration: reducedMotion ? 180 : 1100, lastDrawAt: null, done,
+          path: retargetReadingPath({ ...from, velocity: { p: new THREE.Vector3(), t: new THREE.Vector3(), fov: 0 } }, to, duration),
+          to, focus, mobile: mobile(), elapsed: 0,
+          duration, lastDrawAt: null, done,
         };
         requestRender();
       }));
