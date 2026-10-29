@@ -12,6 +12,7 @@ export function createCozySeating() {
   const smooth = (a:number,b:number,x:number) => THREE.MathUtils.smoothstep(x,a,b);
   const gaussian = (x:number,centre:number,width:number) => Math.exp(-(((x-centre)/width)**2));
   const signedPower = (x:number,power:number) => Math.sign(x)*Math.abs(x)**power;
+  const outlinePower = .74;
   const add = (geometry:THREE.BufferGeometry,material:THREE.Material,name:string) => {
     const mesh=new THREE.Mesh(geometry,material);mesh.name=name;
     mesh.castShadow=mesh.receiveShadow=true;group.add(mesh);return mesh;
@@ -21,16 +22,20 @@ export function createCozySeating() {
     const s=Math.sin(angle),back=Math.max(0,-s);
     // The front slopes outward into a broad weighted base. It is not a tall
     // vertical bucket wall: the sitting edge is 10 cm behind the floor hem.
-    return v((floor?.479:.390-.050*back)*signedPower(Math.cos(angle),.53),0,
-      (floor?.433:s>0?.337:.401)*signedPower(s,.53));
+    return v((floor?.479:.390-.050*back)*signedPower(Math.cos(angle),outlinePower),0,
+      (floor?.440:s>0?.337:.401)*signedPower(s,outlinePower));
   }
   function topPoint(radius:number,angle:number) {
-    // Flatten the shoulder tangent before it turns down into the outside panel.
-    const r=radius<.80?radius:.8+.2*smooth(.8,1,radius);
+    const r=radius;
     const edge=outline(angle),x=edge.x*r,z=edge.z*r;
     const back=smooth(.035,.365,-z);
     const side=smooth(.232,.388,Math.abs(x));
     let y=.335+.433*back+.159*side*(.72+.28*back)*(1-.89*back);
+    // Loose filling forms a rounded crown, with shoulders falling away from
+    // the middle instead of a level, clipped top edge.
+    y-=.049*back**2*(Math.abs(x)/.35)**2;
+    y-=.006*back*gaussian(x,-.19,.12);
+    y-=.027*smooth(.79,1,r)*(back+.72*side*(1-back));
     y+=.009*gaussian(x,-.025,.24)*gaussian(z,-.26,.14);
     // The lower and upper back are one cloth panel. A shallow compressed fold
     // gives its loose filling somewhere to settle, without floating pillows.
@@ -55,12 +60,11 @@ export function createCozySeating() {
   function bodyHeightAt(x:number,z:number) {
     // Invert the rounded-square outline to fit the sitting panel to the same
     // continuous filled surface, with no intersecting triangular edges.
-    let angle=Math.atan2(Math.sign(z)*Math.abs(z/.401)**(1/.53),
-      Math.sign(x)*Math.abs(x/.39)**(1/.53));
+    let angle=Math.atan2(signedPower(z/.401,1/outlinePower),signedPower(x/.39,1/outlinePower));
     for(let i=0;i<3;i++) {
-      const edge=outline(angle),s=Math.sin(angle),back=Math.max(0,-s);
-      angle=Math.atan2(Math.sign(z)*Math.abs(z/(z>0?.337:.401))**(1/.53),
-        Math.sign(x)*Math.abs(x/(.390-.050*back))**(1/.53));
+      const back=Math.max(0,-Math.sin(angle));
+      angle=Math.atan2(signedPower(z/(z>0?.337:.401),1/outlinePower),
+        signedPower(x/(.390-.050*back),1/outlinePower));
     }
     const edge=outline(angle),radius=Math.abs(edge.x)>.02?x/edge.x:z/edge.z;
     return topPoint(radius,angle).y;
@@ -72,7 +76,8 @@ export function createCozySeating() {
     point.y=.001+(top.y-.001)*Math.cos(t*Math.PI/2)**1.55;
     // Modest broad bulges describe beads spreading under the weight. The few
     // narrower creases start at sewn corners and taper out within their panel.
-    point.addScaledVector(normal,.012*Math.sin(t*Math.PI));
+    const spread=.032*(1-.42*Math.max(0,-Math.sin(angle)));
+    point.addScaledVector(normal,spread*Math.sin(t*Math.PI));
     const gathers=(gaussian(angle,.65+.20*t,.042)
       +gaussian(angle,2.49-.16*t,.044))*.024*Math.sin(t*Math.PI)**.8;
     const branch=(gaussian(angle,.90+.32*t,.042)
@@ -92,23 +97,32 @@ export function createCozySeating() {
     top:(r:number,a:number)=>THREE.Vector3,side:(t:number,a:number)=>THREE.Vector3,bottomY=.001) {
     const positions:number[]=[],uvs:number[]=[],indices:number[]=[],rings:number[]=[];
     const centre=top(0,0);positions.push(centre.x,centre.y,centre.z);uvs.push(.5,.5);
+    // Inverse-power angles distribute samples around the actual rounded
+    // outline: uniform input angles leave long, visibly faceted spans at axes.
+    const angleAt=(column:number)=>{
+      const a=column/columns*Math.PI*2;
+      return Math.atan2(signedPower(Math.sin(a),1/outlinePower),signedPower(Math.cos(a),1/outlinePower));
+    };
     // Unwrap the outer panel by actual arc length, keeping the weave at the
     // same sub-millimetre pitch as the sitting/back surfaces.
     const perimeter:number[]=[0];
-    for(let c=1;c<=columns;c++)perimeter.push(perimeter[c-1]+side(.55,c/columns*Math.PI*2)
-      .distanceTo(side(.55,(c-1)/columns*Math.PI*2)));
+    for(let c=1;c<=columns;c++)perimeter.push(perimeter[c-1]+side(.55,angleAt(c))
+      .distanceTo(side(.55,angleAt(c-1))));
     function ring(point:(a:number)=>THREE.Vector3,isSide:boolean) {
       const start=positions.length/3;rings.push(start);
       for(let c=0;c<=columns;c++) {
-        const angle=c/columns*Math.PI*2,p=point(angle);positions.push(p.x,p.y,p.z);
+        const angle=angleAt(c),p=point(angle);positions.push(p.x,p.y,p.z);
         if(isSide)uvs.push(perimeter[c]*2,side(0,angle).distanceTo(p)*2);
         else uvs.push(p.x*2+.5,p.z*2+.5);
       }
     }
     for(let row=1;row<=topRings;row++)ring(a=>top(row/topRings,a),false);
+    // Separate panel UVs at the shoulder; the coincident rim shares normals.
+    ring(a=>side(0,a),true);
     for(let row=1;row<=sideRings;row++)ring(a=>side(row/sideRings,a),true);
     for(let c=0;c<columns;c++)indices.push(0,rings[0]+c+1,rings[0]+c);
     for(let row=0;row<rings.length-1;row++)for(let c=0;c<columns;c++) {
+      if(row===topRings-1)continue;
       const a=rings[row]+c,b=rings[row+1]+c;indices.push(a,b+1,b,a,a+1,b+1);
     }
     const bottom=positions.length/3;positions.push(0,bottomY,0);uvs.push(.5,.5);
@@ -124,6 +138,11 @@ export function createCozySeating() {
       normals.setXYZ(start,normal.x,normal.y,normal.z);
       normals.setXYZ(start+columns,normal.x,normal.y,normal.z);
     }
+    for(let c=0;c<=columns;c++) {
+      const a=rings[topRings-1]+c,b=rings[topRings]+c;
+      const n=v(0,0,0).fromBufferAttribute(normals,a).add(v(0,0,0).fromBufferAttribute(normals,b)).normalize();
+      normals.setXYZ(a,n.x,n.y,n.z);normals.setXYZ(b,n.x,n.y,n.z);
+    }
     return geometry;
   }
   add(radialSurface(112,24,28,topPoint,sidePoint),linen,"beanbag-soft-linen-shell");
@@ -131,13 +150,16 @@ export function createCozySeating() {
   // A low, supple sitting panel sinks into the same filling. Its rolled front
   // is broad and drops gently, rather than a narrow rim above a hollow shell.
   function seatTop(radius:number,angle:number) {
-    const x=.330*signedPower(Math.cos(angle),.53)*radius;
-    const z=.100+.234*signedPower(Math.sin(angle),.53)*radius;
+    const x=.330*signedPower(Math.cos(angle),.78)*radius;
+    const z=.100+.234*signedPower(Math.sin(angle),.78)*radius;
     const front=smooth(.14,.37,z),edge=smooth(.70,1,radius);
     const pressure=.006*gaussian(x,-.025,.20)*gaussian(z,.107,.21);
     const floating=.348-pressure-.009*front*edge;
     const fitted=bodyHeightAt(x,z)+.0035;
-    let y=THREE.MathUtils.lerp(floating,Math.max(floating,fitted),smooth(.55,.91,radius));
+    const difference=floating-fitted;
+    // Keep the entire cloth panel above the filling, including the transition
+    // into the back. Blending a lower seat through the shell creates a hard cut.
+    let y=(floating+fitted+Math.sqrt(difference*difference+.002*.002))/2;
     y-=.009*(gaussian(x,-.274+.25*(z-.12),.017)
       +gaussian(x,.272-.19*(z-.14),.020))*smooth(.11,.29,z)*(1-smooth(.90,1,radius));
     y-=.005*gaussian(z,-.20,.020)*smooth(.15,.32,Math.abs(x));
@@ -145,7 +167,7 @@ export function createCozySeating() {
   }
   function seatSide(t:number,angle:number) {
     const top=seatTop(1,angle),point=top.clone();
-    const roll=Math.sin(t*Math.PI)*.004;
+    const roll=Math.sin(t*Math.PI)*.009;
     point.x+=Math.cos(angle)*roll;point.z+=Math.sin(angle)*roll;
     point.y-=.019*(1-Math.cos(t*Math.PI))/2;
     return point;
@@ -160,7 +182,7 @@ export function createCozySeating() {
   const hem:THREE.Vector3[]=[],seatJoin:THREE.Vector3[]=[];
   for(let i=0;i<112;i++)hem.push(sidePoint(.91,i/112*Math.PI*2));
   for(let i=0;i<64;i++)seatJoin.push(seatSide(.63,i/64*Math.PI*2));
-  seam(hem,true,.00085,80);seam(seatJoin,true,.0008,72);
+  seam(hem,true,.00085,80);seam(seatJoin,true,.00055,72);
   for(const angle of [.65,2.49]) {
     const points:THREE.Vector3[]=[];
     for(let i=0;i<=28;i++) {
