@@ -7,6 +7,7 @@ import { prepareAmbientNoise } from "./ambient-audio";
 import { createCatVoice } from "./cat-voice";
 import { CAT_REACTION_DURATION } from "./cat-choreography";
 import { createRecordMusic, type RecordMusicState } from "./record-music";
+import { createRecordStorage } from "./record-storage";
 
 const icons = {
   play: '<path d="m9 5 10 7-10 7V5Z"/>',
@@ -119,6 +120,8 @@ let audioUnlocked = false;
 let catVoice: ReturnType<typeof createCatVoice> | undefined;
 let recordState: RecordMusicState = { status: "empty", title: "我的音乐" };
 let recordObjectUrl: string | undefined;
+let recordSelectionVersion = 0, recordDisposed = false;
+const recordStorage = createRecordStorage();
 const recordMusic = createRecordMusic(onRecordState);
 recordMusic.load("", recordState.title);
 function updateSoundControl() {
@@ -160,7 +163,7 @@ function onRecordState(next: RecordMusicState) {
   button.setAttribute("aria-pressed", String(playing || next.status === "loading"));
   button.title = next.status === "empty" ? "上传音乐，选择你喜欢的本地音频" : `${action} · ${next.title}`;
   el("choose-record").textContent = next.status === "empty" ? "上传音乐" : "更换音乐";
-  el("choose-record").title = next.status === "empty" ? "选择本地音频，仅在当前页面播放" : next.title;
+  el("choose-record").title = next.status === "empty" ? "选择本地音频，自动保存在此浏览器" : next.title;
   el("record-track").textContent = next.title;
   el("record-track").title = next.title;
   el("record-track").classList.toggle("hidden", next.status === "empty");
@@ -184,20 +187,39 @@ function toggleRecord() {
 }
 el("record-toggle").onclick = toggleRecord;
 el("choose-record").onclick = chooseRecord;
-el<HTMLInputElement>("record-file").onchange = () => {
-  const file = el<HTMLInputElement>("record-file").files?.[0];
-  if (!file || state !== "room") return;
-  if (!file.size) { toast("这份音频是空的，请换一份文件。"); return; }
+function loadRecordFile(file: File) {
   const previous = recordObjectUrl;
   recordObjectUrl = URL.createObjectURL(file);
   const title = file.name.replace(/\.[^.]+$/, "").trim() || "我的音乐";
   recordMusic.load(recordObjectUrl, title);
   if (previous) URL.revokeObjectURL(previous);
+}
+// Restore alongside scene preparation, without delaying entry or starting sound.
+// A late disk read must never replace a file the user has just selected.
+void recordStorage.read().then(file => {
+  if (file && !recordDisposed && recordSelectionVersion === 0) loadRecordFile(file);
+}).catch(() => { /* Storage restrictions must not prevent local playback. */ });
+el<HTMLInputElement>("record-file").onchange = () => {
+  const file = el<HTMLInputElement>("record-file").files?.[0];
+  if (!file || state !== "room") return;
+  if (!file.size) { toast("这份音频是空的，请换一份文件。"); return; }
+  const selection = ++recordSelectionVersion;
+  loadRecordFile(file);
+  // Native play stays in the file-selection gesture; saving runs separately.
   void recordMusic.toggle();
+  void recordStorage.save(file).then(() => {
+    if (!recordDisposed && selection === recordSelectionVersion)
+      toast("音乐已保存到此浏览器，下次无需重新上传。");
+  }).catch(() => {
+    if (!recordDisposed && selection === recordSelectionVersion)
+      toast("这首音乐暂未保存，本次仍可播放；请检查浏览器存储空间。");
+  });
 };
 window.addEventListener("pagehide", event => {
   recordMusic.setPageVisible(false);
   if (event.persisted) return;
+  recordDisposed = true;
+  ++recordSelectionVersion;
   recordMusic.dispose();
   if (recordObjectUrl) URL.revokeObjectURL(recordObjectUrl);
 });

@@ -16,8 +16,8 @@ function testRecord() {
   return wav;
 }
 
-test('the desk record accepts music, resumes in place and stays independent of reading, mute and touch', async ({ browser }) => {
-  test.setTimeout(300000);
+test('the desk record accepts and remembers music, resumes in place and stays independent of reading, mute and touch', async ({ browser }) => {
+  test.setTimeout(420000);
   const context = await browser.newContext({ viewport: { width: 1100, height: 800 }, hasTouch: true, reducedMotion: 'reduce' });
   const page = await context.newPage(), errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -214,6 +214,7 @@ test('the desk record accepts music, resumes in place and stays independent of r
     expect(replaced.stats.contexts).toBe(1);
     await expect(page.locator('#choose-record')).toHaveAttribute('title', 'replacement-record');
     await expect(page.locator('#record-track')).toHaveText('replacement-record');
+    await expect(page.locator('#toast')).toHaveText('音乐已保存到此浏览器，下次无需重新上传。');
 
     // Music uses the native media device even if the separate room-effects
     // device cannot resume. The global mute preference must stay consistent.
@@ -228,6 +229,36 @@ test('the desk record accepts music, resumes in place and stays independent of r
     await expect(page.locator('#sound')).toHaveAttribute('aria-label', '关闭声音');
     const independent = await media(); expect(independent.muted).toBe(false); expect(independent.paused).toBe(false);
     await page.evaluate(() => { const host = window as any; host.__recordAmbient.resume = host.__restoreAmbientResume; });
+
+    // A new document restores the actual audio bytes and filename without a
+    // file picker or autoplay. Only the user's next click starts the record.
+    await page.reload();
+    await expect(page.locator('#loading')).toBeHidden({ timeout: 60000 });
+    await expect(page.locator('#record-track')).toHaveText('replacement-record');
+    await paused();
+    const restored = await media();
+    expect(restored.stats.plays).toBe(0); expect(restored.paused).toBe(true);
+    expect(restored.source).toMatch(/^blob:/); expect(restored.source).not.toBe(replaced.source);
+    expect(await page.locator('#record-file').evaluate((input: HTMLInputElement) => input.files?.length)).toBe(0);
+    await page.locator('#enter').click(); await expect(page.locator('#enter')).toBeEnabled();
+    await page.locator('#enter').click(); await expect(page.locator('#room-ui')).toBeVisible({ timeout: 60000 });
+    await expect(page.locator('#choose-record')).toHaveText('更换音乐');
+    await page.locator('#record-toggle').click(); await playing();
+    expect((await media()).duration).toBeCloseTo(180, 2);
+
+    // Storage failures cannot block playback or falsely claim the new song
+    // was saved. Keep the old saved file intact for the next visit.
+    await page.evaluate(() => {
+      const host = window as any;
+      host.__restoreMusicStorageOpen = indexedDB.open;
+      indexedDB.open = () => { throw new DOMException('Storage is full', 'QuotaExceededError'); };
+    });
+    await page.locator('#record-file').setInputFiles({ name: 'unsaved-record.wav', mimeType: 'audio/wav', buffer: testRecord() });
+    await playing();
+    await expect(page.locator('#record-track')).toHaveText('unsaved-record');
+    await expect(page.locator('#toast')).toHaveText('这首音乐暂未保存，本次仍可播放；请检查浏览器存储空间。');
+    expect((await media()).paused).toBe(false);
+    await page.evaluate(() => { indexedDB.open = (window as any).__restoreMusicStorageOpen; });
     expect(errors).toEqual([]);
   } finally { await context.close(); }
 });
