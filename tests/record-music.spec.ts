@@ -72,8 +72,8 @@ test('the record streams only after a gesture and resumes its position without a
     expect(media.preload).toBe('none');
     expect(media.autoplay).toBe(false); expect(media.loop).toBe(false);
     expect(media.plays).toBe(0);
-    music.load('/music/first.mp3', 'この星のどこかで');
-    expect(music.getState()).toEqual({ status: 'paused', title: 'この星のどこかで' });
+    music.load('/music/first.mp3', '我的音乐');
+    expect(music.getState()).toEqual({ status: 'paused', title: '我的音乐' });
     const playing = music.toggle();
     expect(media.plays).toBe(1); // play() runs in the caller's native gesture task.
     await playing;

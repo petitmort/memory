@@ -1338,6 +1338,8 @@ button svg {
 .room-ui .cozy-actions .cozy-view { margin:0; }
 .room-ui .cozy-notes { display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-top:6px; font-size:10px; color:#fff5df; text-shadow:0 1px 4px #233b32; }
 .room-ui .cozy-notes .cozy-credit { margin:0; }
+.room-ui .record-track { max-width:100%; margin-top:7px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; font-size:10px; line-height:1.5; color:#fff5df; text-shadow:0 1px 4px #233b32; }
 @media (max-width:759px) {
   .room-ui .cozy-actions,.room-ui .cozy-notes { justify-content:center; }
+  .room-ui .record-track { text-align:center; }
 }

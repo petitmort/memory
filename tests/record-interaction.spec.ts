@@ -116,7 +116,9 @@ test('the desk record accepts music, resumes in place and stays independent of r
     await expect(page.locator('#record-toggle')).toBeHidden();
     await page.locator('#enter').click(); await expect(page.locator('#enter')).toBeEnabled();
     await page.locator('#enter').click(); await expect(page.locator('#room-ui')).toBeVisible({ timeout: 60000 });
-    await expect(page.locator('#record-toggle')).toHaveAttribute('aria-label', '放入音乐');
+    await expect(page.locator('#record-toggle')).toHaveAttribute('aria-label', '上传音乐');
+    await expect(page.locator('#record-status')).toHaveText('上传一首你喜欢的音乐，轻触唱片机播放。');
+    await expect(page.locator('#record-track')).toBeHidden();
     const initial = await room();
     expect(await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.tagName, initial.point)).toBe('CANVAS');
     const choose = page.waitForEvent('filechooser', { timeout: 30000 });
@@ -125,6 +127,8 @@ test('the desk record accepts music, resumes in place and stays independent of r
     await playing();
     await expect.poll(() => page.evaluate(() => (window as any).__recordMedia.paused)).toBe(false);
     expect((await room()).playing).toBe(true);
+    await expect(page.locator('#record-track')).toHaveText('test-record');
+    await expect(page.locator('#choose-record')).toHaveText('更换音乐');
     expect((await media()).stats.contexts).toBe(1);
     expect((await media()).stats.targets).toContain(.065);
     expect((await media()).stats.targets).toContain(.032);
@@ -209,6 +213,7 @@ test('the desk record accepts music, resumes in place and stays independent of r
     expect(replaced.stats.revoked).toContain(beforeReplacement.source);
     expect(replaced.stats.contexts).toBe(1);
     await expect(page.locator('#choose-record')).toHaveAttribute('title', 'replacement-record');
+    await expect(page.locator('#record-track')).toHaveText('replacement-record');
 
     // Music uses the native media device even if the separate room-effects
     // device cannot resume. The global mute preference must stay consistent.
