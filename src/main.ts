@@ -4,6 +4,7 @@ import { createScene, SceneUnavailableError } from "./scene";
 import { createReaderJourney, transitionReader } from "./reader-transition";
 import { captureBookPages } from "./page-raster";
 import { prepareAmbientNoise } from "./ambient-audio";
+import { createCatVoice } from "./cat-voice";
 
 const icons = {
   sound:
@@ -22,7 +23,7 @@ document.querySelector("#app")!.innerHTML = `
 <main>
 <section class="intro" id="intro"><div class="eyebrow"><span></span> A LITTLE PLACE FOR OUR MEMORIES</div><h1>把时光，<br>留在<span>潮汐之间。</span></h1><p class="intro-copy">有些瞬间，值得慢慢想起。<br>推开这扇门，让海风替你翻开回忆。</p><button id="enter" class="primary-button"><span id="enter-label">让风吹散迷雾</span><span class="button-arrow">${svg("arrow")}</span></button><p class="enter-note" id="enter-note">戴上耳机，给自己一小段安静的时间</p></section>
 <div class="door-caption" id="door-caption"><span class="tiny-star">✦</span><span>回忆一直都在<br><small>只等你轻轻推开</small></span></div>
-<section class="room-ui hidden" id="room-ui"><div class="eyebrow">SOMEWHERE, BY THE SEA</div><h2>海风如旧，<br>故事等你。</h2><p>猫咪在身旁睡着，海风替你翻开回忆。</p><button class="primary-button" id="open-book">把花放到一旁 · 打开纪念册 <span class="button-arrow">${svg("arrow")}</span></button><button class="cozy-view text-button" id="cozy-view" aria-pressed="false">看看睡着的小猫 <span aria-hidden="true">↖</span></button><a class="cozy-credit hidden" id="cozy-credit" href="credits.html" target="_blank" rel="noopener">猫咪模型鸣谢</a></section>
+<section class="room-ui hidden" id="room-ui"><div class="eyebrow">SOMEWHERE, BY THE SEA</div><h2>海风如旧，<br>故事等你。</h2><p>猫咪在身旁睡着，海风替你翻开回忆。</p><button class="primary-button" id="open-book">把花放到一旁 · 打开纪念册 <span class="button-arrow">${svg("arrow")}</span></button><div class="cozy-actions"><button class="cozy-view text-button" id="cozy-view" aria-pressed="false">看看睡着的小猫 <span aria-hidden="true">↖</span></button><button class="cozy-view text-button hidden" id="pet-cat" aria-describedby="pet-hint">抚摸小猫</button></div><div class="cozy-notes hidden" id="cozy-details"><span id="pet-hint" role="status" aria-live="polite">轻触或轻划小猫</span><a class="cozy-credit" id="cozy-credit" href="credits.html" target="_blank" rel="noopener">猫咪素材鸣谢</a></div></section>
 <div class="scene-hint hidden" id="scene-hint"><span class="pulse-dot"></span> 点击桌上的花束，或轻触按钮</div>
 <div class="loading" id="loading" role="status"><span></span> 正在把海风装进房间</div>
 <div class="fog" id="fog" aria-hidden="true"></div>
@@ -74,6 +75,7 @@ function onSceneUnavailable(error?: unknown) {
   if (sceneInvalidated) return;
   sceneInvalidated = true;
   sceneAvailable = false;
+  catVoice?.dispose();
   ++sceneVersion;
   releaseSceneWait();
   readingScene = undefined;
@@ -107,16 +109,19 @@ let soundEnabled = true,
   gain: GainNode | undefined;
 let audioPreparation: Promise<void> | undefined;
 let audioUnlocked = false;
+let catVoice: ReturnType<typeof createCatVoice> | undefined;
 function updateSoundControl() {
   el("sound").innerHTML = svg(soundEnabled ? "sound" : "mute");
-  el("sound").setAttribute("aria-label", soundEnabled ? "关闭海浪声" : "开启海浪声");
-  el("sound").title = soundEnabled ? "关闭海浪声" : "开启海浪声";
+  el("sound").setAttribute("aria-label", soundEnabled ? "关闭声音" : "开启声音");
+  el("sound").title = soundEnabled ? "关闭声音" : "开启声音";
 }
 updateSoundControl();
+let toastTimer: number | undefined;
 function toast(message: string) {
   el("toast").textContent = message;
   el("toast").classList.add("show");
-  window.setTimeout(() => el("toast").classList.remove("show"), 2600);
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => el("toast").classList.remove("show"), 2600);
 }
 function step(n: number) {
   document
@@ -124,6 +129,7 @@ function step(n: number) {
     .forEach((e, i) => e.classList.toggle("active", i <= n));
 }
 function audioVolume() {
+  catVoice?.setEnabled(soundEnabled && state === "room" && !document.hidden);
   if (!audio || !gain) return;
   gain.gain.cancelScheduledValues(audio.currentTime);
   gain.gain.setTargetAtTime(
@@ -143,6 +149,9 @@ function prepareAudio() {
   // Preparing under the loading screen must never start playback. A later
   // gesture resumes this same context after the expensive device setup.
   const suspended = context.suspend();
+  catVoice = createCatVoice(context);
+  catVoice.setEnabled(false);
+  // The optional purr prepares independently, so a slow download cannot delay waves.
   audioPreparation = Promise.all([prepareAmbientNoise(context), suspended]).then(([buffer]) => {
     if (context.state === "closed") throw new DOMException("Audio context closed", "AbortError");
     const source = context.createBufferSource();
@@ -178,6 +187,28 @@ async function unlockAudio() {
     soundEnabled = false;
     updateSoundControl();
   }
+}
+let petHintTimer: number | undefined;
+function onCatPet() {
+  el("pet-hint").textContent = "小猫舒服地蹭了蹭";
+  window.clearTimeout(petHintTimer);
+  petHintTimer = window.setTimeout(() => { el("pet-hint").textContent = "轻触或轻划小猫"; }, 2300);
+  if (!soundEnabled || state !== "room" || !sceneAvailable) return;
+  const triggered = performance.now();
+  try {
+    const context = prepareAudio();
+    if (context.state === "running") { catVoice?.play(); return; }
+    void unlockAudio().then(() => {
+      if (soundEnabled && state === "room" && sceneAvailable && performance.now() - triggered < 400)
+        catVoice?.play();
+    });
+  } catch { /* Petting remains available when audio is unsupported. */ }
+}
+function updateCozyControls(focused: boolean) {
+  el("cozy-view").setAttribute("aria-pressed",String(focused));
+  el("pet-cat").classList.toggle("hidden",!focused);
+  el("cozy-details").classList.toggle("hidden",!focused);
+  el("cozy-view").innerHTML = focused ? '看回书桌 <span aria-hidden="true">↗</span>' : '看看睡着的小猫 <span aria-hidden="true">↖</span>';
 }
 el("sound").onclick = async () => {
   soundEnabled = !soundEnabled;
@@ -345,6 +376,7 @@ async function openBook() {
   const operation = ++transitionVersion;
   const generation = sceneVersion;
   state = "opening";
+  audioVolume();
   const reader = el("reader");
   reader.dataset.phase = "opening";
   reader.setAttribute("aria-busy", "true");
@@ -441,11 +473,10 @@ async function closeBook() {
     return;
   }
   state = "room";
+  audioVolume();
   el("room-ui").classList.remove("hidden");
   const cozyFocused = scene?.isCozyFocused?.() ?? false;
-  el("cozy-view").setAttribute("aria-pressed",String(cozyFocused));
-  el("cozy-credit").classList.toggle("hidden",!cozyFocused);
-  el("cozy-view").innerHTML = cozyFocused ? '看回书桌 <span aria-hidden="true">↗</span>' : '看看睡着的小猫 <span aria-hidden="true">↖</span>';
+  updateCozyControls(cozyFocused);
   el("open-book").innerHTML = '继续翻阅纪念册 <span class="button-arrow">↗</span>';
   el("scene-hint").innerHTML = '<span class="pulse-dot"></span> 点击桌上的画册，继续我们的故事';
   el("scene-hint").classList.remove("hidden");
@@ -457,20 +488,23 @@ el("open-book").onclick = openBook;
 el("cozy-view").onclick = async () => {
   if (state !== "room" || !sceneAvailable || changingView) return;
   changingView = true;
+  catVoice?.stop();
   const button = el<HTMLButtonElement>("cozy-view");
   const open = el<HTMLButtonElement>("open-book");
-  button.disabled = open.disabled = true;
+  const pet = el<HTMLButtonElement>("pet-cat");
+  button.disabled = open.disabled = pet.disabled = true;
   try {
     const focused = await scene!.focusCozyCorner(button.getAttribute("aria-pressed") !== "true");
-    button.setAttribute("aria-pressed", String(focused));
-    el("cozy-credit").classList.toggle("hidden",!focused);
-    button.innerHTML = focused ? '看回书桌 <span aria-hidden="true">↗</span>' : '看看睡着的小猫 <span aria-hidden="true">↖</span>';
+    updateCozyControls(focused);
   } catch (error) {
     onSceneUnavailable(error);
   } finally {
     changingView = false;
-    button.disabled = open.disabled = false;
+    button.disabled = open.disabled = pet.disabled = false;
   }
+};
+el("pet-cat").onclick = () => {
+  if (state === "room" && sceneAvailable && !changingView) scene?.petCat();
 };
 el("fallback-read").onclick = openBook;
 el("reload-scene").onclick = () => window.location.reload();
@@ -553,6 +587,7 @@ try {
     },
     reduceMotion,
     () => onSceneUnavailable(),
+    onCatPet,
   );
   // Prepare alongside GPU loading, before continuous scene drawing starts.
   // Browsers requiring gesture-time construction retain the lazy fallback.
@@ -570,6 +605,11 @@ try {
 }
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
+    audioVolume();
+    catVoice?.stop();
     void audio?.suspend();
-  } else if (soundEnabled && audioUnlocked) void audio?.resume();
+  } else {
+    audioVolume();
+    if (soundEnabled && audioUnlocked) void audio?.resume();
+  }
 });

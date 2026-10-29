@@ -38,6 +38,7 @@ export function createScene(
   onInteract: () => void,
   reducedMotion: boolean,
   onUnavailable?: () => void,
+  onPet?: () => void,
 ) {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -944,7 +945,7 @@ export function createScene(
       seaMat.uniforms.time.value = t * (reducedMotion ? 0.15 : 1);
       curtains.update(t, reducedMotion);
       mythology.update(t, reducedMotion);
-      cat.update(t, reducedMotion);
+      if (cat.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
     }
     let finishLookFrame: (() => void) | undefined;
     if (lookMotion) {
@@ -1027,6 +1028,7 @@ export function createScene(
         camera.position.copy(motion.to.p);
         target.copy(motion.to.t);
         readingMotion = null;
+        if (motion.kind === "opening" && cat.cancelPet()) sun.shadow.needsUpdate = true;
         finishReadingFrame = () => {
           animating = false;
           current = motion.kind === "opening" ? "book" : "room";
@@ -1065,23 +1067,103 @@ export function createScene(
   }
   const ray = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
+  const canvas = renderer.domElement;
+  let petStroke: { id: number; x: number; y: number; length: number; stroked: boolean } | null = null;
+  const activePointers = new Set<number>(), cancelledPointers = new Set<number>();
+  function canPet() {
+    return !disposed && !unavailableError && !animating && current === "room" && !document.hidden;
+  }
+  function performPet() {
+    if (!canPet() || !cat.pet(simulationTime, reducedMotion)) return false;
+    onPet?.();
+    requestRender();
+    return true;
+  }
+  function pointRay(e: PointerEvent) {
+    pointer.set((e.clientX / innerWidth) * 2 - 1, (-e.clientY / innerHeight) * 2 + 1);
+    ray.far = Infinity;
+    ray.setFromCamera(pointer, camera);
+  }
+  function catHit(e: PointerEvent) {
+    if (!canPet()) return false;
+    pointRay(e);
+    const candidate = ray.intersectObject(cat.group, true)[0];
+    if (!candidate) return false;
+    // Only do the wider occlusion check after hitting the small cat bounds.
+    // A hand cannot reach through furniture to a hidden part of the model.
+    ray.far = Math.max(0, candidate.distance - .001);
+    const blocked = ray.intersectObjects(scene.children, true).some(hit => {
+      if (!(hit.object instanceof THREE.Mesh)) return false;
+      for (let object: THREE.Object3D | null = hit.object; object; object = object.parent) {
+        if (!object.visible || object === cat.group) return false;
+      }
+      return true;
+    });
+    ray.far = Infinity;
+    return !blocked;
+  }
   function hit(e: PointerEvent) {
     if (disposed || unavailableError || animating || current === "book") return false;
-    pointer.set(
-      (e.clientX / innerWidth) * 2 - 1,
-      (-e.clientY / innerHeight) * 2 + 1,
-    );
-    ray.setFromCamera(pointer, camera);
+    pointRay(e);
     return (
       ray.intersectObject(current === "entry" ? door : bouquetParked ? book : bouquet, true).length > 0
     );
   }
-  renderer.domElement.addEventListener("pointerup", (e) => {
+  canvas.addEventListener("pointerdown", e => {
+    activePointers.add(e.pointerId);
+    if (!e.isPrimary || activePointers.size > 1) {
+      for (const id of activePointers) cancelledPointers.add(id);
+      petStroke = null;
+      return;
+    }
+    if (e.button !== 0 || !catHit(e)) return;
+    petStroke = { id: e.pointerId, x: e.clientX, y: e.clientY, length: 0, stroked: false };
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener("pointerup", e => {
+    activePointers.delete(e.pointerId);
+    if (cancelledPointers.delete(e.pointerId) || !e.isPrimary || e.button !== 0) return;
+    if (petStroke?.id === e.pointerId) {
+      const stroke = petStroke;
+      petStroke = null;
+      if (!stroke.stroked && stroke.length < 10 && catHit(e)) performPet();
+      if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+      return; // A stroke ending over the desk must never open the album.
+    }
     if (hit(e)) onInteract();
   });
-  renderer.domElement.addEventListener("pointermove", (e) => {
-    renderer.domElement.style.cursor = hit(e) ? "pointer" : "default";
+  canvas.addEventListener("pointermove", e => {
+    if (petStroke?.id === e.pointerId) {
+      petStroke.length += Math.hypot(e.clientX - petStroke.x, e.clientY - petStroke.y);
+      petStroke.x = e.clientX; petStroke.y = e.clientY;
+      if (!petStroke.stroked && petStroke.length >= 10 && catHit(e)) {
+        petStroke.stroked = true;
+        performPet();
+      }
+      canvas.style.cursor = "grabbing";
+    } else if (e.pointerType !== "touch" && e.timeStamp - lastPointerHint > 40) {
+      lastPointerHint = e.timeStamp;
+      canvas.style.cursor = catHit(e) ? "grab" : hit(e) ? "pointer" : "default";
+    }
   });
+  canvas.addEventListener("pointercancel", e => {
+    activePointers.delete(e.pointerId);
+    cancelledPointers.delete(e.pointerId);
+    if (petStroke?.id === e.pointerId) petStroke = null;
+  });
+  canvas.addEventListener("lostpointercapture", e => {
+    if (petStroke?.id === e.pointerId) {
+      cancelledPointers.add(e.pointerId);
+      petStroke = null;
+    }
+  });
+  let lastPointerHint = -Infinity;
+  function finishPointer(e: PointerEvent) {
+    activePointers.delete(e.pointerId); cancelledPointers.delete(e.pointerId);
+    if (petStroke?.id === e.pointerId) petStroke = null;
+  }
+  window.addEventListener("pointerup", finishPointer);
+  window.addEventListener("pointercancel", finishPointer);
   window.addEventListener("resize", () => {
     if (disposed || unavailableError) return;
     camera.aspect = innerWidth / innerHeight;
@@ -1216,6 +1298,7 @@ export function createScene(
       return nookFocused;
     },
     isCozyFocused() { return nookFocused; },
+    petCat: performPet,
     getBookProjection,
     setBookChapter(index: number) {
       album.setChapter(index);
@@ -1260,6 +1343,8 @@ export function createScene(
       disposed = true;
       cancelAnimationFrame(frame);
       document.removeEventListener("visibilitychange", visibilityChanged);
+      window.removeEventListener("pointerup", finishPointer);
+      window.removeEventListener("pointercancel", finishPointer);
       renderer.dispose();
     },
   };

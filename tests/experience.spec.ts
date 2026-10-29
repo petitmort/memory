@@ -49,12 +49,12 @@ test("desktop: deliberate entry, reading, chapter boundaries, sound and return",
   await page.locator("#sound").click();
   await expect(page.locator("#sound")).toHaveAttribute(
     "aria-label",
-    "开启海浪声",
+    "开启声音",
   );
   await page.locator("#sound").click();
   await expect(page.locator("#sound")).toHaveAttribute(
     "aria-label",
-    "关闭海浪声",
+    "关闭声音",
   );
   await page.locator("#open-book").click();
   await expectReaderReady(page);
