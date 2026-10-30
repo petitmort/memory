@@ -24,6 +24,7 @@ import { readingBlend } from "./reading-timeline";
 import { advanceReadingClock, createReadingPath, readingRetargetDuration, retargetReadingPath, type ReadingPath } from "./reading-motion";
 import { createInteractionFeedback, type InteractionKind } from "./interaction-feedback";
 import { createQualityPolicy } from "./quality-policy";
+import { createEntryPath } from "./entry-motion";
 import type { CatReactionProfile } from "./cat-reactions";
 
 export type PageProjection = { corners: { x: number; y: number }[] };
@@ -730,13 +731,14 @@ export function createScene(
   camera.position.copy(initial.p);
   target.copy(initial.t);
   let walking: {
-    path: THREE.CatmullRomCurve3;
-    fromT: THREE.Vector3;
-    toT: THREE.Vector3;
-    start: number;
+    path: ReadingPath;
+    mobile: boolean;
+    elapsed: number;
     duration: number;
+    lastDrawAt: number | null;
     done: () => void;
   } | null = null;
+  let doorPassage: { elapsed: number; duration: number; lastDrawAt: number | null; done: () => void } | null = null;
   let nookFocused = false;
   let lookMotion: {
     path: ReadingPath;
@@ -832,6 +834,7 @@ export function createScene(
     cancelAnimationFrame(frame);
     frame = 0;
     walking = null;
+    doorPassage = null;
     lookMotion = null;
     bouquetMotion = null;
     readingMotion = null;
@@ -883,24 +886,13 @@ export function createScene(
   function walkIntoRoom() {
     requireAvailable();
     return whileAvailable(new Promise<void>((done) => {
-      const end = roomPose();
+      const end = { ...roomPose(), fov: 50 }, duration = reducedMotion ? 120 : 3800;
+      const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
       walking = {
-        path: new THREE.CatmullRomCurve3(
-          [
-            camera.position.clone(),
-            new THREE.Vector3(D.door.centerX, D.eye, front + 0.6),
-            new THREE.Vector3(D.door.centerX, D.eye, front - 0.6),
-            end.p,
-          ],
-          false,
-          "centripetal",
-        ),
-        fromT: target.clone(),
-        toT: end.t,
-        start: simulationTime * 1000,
-        duration: reducedMotion ? 120 : 3800,
-        done,
+        path: createEntryPath(from, end, { x: D.door.centerX, y: D.eye, z: front }, duration),
+        mobile: mobile(), elapsed: 0, duration, lastDrawAt: null, done,
       };
+      requestRender();
     }));
   }
   function parkBouquet() {
@@ -939,6 +931,8 @@ export function createScene(
     if (readingMotion) readingMotion.lastDrawAt = null;
     if (lookMotion) lookMotion.lastDrawAt = null;
     if (fogMotion) fogMotion.lastDrawAt = null;
+    if (doorPassage) doorPassage.lastDrawAt = null;
+    if (walking) walking.lastDrawAt = null;
   }
   function visibilityChanged() {
     if (document.hidden) {
@@ -1010,18 +1004,27 @@ export function createScene(
         finishLookFrame = () => { animating = false; motion.done(); };
       }
     }
+    let finishWalkingFrame: (() => void) | undefined;
     if (walking) {
-      const a = Math.min(1, (t * 1000 - walking.start) / walking.duration),
-        ease = a * a * (3 - 2 * a);
-      camera.position.copy(walking.path.getPoint(ease));
-      target.lerpVectors(walking.fromT, walking.toT, ease);
-      if (a === 1) {
-        const done = walking.done;
+      const motion = walking, a = advanceReadingClock(motion, now), pose = motion.path.sample(a);
+      camera.position.copy(pose.p);
+      target.copy(pose.t);
+      // Preserve the doorway segment during rotation. Redirect only once the
+      // eye is safely inside, retaining its velocity at the new layout's pose.
+      if (motion.mobile !== mobile() && camera.position.z <= front - .6) {
+        const duration = readingRetargetDuration(motion), to = { ...roomPose(), fov: 50 };
+        walking = {
+          ...motion, path: retargetReadingPath(pose, to, duration), mobile: mobile(),
+          elapsed: 0, duration, lastDrawAt: now,
+        };
+      } else if (a === 1) {
         walking = null;
-        animating = false;
-        current = "room";
-        scheduleIdleHint();
-        done();
+        finishWalkingFrame = () => {
+          animating = false;
+          current = "room";
+          scheduleIdleHint();
+          motion.done();
+        };
       }
     }
     if (bouquetMotion) {
@@ -1101,6 +1104,17 @@ export function createScene(
     // map; rebuild it only when a caster actually moves or changes visibility.
     if (Math.abs(doorPivot.rotation.y - previousDoor) > .000001)
       sun.shadow.needsUpdate = true;
+    let finishDoorFrame: (() => void) | undefined;
+    if (doorPassage) {
+      const motion = doorPassage, progress = advanceReadingClock(motion, now);
+      // The door must visibly move first and clear the passage. Never release
+      // this gate from a wall-clock timer while the page cannot draw.
+      if (reducedMotion) { doorPivot.rotation.y = doorOpen; sun.shadow.needsUpdate = true; }
+      if ((reducedMotion || progress === 1) && doorPivot.rotation.y <= -Math.PI * .45) {
+        doorPassage = null;
+        finishDoorFrame = motion.done;
+      }
+    }
     camera.lookAt(target);
     if (updateFog) {
       camera.updateMatrixWorld();
@@ -1113,6 +1127,8 @@ export function createScene(
     finishFogFrame?.();
     finishLookFrame?.();
     finishReadingFrame?.();
+    finishDoorFrame?.();
+    finishWalkingFrame?.();
     drawing = false;
     if (readerBackdropFrozen && !singleRenderRequested) lastDraw = null;
     else scheduleFrame();
@@ -1439,9 +1455,9 @@ export function createScene(
       doorOpen = -Math.PI * 0.58;
       animating = true;
       requestRender();
-      await whileAvailable(new Promise<void>((resolve) =>
-        setTimeout(resolve, reducedMotion ? 0 : 800),
-      ));
+      await whileAvailable(new Promise<void>(done => {
+        doorPassage = { elapsed: 0, duration: reducedMotion ? 1 : 400, lastDrawAt: null, done };
+      }));
       requireAvailable();
       await walkIntoRoom();
       requireAvailable();

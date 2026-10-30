@@ -9,6 +9,11 @@ export function createExplorationGuide() {
     window.clearTimeout(timer);
     element.classList.add("hidden");
   }
+  function dismiss() {
+    hide();
+    seen = true;
+    try { localStorage.setItem("tideline-exploration-seen", "1"); } catch {}
+  }
   document.addEventListener("pointerdown", hide, { signal: scope.signal, passive: true });
   document.addEventListener("keydown", hide, { signal: scope.signal });
   document.addEventListener("visibilitychange", () => { if (document.hidden) hide(); }, { signal: scope.signal });
@@ -21,6 +26,7 @@ export function createExplorationGuide() {
       timer = window.setTimeout(hide, 5000);
     },
     hide,
+    dismiss,
     dispose() { scope.abort(); hide(); },
   };
 }

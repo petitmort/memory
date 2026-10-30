@@ -23,6 +23,46 @@ let readingScene: ReturnType<typeof createScene> | undefined;
 let changingView = false;
 let cozyViewRequested = false;
 let catIntentVersion = 0;
+let roomObservation: { remaining: number; startedAt: number; interacted: boolean; timer?: number } | undefined;
+let inputRevealTimer: number | undefined;
+const observationPointers = new Set<number>();
+
+function pauseRoomObservation() {
+  if (!roomObservation || roomObservation.timer === undefined) return;
+  window.clearTimeout(roomObservation.timer);
+  roomObservation.timer = undefined;
+  roomObservation.remaining = Math.max(0, roomObservation.remaining - (performance.now() - roomObservation.startedAt));
+}
+function cancelRoomObservation() {
+  if (roomObservation) window.clearTimeout(roomObservation.timer);
+  window.clearTimeout(inputRevealTimer);
+  inputRevealTimer = undefined;
+  roomObservation = undefined;
+  observationPointers.clear();
+}
+function finishRoomObservation(active = false) {
+  if (!roomObservation) return;
+  if (active) {
+    roomObservation.interacted = true;
+    exploration.dismiss();
+  }
+  if (document.hidden || (active && observationPointers.size > 0)) {
+    pauseRoomObservation();
+    return;
+  }
+  cancelRoomObservation();
+  if (flow.disposed || !sceneAvailable || flow.getState() !== "room") return;
+  el("room-ui").classList.toggle("room-arriving", !active && !reduceMotion);
+  el("scene-hint").classList.toggle("room-arriving", !active && !reduceMotion);
+  el("room-ui").classList.remove("hidden");
+  syncControls();
+  if (!active) exploration.enterRoom();
+}
+function resumeRoomObservation() {
+  if (!roomObservation || document.hidden || flow.disposed || roomObservation.timer !== undefined) return;
+  roomObservation.startedAt = performance.now();
+  roomObservation.timer = window.setTimeout(() => finishRoomObservation(), roomObservation.remaining);
+}
 
 function setBackgroundInert(value: boolean) {
   document.querySelectorAll<HTMLElement>("#world,.header,.footer,main > :not(#reader),#fallback")
@@ -30,6 +70,7 @@ function setBackgroundInert(value: boolean) {
 }
 function showFallback() {
   if (flow.disposed) return;
+  cancelRoomObservation();
   flow.transition("fallback");
   document.body.classList.remove("reading", "book-transition");
   el("loading").classList.add("hidden");
@@ -45,6 +86,7 @@ function showFallback() {
 }
 function onSceneUnavailable(error?: unknown) {
   if (!flow.invalidateScene()) return;
+  cancelRoomObservation();
   sceneAvailable = false;
   sound.updateContext();
   readingScene = undefined;
@@ -110,7 +152,7 @@ function syncControls() {
   for (const id of ["open-book", "cozy-view", "pet-cat", "choose-record", "record-toggle"])
     el<HTMLButtonElement>(id).disabled = !inRoom || (id === "open-book" && catContext) || (id === "pet-cat" && el(id).dataset.busy === "true");
   el("open-book").classList.toggle("hidden", catContext);
-  el("scene-hint").classList.toggle("hidden", catContext || flow.getState() !== "room");
+  el("scene-hint").classList.toggle("hidden", catContext || flow.getState() !== "room" || !!roomObservation);
   const interactive = !changingView && ["fog", "door", "room"].includes(flow.getState());
   scene?.setInteractionEnabled?.(interactive);
   if (!interactive) scene?.clearInteractionFeedback?.();
@@ -131,11 +173,43 @@ flow.own(() => readerController.dispose());
 flow.own(() => sound.dispose());
 flow.own(() => scene?.dispose());
 flow.own(() => window.clearTimeout(toastTimer));
+flow.own(cancelRoomObservation);
+for (const id of ["room-ui", "scene-hint"]) el(id).addEventListener("animationend", event => {
+  if (event.animationName === "room-arriving") el(id).classList.remove("room-arriving");
+}, { signal: flow.signal });
 window.addEventListener("pagehide", event => { if (!event.persisted) flow.dispose(); }, { signal: flow.signal });
 document.addEventListener("visibilitychange", () => {
   // A paused approach may resume, but its pet must not play later on return.
-  if (document.hidden) ++catIntentVersion;
+  if (document.hidden) {
+    ++catIntentVersion;
+    pauseRoomObservation();
+    window.clearTimeout(inputRevealTimer);
+    inputRevealTimer = undefined;
+    observationPointers.clear();
+  } else if (roomObservation?.interacted) finishRoomObservation(true);
+  else resumeRoomObservation();
 }, { signal: flow.signal });
+// Keep the original pointer target through the entire gesture. Inserting the
+// room buttons on pointerdown could place a new control under its pointerup.
+document.addEventListener("pointerdown", event => {
+  if (!roomObservation || flow.getState() !== "room") return;
+  window.clearTimeout(inputRevealTimer);
+  inputRevealTimer = undefined;
+  roomObservation.interacted = true;
+  observationPointers.add(event.pointerId);
+  pauseRoomObservation();
+  exploration.dismiss();
+}, { capture: true, passive: true, signal: flow.signal });
+for (const type of ["pointerup", "pointercancel"] as const) document.addEventListener(type, event => {
+  if (!roomObservation || !observationPointers.delete(event.pointerId) || observationPointers.size) return;
+  inputRevealTimer = window.setTimeout(() => finishRoomObservation(true), 0);
+}, { capture: true, passive: true, signal: flow.signal });
+document.addEventListener("click", () => {
+  if (roomObservation && flow.getState() === "room" && !observationPointers.size) finishRoomObservation(true);
+}, { capture: true, signal: flow.signal });
+document.addEventListener("keydown", () => {
+  if (roomObservation && flow.getState() === "room") finishRoomObservation(true);
+}, { capture: true, signal: flow.signal });
 function updateCozyControls(focused: boolean) {
   cozyViewRequested = focused;
   el("cozy-view").setAttribute("aria-pressed",String(focused));
@@ -191,18 +265,20 @@ async function enter() {
     return;
   }
   if (!sceneAvailable || generation !== flow.sceneVersion) return;
+  roomObservation = { remaining: 2000, startedAt: performance.now(), interacted: false };
   flow.transition("room");
   step(1);
   el("record-toggle").classList.remove("hidden");
   el("intro").classList.add("hidden");
-  el("room-ui").classList.remove("hidden");
-  el("scene-hint").classList.remove("hidden");
-  exploration.enterRoom();
+  resumeRoomObservation();
   sound.updateContext();
 }
 el("enter").onclick = enter;
 async function openBook() {
   if (flow.disposed || changingView || (sceneAvailable && viewingCat()) || (flow.getState() !== "room" && flow.getState() !== "fallback")) return;
+  finishRoomObservation(true);
+  el("room-ui").classList.remove("room-arriving");
+  el("scene-hint").classList.remove("room-arriving");
   lastFocus = document.activeElement as HTMLElement;
   const operation = flow.beginTransition();
   const generation = flow.sceneVersion;
@@ -319,6 +395,7 @@ async function closeBook() {
 el("open-book").onclick = openBook;
 async function changeCozyView(focus: boolean, petAfter = false) {
   if (flow.disposed || document.hidden || flow.getState() !== "room" || !sceneAvailable || changingView) return;
+  finishRoomObservation(true);
   const activeScene = scene!;
   const generation = flow.sceneVersion;
   const intent = ++catIntentVersion;

@@ -4,37 +4,48 @@ import * as THREE from "three";
 export function createCourtyardFog() {
   const group = new THREE.Group();
   group.name = "courtyard-coastal-fog";
+  // Far-to-near ordering matters inside the one transparent instanced draw.
+  // None of the banks crosses the entry eye (Z=6.3) or the door (Z=2.7).
+  const banks = [
+    { z: 3.00, scale: .35, seed: .17, weight: .92 },
+    { z: 3.60, scale: .42, seed: 1.43, weight: .90 },
+    { z: 4.25, scale: .56, seed: 2.71, weight: .96 },
+    { z: 4.95, scale: .84, seed: 4.23, weight: .94 },
+    { z: 5.65, scale: 1.38, seed: 5.89, weight: .78 },
+  ];
+  // Progress, opening radius, opening strength and final wisps. These same
+  // per-bank values drive the shader and conservative whole-bank culling.
+  const bankClearing = banks.map(() => new THREE.Vector4(0, -.65, 0, 1));
   const cloudMap = createCloudNoise();
   const material = new THREE.ShaderMaterial({
     uniforms: {
       cloudMap: { value: cloudMap },
       time: { value: 0 },
-      clearance: { value: 0 },
-      windowRadius: { value: -.65 },
-      openingStrength: { value: 0 },
-      opacityFade: { value: 1 },
+      bankClearing: { value: bankClearing },
       mistTint: { value: new THREE.Color("#9eb7ba") },
       mistLight: { value: new THREE.Color("#dce3de") },
     },
     vertexShader: `
       attribute vec4 fogParameters;
       uniform float time;
-      uniform float clearance;
+      uniform vec4 bankClearing[5];
       varying vec2 vUv;
       varying vec2 vWorldXY;
       varying vec2 vCloudUV;
       varying vec2 vWarpUV;
       varying float vWeight;
+      varying vec4 vClearing;
       void main() {
         vUv=uv;
         float layer=fogParameters.x;
         vWeight=fogParameters.w;
+        vClearing=bankClearing[int(layer*4.+.5)];
         vec4 world=modelMatrix*instanceMatrix*vec4(position,1.);
         vWorldXY=world.xy;
         // These coordinates are affine in world XY. Perspective-correct
         // interpolation is the same field as evaluating them per fragment.
         vec2 drift=vec2(time*(.018+layer*.012),time*(.003-layer*.005));
-        vec2 gust=vec2(clearance*clearance*(.70+layer*.65),clearance*.08);
+        vec2 gust=vec2(vClearing.x*vClearing.x*(.70+layer*.65),vClearing.x*.08);
         vCloudUV=world.xy*fogParameters.y+vec2(fogParameters.z,layer*1.93)-drift-gust;
         vWarpUV=vCloudUV*.63+vec2(.31,-time*.007);
         gl_Position=projectionMatrix*viewMatrix*world;
@@ -42,10 +53,6 @@ export function createCourtyardFog() {
     `,
     fragmentShader: `
       uniform sampler2D cloudMap;
-      uniform float clearance;
-      uniform float windowRadius;
-      uniform float openingStrength;
-      uniform float opacityFade;
       uniform vec3 mistTint;
       uniform vec3 mistLight;
       varying vec2 vUv;
@@ -53,7 +60,11 @@ export function createCourtyardFog() {
       varying vec2 vCloudUV;
       varying vec2 vWarpUV;
       varying float vWeight;
+      varying vec4 vClearing;
       void main() {
+        float windowRadius=vClearing.y;
+        float openingStrength=vClearing.z;
+        float opacityFade=vClearing.w;
         if(opacityFade<=0.) discard;
         vec2 fromDoor=(vWorldXY-vec2(.55,1.35))*vec2(.78,.93);
         float distanceFromDoor=length(fromDoor);
@@ -61,7 +72,7 @@ export function createCourtyardFog() {
         // edge displacement is bounded by (.82+.34)/2 = .58. Once the opening
         // has full strength, distance+.58 < radius-.38 guarantees zero alpha.
         // The extra .0001 is a conservative margin for floating-point error.
-        if(clearance>=.22 && distanceFromDoor<windowRadius-.9601) discard;
+        if(openingStrength>=1. && distanceFromDoor<windowRadius-.9601) discard;
         vec3 warp=texture2D(cloudMap,vWarpUV).rgb;
         vec3 cloud=texture2D(cloudMap,vCloudUV+(warp.gb-.5)*.22).rgb;
         float billow=smoothstep(.25,.76,cloud.r*.82+cloud.g*.18);
@@ -89,15 +100,6 @@ export function createCourtyardFog() {
     toneMapped: false,
   });
   const geometry = new THREE.PlaneGeometry(12,7);
-  // Far-to-near ordering matters inside the one transparent instanced draw.
-  // None of the banks crosses the entry eye (Z=6.3) or the door (Z=2.7).
-  const banks = [
-    { z: 3.00, scale: .35, seed: .17, weight: .92 },
-    { z: 3.60, scale: .42, seed: 1.43, weight: .90 },
-    { z: 4.25, scale: .56, seed: 2.71, weight: .96 },
-    { z: 4.95, scale: .84, seed: 4.23, weight: .94 },
-    { z: 5.65, scale: 1.38, seed: 5.89, weight: .78 },
-  ];
   const parameters: number[]=[];
   const mesh = new THREE.InstancedMesh(geometry,material,banks.length);
   mesh.name = "courtyard-fog-depth-banks";
@@ -140,11 +142,21 @@ export function createCourtyardFog() {
     group,
     update(time:number,clearance:number,reduced:boolean,camera?:THREE.PerspectiveCamera) {
       const progress=THREE.MathUtils.clamp(clearance,0,1);
-      const windowRadius=THREE.MathUtils.lerp(-.65,3.7,THREE.MathUtils.smoothstep(progress,.015,1));
+      for(let index=0;index<banks.length;index++) {
+        // The nearest bank starts first and finishes at .84; the bank by the
+        // door starts at .16 and finishes at 1. All five retain the same overall
+        // clearing duration, with overlapping motion rather than five steps.
+        const delay=(1-index/(banks.length-1))*.16;
+        const local=THREE.MathUtils.clamp((progress-delay)/.84,0,1);
+        bankClearing[index].set(local,
+          THREE.MathUtils.lerp(-.65,3.7,THREE.MathUtils.smoothstep(local,.015,1)),
+          THREE.MathUtils.smoothstep(local,0,.22),
+          1-THREE.MathUtils.smoothstep(local,.63,1));
+      }
       let activeLayers=banks.length;
       // No camera keeps the original API and all five banks. Recompute from
       // the full prefix every update so resize can safely restore edge wisps.
-      if(camera&&progress>=.22&&windowRadius>.9602) {
+      if(camera&&progress>0) {
         rayOrigin.setFromMatrixPosition(camera.matrixWorld);
         let validRays=Number.isFinite(rayOrigin.x)&&Number.isFinite(rayOrigin.y)&&Number.isFinite(rayOrigin.z);
         for(let i=0;i<cornerDirections.length;i++) {
@@ -155,18 +167,17 @@ export function createCourtyardFog() {
         }
         // The shader's transparent bound is radius-.9601; one further .0001
         // makes this whole-bank decision conservative around floating error.
-        if(validRays)while(activeLayers>0&&bankIsFullyClear(banks[activeLayers-1].z,windowRadius-.9602))activeLayers--;
+        if(validRays)while(activeLayers>0) {
+          const index=activeLayers-1, clearing=bankClearing[index];
+          if(clearing.w===0 || (clearing.z===1 && bankIsFullyClear(banks[index].z,clearing.y-.9602)))activeLayers--;
+          else break;
+        }
       }
       mesh.count=activeLayers;
       group.visible=progress<1&&activeLayers>0;
       group.userData.clearance=progress;
       group.userData.activeLayers=activeLayers;
       material.uniforms.time.value=time*(reduced?.12:1);
-      material.uniforms.clearance.value=progress;
-      // Shared by every pixel and bank; evaluate only once per update.
-      material.uniforms.windowRadius.value=windowRadius;
-      material.uniforms.openingStrength.value=THREE.MathUtils.smoothstep(progress,0,.22);
-      material.uniforms.opacityFade.value=1-THREE.MathUtils.smoothstep(progress,.63,1);
     },
     dispose() {
       geometry.dispose();material.dispose();cloudMap.dispose();

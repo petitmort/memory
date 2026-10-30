@@ -17,6 +17,7 @@ async function observeFog(page: Page) {
         }
         const texture=banks?.material.uniforms.cloudMap.value;
         return{clearance:fogClearance,density:sceneFog.density,visible:courtyardFog.group.visible,
+          banks:banks?.material.uniforms.bankClearing.value.map(value=>value.toArray()),
           eye:camera.position.toArray(),time:banks?.material.uniforms.time.value??0,depths,
           meshes:meshes.length,triangles:meshes.reduce((sum,mesh)=>sum+(mesh.geometry.index?.count??mesh.geometry.attributes.position.count)/3*(mesh.count??1),0),
           shadow:meshes.some(mesh=>mesh.castShadow||mesh.receiveShadow),
@@ -84,6 +85,11 @@ test('dense courtyard mist has moving depth and clears through rendered intermed
     await page.waitForFunction(()=>(window as any).__fogDebug.held,{},{timeout:60000});
     const held=await snapshot(page),heldCount=await page.evaluate(()=>(window as any).__fogDebug.frames.length);
     expect(held.clearance).toBeGreaterThanOrEqual(.35);expect(held.clearance).toBeLessThan(.6);
+    expect(held.banks).toHaveLength(5);
+    for(let index=1;index<held.banks.length;index++) {
+      expect(held.banks[index][0], 'nearer mist must clear ahead of the bank by the door').toBeGreaterThan(held.banks[index-1][0]);
+      expect(held.banks[index][1]).toBeGreaterThan(held.banks[index-1][1]);
+    }
     await expect(page.locator('#enter')).toBeDisabled();await expect(page.locator('#room-ui')).toBeHidden();
     await page.screenshot({path:'test-results/fog-clearing.png'});
     await page.waitForTimeout(200);

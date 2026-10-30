@@ -23,7 +23,14 @@
 }
 .room-ui .cozy-actions { flex-wrap: wrap; }
 .room-ui .primary-button { max-width: 100%; }
+.room-ui { animation: none; }
 .scene-hint { pointer-events: none; }
+.room-arriving,
+#explore-guide:not(.hidden) { animation: room-arriving 450ms ease-out both; }
+@keyframes room-arriving {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 .pulse-dot { animation: none; }
 .journey-status {
   position: fixed; z-index: 16; top: max(95px, calc(env(safe-area-inset-top) + 75px));
@@ -139,4 +146,5 @@ button:focus-visible, a:focus-visible { outline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
   #enter.door-ready { animation: none; }
+  .room-arriving, #explore-guide:not(.hidden) { animation: none; }
 }
