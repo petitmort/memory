@@ -22,6 +22,8 @@ import { createCourtyardFog } from "./courtyard-fog";
 import { warmSceneResources } from "./scene-warmup";
 import { readingBlend } from "./reading-timeline";
 import { advanceReadingClock, createReadingPath, readingRetargetDuration, retargetReadingPath, type ReadingPath } from "./reading-motion";
+import { createInteractionFeedback, type InteractionKind } from "./interaction-feedback";
+import { createQualityPolicy } from "./quality-policy";
 
 export type PageProjection = { corners: { x: number; y: number }[] };
 export type BookProjection = PageProjection & { pages: [PageProjection, PageProjection] };
@@ -41,20 +43,26 @@ export function createScene(
   onUnavailable?: () => void,
   onPet?: () => (() => number) | undefined,
   onRecord?: () => void,
+  onQualityChange?: (low: boolean) => void,
 ) {
+  const listeners = new AbortController();
+  const listenerOptions = { signal: listeners.signal };
+  const hints = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+  const qualityPolicy = createQualityPolicy({ deviceMemory: hints.deviceMemory, hardwareConcurrency: hints.hardwareConcurrency, saveData: hints.connection?.saveData });
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: false,
     powerPreference: "high-performance",
   });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, qualityPolicy.initialLow ? 1 : 1.5));
   renderer.setSize(innerWidth, innerHeight);
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = !qualityPolicy.initialLow;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.1;
   container.appendChild(renderer.domElement);
+  const feedback = createInteractionFeedback(container);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color("#c6dce5");
   const fogColor = new THREE.Color("#c5d0d1"), clearColor = new THREE.Color("#d2e4e8");
@@ -774,13 +782,50 @@ export function createScene(
     if (wasVisible !== album.group.visible) sun.shadow.needsUpdate = true;
   }
 
+  function collectResources(root: THREE.Object3D) {
+    const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
+    root.traverse(object => {
+      const renderable = object as THREE.Mesh;
+      if (renderable.geometry instanceof THREE.BufferGeometry) geometries.add(renderable.geometry);
+      if (!renderable.material) return;
+      for (const material of Array.isArray(renderable.material) ? renderable.material : [renderable.material]) {
+        materials.add(material);
+        for (const value of Object.values(material)) if (value instanceof THREE.Texture) textures.add(value);
+        if (material instanceof THREE.ShaderMaterial)
+          for (const uniform of Object.values(material.uniforms)) if (uniform.value instanceof THREE.Texture) textures.add(uniform.value);
+      }
+    });
+    return { geometries, materials, textures };
+  }
+
   function makeUnavailable(notify: boolean) {
     if (unavailableError) return;
     unavailableError = new SceneUnavailableError();
+    stopIdleHint();
+    feedback.dispose();
+    listeners.abort();
+    // Asset factories own their loading cancellation and private resources.
+    // Release the remaining room resources once, including Points and uniforms.
+    const resources = collectResources(scene);
+    for (const owned of [cat.group, recordPlayer.group, courtyardFog.group]) {
+      const asset = collectResources(owned);
+      asset.geometries.forEach(value => resources.geometries.delete(value));
+      asset.materials.forEach(value => resources.materials.delete(value));
+      asset.textures.forEach(value => resources.textures.delete(value));
+    }
+    const fabric = collectResources(lounge.group);
+    fabric.materials.forEach(value => resources.materials.delete(value));
+    fabric.textures.forEach(value => resources.textures.delete(value));
     cat.dispose();
     recordPlayer.dispose();
     lounge.dispose();
     courtyardFog.dispose();
+    resources.geometries.forEach(value => value.dispose());
+    resources.materials.forEach(value => value.dispose());
+    resources.textures.forEach(value => value.dispose());
+    sun.shadow.dispose();
+    album.setInvalidation(() => {});
+    renderer.renderLists.dispose();
     fogMotion = null;
     cancelAnimationFrame(frame);
     frame = 0;
@@ -873,12 +918,10 @@ export function createScene(
     }));
   }
   let frame = 0,
-    low = false;
+    low = qualityPolicy.initialLow;
   let lastDraw: number | null = null;
   let prepared = false;
   let drawing = false;
-  let average = 16,
-    slowFrames = 0;
   function scheduleFrame() {
     if (!frame && !drawing && prepared && !disposed && !unavailableError && !document.hidden)
       frame = requestAnimationFrame(tick);
@@ -897,12 +940,17 @@ export function createScene(
   }
   function visibilityChanged() {
     if (document.hidden) {
+      clearInteractionFeedback();
+      qualityPolicy.resetSamples();
       if (cat.cancelPet()) sun.shadow.needsUpdate = true;
       pauseFrames();
     }
-    else if (!readerBackdropFrozen || singleRenderRequested) scheduleFrame();
+    else {
+      scheduleIdleHint();
+      if (!readerBackdropFrozen || singleRenderRequested) scheduleFrame();
+    }
   }
-  document.addEventListener("visibilitychange", visibilityChanged);
+  document.addEventListener("visibilitychange", visibilityChanged, listenerOptions);
   function tick(now: number) {
     frame = 0;
     if (disposed || unavailableError) return;
@@ -915,17 +963,7 @@ export function createScene(
     drawing = true;
     const delta = lastDraw === null ? 0 : now - lastDraw;
     lastDraw = now;
-    if (delta > 0 && delta < 2000) {
-      average = average * 0.9 + Math.min(delta, 250) * 0.1;
-      if (average > 45) slowFrames++;
-      else slowFrames = Math.max(0, slowFrames - 1);
-      if (slowFrames >= 12) {
-        const currentRatio = renderer.getPixelRatio();
-        const next = Math.max(0.75, currentRatio * 0.85);
-        if (next < currentRatio - 0.01) renderer.setPixelRatio(next);
-        slowFrames = 0;
-      }
-    }
+    if (qualityPolicy.sample(delta, { eligible: current === "room" && !animating && !readerBackdropFrozen })) applyQuality(true, true);
     // Hidden tabs and reading pauses do not advance the sea or a walking eye.
     simulationTime += Math.max(delta, 0) / 1000;
     const t = simulationTime;
@@ -980,6 +1018,7 @@ export function createScene(
         walking = null;
         animating = false;
         current = "room";
+        scheduleIdleHint();
         done();
       }
     }
@@ -1043,6 +1082,7 @@ export function createScene(
           animating = false;
           current = motion.kind === "opening" ? "book" : "room";
           readerBackdropFrozen = motion.kind === "opening";
+          scheduleIdleHint();
           motion.done();
         };
       }
@@ -1078,14 +1118,50 @@ export function createScene(
   const ray = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const canvas = renderer.domElement;
+  let interactionEnabled = true, idleGuidanceShown = false, explored = false;
+  let idleHintTimer: ReturnType<typeof setTimeout> | undefined;
   let petStroke: { id: number; x: number; y: number; length: number; stroked: boolean } | null = null;
   let recordPress: { id: number; x: number; y: number; moved: boolean } | null = null;
+  let objectPress: { id: number; x: number; y: number; moved: boolean; kind: InteractionKind } | null = null;
   const activePointers = new Set<number>(), cancelledPointers = new Set<number>();
+  const feedbackText: Record<InteractionKind, string> = {
+    bouquet: "轻触花束，打开纪念册", book: "轻触画册，继续阅读", cat: "轻轻摸摸睡着的小猫", record: "轻触唱片机，听一首喜欢的歌", door: "探索门后的房间",
+  };
+  function stopIdleHint() { clearTimeout(idleHintTimer); idleHintTimer = undefined; }
+  function clearInteractionFeedback() { stopIdleHint(); feedback.hide(); canvas.style.cursor = "default"; }
+  function showFeedback(kind: InteractionKind, e: Pick<PointerEvent, "clientX" | "clientY">, phase: "hover" | "press" | "activate", text = feedbackText[kind]) {
+    feedback.show(kind, text, e.clientX, e.clientY, phase, phase === "hover" ? undefined : phase === "press" ? 1600 : 1700);
+  }
+  function markExplored() { explored = true; stopIdleHint(); }
+  function hintInteractionsOnce() {
+    if (idleGuidanceShown || explored || !canPet()) return;
+    const object = bouquetParked ? book : bouquet;
+    object.updateWorldMatrix(true, true);
+    camera.updateMatrixWorld(true);
+    const anchor = new THREE.Box3().setFromObject(object).getCenter(new THREE.Vector3()).project(camera);
+    const x = (anchor.x + 1) * innerWidth / 2, y = (1 - anchor.y) * innerHeight / 2;
+    if (anchor.z < -1 || anchor.z > 1 || x < 16 || x > innerWidth - 16 || y < 90 || y > innerHeight - 80) return;
+    // A visual hint can never intercept an object or a nearby UI control.
+    if (document.elementFromPoint(x, y) !== canvas) return;
+    idleGuidanceShown = true;
+    const kind = bouquetParked ? "book" : "bouquet";
+    feedback.show(kind, feedbackText[kind], x, y, "hint", 4200);
+  }
+  function scheduleIdleHint() {
+    stopIdleHint();
+    if (!idleGuidanceShown && !explored && canPet()) idleHintTimer = setTimeout(hintInteractionsOnce, 6000);
+  }
+  function interactionActivity() {
+    if (current === "room") { feedback.hide(); scheduleIdleHint(); }
+  }
+  window.addEventListener("pointerdown", interactionActivity, { ...listenerOptions, capture: true });
+  window.addEventListener("keydown", interactionActivity, listenerOptions);
   function canPet() {
-    return !disposed && !unavailableError && !animating && current === "room" && !document.hidden;
+    return interactionEnabled && !disposed && !unavailableError && !animating && current === "room" && !document.hidden;
   }
   function performPet() {
     if (!canPet() || !cat.pet(simulationTime, reducedMotion)) return false;
+    markExplored();
     cat.setReactionClock(onPet?.());
     requestRender();
     return true;
@@ -1115,11 +1191,9 @@ export function createScene(
   function catHit(e: PointerEvent) { return canPet() && visibleHit(cat.group, e); }
   function recordHit(e: PointerEvent) { return canPet() && visibleHit(recordPlayer.group, e); }
   function hit(e: PointerEvent) {
-    if (disposed || unavailableError || animating || current === "book") return false;
+    if (!interactionEnabled || disposed || unavailableError || animating || current === "book" || document.hidden) return false;
     pointRay(e);
-    return (
-      ray.intersectObject(current === "entry" ? door : bouquetParked ? book : bouquet, true).length > 0
-    );
+    return current === "entry" ? ray.intersectObject(door, true).length > 0 : visibleHit(bouquetParked ? book : bouquet, e);
   }
   canvas.addEventListener("pointerdown", e => {
     activePointers.add(e.pointerId);
@@ -1127,60 +1201,93 @@ export function createScene(
       for (const id of activePointers) cancelledPointers.add(id);
       petStroke = null;
       recordPress = null;
+      objectPress = null;
+      feedback.hide();
       return;
     }
     if (e.button !== 0) return;
     if (recordHit(e)) {
       recordPress = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+      showFeedback("record", e, "press");
       canvas.setPointerCapture(e.pointerId);
       return;
     }
-    if (!catHit(e)) return;
-    petStroke = { id: e.pointerId, x: e.clientX, y: e.clientY, length: 0, stroked: false };
-    canvas.setPointerCapture(e.pointerId);
-  });
+    if (catHit(e)) {
+      petStroke = { id: e.pointerId, x: e.clientX, y: e.clientY, length: 0, stroked: false };
+      showFeedback("cat", e, "press");
+      canvas.setPointerCapture(e.pointerId);
+    } else if (hit(e)) {
+      const kind = current === "entry" ? "door" : bouquetParked ? "book" : "bouquet";
+      objectPress = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, kind };
+      showFeedback(kind, e, "press");
+      canvas.setPointerCapture(e.pointerId);
+    }
+  }, listenerOptions);
   canvas.addEventListener("pointerup", e => {
     activePointers.delete(e.pointerId);
     if (cancelledPointers.delete(e.pointerId) || !e.isPrimary || e.button !== 0) return;
     if (recordPress?.id === e.pointerId) {
       const press = recordPress;
       recordPress = null;
-      if (!press.moved && recordHit(e)) onRecord?.();
+      if (!press.moved && recordHit(e)) {
+        markExplored();
+        showFeedback("record", e, "activate", "已轻触唱片机");
+        onRecord?.();
+      } else feedback.hide();
       if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
       return;
     }
     if (petStroke?.id === e.pointerId) {
       const stroke = petStroke;
       petStroke = null;
-      if (!stroke.stroked && stroke.length < 10 && catHit(e)) performPet();
+      if (!stroke.stroked && stroke.length < 10 && catHit(e) && performPet()) showFeedback("cat", e, "activate", "小猫舒服地蹭了蹭");
       if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
       return; // A stroke ending over the desk must never open the album.
     }
-    if (hit(e)) onInteract();
-  });
+    if (objectPress?.id === e.pointerId) {
+      const press = objectPress;
+      objectPress = null;
+      if (!press.moved && hit(e)) {
+        if (current === "room") markExplored();
+        showFeedback(press.kind, e, "activate", press.kind === "bouquet" ? "把花轻轻放到一旁…" : press.kind === "book" ? "继续翻阅纪念册…" : fogClearance < 1 ? "风正在经过…" : "轻轻推开这扇门…");
+        onInteract();
+      } else feedback.hide();
+      if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+    }
+  }, listenerOptions);
   canvas.addEventListener("pointermove", e => {
     if (recordPress?.id === e.pointerId) {
       recordPress.moved ||= Math.hypot(e.clientX - recordPress.x, e.clientY - recordPress.y) >= 10;
+      if (recordPress.moved) feedback.hide();
       canvas.style.cursor = "pointer";
     } else if (petStroke?.id === e.pointerId) {
       petStroke.length += Math.hypot(e.clientX - petStroke.x, e.clientY - petStroke.y);
       petStroke.x = e.clientX; petStroke.y = e.clientY;
       if (!petStroke.stroked && petStroke.length >= 10 && catHit(e)) {
         petStroke.stroked = true;
-        performPet();
+        if (performPet()) showFeedback("cat", e, "activate", "小猫舒服地蹭了蹭");
       }
       canvas.style.cursor = "grabbing";
-    } else if (e.pointerType !== "touch" && e.timeStamp - lastPointerHint > 40) {
+    } else if (objectPress?.id === e.pointerId) {
+      objectPress.moved ||= Math.hypot(e.clientX - objectPress.x, e.clientY - objectPress.y) >= 10;
+      if (objectPress.moved) feedback.hide();
+    } else if (e.pointerType !== "touch" && e.timeStamp - lastPointerHint > 65) {
       lastPointerHint = e.timeStamp;
-      canvas.style.cursor = catHit(e) ? "grab" : recordHit(e) || hit(e) ? "pointer" : "default";
+      const kind = catHit(e) ? "cat" : recordHit(e) ? "record" : hit(e) ? current === "entry" ? "door" : bouquetParked ? "book" : "bouquet" : undefined;
+      canvas.style.cursor = kind === "cat" ? "grab" : kind ? "pointer" : "default";
+      if (kind) { scheduleIdleHint(); showFeedback(kind, e, "hover"); }
+      else feedback.hide();
     }
-  });
+  }, listenerOptions);
+  canvas.addEventListener("pointerleave", () => { if (!petStroke && !recordPress && !objectPress) feedback.hide(); }, listenerOptions);
   canvas.addEventListener("pointercancel", e => {
     activePointers.delete(e.pointerId);
     cancelledPointers.delete(e.pointerId);
     if (petStroke?.id === e.pointerId) petStroke = null;
     if (recordPress?.id === e.pointerId) recordPress = null;
-  });
+    if (objectPress?.id === e.pointerId) objectPress = null;
+    feedback.hide();
+  }, listenerOptions);
   canvas.addEventListener("lostpointercapture", e => {
     if (petStroke?.id === e.pointerId) {
       cancelledPointers.add(e.pointerId);
@@ -1190,17 +1297,23 @@ export function createScene(
       cancelledPointers.add(e.pointerId);
       recordPress = null;
     }
-  });
+    if (objectPress?.id === e.pointerId) {
+      cancelledPointers.add(e.pointerId);
+      objectPress = null;
+    }
+  }, listenerOptions);
   let lastPointerHint = -Infinity;
   function finishPointer(e: PointerEvent) {
     activePointers.delete(e.pointerId); cancelledPointers.delete(e.pointerId);
     if (petStroke?.id === e.pointerId) petStroke = null;
     if (recordPress?.id === e.pointerId) recordPress = null;
+    if (objectPress?.id === e.pointerId) objectPress = null;
   }
-  window.addEventListener("pointerup", finishPointer);
-  window.addEventListener("pointercancel", finishPointer);
+  window.addEventListener("pointerup", finishPointer, listenerOptions);
+  window.addEventListener("pointercancel", finishPointer, listenerOptions);
   window.addEventListener("resize", () => {
     if (disposed || unavailableError) return;
+    clearInteractionFeedback();
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
@@ -1252,11 +1365,11 @@ export function createScene(
       camera.fov = pose.fov;
       camera.updateProjectionMatrix();
     }
-  });
+  }, listenerOptions);
   renderer.domElement.addEventListener("webglcontextlost", (e) => {
     e.preventDefault();
     makeUnavailable(true);
-  });
+  }, listenerOptions);
   camera.lookAt(target);
   camera.updateMatrixWorld(true);
   // Warm the two-sided paper shader before its first visible turn.
@@ -1271,11 +1384,35 @@ export function createScene(
     prepared = true;
     requestRender();
   });
+  function applyQuality(value: boolean, automatic = false) {
+    if (disposed || unavailableError) return;
+    low = value;
+    renderer.setPixelRatio(value ? Math.min(renderer.getPixelRatio(), automatic ? .85 : 1) : Math.min(devicePixelRatio, 1.5));
+    // Automatic adaptation keeps the warmed shadow shader variant. Switching
+    // resolution and frame pacing must not introduce new compilation stalls.
+    const shadowsChanged = !automatic && renderer.shadowMap.enabled !== !value;
+    if (!automatic) renderer.shadowMap.enabled = !value;
+    if (!value) sun.shadow.needsUpdate = true;
+    // A quality change may alter shadow defines. Mark each shared material once,
+    // and avoid recompiling any program for a resolution-only adjustment.
+    if (shadowsChanged) {
+      const materials = new Set<THREE.Material>();
+      scene.traverse(object => {
+        if (object instanceof THREE.Mesh)
+          for (const material of Array.isArray(object.material) ? object.material : [object.material]) materials.add(material);
+      });
+      materials.forEach(material => { material.needsUpdate = true; });
+    }
+    canvas.dataset.quality = value ? "low" : "auto";
+    onQualityChange?.(value);
+    requestRender();
+  }
   return {
     ready,
     clearFog() {
       requireAvailable();
       if (fogClearing) return fogClearing;
+      clearInteractionFeedback();
       animating = true;
       fogClearing = whileAvailable(new Promise<void>(done => {
         fogMotion = { elapsed: 0, duration: reducedMotion ? 100 : 1850, lastDrawAt: null, done };
@@ -1285,6 +1422,8 @@ export function createScene(
     },
     async enterRoom() {
       requireAvailable();
+      clearInteractionFeedback();
+      qualityPolicy.resetSamples();
       if (!roomRevealed) {
         roomRevealed = true;
         shelteredDetails.forEach(object => { object.visible = true; });
@@ -1303,6 +1442,8 @@ export function createScene(
     async openBook(onFrame?: (frame: ReadingFrame) => void, paperReady?: Promise<void>) {
       requireAvailable();
       if (animating || current !== "room") return getBookProjection();
+      clearInteractionFeedback();
+      qualityPolicy.resetSamples();
       roomBeforeReading = { p: camera.position.clone(), t: target.clone(), fov: camera.fov, mobile: mobile() };
       animating = true;
       readerBackdropFrozen = false;
@@ -1317,6 +1458,8 @@ export function createScene(
     async focusCozyCorner(focus: boolean) {
       requireAvailable();
       if (animating || current !== "room") return nookFocused;
+      clearInteractionFeedback();
+      qualityPolicy.resetSamples();
       const from = { p: camera.position.clone(), t: target.clone(), fov: camera.fov };
       const to = focus ? cozyPose() : { ...roomPose(), fov: 50 };
       const duration = reducedMotion ? 180 : 1800;
@@ -1330,10 +1473,19 @@ export function createScene(
         requestRender();
       }));
       nookFocused = focus;
+      scheduleIdleHint();
       return nookFocused;
     },
     isCozyFocused() { return nookFocused; },
     petCat: performPet,
+    setInteractionEnabled(enabled: boolean) {
+      interactionEnabled = enabled;
+      if (!enabled) clearInteractionFeedback();
+      else scheduleIdleHint();
+    },
+    clearInteractionFeedback,
+    hintInteractionsOnce,
+    getQuality() { return { low, manual: qualityPolicy.manual !== undefined }; },
     setRecordPlaying(playing: boolean) {
       if (disposed || unavailableError) return;
       recordPlayer.setPlaying(playing);
@@ -1352,6 +1504,8 @@ export function createScene(
     async returnToRoom(onFrame?: (frame: ReadingFrame) => void) {
       requireAvailable();
       if (animating || current !== "book") return;
+      clearInteractionFeedback();
+      qualityPolicy.resetSamples();
       animating = true;
       readerBackdropFrozen = false;
       lastDraw = null;
@@ -1362,29 +1516,14 @@ export function createScene(
       setAlbumVisibility(1);
     },
     setQuality(value: boolean) {
-      if (unavailableError) return;
-      low = value;
-      renderer.setPixelRatio(value ? Math.min(renderer.getPixelRatio(), 1) : Math.min(devicePixelRatio, 1.5));
-      renderer.shadowMap.enabled = !value;
-      if (!value) sun.shadow.needsUpdate = true;
-      scene.traverse((o) => {
-        if (o instanceof THREE.Mesh) {
-          const materials = Array.isArray(o.material)
-            ? o.material
-            : [o.material];
-          materials.forEach((m) => (m.needsUpdate = true));
-        }
-      });
-      requestRender();
+      qualityPolicy.setManual(value ? true : undefined);
+      applyQuality(qualityPolicy.low);
     },
     dispose() {
       if (disposed) return;
       makeUnavailable(false);
       disposed = true;
       cancelAnimationFrame(frame);
-      document.removeEventListener("visibilitychange", visibilityChanged);
-      window.removeEventListener("pointerup", finishPointer);
-      window.removeEventListener("pointercancel", finishPointer);
       renderer.dispose();
     },
   };

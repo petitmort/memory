@@ -1,0 +1,37 @@
+.scene-object-feedback {
+  position: fixed;
+  z-index: 4;
+  width: max-content;
+  max-width: min(220px, calc(100vw - 24px));
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  user-select: none;
+  animation: object-feedback-in 180ms ease-out both;
+}
+.scene-object-feedback[hidden] { display: none; }
+.scene-object-feedback-label {
+  display: block;
+  padding: 9px 13px;
+  color: #f8f2e5;
+  background: rgba(41, 63, 59, .89);
+  border: 1px solid rgba(249, 239, 211, .33);
+  border-radius: 18px;
+  box-shadow: 0 3px 15px rgba(22, 40, 35, .12);
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: .04em;
+  text-align: center;
+}
+.scene-object-feedback[data-phase="press"] .scene-object-feedback-label {
+  background: rgba(243, 232, 204, .96);
+  color: #354d45;
+  border-color: rgba(255, 249, 225, .8);
+}
+.scene-object-feedback[data-phase="hint"] { animation-duration: 650ms; }
+@keyframes object-feedback-in {
+  from { opacity: 0; transform: translate(-50%, calc(-100% + 4px)); }
+  to { opacity: 1; transform: translate(-50%, -100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene-object-feedback { animation: none; }
+}

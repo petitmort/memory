@@ -1,0 +1,142 @@
+/* Keep controls at the edge of the room, with a clear view between them. */
+.icon-button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  flex-shrink: 0;
+}
+.quality-button {
+  min-height: 44px;
+  min-width: 84px;
+  padding: 10px 8px;
+  font-size: 11px;
+  color: #f0eadbd9;
+}
+.room-ui .cozy-view {
+  min-height: 44px;
+  line-height: 1.4;
+}
+.room-ui .cozy-credit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.room-ui .cozy-actions { flex-wrap: wrap; }
+.room-ui .primary-button { max-width: 100%; }
+.scene-hint { pointer-events: none; }
+.pulse-dot { animation: none; }
+.journey-status {
+  position: fixed; z-index: 16; top: max(95px, calc(env(safe-area-inset-top) + 75px));
+  left: 50%; transform: translateX(-50%); max-width: calc(100vw - 32px);
+  padding: 9px 15px; border-radius: 18px; background: #28453cdb;
+  color: #f9efda; font-size: 12px; line-height: 1.7; text-align: center;
+  pointer-events: none;
+}
+
+#enter.door-ready {
+  background: #fff3d5;
+  border-color: #e5c787;
+  box-shadow: 0 0 0 3px #e5c78726, 0 5px 24px #172f2855;
+  animation: door-ready 700ms ease-out both;
+}
+@keyframes door-ready {
+  from { box-shadow: 0 0 0 0 #f0d49d55, 0 5px 24px #172f2855; }
+  to { box-shadow: 0 0 0 7px #f0d49d00, 0 5px 24px #172f2855; }
+}
+#explore-guide {
+  position: fixed;
+  z-index: 6;
+  top: 112px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(480px, calc(100vw - 32px));
+  margin: 0;
+  padding: 11px 17px;
+  border: 1px solid #f0e4ca3b;
+  border-radius: 12px;
+  background: #28453cdb;
+  color: #f9efda;
+  font-size: 13px;
+  line-height: 1.8;
+  text-align: center;
+  text-wrap: pretty;
+  box-shadow: 0 4px 22px #162f2b20;
+  pointer-events: none;
+}
+button:active:not(:disabled) { filter: brightness(.96); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+
+@media (max-width: 759px) {
+  .header {
+    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 12px max(16px, env(safe-area-inset-left));
+  }
+  .header-right { gap: 6px; }
+  .footer {
+    left: max(16px, env(safe-area-inset-left));
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .journey { gap: 8px; }
+  .journey b { width: 10px; }
+  .room-ui {
+    bottom: calc(63px + env(safe-area-inset-bottom));
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+  }
+  .room-ui .cozy-actions { gap: 6px; margin-top: 7px; }
+  .room-ui .cozy-view { padding: 8px 12px; }
+  .room-ui .cozy-notes { margin-top: 2px; gap: 8px; }
+  .room-ui .record-track { margin-top: 4px; }
+  #explore-guide { top: calc(83px + env(safe-area-inset-top)); font-size: 12px; padding: 9px 13px; }
+  .toast { bottom: auto; top: calc(83px + env(safe-area-inset-top)); width: max-content; max-width: calc(100vw - 32px); line-height: 1.8; }
+}
+
+@media (max-width: 360px) {
+  .brand { gap: 8px; font-size: 15px; letter-spacing: 2px; }
+  .brand-mark { font-size: 30px; }
+  .brand small { font-size: 6px; letter-spacing: 1.5px; line-height: 2.3; }
+  .journey { gap: 6px; font-size: 8px; }
+  .journey > span { gap: 4px; }
+  .journey b { width: 8px; }
+  .quality-button { font-size: 10px; }
+  .intro { left: 7%; max-width: 86%; bottom: 17%; }
+  .intro h1 { font-size: 38px; margin: 16px 0; }
+  .intro-copy { font-size: 12px; letter-spacing: 1px; margin-bottom: 18px; }
+  .intro .eyebrow { font-size: 7px; letter-spacing: 1.1px; }
+  .room-ui .primary-button { padding: 10px 12px; gap: 10px; font-size: 11px; letter-spacing: 1px; }
+  .room-ui .cozy-view { padding-inline: 10px; font-size: 10px; letter-spacing: .5px; }
+  .room-ui .cozy-notes { font-size: 9px; }
+  #explore-guide { max-width: calc(100vw - 24px); font-size: 11px; }
+}
+
+@media (max-height: 500px) and (min-width: 600px) {
+  .header { padding: max(10px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 8px max(18px, env(safe-area-inset-left)); }
+  .footer { bottom: max(4px, env(safe-area-inset-bottom)); left: 18px; right: 18px; }
+  .footer-note, .door-caption, .intro .eyebrow { display: none; }
+  .intro { top: auto; bottom: 59px; left: 5%; transform: none; max-width: 48%; }
+  .intro h1 { font-size: 32px; line-height: 1.2; margin: 10px 0; }
+  .intro-copy { font-size: 11px; line-height: 1.8; margin-bottom: 12px; }
+  .intro .primary-button { min-height: 44px; }
+  .intro .enter-note { margin: 8px 0 0; font-size: 9px; }
+  .room-ui {
+    position: fixed;
+    left: max(16px, env(safe-area-inset-left));
+    right: auto;
+    bottom: calc(48px + env(safe-area-inset-bottom));
+    width: min(310px, 42vw);
+    max-width: none;
+    text-align: left;
+  }
+  .room-ui .cozy-actions, .room-ui .cozy-notes { justify-content: flex-start; }
+  .room-ui .cozy-view { font-size: 10px; letter-spacing: .5px; padding: 8px 10px; }
+  .room-ui .primary-button { min-height: 44px; padding: 10px 12px; gap: 12px; font-size: 10px; letter-spacing: 1px; }
+  .room-ui .record-track { text-align: left; }
+  .scene-hint { display: none; }
+  #explore-guide { top: 68px; font-size: 11px; max-width: min(430px, 58vw); padding: 7px 12px; }
+  .toast { top: 68px; bottom: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #enter.door-ready { animation: none; }
+}

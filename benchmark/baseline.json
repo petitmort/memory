@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "environment": {
+    "viewport": {
+      "width": 960,
+      "height": 640
+    },
+    "deviceScaleFactor": 1,
+    "cpuThrottle": 1,
+    "sampleMs": 5000,
+    "browser": "154.0.8037.57",
+    "reducedMotion": true,
+    "note": "Chromium with SwiftShader in a cloud Linux container; CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+    "device": {
+      "hardwareConcurrency": 5,
+      "deviceMemoryGiB": 32,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    }
+  },
+  "errors": [],
+  "loadingMs": 7118.681855000001,
+  "entryMs": 16846.738882,
+  "before": {
+    "calls": 137,
+    "triangles": 404296,
+    "geometries": 217,
+    "textures": 37,
+    "programs": 40,
+    "pixelRatio": 1,
+    "low": false
+  },
+  "room": {
+    "calls": 137,
+    "triangles": 404296,
+    "geometries": 217,
+    "textures": 37,
+    "programs": 40,
+    "pixelRatio": 0.85,
+    "low": true,
+    "drawnFrames": 6,
+    "measuredFps": 1.135125317835857,
+    "frameIntervalMedianMs": 867.2999999970198,
+    "frameIntervalP95Ms": 961.4000000059605,
+    "frameSubmitP95Ms": 4.0999999940395355
+  },
+  "input": {
+    "events": [
+      {
+        "name": "pointerdown",
+        "durationMs": 3192,
+        "inputDelayMs": 2526.6000000089407,
+        "processingMs": 0.7000000029802322
+      },
+      {
+        "name": "touchstart",
+        "durationMs": 3192,
+        "inputDelayMs": 2527.5,
+        "processingMs": 0.10000000894069672
+      },
+      {
+        "name": "click",
+        "durationMs": 3192,
+        "inputDelayMs": 2530.4000000059605,
+        "processingMs": 1
+      },
+      {
+        "name": "pointerdown",
+        "durationMs": 2128,
+        "inputDelayMs": 1588.2999999970198,
+        "processingMs": 1.7999999970197678
+      },
+      {
+        "name": "touchstart",
+        "durationMs": 2128,
+        "inputDelayMs": 1590.0999999940395,
+        "processingMs": 0.10000000894069672
+      },
+      {
+        "name": "click",
+        "durationMs": 3216,
+        "inputDelayMs": 2125.7999999970198,
+        "processingMs": 0.4000000059604645
+      },
+      {
+        "name": "pointerdown",
+        "durationMs": 2232,
+        "inputDelayMs": 1485.2999999970198,
+        "processingMs": 0.5
+      },
+      {
+        "name": "touchstart",
+        "durationMs": 2232,
+        "inputDelayMs": 1485.7999999970198,
+        "processingMs": 0.09999999403953552
+      },
+      {
+        "name": "click",
+        "durationMs": 2992,
+        "inputDelayMs": 2227.7999999970198,
+        "processingMs": 1.4000000059604645
+      }
+    ],
+    "pointerDispatchMs": [
+      2527.2000000029802,
+      1590,
+      1485.7999999970198
+    ]
+  },
+  "memory": {
+    "jsHeapUsedBytes": 12705008,
+    "jsHeapTotalBytes": 14872576,
+    "documents": 2,
+    "nodes": 317,
+    "jsEventListeners": 87
+  },
+  "warnings": [
+    "Fewer than ten drawn frames were collected; frame quantiles have a small sample. Use a longer --sample-ms for timing comparisons.",
+    "Automatic quality changed during the sample; resource counts are comparable but this is not a stable-quality frame-rate sample."
+  ]
+}

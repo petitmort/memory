@@ -1,4 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+
+const baseline = JSON.parse(readFileSync('benchmark/baseline.json', 'utf8')) as {
+  room: { geometries: number; textures: number };
+};
 
 test('rendering sleeps while reading or hidden and resumes without skipping the sea',async ({browser}) => {
   test.setTimeout(180000);
@@ -27,7 +32,7 @@ test('rendering sleeps while reading or hidden and resumes without skipping the 
         const geometry=ocean.geometry;
         let oceanBytes=geometry.index.array.byteLength;
         for(const attribute of Object.values(geometry.attributes))oceanBytes+=attribute.array.byteLength;
-        return {callbacks:this.callbacks,draws:this.samples.length,wave:seaMat.uniforms.time.value,ratio:renderer.getPixelRatio(),oceanVertices:geometry.attributes.position.count,oceanBytes,hiddenOcean:!ocean.visible,hiddenFlowers:!bouquet.visible,firstUse:{buffers:window.__firstUse.buffers,shaders:window.__firstUse.shaders,contexts:window.__firstUse.contexts,resumes:window.__firstUse.resumes,audioState:window.__firstUse.audio?.state}};
+        return {callbacks:this.callbacks,draws:this.samples.length,wave:seaMat.uniforms.time.value,ratio:renderer.getPixelRatio(),oceanVertices:geometry.attributes.position.count,oceanBytes,resources:{geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures},hiddenOcean:!ocean.visible,hiddenFlowers:!bouquet.visible,firstUse:{buffers:window.__firstUse.buffers,shaders:window.__firstUse.shaders,contexts:window.__firstUse.contexts,resumes:window.__firstUse.resumes,audioState:window.__firstUse.audio?.state}};
       }};
       const ray = new THREE.Raycaster();
     `);
@@ -60,6 +65,10 @@ test('rendering sleeps while reading or hidden and resumes without skipping the 
     // First room reveal reuses the native-quality loading prepass resources.
     expect(entered.firstUse.buffers).toBe(entry.firstUse.buffers);
     expect(entered.firstUse.shaders).toBe(entry.firstUse.shaders);
+    // Deterministic whole-room budgets complement the noisy lab frame metrics.
+    // A reviewed scene expansion must update its baseline deliberately.
+    expect(entered.resources.geometries).toBeLessThanOrEqual(Math.ceil(baseline.room.geometries * 1.1));
+    expect(entered.resources.textures).toBeLessThanOrEqual(baseline.room.textures + 4);
     const paused=await page.evaluate(()=>{
       Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
       document.dispatchEvent(new Event('visibilitychange'));

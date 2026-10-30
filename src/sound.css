@@ -1,0 +1,87 @@
+.room-ui .record-music-row {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  max-width: 100%;
+  min-height: 18px;
+  margin-top: 6px;
+  color: #fff5e6;
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 1.5;
+  text-shadow: 0 1px 3px #233b32;
+  pointer-events: none;
+}
+.room-ui .record-music-row .record-track {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-top: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+.record-music-row #record-state { flex: 0 0 auto; opacity: .9; }
+.record-music-row[data-status="playing"] #record-state { color: #e7e9c2; }
+.record-music-row[data-status="error"] #record-state { color: #ffdfbd; }
+.record-empty-note { opacity: .85; }
+.room-ui .record-panel {
+  position: absolute;
+  z-index: 8;
+  right: 0;
+  bottom: calc(100% + 12px);
+  width: min(290px, calc(100vw - 40px));
+  text-align: left;
+  pointer-events: auto;
+  text-shadow: none;
+}
+.room-ui .record-panel-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-height: min(300px, 45svh);
+  overflow: auto;
+  padding: 18px;
+  border: 1px solid #d9cbb1;
+  border-radius: 12px;
+  background: #f7f1e4fa;
+  color: #3c514a;
+  box-shadow: 0 8px 28px #12292030;
+}
+.record-panel-heading { padding-right: 35px; font-size: 14px; }
+.record-panel-close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #50634e;
+  font-size: 25px;
+  cursor: pointer;
+}
+.record-panel-close:hover { background: #546d4d14; }
+.record-description { font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }
+.record-storage-note { font-size: 12px; line-height: 1.75; color: #68766e; }
+.record-panel-action {
+  min-height: 44px;
+  padding: 9px 17px;
+  border: 1px solid #667c69;
+  border-radius: 22px;
+  background: #496454;
+  color: #fff7e7;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.record-panel-action:hover { background: #355140; }
+.record-panel-action:active { transform: translateY(1px); }
+@media (max-width: 759px) {
+  .room-ui .record-music-row { justify-content: center; }
+  .room-ui .record-panel { right: 50%; transform: translateX(50%); }
+}
