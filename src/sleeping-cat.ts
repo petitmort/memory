@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import catModelUrl from "./assets/sleeping-tabby.glb?url";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { prepareCatPetting } from "./cat-petting";
+import { createCatRig } from "./cat-rig";
 import { sampleCatReaction } from "./cat-choreography";
 
 /** A cleaned, locally hosted tabby scan. Attribution: public/models/README.md. */
@@ -11,26 +11,15 @@ export function createSleepingCat() {
   group.add(breathing);
   const controller=new AbortController();
   let disposed=false;
-  const petMeshes:THREE.Mesh[]=[];
+  let rig:ReturnType<typeof createCatRig>|undefined;
   let reaction:{elapsed:number;startedAt:number|null;clock?:()=>number;gentle:boolean;variant:number}|null=null;
   let cooldownUntil=-Infinity,lastTime=0,nextVariant=0;
-  function pose(head:number,ears:number,stretch=0,tail=0) {
-    let changed=false;
-    const values=[head,ears,stretch,tail];
-    for(const mesh of petMeshes) {
-      const weights=mesh.morphTargetInfluences!;
-      for(let i=0;i<values.length;i++) {
-        if(Math.abs(weights[i]-values[i])>1e-6)changed=true;
-        weights[i]=values[i];
-      }
-    }
-    return changed;
-  }
   function release(root:THREE.Object3D) {
-    const materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>();
+    const materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>(),skeletons=new Set<THREE.Skeleton>();
     root.traverse(object=>{
       if(!(object instanceof THREE.Mesh))return;
       object.geometry.dispose();
+      if(object instanceof THREE.SkinnedMesh)skeletons.add(object.skeleton);
       for(const material of Array.isArray(object.material)?object.material:[object.material])materials.add(material);
     });
     for(const material of materials) {
@@ -38,6 +27,7 @@ export function createSleepingCat() {
       material.dispose();
     }
     for(const texture of textures)texture.dispose();
+    for(const skeleton of skeletons)skeleton.dispose();
   }
   // Vite versions the local GLB by content, so a new pose never reuses a
   // cached older model. The relative build URL also works on /memory/.
@@ -55,7 +45,6 @@ export function createSleepingCat() {
       const model=gltf.scene;model.name="tabby-textured-scan";
       model.traverse(object=>{
         if(!(object instanceof THREE.Mesh))return;
-        prepareCatPetting(object);petMeshes.push(object);
         object.castShadow=object.receiveShadow=true;
         for(const material of Array.isArray(object.material)?object.material:[object.material]) {
           if(!(material instanceof THREE.MeshStandardMaterial))continue;
@@ -63,12 +52,18 @@ export function createSleepingCat() {
           if(material.map) {material.map.colorSpace=THREE.SRGBColorSpace;material.map.anisotropy=4;}
         }
       });
-      breathing.add(model);
+      try {
+        rig=createCatRig(model,gltf.animations);
+        breathing.add(model);
+      } catch(error) {
+        release(model);
+        throw error;
+      }
     });
   return {
     group,ready,
     pet(time:number,reduced:boolean) {
-      if(disposed||!petMeshes.length||reaction||!Number.isFinite(time)||time<cooldownUntil)return false;
+      if(disposed||!rig||reaction||!Number.isFinite(time)||time<cooldownUntil)return false;
       reaction={elapsed:0,startedAt:null,gentle:reduced,variant:nextVariant};
       nextVariant=(nextVariant+1)%3;
       return true;
@@ -77,7 +72,7 @@ export function createSleepingCat() {
     isPetting(){return reaction!==null;},
     cancelPet() {
       reaction=null;cooldownUntil=lastTime+.12;
-      return pose(0,0);
+      return rig?.reset()??false;
     },
     update(time:number,reduced:boolean) {
       if(disposed)return false;
@@ -93,13 +88,13 @@ export function createSleepingCat() {
       const frame=sampleCatReaction(reaction.elapsed,reaction.gentle,reaction.variant);
       if(frame.done) {
         reaction=null;cooldownUntil=time+.20;
-        return pose(0,0);
+        return rig!.reset();
       }
-      return pose(frame.head,frame.ears,frame.stretch,frame.tail);
+      return rig!.seek(reaction.elapsed,reaction.variant,reaction.gentle);
     },
     dispose() {
       if(disposed)return;
-      disposed=true;reaction=null;controller.abort();release(breathing);breathing.clear();petMeshes.length=0;
+      disposed=true;reaction=null;controller.abort();rig?.dispose();rig=undefined;release(breathing);breathing.clear();
     },
   };
 }

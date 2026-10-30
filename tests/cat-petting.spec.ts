@@ -1,61 +1,107 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
-import { prepareCatPetting } from '../src/cat-petting';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { createCatRig } from '../src/cat-rig';
 import { CAT_REACTION_DURATION, sampleCatReaction } from '../src/cat-choreography';
 
-/** Read geometry only: the material's photograph is exercised by the room test. */
-function catGeometry() {
+/** Preserve the native GLB skin but skip photographs in the Node-only rig test. */
+async function loadCatRig() {
   const file=readFileSync(new URL('../src/assets/sleeping-tabby.glb',import.meta.url));
-  const jsonLength=file.readUInt32LE(12);
-  const document=JSON.parse(file.subarray(20,20+jsonLength).toString());
-  const binaryOffset=20+jsonLength+8;
-  const primitive=document.meshes[0].primitives[0];
-  const geometry=new THREE.BufferGeometry();
-  for(const [name,key,size] of [['position','POSITION',3],['normal','NORMAL',3]] as const) {
-    const accessor=document.accessors[primitive.attributes[key]],view=document.bufferViews[accessor.bufferView];
-    const offset=file.byteOffset+binaryOffset+(view.byteOffset??0)+(accessor.byteOffset??0);
-    geometry.setAttribute(name,new THREE.BufferAttribute(new Float32Array(file.buffer,offset,accessor.count*size).slice(),size));
-  }
-  const accessor=document.accessors[primitive.indices],view=document.bufferViews[accessor.bufferView];
-  const offset=file.byteOffset+binaryOffset+(view.byteOffset??0)+(accessor.byteOffset??0);
-  const indices=accessor.componentType===5125?new Uint32Array(file.buffer,offset,accessor.count):new Uint16Array(file.buffer,offset,accessor.count);
-  geometry.setIndex(new THREE.BufferAttribute(indices.slice(),1));
-  return geometry;
+  const jsonLength=file.readUInt32LE(12),binaryOffset=20+jsonLength;
+  const document=JSON.parse(file.subarray(20,binaryOffset).toString());
+  for(const mesh of document.meshes)for(const primitive of mesh.primitives)delete primitive.material;
+  delete document.materials;delete document.images;delete document.textures;delete document.samplers;
+  const json=Buffer.from(JSON.stringify(document)),padding=(4-json.length%4)%4;
+  const jsonChunk=Buffer.alloc(8+json.length+padding,0x20);
+  jsonChunk.writeUInt32LE(json.length+padding,0);jsonChunk.write('JSON',4);json.copy(jsonChunk,8);
+  const header=Buffer.from(file.subarray(0,12)),binary=file.subarray(binaryOffset);
+  header.writeUInt32LE(12+jsonChunk.length+binary.length,8);
+  const clean=Buffer.concat([header,jsonChunk,binary]);
+  const gltf=await new GLTFLoader().parseAsync(clean.buffer.slice(clean.byteOffset,clean.byteOffset+clean.byteLength),'');
+  let mesh!:THREE.SkinnedMesh;
+  gltf.scene.traverse(object=>{if(object instanceof THREE.SkinnedMesh)mesh=object;});
+  expect(mesh,'The asset must carry its own native skeleton and skin weights').toBeDefined();
+  return{root:gltf.scene,mesh,animations:gltf.animations,rig:createCatRig(gltf.scene,gltf.animations)};
 }
 
-test('the real scan has localized petting poses without lifting its support or changing its mesh',()=>{
-  const geometry=catGeometry(),material=new THREE.MeshStandardMaterial(),mesh=new THREE.Mesh(geometry,material);
-  const original=Float32Array.from(geometry.getAttribute('position').array),indexCount=geometry.index!.count;
+test('the native cat rig bends real joints continuously while keeping its support, hind leg and tail root planted',async()=>{
+  const {root,mesh,rig,animations}=await loadCatRig(),geometry=mesh.geometry;
+  const base=geometry.getAttribute('position'),original=Float32Array.from(base.array),index=geometry.index!.array.slice();
+  const rest=mesh.skeleton.bones.map(bone=>({position:bone.position.clone(),quaternion:bone.quaternion.clone()}));
+  const names=mesh.skeleton.bones.map(bone=>bone.name);
+  expect(names).toEqual(expect.arrayContaining(['cat-root','cat-shoulder','cat-neck','cat-head','cat-ear-inner','cat-ear-outer','cat-tail-01','cat-tail-04']));
+  expect(geometry.morphAttributes.position??[]).toHaveLength(0);
+  expect(animations.map(clip=>clip.name)).toEqual(['pet-nuzzle','pet-stretch','pet-tail']);
+  for(const clip of animations){expect(clip.duration).toBeCloseTo(CAT_REACTION_DURATION,5);expect(clip.tracks.filter(track=>track.name.endsWith('.quaternion')).length).toBeGreaterThan(5);}
+  const skinIndices=geometry.getAttribute('skinIndex'),skinWeights=geometry.getAttribute('skinWeight');
+  expect(skinIndices.count).toBe(base.count);expect(skinWeights.count).toBe(base.count);
+  let floorCount=0,invalidWeights=0;
+  for(let i=0;i<base.count;i++){
+    const weights=[skinWeights.getX(i),skinWeights.getY(i),skinWeights.getZ(i),skinWeights.getW(i)];
+    const joints=[skinIndices.getX(i),skinIndices.getY(i),skinIndices.getZ(i),skinIndices.getW(i)];
+    if(Math.abs(weights.reduce((sum,value)=>sum+value,0)-1)>1e-6||weights.some(value=>!Number.isFinite(value)||value<0)||joints.some(value=>value<0||value>=names.length))invalidWeights++;
+    if(base.getY(i)<=.005)floorCount++;
+  }
+  expect(invalidWeights).toBe(0);expect(floorCount).toBeGreaterThan(50);
+  const normalPeaks:number[]=[],reducedPeaks:number[]=[],variantSignatures:string[]=[];
+  const originalPoint=new THREE.Vector3(),posedPoint=new THREE.Vector3();
   try {
-    prepareCatPetting(mesh);
-    expect(geometry.index!.count).toBe(indexCount);
-    expect(new Uint8Array(geometry.getAttribute('position').array.buffer)).toEqual(new Uint8Array(original.buffer));
-    expect(mesh.morphTargetInfluences).toEqual([0,0,0,0]);
-    const poses=geometry.morphAttributes.position;
-    expect(poses).toHaveLength(4);
-    let floorVertices=0,torsoVertices=0;
-    const maximum=[0,0,0,0];
-    let largestPinnedDelta=0,invalidNormals=0;
-    for(let i=0;i<original.length/3;i++) {
-      const x=original[i*3],y=original[i*3+1];
-      if(y<=.005)floorVertices++;
-      if(x>.01)torsoVertices++;
-      for(let p=0;p<poses.length;p++) {
-        const delta=Math.hypot(poses[p].getX(i),poses[p].getY(i),poses[p].getZ(i));
-        maximum[p]=Math.max(maximum[p],delta);
-        if(y<=.005 || (p<2 && x>.01) || (p===2 && x>.10) || (p===3 && original[i*3+2]<=.07))largestPinnedDelta=Math.max(largestPinnedDelta,delta);
-        const normals=geometry.morphAttributes.normal[p];
-        if(!Number.isFinite(normals.getX(i)+normals.getY(i)+normals.getZ(i)))invalidNormals++;
+    for(const reduced of [false,true])for(let variant=0;variant<3;variant++){
+      let maxHead=0,maxTail=0,maxFloor=0,maxHindLeg=0,maxTailRoot=0,maxJointStep=0;
+      let previous:THREE.Quaternion[]|undefined;
+      // Dense quaternion samples catch discontinuous interpolation between keys.
+      for(let step=0;step<=Math.ceil(CAT_REACTION_DURATION*120);step++){
+        const time=Math.min(CAT_REACTION_DURATION,step/120);
+        rig.seek(time,variant,reduced);root.updateMatrixWorld(true);mesh.skeleton.update();
+        mesh.skeleton.bones.forEach((bone,i)=>{
+          expect(Number.isFinite(bone.quaternion.lengthSq())).toBe(true);
+          if(previous)maxJointStep=Math.max(maxJointStep,bone.quaternion.angleTo(previous[i]));
+        });
+        previous=mesh.skeleton.bones.map(bone=>bone.quaternion.clone());
       }
+      expect(maxJointStep).toBeLessThan(.045);
+      for(const time of [.35,.58,1.04,1.7,2.36,2.88,3.12,3.75,CAT_REACTION_DURATION]){
+        rig.seek(time,variant,reduced);root.updateMatrixWorld(true);mesh.skeleton.update();
+        for(let i=0;i<base.count;i++){
+          originalPoint.fromBufferAttribute(base,i);mesh.getVertexPosition(i,posedPoint);
+          const delta=posedPoint.distanceTo(originalPoint),x=originalPoint.x,y=originalPoint.y,z=originalPoint.z;
+          if(y<=.005)maxFloor=Math.max(maxFloor,delta);
+          if(x<-.12&&y>.02)maxHead=Math.max(maxHead,delta);
+          if(x>.10&&z<.07)maxHindLeg=Math.max(maxHindLeg,delta);
+          if(z>.07)maxTail=Math.max(maxTail,delta);
+          if(z>.07&&z<.09&&x>.175)maxTailRoot=Math.max(maxTailRoot,delta);
+        }
+        if(!reduced&&time===1.7)variantSignatures.push(JSON.stringify(mesh.skeleton.bones.map(bone=>bone.quaternion.toArray())));
+      }
+      expect(maxFloor).toBeLessThan(1e-7);expect(maxHindLeg).toBeLessThan(1e-7);
+      expect(maxTailRoot).toBeLessThan(.008);expect(maxTail).toBeLessThan(.08);
+      (reduced?reducedPeaks:normalPeaks).push(maxHead);
+      rig.reset();root.updateMatrixWorld(true);mesh.skeleton.update();
+      mesh.skeleton.bones.forEach((bone,i)=>{
+        expect(bone.position.toArray()).toEqual(rest[i].position.toArray());
+        expect(bone.quaternion.angleTo(rest[i].quaternion)).toBeLessThan(1e-7);
+      });
     }
-    expect(floorVertices).toBeGreaterThan(50);expect(torsoVertices).toBeGreaterThan(1000);
-    expect(largestPinnedDelta).toBe(0);expect(invalidNormals).toBe(0);
-    expect(maximum[0]).toBeGreaterThan(.04);expect(maximum[0]).toBeLessThan(.055);
-    expect(maximum[1]).toBeGreaterThan(.003);expect(maximum[1]).toBeLessThan(.025);
-    expect(maximum[2]).toBeGreaterThan(.01);expect(maximum[2]).toBeLessThan(.022);
-    expect(maximum[3]).toBeGreaterThan(.025);expect(maximum[3]).toBeLessThan(.038);
-  } finally { geometry.dispose();material.dispose(); }
+    expect(new Set(variantSignatures).size).toBe(3);
+    // The native baked clips must reproduce the authored articulation between
+    // samples; this also checks node bindings rather than just clip metadata.
+    for(let variant=0;variant<3;variant++){
+      rig.setPose(sampleCatReaction(1.317,false,variant));
+      const authored=mesh.skeleton.bones.map(bone=>bone.quaternion.clone());
+      rig.reset();rig.seek(1.317,variant,false);
+      mesh.skeleton.bones.forEach((bone,i)=>expect(bone.quaternion.clone().normalize().angleTo(authored[i].clone().normalize())).toBeLessThan(.0003));
+      rig.reset();
+    }
+    for(let variant=0;variant<3;variant++){
+      expect(normalPeaks[variant]).toBeGreaterThan(.025);expect(normalPeaks[variant]).toBeLessThan(.065);
+      expect(reducedPeaks[variant]).toBeGreaterThan(.001);expect(reducedPeaks[variant]).toBeLessThan(normalPeaks[variant]*.35);
+    }
+    expect(Float32Array.from(base.array)).toEqual(original);expect(geometry.index!.array).toEqual(index);
+  } finally {
+    mesh.skeleton.dispose();geometry.dispose();
+    for(const material of Array.isArray(mesh.material)?mesh.material:[mesh.material])material.dispose();
+  }
 });
 
 test('petting the visible cat reacts once, purrs gently and remains safe with touch, mute and reading',async({browser})=>{
@@ -65,8 +111,10 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
   page.on('pageerror',error=>errors.push(error.message));
   await page.addInitScript(()=>{
     const state=(window as any).__petAudio={contexts:0,decoded:false,starts:0,stops:0,active:0,ends:0};
-    const gpu=(window as any).__petGpu={buffers:0,shaders:0,morphStorage:0,morphUploads:0};
-    for(const [name,key] of [['bufferData','buffers'],['compileShader','shaders'],['texStorage3D','morphStorage'],['texSubImage3D','morphUploads']] as const){
+    // A native rig updates its existing bone texture every frame. Count fresh
+    // geometry/shader/storage work, allowing those expected matrix updates.
+    const gpu=(window as any).__petGpu={buffers:0,shaders:0,textureStorage2D:0,textureStorage3D:0};
+    for(const [name,key] of [['bufferData','buffers'],['compileShader','shaders'],['texStorage2D','textureStorage2D'],['texStorage3D','textureStorage3D']] as const){
       const original=(WebGL2RenderingContext.prototype as any)[name];
       (WebGL2RenderingContext.prototype as any)[name]=function(...args:unknown[]){gpu[key]++;return original.apply(this,args);};
     }
@@ -106,38 +154,43 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
         return changed;
       };
       renderer.domElement.addEventListener('pointerdown',event=>{window.__lastPetPointer=event.pointerId;});
+      let petMesh,petRest;
+      window.__petPose=()=>{
+        if(!petMesh){
+          cat.group.traverse(object=>{if(object.isSkinnedMesh)petMesh=object;});
+          if(!petMesh)throw new Error('Cat must render as a genuine SkinnedMesh');
+          petRest=petMesh.skeleton.bones.map(bone=>bone.quaternion.clone());
+        }
+        const joints=petMesh.skeleton.bones.map((bone,i)=>({name:bone.name,angle:bone.quaternion.angleTo(petRest[i]),quaternion:bone.quaternion.toArray()}));
+        return{joints,maxAngle:Math.max(...joints.map(joint=>joint.angle)),headAngle:Math.max(...joints.filter(joint=>/head|neck/i.test(joint.name)).map(joint=>joint.angle))};
+      };
       window.__petSnapshot=()=>{
         scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
-        let mesh;cat.group.traverse(object=>{if(object.isMesh&&object.morphTargetInfluences)mesh=object;});
-        const base=mesh.geometry.getAttribute('position'),head=mesh.geometry.morphAttributes.position[0];
-        let headIndex=0,largest=0,floorDelta=0,torsoDelta=0;
+        const pose=window.__petPose(),base=petMesh.geometry.getAttribute('position');
+        let headDelta=0,floorDelta=0,torsoDelta=0;
         const rest=new THREE.Vector3(),posed=new THREE.Vector3();
         for(let i=0;i<base.count;i++){
-          const amount=Math.hypot(head.getX(i),head.getY(i),head.getZ(i));if(amount>largest){largest=amount;headIndex=i;}
-          if(base.getY(i)<=.005||base.getX(i)>.01){
-            rest.fromBufferAttribute(base,i);mesh.getVertexPosition(i,posed);const delta=posed.distanceTo(rest);
-            if(base.getY(i)<=.005)floorDelta=Math.max(floorDelta,delta);
-            if(base.getX(i)>.01)torsoDelta=Math.max(torsoDelta,delta);
-          }
+          rest.fromBufferAttribute(base,i);petMesh.getVertexPosition(i,posed);const delta=posed.distanceTo(rest);
+          if(base.getX(i)<-.12&&base.getY(i)>.02)headDelta=Math.max(headDelta,delta);
+          if(base.getY(i)<=.005)floorDelta=Math.max(floorDelta,delta);
+          if(base.getX(i)>.01)torsoDelta=Math.max(torsoDelta,delta);
         }
-        rest.fromBufferAttribute(base,headIndex);mesh.getVertexPosition(headIndex,posed);
-        const headDelta=posed.distanceTo(rest);
         const point=lounge.catNest.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0,.09,0)).project(camera);
-        return{accepted:window.__petAccepted,active:cat.isPetting(),time:simulationTime,weights:[...mesh.morphTargetInfluences],headDelta,floorDelta,torsoDelta,point:{x:(point.x+1)*innerWidth/2,y:(1-point.y)*innerHeight/2},gpu:{...window.__petGpu},audio:{...window.__petAudio}};
+        return{accepted:window.__petAccepted,active:cat.isPetting(),time:simulationTime,...pose,headDelta,floorDelta,torsoDelta,point:{x:(point.x+1)*innerWidth/2,y:(1-point.y)*innerHeight/2},gpu:{...window.__petGpu},audio:{...window.__petAudio}};
       };
       const ray = new THREE.Raycaster();
     `);
     body=body.replace('renderer.render(scene, camera);',`
       renderer.render(scene, camera);
       if(window.__petSnapshot){
-        let weights;cat.group.traverse(object=>{if(object.isMesh&&object.morphTargetInfluences)weights=[...object.morphTargetInfluences];});
+        const pose=window.__petPose();
         const active=cat.isPetting(),accepted=window.__petAccepted;
         const clock=window.__petSampleClock;
-        const frame={accepted,active,weights,clock};
+        const frame={accepted,active,...pose,clock};
         window.__petFrames.push(frame);
         // Preserve the actually drawn meow pose and first resting frame. The
         // sample time is taken around cat.update, before a slow GPU draw can
-        // advance the audio clock while leaving these weights unchanged.
+        // advance the audio clock while leaving these joint transforms unchanged.
         if(clock?.before?.gesture===accepted&&clock?.after?.gesture===accepted){
           const elapsed=(clock.before.elapsed+clock.after.elapsed)/2;
           if(active&&clock.before.elapsed>=2.760&&clock.after.elapsed<=3.312){
@@ -152,7 +205,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
         window.__petPreviousFrame=frame;
         // Capture the actual drawn pose once per accepted gesture. Polling a
         // short reduced-motion reaction after an input round trip can miss it.
-        if(active&&weights[0]>.08&&window.__petObserved?.accepted!==window.__petAccepted)
+        if(active&&pose.headAngle>.025&&window.__petObserved?.accepted!==window.__petAccepted)
           window.__petObserved=window.__petSnapshot();
       }
     `);
@@ -172,12 +225,10 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     }),gesture);
     expect(observed.meow,'A real rendered frame must keep the head raised during the meow').toBeDefined();
     expect(observed.meow.active).toBe(true);
-    expect(observed.meow.weights[0]).toBeGreaterThan(.10);
-    const expected=sampleCatReaction(observed.meow.elapsed,true);
-    expect(Math.abs(observed.meow.weights[0]-expected.head)).toBeLessThan(.004);
-    expect(Math.abs(observed.meow.weights[1]-expected.ears)).toBeLessThan(.004);
+    expect(observed.meow.headAngle).toBeGreaterThan(.025);
+    expect(observed.meow.joints.every((joint:any)=>joint.quaternion.every(Number.isFinite))).toBe(true);
     expect(observed.finished,'The same audio clock must include the quiet settling tail').toBeDefined();
-    expect(observed.finished.weights).toEqual([0,0,0,0]);
+    expect(observed.finished.maxAngle).toBeLessThan(1e-7);
     expect(observed.finished.clock.before.elapsed).toBeGreaterThanOrEqual(CAT_REACTION_DURATION-.005);
     expect(observed.finished.previous.clock.after.elapsed).toBeLessThan(CAT_REACTION_DURATION+.02);
   };
@@ -188,7 +239,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await expect(page.locator('#room-ui')).toBeVisible({timeout:30000});
     await expect(page.locator('#pet-cat')).toBeHidden();
     await expect.poll(()=>page.evaluate(()=>(window as any).__petAudio.decoded)).toBe(true);
-    const before=await snapshot();expect(before.audio.contexts).toBe(1);expect(before.weights).toEqual([0,0,0,0]);
+    const before=await snapshot();expect(before.audio.contexts).toBe(1);expect(before.maxAngle).toBeLessThan(1e-7);
     await page.evaluate(()=>{(window as any).__petFrames=[];});
     // Clicking the actual visible scan from the desk approaches before the
     // first reaction; the same gesture must not be consumed by the album.
@@ -199,14 +250,14 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await expect.poll(()=>page.evaluate(()=>(window as any).__petAccepted)).toBe(1);
     await page.waitForFunction(()=>(window as any).__petObserved?.accepted===1,undefined,{timeout:10000});
     const reacting=await page.evaluate(()=>(window as any).__petObserved);
-    expect(reacting.headDelta).toBeGreaterThan(.0005);expect(reacting.floorDelta).toBe(0);expect(reacting.torsoDelta).toBeLessThan(.012);
+    expect(reacting.headDelta).toBeGreaterThan(.0005);expect(reacting.floorDelta).toBeLessThan(1e-7);expect(reacting.torsoDelta).toBeLessThan(.012);
     expect(reacting.audio.starts).toBe(1);expect(reacting.audio.contexts).toBe(1);
     expect(reacting.gpu).toEqual(before.gpu);
     await page.screenshot({path:test.info().outputPath('cat-pet-reaction.png')});
     await settled();
     await expectSynchronizedResponse(1);
-    const resting=await snapshot();expect(resting.weights).toEqual([0,0,0,0]);expect(resting.headDelta).toBe(0);
-    expect(await page.evaluate(()=>(window as any).__petFrames.some((frame:any)=>frame.weights?.[1]>0))).toBe(true);
+    const resting=await snapshot();expect(resting.maxAngle).toBeLessThan(1e-7);expect(resting.headDelta).toBeLessThan(1e-7);
+    expect(await page.evaluate(()=>(window as any).__petFrames.some((frame:any)=>frame.joints?.some((joint:any)=>/ear/i.test(joint.name)&&joint.angle>.01)))).toBe(true);
     expect(resting.gpu).toEqual(before.gpu);
 
     // Cancelling an in-progress touch cannot produce a late pet on release.
@@ -252,7 +303,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     expect(interrupted.accepted).toBe(4);
     expect(interrupted.audio.starts).toBe(muted.audio.starts+1);expect(interrupted.audio.active).toBe(1);
     await ready();
-    const reading=await snapshot();expect(reading.active).toBe(false);expect(reading.weights).toEqual([0,0,0,0]);
+    const reading=await snapshot();expect(reading.active).toBe(false);expect(reading.maxAngle).toBeLessThan(1e-7);
     expect(reading.audio.stops).toBeGreaterThan(interrupted.audio.stops);
     await page.mouse.click(before.point.x,before.point.y);
     expect((await snapshot()).accepted).toBe(4);
@@ -268,7 +319,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await expect.poll(()=>page.evaluate(()=>(window as any).__petAccepted)).toBe(5);
     await page.waitForFunction(()=>(window as any).__petObserved?.accepted===5,undefined,{timeout:10000});
     const phoneReaction=await page.evaluate(()=>(window as any).__petObserved);
-    expect(phoneReaction.headDelta).toBeGreaterThan(.0005);expect(phoneReaction.floorDelta).toBe(0);
+    expect(phoneReaction.headDelta).toBeGreaterThan(.0005);expect(phoneReaction.floorDelta).toBeLessThan(1e-7);
     await expect(page.locator('#reader')).toBeHidden();await page.screenshot({path:test.info().outputPath('cat-pet-mobile.png')});
     await settled();
     await expect.poll(()=>page.evaluate(()=>(window as any).__petAudio.active),{timeout:10000}).toBe(0);
