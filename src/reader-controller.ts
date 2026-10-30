@@ -105,37 +105,45 @@ export function createReaderController(options: ReaderOptions) {
       }));
     }
   }
-  function render() {
+  /** Paint live and detached spreads through the same content path. */
+  function paintPages(scope: ParentNode, index: number, artworkOnly = false) {
+    const field = <T extends HTMLElement = HTMLElement>(id: string) => scope.querySelector<T>(`#${id}`)!;
+    const item = chapters[index], holder = field("art-holder");
+    field("chapter-date").textContent = item.date;
+    field("chapter-subtitle").textContent = item.subtitle;
+    field("chapter-title").textContent = item.title;
+    field("chapter-text").textContent = item.text;
+    field("chapter-note").textContent = item.note;
+    field("photo-caption").textContent = item.caption;
+    const makeArtwork = () => {
+      const image = artwork(item.scene);
+      image.setAttribute("role", "img");
+      image.setAttribute("aria-label", `${item.title}：${item.scene === "mountain" ? "层叠青山" : "海岸风景"}原创插画`);
+      return image;
+    };
+    let photograph: HTMLImageElement | undefined, useArtwork: (() => void) | undefined;
+    if (item.image && !artworkOnly) {
+      const image = new Image();
+      image.alt = item.caption;
+      image.decoding = "async";
+      useArtwork = image.onerror = () => {
+        if (!disposed && image.parentElement === holder) holder.replaceChildren(makeArtwork());
+      };
+      image.src = item.image;
+      holder.replaceChildren(image);
+      photograph = image;
+    } else holder.replaceChildren(makeArtwork());
+    field("left-number").textContent = String(index * 2 + 1).padStart(2, "0");
+    field("right-number").textContent = String(index * 2 + 2).padStart(2, "0");
+    return { photograph, useArtwork };
+  }
+  function render(artworkOnly = false) {
     if (disposed) return;
     const item = chapters[chapter];
     const contentKey = JSON.stringify([chapter, chapters.length, item.date, item.subtitle, item.title,
       item.text, item.note, item.caption, item.scene, item.image]);
     if (renderedContent !== contentKey) {
-      el("chapter-date").textContent = item.date;
-      el("chapter-subtitle").textContent = item.subtitle;
-      el("chapter-title").textContent = item.title;
-      el("chapter-text").textContent = item.text;
-      el("chapter-note").textContent = item.note;
-      el("photo-caption").textContent = item.caption;
-      const makeArtwork = () => {
-        const image = artwork(item.scene);
-        image.setAttribute("role", "img");
-        image.setAttribute("aria-label", `${item.title}：${item.scene === "mountain" ? "层叠青山" : "海岸风景"}原创插画`);
-        return image;
-      };
-      if (item.image) {
-        const image = new Image();
-        image.alt = item.caption;
-        image.decoding = "async";
-        image.onerror = () => {
-          if (!disposed && renderedContent === contentKey && image.parentElement === el("art-holder"))
-            el("art-holder").replaceChildren(makeArtwork());
-        };
-        image.src = item.image;
-        el("art-holder").replaceChildren(image);
-      } else el("art-holder").replaceChildren(makeArtwork());
-      el("left-number").textContent = String(chapter * 2 + 1).padStart(2, "0");
-      el("right-number").textContent = String(chapter * 2 + 2).padStart(2, "0");
+      paintPages(book, chapter, artworkOnly);
       el("chapter-count").textContent = `${String(chapter + 1).padStart(2, "0")} / ${String(chapters.length).padStart(2, "0")} 章`;
       el("chapter-count").setAttribute("aria-label", `${item.date}，${item.title}。第 ${chapter + 1} 章，共 ${chapters.length} 章。`);
       renderedContent = contentKey;
@@ -150,8 +158,8 @@ export function createReaderController(options: ReaderOptions) {
     });
   }
   function cleanTurn() {
-    book.querySelectorAll(".turn-leaf").forEach(leaf => leaf.remove());
-    book.classList.remove("turning");
+    book.querySelectorAll(".turn-leaf,.turn-underlay").forEach(leaf => leaf.remove());
+    book.classList.remove("turning", "has-turn-leaf");
     book.setAttribute("aria-busy", "false");
     turning = false;
     updateControls();
@@ -175,28 +183,79 @@ export function createReaderController(options: ReaderOptions) {
     book.setAttribute("aria-busy", "true");
     const forward = target > chapter;
     if (innerWidth >= 760 && !options.reducedMotion) {
+      // Keep the live spread and retained chapter untouched until the sheet
+      // lands. The turning paper carries current recto and destination verso;
+      // only the newly uncovered stationary page is replaced underneath it.
+      const left = book.querySelector<HTMLElement>(":scope > .page-left")!;
+      const right = book.querySelector<HTMLElement>(":scope > .page-right")!;
+      const source = forward ? right : left;
+      const destination = document.createElement("div");
+      destination.append(left.cloneNode(true), right.cloneNode(true));
+      const { photograph, useArtwork } = paintPages(destination, target);
+      let artworkOnly = false;
+      if (photograph) {
+        // A slow or failed photo must not hold chapter navigation indefinitely.
+        // Reuse cancellation's timer cleanup and paint a real local image before
+        // placing the verso in the book, including when decode rejects first.
+        const ready = await new Promise<boolean>(resolve => {
+          const settle = (loaded: boolean) => {
+            window.clearTimeout(id);
+            timers.delete(id);
+            resolve(loaded);
+          };
+          const id = window.setTimeout(() => settle(false), 1200);
+          timers.set(id, () => settle(false));
+          void photograph.decode().then(() => settle(true), () => settle(false));
+        });
+        if (!ready) { useArtwork?.(); artworkOnly = true; }
+      }
+      if (disposed || operation !== version || !options.canRead()) return;
       const leaf = document.createElement("div"), front = document.createElement("div"), back = document.createElement("div");
       leaf.className = `turn-leaf ${forward ? "forward" : "backward"}`;
       leaf.setAttribute("aria-hidden", "true");
+      leaf.inert = true;
       front.className = "leaf-front";
       back.className = "leaf-back";
-      const source = book.querySelector(forward ? ".page-right" : ".page-left")!;
+      function stripIds(page: HTMLElement) {
+        page.removeAttribute("id");
+        page.querySelectorAll("[id]").forEach(element => element.removeAttribute("id"));
+        return page;
+      }
       const clone = source.cloneNode(true) as HTMLElement;
       const originals = source.querySelectorAll("canvas");
       clone.querySelectorAll("canvas").forEach((canvas, index) => {
         canvas.getContext("2d")!.drawImage(originals[index], 0, 0);
       });
-      clone.querySelectorAll("[id]").forEach(element => element.removeAttribute("id"));
-      front.append(clone);
+      front.append(stripIds(clone));
+      back.append(stripIds(destination.querySelector<HTMLElement>(forward ? ".page-left" : ".page-right")!));
+      const underlay = document.createElement("div");
+      underlay.className = `turn-underlay ${forward ? "forward" : "backward"}`;
+      underlay.setAttribute("aria-hidden", "true");
+      underlay.inert = true;
+      underlay.append(stripIds(destination.querySelector<HTMLElement>(forward ? ".page-right" : ".page-left")!));
+      // Source offsets include the full print height in a short, scrolled book.
+      for (const layer of [leaf, underlay]) Object.assign(layer.style, {
+        top: `${source.offsetTop}px`, left: `${source.offsetLeft}px`,
+        width: `${source.offsetWidth}px`, height: `${source.offsetHeight}px`,
+      });
       leaf.append(front, back);
-      book.append(leaf);
-    } else book.classList.add("turning");
-    await wait(options.reducedMotion ? 0 : 260);
-    if (disposed || operation !== version || !options.canRead()) return;
-    chapter = target;
-    render();
-    await wait(options.reducedMotion ? 0 : 340);
-    if (disposed || operation !== version) return;
+      book.classList.add("has-turn-leaf");
+      book.append(underlay, leaf);
+      const animation = leaf.getAnimations()[0];
+      if (animation) await animation.finished.catch(() => {});
+      else await wait(600);
+      if (disposed || operation !== version || !options.canRead()) return;
+      chapter = target;
+      render(artworkOnly);
+    } else {
+      book.classList.add("turning");
+      await wait(options.reducedMotion ? 0 : 260);
+      if (disposed || operation !== version || !options.canRead()) return;
+      chapter = target;
+      render();
+      await wait(options.reducedMotion ? 0 : 340);
+      if (disposed || operation !== version) return;
+    }
     cleanTurn();
     book.scrollTo({ top: 0, behavior: options.reducedMotion ? "instant" : "smooth" });
     if (focused && options.canRead()) {
@@ -251,6 +310,7 @@ export function createReaderController(options: ReaderOptions) {
     if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.25) void turn(chapter + (dx < 0 ? 1 : -1));
   }
   function onTouchCancel() { swipe = undefined; }
+  function onResize() { if (turning) cancelTurn(); }
   const onPrevious = () => { void turn(chapter - 1); }, onNext = () => { void turn(chapter + 1); };
   previous.addEventListener("click", onPrevious);
   next.addEventListener("click", onNext);
@@ -258,6 +318,7 @@ export function createReaderController(options: ReaderOptions) {
   document.addEventListener("pointerdown", onOutsidePointer);
   reader.addEventListener("keydown", onReaderKey);
   window.addEventListener("keydown", onWindowKey);
+  window.addEventListener("resize", onResize);
   book.addEventListener("touchstart", onTouchStart, { passive: true });
   book.addEventListener("touchmove", onTouchMove, { passive: true });
   book.addEventListener("touchend", onTouchEnd, { passive: true });
@@ -278,6 +339,7 @@ export function createReaderController(options: ReaderOptions) {
       document.removeEventListener("pointerdown", onOutsidePointer);
       reader.removeEventListener("keydown", onReaderKey);
       window.removeEventListener("keydown", onWindowKey);
+      window.removeEventListener("resize", onResize);
       book.removeEventListener("touchstart", onTouchStart);
       book.removeEventListener("touchmove", onTouchMove);
       book.removeEventListener("touchend", onTouchEnd);
