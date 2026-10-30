@@ -6,6 +6,15 @@
 
 项目使用 TypeScript + Three.js + Vite，纯静态运行，无后端，无需 API 密钥；默认素材随站点本地加载。
 
+## 协作与更新记录
+
+本仓库可能同时由本地 Codex、ChatGPT 网页端 Codex 或作者手动修改。所有修改遵循根目录 [AGENTS.md](AGENTS.md)，完成一批改动时，必须在同一次提交中更新 README 的相关说明，并在文末[更新日志](#更新日志)顶部新增记录；代码、素材、配置和文档修改都适用，同一批次的连续微调可合并为一条。
+
+- **开始前**：检查 `git status`，执行 `git fetch origin`，阅读最新 README 和更新日志，确认本次基线提交。工作区干净且可以快进时，同步最新目标分支；已有本地改动时先保留、分离，避免覆盖其他端的成果。
+- **记录内容**：北京时间日期、来源（本地 Codex / 网页端 Codex / 手动）、基线提交、改了什么及影响哪些功能或文件、实际运行的验证与结果。没有运行的检查明确写“未运行”，不能沿用历史结果冒充本轮验证。
+- **提交与推送前**：再次获取远端更新；若目标分支已前进，先整合新提交并保留双方日志，再检查最终差异。只提交本任务内容，使用普通推送，不强制覆盖共享分支。
+- **历史记录**：保留已有条目，新记录按完成时间倒序排列；同日多次更新分别说明。基线写修改前的提交号，当前提交通过 Git 历史追溯，避免为填写自身提交号反复修改提交。
+
 ## 开发
 
 需要 Node.js 22.12+（本云环境为 24.19.0）。在项目目录执行：
@@ -38,7 +47,7 @@ npm run build
 rm -rf docs/assets
 cp -R dist/. docs/
 touch docs/.nojekyll
-git add README.md src public tests index.html package.json package-lock.json vite.config.ts playwright.config.ts docs
+git add AGENTS.md README.md src public tests index.html package.json package-lock.json vite.config.ts playwright.config.ts docs
 git commit -m "Update published site"
 git push origin main
 ```
@@ -252,3 +261,14 @@ npm test
 截图保存在 `test-results/`。`fog-dense.png`、`fog-clearing.png`、`fog-clear-door.png` 和 `fog-mobile-dense.png` 记录浓雾、消散中途、清晰庭院及手机开场。其余包括 `album-opening.png` 的实体翻页、`album-handoff.png` 的界面接续、`album-reading.png` 的阅读终态，以及 `paper-layout-*-80.png` / `paper-layout-*-90.png` 的后段落位；`landscape-reading.png` 和 `recovered-reading.png` 分别记录短横屏与画面中断后的阅读界面。`cozy-room.png`、`cozy-cat.png` 与 `cozy-cat-mobile.png` 记录休息角在房间及桌面、手机转头后的画面。软件渲染测试用于检查功能与构图，真实手机帧率需要在目标设备验证。
 
 云端 Chromium 使用 SwiftShader 软件渲染时，单帧可能超过一秒，因此清雾完成、开册完成、页面接续和返回房间的测试等待上限为 60 秒。此等待上限不改变场景动画时长，测试仍检查每一帧的进度与中间运动。
+
+## 更新日志
+
+每批修改按以下格式记录：日期与标题、来源、基线、改动、验证。代码或素材变更时，还需同步更新上文对应的使用说明。
+
+### 2026-10-30 · 建立多端协作与更新日志约定
+
+- **来源**：本地 Codex。
+- **基线**：[`c57e611`](https://github.com/petitmort/memory/commit/c57e61168bd570d3f50725199991002daf248517)。开始本轮前已同步远端的体验优化和默认唱片更新。
+- **改动**：README 新增协作流程和更新日志格式；新增根目录 `AGENTS.md`，要求本地与网页端 Codex 每次交付同步补充 README；发布示例包含 `AGENTS.md`。推送前须检查远端变化，整合双方改动和记录。
+- **验证**：仅修改文档，已检查 Markdown 标题、相对链接和最终差异，`git diff --check` 通过；未运行构建或浏览器测试。
