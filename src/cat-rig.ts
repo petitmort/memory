@@ -16,6 +16,7 @@ export function createCatRig(root:THREE.Object3D,clips:THREE.AnimationClip[]=[])
     return clip?mixer.clipAction(clip):undefined;
   });
   const previous=new Float64Array(bones.length*7);
+  const poseEuler=new THREE.Euler();
   let playbackKey="";
   function changed() {
     let result=false;
@@ -37,11 +38,12 @@ export function createCatRig(root:THREE.Object3D,clips:THREE.AnimationClip[]=[])
   return {
     bones,
     setPose(pose:CatReactionPose) {
-      mixer.stopAllAction();playbackKey="";
+      if(playbackKey){mixer.stopAllAction();playbackKey="";}
       const transforms=catJointTransforms(pose);
       bones.forEach((bone,i)=>{
-        bone.position.copy(rest[i].position).add(new THREE.Vector3(...transforms[i].offset));
-        bone.quaternion.setFromEuler(new THREE.Euler(...transforms[i].rotation));
+        const position=rest[i].position,offset=transforms[i].offset,rotation=transforms[i].rotation;
+        bone.position.set(position.x+offset[0],position.y+offset[1],position.z+offset[2]);
+        bone.quaternion.setFromEuler(poseEuler.set(rotation[0],rotation[1],rotation[2]));
       });
       root.updateMatrixWorld(true);
       return changed();

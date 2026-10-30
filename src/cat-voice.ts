@@ -1,11 +1,22 @@
 import voiceUrl from "./assets/cat-purr.mp3";
+import curiousUrl from "./assets/cat-curious.mp3";
+import affectionateUrl from "./assets/cat-affectionate.mp3";
+import sleepyUrl from "./assets/cat-sleepy.mp3";
+import playfulUrl from "./assets/cat-playful.mp3";
+import stretchUrl from "./assets/cat-stretch.mp3";
+import type { CatReactionId } from "./cat-reactions";
 
-/** One prepared purr-then-meow recording sharing the room's audio context. */
+const voiceUrls: Record<CatReactionId, string> = {
+  content: voiceUrl, curious: curiousUrl, affectionate: affectionateUrl,
+  sleepy: sleepyUrl, playful: playfulUrl, stretch: stretchUrl,
+};
+
+/** Prepared voice profiles use one source each and the room's existing clock. */
 export function createCatVoice(context: AudioContext) {
   const controller = new AbortController();
-  let buffer: AudioBuffer | null = null;
+  const buffers = new Map<CatReactionId, AudioBuffer>();
   let enabled = true, disposed = false;
-  type Voice = { source: AudioBufferSourceNode; gain: GainNode; startedAt: number; stopping: boolean; released: boolean };
+  type Voice = { source: AudioBufferSourceNode; gain: GainNode; startedAt: number; profileId: CatReactionId; stopping: boolean; released: boolean };
   let active: Voice | null = null;
 
   function release(voice: Voice) {
@@ -43,7 +54,7 @@ export function createCatVoice(context: AudioContext) {
     if (disposed) return;
     disposed = true;
     enabled = false;
-    buffer = null;
+    buffers.clear();
     controller.abort();
     stopImmediately();
     context.removeEventListener("statechange", stateChanged);
@@ -56,7 +67,7 @@ export function createCatVoice(context: AudioContext) {
 
   // Decoding is allowed while suspended. Nothing starts here, and neither a
   // late success nor an optional download failure queues a future vocalization.
-  const ready: Promise<void> = fetch(voiceUrl, { signal: controller.signal })
+  const ready: Promise<void> = Promise.all((Object.entries(voiceUrls) as [CatReactionId, string][]).map(([profileId, url]) => fetch(url, { signal: controller.signal })
     .then(response => {
       if (!response.ok) throw new Error(`Cat voice: HTTP ${response.status}`);
       return response.arrayBuffer();
@@ -66,19 +77,21 @@ export function createCatVoice(context: AudioContext) {
       return context.decodeAudioData(data);
     })
     .then(decoded => {
-      if (!disposed && context.state !== "closed") buffer = decoded;
+      if (decoded && !disposed && context.state !== "closed") buffers.set(profileId, decoded);
     })
-    .catch(() => { /* The room and sea remain usable without this optional sound. */ });
+    .catch(() => { /* One optional profile cannot disable the others or queue a sound. */ })))
+    .then(() => undefined);
 
   return {
     ready,
-    play() {
+    play(profileId: CatReactionId = "content") {
+      const buffer = buffers.get(profileId);
       if (disposed || !enabled || !buffer || active || context.state !== "running") return false;
       let voice: Voice | undefined;
       try {
         const source = context.createBufferSource(), gain = context.createGain();
         const now = context.currentTime, duration = buffer.duration;
-        const currentVoice: Voice = { source, gain, startedAt: now, stopping: false, released: false };
+        const currentVoice: Voice = { source, gain, startedAt: now, profileId, stopping: false, released: false };
         voice = currentVoice;
         source.buffer = buffer;
         gain.gain.setValueAtTime(0, now);
@@ -95,6 +108,8 @@ export function createCatVoice(context: AudioContext) {
         return false;
       }
     },
+    isReady(profileId: CatReactionId) { return !disposed && buffers.has(profileId); },
+    getActiveProfile(): CatReactionId | undefined { return active?.profileId; },
     captureClock(): (() => number) | undefined {
       if (!active) return;
       // Capture this play, including its quiet settling tail after onended.

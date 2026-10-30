@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import ts from 'typescript';
 
 // Exercise the real voice module in Node. Only Vite's binary-asset import is
-// substituted; the sound remains a single decoded purr-and-meow recording.
+// substituted; each selected profile still uses one decoded recording/source.
 const compiled = ts.transpileModule(
   readFileSync(new URL('../src/cat-voice.ts', import.meta.url), 'utf8'),
   { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } },
@@ -12,7 +12,7 @@ const voiceModule: { exports: Record<string, any> } = { exports: {} };
 new Function('require', 'module', 'exports', compiled)(
   (name: string) => {
     if (!name.endsWith('.mp3')) throw new Error(`Unexpected module: ${name}`);
-    return { default: '/cat-voice.mp3' };
+    return { default: '/' + name.split('/').at(-1) };
   }, voiceModule, voiceModule.exports,
 );
 const createCatVoice = voiceModule.exports.createCatVoice as typeof import('../src/cat-voice').createCatVoice;
@@ -44,7 +44,7 @@ class RecordingContext extends EventTarget {
   starts = 0;
   decodes = 0;
   sources: RecordingSource[] = [];
-  async decodeAudioData(): Promise<{ duration: number }> { this.decodes++; return { duration: 3.6 }; }
+  async decodeAudioData(_data?: ArrayBuffer): Promise<{ duration: number }> { this.decodes++; return { duration: 3.6 }; }
   createBufferSource() { const source = new RecordingSource(this); this.sources.push(source); return source; }
   createGain() {
     return { connect() {}, disconnect() {}, gain: {
@@ -113,8 +113,8 @@ test('a complete purr-and-meow is one optional voice; interrupted pets cannot le
     context.changeState('running');
     context.advance(5);
     expect(context.starts).toBe(4);
-    expect(requests).toBe(1);
-    expect(context.decodes).toBe(1);
+    expect(requests).toBe(6);
+    expect(context.decodes).toBe(6);
   } finally {
     voice.dispose();
     globalThis.fetch = originalFetch;
@@ -140,16 +140,16 @@ test('unavailable or late voice preparation never starts or queues a pet sound',
 
     globalThis.fetch = (async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) })) as typeof fetch;
     const context = new RecordingContext(); context.changeState('running'); contexts.push(context);
-    let finishDecode!: (buffer: { duration: number }) => void;
-    context.decodeAudioData = () => new Promise(resolve => { finishDecode = resolve; });
+    const finishDecode: ((buffer: { duration: number }) => void)[] = [];
+    context.decodeAudioData = () => new Promise(resolve => { finishDecode.push(resolve); });
     const late = createCatVoice(context.audio); voices.push(late);
     // Wait for the asynchronous fetch/arrayBuffer pipeline, not a wall-clock timer.
-    for (let turn = 0; !finishDecode && turn < 20; turn++) await Promise.resolve();
-    expect(finishDecode).toBeDefined();
+    for (let turn = 0; finishDecode.length < 6 && turn < 20; turn++) await Promise.resolve();
+    expect(finishDecode).toHaveLength(6);
     expect(late.play()).toBe(false);
     expect(late.captureClock()).toBeUndefined();
     late.dispose();
-    finishDecode({ duration: 3.6 }); await late.ready;
+    finishDecode.forEach(finish => finish({ duration: 3.6 })); await late.ready;
     expect(late.play()).toBe(false);
     for (const owner of contexts) { owner.advance(10); expect(owner.starts).toBe(0); }
   } finally {
@@ -188,7 +188,7 @@ test('a captured reaction clock follows its own sound through the quiet settle a
     expect(first()).toBeCloseTo(3.9, 8);
     expect(second()).toBeCloseTo(.2, 8);
     expect(context.starts).toBe(2);
-    expect(context.decodes).toBe(1);
+    expect(context.decodes).toBe(6);
   } finally {
     voice.dispose();
     globalThis.fetch = originalFetch;
@@ -228,4 +228,84 @@ test('a device interruption lets the captured pose settle monotonically without 
     if (originalNow) Object.defineProperty(performance, 'now', originalNow);
     else Reflect.deleteProperty(performance, 'now');
   }
+});
+
+test('the requested mood selects its actual decoded buffer and immutable playback identity', async () => {
+  const originalFetch = globalThis.fetch;
+  const files = ['cat-purr.mp3', 'cat-curious.mp3', 'cat-affectionate.mp3', 'cat-sleepy.mp3', 'cat-playful.mp3', 'cat-stretch.mp3'];
+  const ids = ['content', 'curious', 'affectionate', 'sleepy', 'playful', 'stretch'] as const;
+  globalThis.fetch = (async input => {
+    const index = files.indexOf(String(input).split('/').at(-1)!);
+    expect(index).toBeGreaterThanOrEqual(0);
+    return { ok: true, arrayBuffer: async () => new Uint8Array([index]).buffer };
+  }) as typeof fetch;
+  const context = new RecordingContext(); context.changeState('running');
+  context.decodeAudioData = async data => {
+    context.decodes++;
+    return { duration: 3.6, recording: new Uint8Array(data!)[0] };
+  };
+  const voice = createCatVoice(context.audio);
+  try {
+    await voice.ready;
+    for (let index = 0; index < ids.length; index++) {
+      const id = ids[index];
+      expect(voice.isReady(id)).toBe(true);
+      expect(voice.play(id)).toBe(true);
+      expect(voice.getActiveProfile()).toBe(id);
+      expect((context.sources.at(-1)!.buffer as any).recording).toBe(index);
+      const clock = voice.captureClock()!;
+      context.advance(.2); expect(clock()).toBeCloseTo(.2, 8);
+      expect(voice.play(ids[(index + 1) % ids.length])).toBe(false);
+      expect(voice.getActiveProfile()).toBe(id);
+      context.advance(3.5);
+      expect(voice.getActiveProfile()).toBeUndefined();
+      expect(clock()).toBeCloseTo(3.7, 8);
+    }
+    expect(context.starts).toBe(6); expect(context.decodes).toBe(6);
+  } finally { voice.dispose(); globalThis.fetch = originalFetch; }
+});
+
+test('one missing mood stays silent without replacing it with a mismatched ready voice', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (async input => ({
+    ok: !String(input).includes('curious'), status: 404,
+    arrayBuffer: async () => new ArrayBuffer(8),
+  })) as typeof fetch;
+  const context = new RecordingContext(); context.changeState('running');
+  const voice = createCatVoice(context.audio);
+  try {
+    await voice.ready;
+    expect(voice.isReady('curious')).toBe(false);
+    expect(voice.isReady('playful')).toBe(true);
+    expect(voice.play('curious')).toBe(false);
+    expect(voice.getActiveProfile()).toBeUndefined(); expect(context.starts).toBe(0);
+    expect(voice.play('playful')).toBe(true);
+    expect(voice.getActiveProfile()).toBe('playful');
+    voice.dispose();
+    expect(voice.isReady('playful')).toBe(false);
+    expect(voice.getActiveProfile()).toBeUndefined();
+  } finally { voice.dispose(); globalThis.fetch = originalFetch; }
+});
+
+test('a late individual mood decode neither blocks the ready moods nor starts a queued meow', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (async input => ({ ok: true,
+    arrayBuffer: async () => new Uint8Array([String(input).includes('curious') ? 1 : 0]).buffer,
+  })) as typeof fetch;
+  const context = new RecordingContext(); context.changeState('running');
+  let finishCurious!: (buffer: { duration: number }) => void;
+  context.decodeAudioData = data => new Uint8Array(data!)[0] === 1
+    ? new Promise(resolve => { finishCurious = resolve; }) : Promise.resolve({ duration: 3.6 });
+  const voice = createCatVoice(context.audio);
+  try {
+    for (let turn = 0; (!voice.isReady('content') || !finishCurious) && turn < 30; turn++) await Promise.resolve();
+    expect(voice.isReady('content')).toBe(true); expect(finishCurious).toBeDefined();
+    expect(voice.play('curious')).toBe(false); expect(context.starts).toBe(0);
+    expect(voice.play('content')).toBe(true);
+    finishCurious({ duration: 3.6 }); await voice.ready;
+    expect(context.starts).toBe(1); expect(voice.getActiveProfile()).toBe('content');
+    context.advance(4);
+    expect(context.starts).toBe(1); expect(voice.getActiveProfile()).toBeUndefined();
+    expect(voice.play('curious')).toBe(true); expect(voice.getActiveProfile()).toBe('curious');
+  } finally { voice.dispose(); globalThis.fetch = originalFetch; }
 });

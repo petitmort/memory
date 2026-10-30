@@ -110,7 +110,9 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
   const page=await context.newPage(),errors:string[]=[];
   page.on('pageerror',error=>errors.push(error.message));
   await page.addInitScript(()=>{
-    const state=(window as any).__petAudio={contexts:0,decoded:false,starts:0,stops:0,active:0,ends:0};
+    const state=(window as any).__petAudio={contexts:0,decoded:0,starts:0,stops:0,active:0,ends:0,voices:[] as {gesture:number;requested:string}[]};
+    // A fixed RNG keeps this GPU regression repeatable without changing the real shuffle bag.
+    Math.random=()=>.999;
     // A native rig updates its existing bone texture every frame. Count fresh
     // geometry/shader/storage work, allowing those expected matrix updates.
     const gpu=(window as any).__petGpu={buffers:0,shaders:0,textureStorage2D:0,textureStorage3D:0};
@@ -123,29 +125,47 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     const decode=NativeAudio.prototype.decodeAudioData;
     NativeAudio.prototype.decodeAudioData=function(...args:any[]){
       const pending=(decode as any).apply(this,args) as Promise<AudioBuffer>;
-      void pending.then(buffer=>{if(buffer.duration<4)state.decoded=true;},()=>{});
+      void pending.then(buffer=>{if(buffer.duration<6)state.decoded++;},()=>{});
       return pending;
     };
     const start=AudioBufferSourceNode.prototype.start,stop=AudioBufferSourceNode.prototype.stop;
     AudioBufferSourceNode.prototype.start=function(...args:any[]){
-      if(this.buffer&&this.buffer.duration<4){
+      if(this.buffer&&this.buffer.duration<6){
         state.starts++;state.active++;
         const context=this.context,startedAt=args[0]??context.currentTime;
         const gesture=(window as any).__petAccepted;
+        state.voices.push({gesture,requested:(window as any).__catVoiceRequested});
         (window as any).__petSoundClock=()=>({gesture,elapsed:context.currentTime-startedAt});
         this.addEventListener('ended',()=>{state.active--;state.ends++;},{once:true});
       }
       return(start as any).apply(this,args);
     };
-    AudioBufferSourceNode.prototype.stop=function(...args:any[]){if(this.buffer&&this.buffer.duration<4)state.stops++;return(stop as any).apply(this,args);};
+    AudioBufferSourceNode.prototype.stop=function(...args:any[]){if(this.buffer&&this.buffer.duration<6)state.stops++;return(stop as any).apply(this,args);};
+  });
+  await page.route(/\/src\/sound-controller\.ts(?:\?.*)?$/,async route=>{
+    const response=await route.fetch();let body=await response.text();
+    const play=/catVoice\?\.play\(([^)]+)\)/;
+    expect(body).toMatch(play);
+    body=body.replace(play,`(()=>{
+      const requested=$1;
+      window.__catVoiceRequested=requested;
+      const started=catVoice?.play(requested);
+      window.__catVoiceActive=catVoice?.getActiveProfile();
+      return started;
+    })()`);
+    await route.fulfill({response,body});
   });
   await page.route(/\/src\/scene\.ts(?:\?.*)?$/,async route=>{
     const response=await route.fetch();let body=await response.text();
     body=body.replace('const ray = new THREE.Raycaster();',`
-      window.__petAccepted=0;window.__petFrames=[];window.__petMeowFrames={};window.__petFinishedFrames={};
+      window.__petAccepted=0;window.__petFrames=[];window.__petMeowFrames={};window.__petFinishedFrames={};window.__petProfiles={};
       window.__petClock=()=>({active:cat.isPetting(),time:simulationTime});
       const originalPet=cat.pet.bind(cat);
-      cat.pet=(...args)=>{const accepted=originalPet(...args);if(accepted)window.__petAccepted++;return accepted;};
+      cat.pet=(...args)=>{
+        const accepted=originalPet(...args);
+        if(accepted){window.__petAccepted++;window.__petProfiles[window.__petAccepted]=cat.getReaction();}
+        return accepted;
+      };
       const originalUpdate=cat.update.bind(cat);
       cat.update=(...args)=>{
         const before=window.__petSoundClock?.();
@@ -176,7 +196,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
           if(base.getX(i)>.01)torsoDelta=Math.max(torsoDelta,delta);
         }
         const point=lounge.catNest.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0,.09,0)).project(camera);
-        return{accepted:window.__petAccepted,active:cat.isPetting(),time:simulationTime,...pose,headDelta,floorDelta,torsoDelta,point:{x:(point.x+1)*innerWidth/2,y:(1-point.y)*innerHeight/2},gpu:{...window.__petGpu},audio:{...window.__petAudio}};
+        return{accepted:window.__petAccepted,active:cat.isPetting(),time:simulationTime,profile:window.__petProfiles[window.__petAccepted],voiceProfile:window.__catVoiceActive,...pose,headDelta,floorDelta,torsoDelta,point:{x:(point.x+1)*innerWidth/2,y:(1-point.y)*innerHeight/2},gpu:{...window.__petGpu},audio:{...window.__petAudio}};
       };
       const ray = new THREE.Raycaster();
     `);
@@ -186,17 +206,20 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
         const pose=window.__petPose();
         const active=cat.isPetting(),accepted=window.__petAccepted;
         const clock=window.__petSampleClock;
-        const frame={accepted,active,...pose,clock};
+        const profile=window.__petProfiles[accepted];
+        const frame={accepted,active,...pose,clock,profile,voiceProfile:window.__catVoiceActive};
         window.__petFrames.push(frame);
         // Preserve the actually drawn meow pose and first resting frame. The
         // sample time is taken around cat.update, before a slow GPU draw can
         // advance the audio clock while leaving these joint transforms unchanged.
         if(clock?.before?.gesture===accepted&&clock?.after?.gesture===accepted){
           const elapsed=(clock.before.elapsed+clock.after.elapsed)/2;
-          if(active&&clock.before.elapsed>=2.760&&clock.after.elapsed<=3.312){
+          const cue=profile?.cues.find(cue=>clock.before.elapsed>=cue.start&&clock.after.elapsed<=cue.end);
+          if(active&&cue){
+            const distance=Math.abs(elapsed-(cue.start+cue.end)/2);
             const previous=window.__petMeowFrames[accepted];
-            if(!previous||Math.abs(elapsed-2.88)<Math.abs(previous.elapsed-2.88))
-              window.__petMeowFrames[accepted]={...frame,elapsed};
+            if(!previous||distance<previous.distance)
+              window.__petMeowFrames[accepted]={...frame,elapsed,distance,cue};
           }
           const previous=window.__petPreviousFrame;
           if(!active&&previous?.active&&previous.accepted===accepted)
@@ -222,15 +245,20 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     const observed=await page.evaluate(gesture=>({
       meow:(window as any).__petMeowFrames[gesture],
       finished:(window as any).__petFinishedFrames[gesture],
+      profile:(window as any).__petProfiles[gesture],
+      voice:(window as any).__petAudio.voices.find((voice:any)=>voice.gesture===gesture),
     }),gesture);
     expect(observed.meow,'A real rendered frame must keep the head raised during the meow').toBeDefined();
     expect(observed.meow.active).toBe(true);
-    expect(observed.meow.headAngle).toBeGreaterThan(.025);
+    expect(observed.meow.headAngle).toBeGreaterThan(.01);
+    expect(observed.voice.requested).toBe(observed.profile.id);
+    expect(observed.meow.voiceProfile).toBe(observed.profile.id);
+    expect(observed.profile.cues.some((cue:any)=>observed.meow.elapsed>=cue.start&&observed.meow.elapsed<=cue.end)).toBe(true);
     expect(observed.meow.joints.every((joint:any)=>joint.quaternion.every(Number.isFinite))).toBe(true);
     expect(observed.finished,'The same audio clock must include the quiet settling tail').toBeDefined();
     expect(observed.finished.maxAngle).toBeLessThan(1e-7);
-    expect(observed.finished.clock.before.elapsed).toBeGreaterThanOrEqual(CAT_REACTION_DURATION-.005);
-    expect(observed.finished.previous.clock.after.elapsed).toBeLessThan(CAT_REACTION_DURATION+.02);
+    expect(observed.finished.clock.before.elapsed).toBeGreaterThanOrEqual(observed.profile.duration-.005);
+    expect(observed.finished.previous.clock.after.elapsed).toBeLessThan(observed.profile.duration+.05);
   };
   try {
     await page.goto('/');await expect(page.locator('#loading')).toBeHidden({timeout:60000});
@@ -238,7 +266,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await page.locator('#enter').click();await expect(page.locator('#enter')).toBeEnabled();await page.locator('#enter').click();
     await expect(page.locator('#room-ui')).toBeVisible({timeout:30000});
     await expect(page.locator('#pet-cat')).toBeHidden();
-    await expect.poll(()=>page.evaluate(()=>(window as any).__petAudio.decoded)).toBe(true);
+    await expect.poll(()=>page.evaluate(()=>(window as any).__petAudio.decoded)).toBe(6);
     const before=await snapshot();expect(before.audio.contexts).toBe(1);expect(before.maxAngle).toBeLessThan(1e-7);
     await page.evaluate(()=>{(window as any).__petFrames=[];});
     // Clicking the actual visible scan from the desk approaches before the
@@ -324,6 +352,9 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await settled();
     await expect.poll(()=>page.evaluate(()=>(window as any).__petAudio.active),{timeout:10000}).toBe(0);
     await expectSynchronizedResponse(5);
+    const profiles=await page.evaluate(()=>Object.values((window as any).__petProfiles).map((profile:any)=>profile.id));
+    expect(new Set(profiles).size).toBe(5);
+    expect(profiles.every((id,index)=>index===0||id!==profiles[index-1])).toBe(true);
     const voiceBeforeHidden=await page.evaluate(()=>({...((window as any).__petAudio)}));
     // Fence visibility loss directly after the next native pet activation,
     // while its source is verifiably playing, rather than after a screenshot.

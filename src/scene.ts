@@ -24,6 +24,7 @@ import { readingBlend } from "./reading-timeline";
 import { advanceReadingClock, createReadingPath, readingRetargetDuration, retargetReadingPath, type ReadingPath } from "./reading-motion";
 import { createInteractionFeedback, type InteractionKind } from "./interaction-feedback";
 import { createQualityPolicy } from "./quality-policy";
+import type { CatReactionProfile } from "./cat-reactions";
 
 export type PageProjection = { corners: { x: number; y: number }[] };
 export type BookProjection = PageProjection & { pages: [PageProjection, PageProjection] };
@@ -41,7 +42,7 @@ export function createScene(
   onInteract: () => void,
   reducedMotion: boolean,
   onUnavailable?: () => void,
-  onPet?: () => (() => number) | undefined,
+  onPet?: (profile: CatReactionProfile) => (() => number) | undefined,
   onRecord?: () => void,
   onQualityChange?: (low: boolean) => void,
   onCatInteract?: () => boolean,
@@ -1163,7 +1164,7 @@ export function createScene(
   function performPet() {
     if (!canPet() || !cat.pet(simulationTime, reducedMotion)) return false;
     markExplored();
-    cat.setReactionClock(onPet?.());
+    cat.setReactionClock(onPet?.(cat.getReaction()!));
     requestRender();
     return true;
   }

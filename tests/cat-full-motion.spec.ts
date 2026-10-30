@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
-import { CAT_REACTION_DURATION } from '../src/cat-choreography';
 
-test('normal-motion responses render a fluid native rig, vary across three pets and settle after approaching from the desk', async ({ browser }) => {
-  test.setTimeout(180000);
+test('randomized normal-motion responses render a fluid native rig and settle after approaching from the desk', async ({ browser }) => {
+  test.setTimeout(240000);
   const context=await browser.newContext({viewport:{width:1600,height:900},reducedMotion:'no-preference'});
   const page=await context.newPage(),errors:string[]=[];
   page.on('pageerror',error=>errors.push(error.message));
+  await page.addInitScript(()=>{Math.random=()=>.999;});
   await page.route(/\/src\/scene\.ts(?:\?.*)?$/,async route=>{
     const response=await route.fetch();let body=await response.text();
     body=body.replace('const ray = new THREE.Raycaster();',`
@@ -29,7 +29,7 @@ test('normal-motion responses render a fluid native rig, vary across three pets 
         scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
         const point=lounge.catNest.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0,.09,0)).project(camera);
         return{accepted:fullMotion.accepted,active:cat.isPetting(),time:simulationTime,
-          focused:nookFocused,moving:animating,...fullPose(),
+          focused:nookFocused,moving:animating,profile:cat.getReaction(),...fullPose(),
           position:camera.position.toArray(),point:{x:(point.x+1)*innerWidth/2,y:(1-point.y)*innerHeight/2}};
       };
       const originalFullPet=cat.pet.bind(cat);
@@ -37,7 +37,7 @@ test('normal-motion responses render a fluid native rig, vary across three pets 
         const accepted=originalFullPet(...args);
         if(accepted){
           fullMotion.accepted++;
-          fullMotion.gestures[fullMotion.accepted]={start:null,variant:(fullMotion.accepted-1)%3,
+          fullMotion.gestures[fullMotion.accepted]={start:null,profile:cat.getReaction(),
             acceptedFocused:nookFocused,acceptedMoving:animating,peaks:{headAngle:0,earAngle:0,shoulderAngle:0,tailAngle:0},captures:{},finished:null};
         }
         return accepted;
@@ -58,7 +58,7 @@ test('normal-motion responses render a fluid native rig, vary across three pets 
         fullMotion.frames.push({gesture:fullMotion.accepted,elapsed,...pose,active});
         for(const key of Object.keys(gesture.peaks))gesture.peaks[key]=Math.max(gesture.peaks[key],pose[key]);
         if(active){
-          for(const [name,time] of [['nuzzle',.58],['stretch',1.04],['meow',2.88]]){
+          for(const [name,time] of [['nuzzle',.58],['stretch',1.04],['meow',(gesture.profile.cues[0].start+gesture.profile.cues[0].end)/2]]){
             if(gesture.captures[name]||elapsed<time)continue;
             const rest=new THREE.Vector3(),posed=new THREE.Vector3();
             let floorDelta=0,headDelta=0,shoulderDelta=0,tailDelta=0;
@@ -80,17 +80,18 @@ test('normal-motion responses render a fluid native rig, vary across three pets 
     await route.fulfill({response,body});
   });
   const snapshot=()=>page.evaluate(()=>(window as any).__fullSnapshot());
-  const variants:string[]=[];
+  const variants:string[]=[],profiles:string[]=[],peaks:{headAngle:number;earAngle:number;shoulderAngle:number;tailAngle:number}[]=[];
   try {
     await page.goto('/');await expect(page.locator('#loading')).toBeHidden({timeout:60000});
-    await page.locator('#enter').click();await expect(page.locator('#enter')).toBeEnabled();await page.locator('#enter').click();
-    await expect(page.locator('#room-ui')).toBeVisible({timeout:30000});
+    // SwiftShader needs more wall time to draw the same full fog/camera path.
+    await page.locator('#enter').click();await expect(page.locator('#enter')).toBeEnabled({timeout:60000});await page.locator('#enter').click();
+    await expect(page.locator('#room-ui')).toBeVisible({timeout:60000});
     await page.locator('#sound').click();await expect(page.locator('#sound')).toHaveAttribute('aria-label','开启声音');
     await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','false');
     const desk=await snapshot();expect(desk.maxAngle).toBeLessThan(1e-7);
     expect(desk.point.x).toBeGreaterThan(0);expect(desk.point.x).toBeLessThan(1600);
     await page.mouse.click(desk.point.x,desk.point.y);
-    await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','true',{timeout:20000});
+    await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','true',{timeout:60000});
     await expect(page.locator('#pet-cat')).toBeVisible();
     for(let gesture=1;gesture<=3;gesture++) {
       if(gesture>1)await page.locator('#pet-cat').click();
@@ -98,9 +99,9 @@ test('normal-motion responses render a fluid native rig, vary across three pets 
       await page.waitForFunction(id=>(window as any).__fullMotion.gestures[id]?.finished,gesture,{timeout:15000});
       const observed=await page.evaluate(id=>(window as any).__fullMotion.gestures[id],gesture);
       expect(observed.acceptedFocused).toBe(true);expect(observed.acceptedMoving).toBe(false);
-      expect(observed.finished.maxAngle).toBeLessThan(1e-7);expect(observed.finished.elapsed).toBeGreaterThanOrEqual(CAT_REACTION_DURATION);
-      expect(observed.peaks.headAngle).toBeGreaterThan(.12);expect(observed.peaks.earAngle).toBeGreaterThan(.12);
-      expect(observed.peaks.shoulderAngle).toBeGreaterThan(.01);expect(observed.peaks.tailAngle).toBeGreaterThan(.1);
+      expect(observed.finished.maxAngle).toBeLessThan(1e-7);expect(observed.finished.elapsed).toBeGreaterThanOrEqual(observed.profile.duration);
+      expect(observed.peaks.headAngle).toBeGreaterThan(.08);
+      peaks.push(observed.peaks);profiles.push(observed.profile.id);
       for(const name of ['nuzzle','stretch','meow']) {
         const capture=observed.captures[name];expect(capture).toBeDefined();
         expect(capture.floorDelta).toBeLessThan(1e-7);
@@ -108,8 +109,8 @@ test('normal-motion responses render a fluid native rig, vary across three pets 
         await writeFile(test.info().outputPath('cat-full-'+gesture+'-'+name+'.png'),Buffer.from(capture.image.split(',')[1],'base64'));
         delete capture.image;
       }
-      expect(observed.captures.meow.headDelta).toBeGreaterThan(.025);
-      expect(observed.captures.stretch.shoulderDelta).toBeGreaterThan(.001);
+      expect(observed.captures.meow.headDelta).toBeGreaterThan(.012);
+      expect(observed.captures.meow.elapsed).toBeGreaterThanOrEqual(observed.profile.cues[0].start);
       variants.push(JSON.stringify(observed.captures.meow.joints.map((joint:any)=>joint.quaternion)));
       const settled=await snapshot();expect(settled.maxAngle).toBeLessThan(1e-7);
       await page.waitForFunction(time=>(window as any).__fullSnapshot().time>time+.25,settled.time,{timeout:10000});
@@ -117,6 +118,11 @@ test('normal-motion responses render a fluid native rig, vary across three pets 
       await test.info().attach('cat-full-gesture-'+gesture,{body:JSON.stringify(observed,null,2),contentType:'application/json'});
     }
     expect(new Set(variants).size).toBe(3);
+    expect(new Set(profiles).size).toBe(3);
+    expect(Math.max(...peaks.map(peak=>peak.headAngle))).toBeGreaterThan(.15);
+    expect(Math.max(...peaks.map(peak=>peak.earAngle))).toBeGreaterThan(.12);
+    expect(Math.max(...peaks.map(peak=>peak.shoulderAngle))).toBeGreaterThan(.01);
+    expect(Math.max(...peaks.map(peak=>peak.tailAngle))).toBeGreaterThan(.1);
     const close=await snapshot();expect(Math.hypot(...close.position.map((v:number,i:number)=>v-desk.position[i]))).toBeGreaterThan(1);
     await expect(page.locator('#reader')).toBeHidden();expect(errors).toEqual([]);
   } finally {await context.close();}

@@ -2,7 +2,8 @@ import * as THREE from "three";
 import catModelUrl from "./assets/sleeping-tabby.glb?url";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { createCatRig } from "./cat-rig";
-import { sampleCatReaction } from "./cat-choreography";
+import { sampleCatResponse } from "./cat-choreography";
+import { createCatReactionPicker, type CatReactionProfile } from "./cat-reactions";
 
 /** A cleaned, locally hosted tabby scan. Attribution: public/models/README.md. */
 export function createSleepingCat() {
@@ -12,8 +13,9 @@ export function createSleepingCat() {
   const controller=new AbortController();
   let disposed=false;
   let rig:ReturnType<typeof createCatRig>|undefined;
-  let reaction:{elapsed:number;startedAt:number|null;clock?:()=>number;gentle:boolean;variant:number}|null=null;
-  let cooldownUntil=-Infinity,lastTime=0,nextVariant=0;
+  let reaction:{elapsed:number;startedAt:number|null;clock?:()=>number;gentle:boolean;profile:CatReactionProfile}|null=null;
+  let cooldownUntil=-Infinity,lastTime=0;
+  const reactions=createCatReactionPicker();
   function release(root:THREE.Object3D) {
     const materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>(),skeletons=new Set<THREE.Skeleton>();
     root.traverse(object=>{
@@ -64,10 +66,10 @@ export function createSleepingCat() {
     group,ready,
     pet(time:number,reduced:boolean) {
       if(disposed||!rig||reaction||!Number.isFinite(time)||time<cooldownUntil)return false;
-      reaction={elapsed:0,startedAt:null,gentle:reduced,variant:nextVariant};
-      nextVariant=(nextVariant+1)%3;
+      reaction={elapsed:0,startedAt:null,gentle:reduced,profile:reactions.next()};
       return true;
     },
+    getReaction() { return reaction?.profile; },
     setReactionClock(clock: (()=>number)|undefined) { if(reaction)reaction.clock=clock; },
     isPetting(){return reaction!==null;},
     cancelPet() {
@@ -85,12 +87,12 @@ export function createSleepingCat() {
       // scene time from the first draw; neither clock stretches on slow frames.
       if(reaction.startedAt===null)reaction.startedAt=time;
       reaction.elapsed=Math.max(reaction.elapsed,reaction.clock?.()??time-reaction.startedAt);
-      const frame=sampleCatReaction(reaction.elapsed,reaction.gentle,reaction.variant);
+      const frame=sampleCatResponse(reaction.elapsed,reaction.gentle,reaction.profile);
       if(frame.done) {
         reaction=null;cooldownUntil=time+.20;
         return rig!.reset();
       }
-      return rig!.seek(reaction.elapsed,reaction.variant,reaction.gentle);
+      return rig!.setPose(frame);
     },
     dispose() {
       if(disposed)return;

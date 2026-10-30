@@ -1,7 +1,7 @@
 import "./sound.css";
 import { prepareAmbientNoise } from "./ambient-audio";
 import { createCatVoice } from "./cat-voice";
-import { CAT_REACTION_DURATION } from "./cat-choreography";
+import { CAT_REACTIONS, type CatReactionProfile } from "./cat-reactions";
 import { createRecordMusic, type RecordMusicState } from "./record-music";
 import { createRecordStorage } from "./record-storage";
 
@@ -252,9 +252,9 @@ export function createSoundController(options: SoundOptions) {
   function stopCat() {
     catVoice?.stop();
   }
-  function onCatPet(): (() => number) | undefined {
+  function onCatPet(profile: CatReactionProfile = CAT_REACTIONS[0]): (() => number) | undefined {
     if (disposed) return;
-    el("pet-hint").textContent = "小猫舒服地蹭了蹭";
+    el("pet-hint").textContent = profile.hint;
     el<HTMLButtonElement>("pet-cat").disabled = true;
     el("pet-cat").dataset.busy = "true";
     window.clearTimeout(petHintTimer);
@@ -263,11 +263,11 @@ export function createSoundController(options: SoundOptions) {
       delete el("pet-cat").dataset.busy;
       if (!disposed && options.getState() === "room" && options.getSceneAvailable())
         el<HTMLButtonElement>("pet-cat").disabled = false;
-    }, (CAT_REACTION_DURATION + .2) * 1000);
+    }, (profile.duration + .2) * 1000);
     if (!soundEnabled || options.getState() !== "room" || !options.getSceneAvailable()) return;
     try {
       prepare();
-      if (audio?.state === "running" && catVoice?.play()) return catVoice.captureClock();
+      if (audio?.state === "running" && catVoice?.play(profile.id)) return catVoice.captureClock();
       if (audio?.state !== "running") void unlock();
     } catch { /* A silent cat reaction remains available. */ }
   }

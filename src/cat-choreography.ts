@@ -67,3 +67,117 @@ export function sampleCatReaction(elapsed:number,reduced:boolean,variant=0):CatR
     done:false,
   };
 }
+import type { CatReactionProfile } from "./cat-reactions";
+
+
+type MotionShape = {
+  head: (time: number) => number;
+  yaw: (time: number) => number;
+  roll: (time: number) => number;
+  shoulder: (time: number) => number;
+  tailSpeed: number;
+  tailAmount: number;
+  curlAmount: number;
+  innerEar: number;
+  outerEar: number;
+  vocalHead: number;
+};
+
+// Normalized reaction time leaves the physical pose independent of how long
+// each recording takes. Vocal accents below use the actual cue timestamps.
+const responseShapes: Record<CatReactionProfile["id"], MotionShape> = {
+  content: {
+    head: trajectory([[0,0],[.12,.30],[.25,.60],[.43,.38],[.64,.34],[.82,.22],[1,0]]),
+    yaw: trajectory([[0,0],[.15,.35],[.34,-.55],[.54,-.15],[.78,.40],[1,0]]),
+    roll: trajectory([[0,0],[.18,-.30],[.40,.25],[.70,.10],[1,0]]),
+    shoulder: trajectory([[0,0],[.10,.28],[.25,.58],[.48,.40],[.80,.18],[1,0]]),
+    tailSpeed: 1.95, tailAmount: .68, curlAmount: .60, innerEar: .28, outerEar: .22, vocalHead: .92,
+  },
+  curious: {
+    head: trajectory([[0,0],[.12,.48],[.25,.72],[.48,.60],[.72,.42],[.88,.20],[1,0]]),
+    yaw: trajectory([[0,0],[.22,.76],[.40,.32],[.56,-.35],[.78,.24],[1,0]]),
+    roll: trajectory([[0,0],[.27,.42],[.58,-.20],[.80,.15],[1,0]]),
+    shoulder: trajectory([[0,0],[.16,.36],[.38,.46],[.68,.30],[1,0]]),
+    tailSpeed: 2.55, tailAmount: .54, curlAmount: .45, innerEar: .60, outerEar: .42, vocalHead: 1,
+  },
+  affectionate: {
+    head: trajectory([[0,0],[.13,.38],[.25,.64],[.38,.32],[.52,.62],[.74,.36],[1,0]]),
+    yaw: trajectory([[0,0],[.20,.70],[.38,-.68],[.58,.48],[.80,-.22],[1,0]]),
+    roll: trajectory([[0,0],[.22,-.42],[.43,.44],[.68,-.20],[1,0]]),
+    shoulder: trajectory([[0,0],[.14,.48],[.28,.76],[.48,.64],[.70,.45],[1,0]]),
+    tailSpeed: 2.15, tailAmount: .78, curlAmount: .70, innerEar: .32, outerEar: .48, vocalHead: .86,
+  },
+  sleepy: {
+    head: trajectory([[0,0],[.20,.25],[.40,.38],[.66,.24],[.84,.12],[1,0]]),
+    yaw: trajectory([[0,0],[.32,.24],[.62,-.26],[.84,-.12],[1,0]]),
+    roll: trajectory([[0,0],[.30,-.18],[.64,.22],[1,0]]),
+    shoulder: trajectory([[0,0],[.22,.60],[.42,.86],[.62,.72],[.84,.26],[1,0]]),
+    tailSpeed: 1.20, tailAmount: .36, curlAmount: .50, innerEar: .20, outerEar: .15, vocalHead: .62,
+  },
+  playful: {
+    head: trajectory([[0,0],[.14,.48],[.25,.70],[.37,.32],[.53,.68],[.72,.40],[1,0]]),
+    yaw: trajectory([[0,0],[.18,.62],[.36,-.66],[.56,.55],[.78,-.24],[1,0]]),
+    roll: trajectory([[0,0],[.24,.34],[.46,-.36],[.72,.22],[1,0]]),
+    shoulder: trajectory([[0,0],[.16,.48],[.34,.40],[.54,.54],[.78,.28],[1,0]]),
+    tailSpeed: 2.85, tailAmount: 1, curlAmount: .84, innerEar: .54, outerEar: .44, vocalHead: .98,
+  },
+  stretch: {
+    head: trajectory([[0,0],[.18,.22],[.34,.42],[.49,.72],[.68,.44],[.86,.18],[1,0]]),
+    yaw: trajectory([[0,0],[.20,-.22],[.44,.38],[.68,.18],[.84,-.12],[1,0]]),
+    roll: trajectory([[0,0],[.30,.20],[.52,-.28],[.78,-.10],[1,0]]),
+    shoulder: trajectory([[0,0],[.18,.70],[.32,.96],[.48,.88],[.68,.62],[.86,.22],[1,0]]),
+    tailSpeed: 1.65, tailAmount: .90, curlAmount: .92, innerEar: .34, outerEar: .24, vocalHead: .82,
+  },
+};
+
+function restingPose(done: boolean): CatReactionPose {
+  return { head:0, yaw:0, roll:0, ears:0, earOuter:0, stretch:0, tail:0, tailCurl:0, done };
+}
+
+/** A complete action and its vocal accents are sampled from the same clock. */
+export function sampleCatResponse(elapsed: number, reduced: boolean, profile: CatReactionProfile): CatReactionPose {
+  const time = Number.isFinite(elapsed) ? Math.max(0, elapsed) : 0;
+  const duration = profile.duration;
+  const done = time >= duration;
+  if (done || time === 0) return restingPose(done);
+  const shape = responseShapes[profile.id];
+  const phase = time / duration;
+  const variation = profile.variation;
+  const amplitude = Math.max(.85, Math.min(1, variation?.amplitude ?? 1));
+  const direction = (variation?.direction ?? 1) < 0 ? -1 : 1;
+  const tailPhase = Math.max(-.15, Math.min(.15, variation?.tailPhase ?? 0));
+  const weight = amplitude * (reduced ? CAT_REDUCED_WEIGHT : 1);
+
+  // Product blending keeps overlapping calls smooth and bounded. The head
+  // anticipates each call, stays raised through it, then quietly releases.
+  let headQuiet = 1, innerQuiet = 1, outerQuiet = 1;
+  for (const cue of profile.cues) {
+    const width = Math.max(.08, cue.end - cue.start);
+    const anticipation = Math.max(0, cue.start - .24);
+    const voicePeak = Math.max(cue.start + .02, Math.min(cue.end - .02, cue.peak ?? cue.start + Math.min(.16, width * .30)));
+    const release = Math.min(duration, cue.end + .46);
+    const voiceEnvelope = envelope(time, anticipation, voicePeak, cue.end, release);
+    headQuiet *= 1 - shape.vocalHead * voiceEnvelope;
+    innerQuiet *= 1 - .78 * pulse(time, Math.max(0, cue.start - .12), cue.start + .08, Math.min(duration, cue.end + .22));
+    outerQuiet *= 1 - .68 * pulse(time, cue.start + .01, cue.start + Math.min(.24, width * .5), Math.min(duration, cue.end + .35));
+  }
+  const headBase = shape.head(phase);
+  const innerBase = shape.innerEar * pulse(time, .20, .52, 1.03);
+  const outerBase = shape.outerEar * pulse(time, .32, .74, 1.30);
+  const wake = envelope(time, .15, duration * .20, duration * .80, duration);
+  const curlWake = envelope(time, .28, duration * .26, duration * .84, duration);
+  const tailClock = time - .32 + tailPhase;
+  const tail = wake * (.65 * Math.sin(tailClock * shape.tailSpeed) + .18 * Math.sin(tailClock * shape.tailSpeed * 1.7));
+  const curl = curlWake * (.68 * Math.sin((tailClock - .23) * shape.tailSpeed * .75) + .10 * Math.sin(tailClock * shape.tailSpeed * 1.35));
+  return {
+    head: (1 - (1 - headBase) * headQuiet) * weight,
+    yaw: shape.yaw(phase) * direction * weight,
+    roll: shape.roll(phase) * direction * weight,
+    ears: (1 - (1 - innerBase) * innerQuiet) * weight,
+    earOuter: (1 - (1 - outerBase) * outerQuiet) * weight,
+    stretch: shape.shoulder(phase) * weight,
+    tail: tail * shape.tailAmount * direction * weight,
+    tailCurl: curl * shape.curlAmount * direction * weight,
+    done: false,
+  };
+}
