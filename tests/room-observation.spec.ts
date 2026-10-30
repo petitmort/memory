@@ -14,7 +14,10 @@ async function arrive(page: Page, reducedMotion = true) {
   await page.waitForFunction(() => (window as any).__experience.pending === 'entering');
   const now = new Date('2026-10-30T12:00:00Z');
   await page.clock.install({ time: now });
-  await page.clock.pauseAt(now);
+  // Pausing at the installed timestamp races the real milliseconds spent on
+  // the next protocol call. Freeze ahead while entry is still gated; the room
+  // observation starts only after complete() below, so its timing is unchanged.
+  await page.clock.pauseAt(new Date(now.getTime() + 1000));
   await page.evaluate(() => (window as any).__experience.complete());
   await expect(page.locator('body')).toHaveAttribute('data-stage', 'room');
 }

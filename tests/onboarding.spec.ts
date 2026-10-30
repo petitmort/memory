@@ -1,5 +1,36 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { mockExperienceScene, finishSceneStep, enterFixtureRoom, openFixtureBook, closeFixtureBook } from './helpers/experience-scene';
+
+async function expectRoomControlsClear(page: Page) {
+  const original = page.viewportSize()!;
+  for (const [width, height] of [[320,568], [390,844], [670,344], [759,600], [760,540], [844,390], [960,540], [1280,720], [1280,800], [1920,1080], [2560,1440]]) {
+    await page.setViewportSize({ width, height });
+    const result = await page.evaluate(() => {
+      const selectors = ['#open-book', '#cozy-view', '#pet-cat', '#choose-record', '#scene-hint', '#record-track', '#record-state', '.record-empty-note', '#pet-hint', '#cozy-credit', '#quality', '.journey'];
+      const boxes = selectors.flatMap(selector => {
+        const element = document.querySelector<HTMLElement>(selector)!;
+        if (!element.checkVisibility()) return [];
+        const r = element.getBoundingClientRect();
+        return [{ selector, left:r.left, right:r.right, top:r.top, bottom:r.bottom }];
+      });
+      const overlaps: string[] = [];
+      for (let a=0; a<boxes.length; a++) for (let b=a+1; b<boxes.length; b++) {
+        const x=boxes[a], y=boxes[b];
+        if (Math.min(x.right,y.right)-Math.max(x.left,y.left)>.5 && Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top)>.5)
+          overlaps.push(`${x.selector} / ${y.selector}`);
+      }
+      const missed = ['#open-book','#cozy-view','#pet-cat','#choose-record','#quality'].filter(selector => {
+        const button = document.querySelector<HTMLElement>(selector)!;
+        if (!button.checkVisibility()) return false;
+        const r=button.getBoundingClientRect(), hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
+        return !hit || !button.contains(hit) || r.height<44;
+      });
+      return { overlaps, missed, outside:boxes.filter(r=>r.left<0 || r.right>innerWidth+.5 || r.top<0 || r.bottom>innerHeight+.5), overflow:document.documentElement.scrollWidth>innerWidth };
+    });
+    expect(result, `${width}×${height}`).toEqual({ overlaps:[], missed:[], outside:[], overflow:false });
+  }
+  await page.setViewportSize(original);
+}
 
 test('entry has an explicit door state and repeated gestures cannot overlap journeys', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -42,6 +73,7 @@ test('entry has an explicit door state and repeated gestures cannot overlap jour
   await expect(page.locator('#open-book')).toBeDisabled();
   await expect(page.locator('#cozy-view')).toBeEnabled();
   await expect(page.locator('#explore-guide')).toBeHidden();
+  await expectRoomControlsClear(page);
 
   await page.locator('#cozy-view').click();
   await expect(page.locator('#open-book')).toBeHidden();
@@ -69,8 +101,10 @@ test('chapter contents, keyboard and return agree while music stays optional', a
   await expect(page.locator('#record-track')).toContainText('Merry Christmas Mr. Lawrence');
   await expect(page.locator('#record-toggle')).toHaveAttribute('aria-label', '播放唱片');
   await expect(page.locator('#sound')).toHaveAttribute('aria-label', '关闭声音');
+  await expectRoomControlsClear(page);
   await page.locator('#sound').click();
   await expect(page.locator('#sound')).toHaveAttribute('aria-label', '开启声音');
+  await expectRoomControlsClear(page);
   await page.locator('#sound').click();
   await openFixtureBook(page);
   await expect(page.locator('#prev')).toHaveAttribute('aria-label', '上一章');
@@ -160,6 +194,8 @@ test('optional audio failure keeps a healthy room usable and music loading error
   await expect(page.locator('#record-panel')).toBeVisible();
   await expect(page.locator('#record-panel .record-storage-note')).toContainText('当前浏览器');
   await expect(page.locator('#record-panel .record-storage-note')).toContainText('清除网站数据');
+  await page.locator('#record-panel-close').click();
+  await expectRoomControlsClear(page);
   await expect(page.locator('#choose-record')).toHaveText('更换音乐');
   await expect(page.locator('#choose-record')).toBeEnabled();
   await expect(page.locator('#room-ui')).toBeVisible();

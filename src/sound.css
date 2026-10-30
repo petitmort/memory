@@ -21,10 +21,10 @@
   font-size: inherit;
   line-height: inherit;
 }
-.record-music-row #record-state { flex: 0 0 auto; opacity: .9; }
+.record-music-row #record-state { flex: 0 0 auto; white-space: nowrap; opacity: .9; }
 .record-music-row[data-status="playing"] #record-state { color: #e7e9c2; }
 .record-music-row[data-status="error"] #record-state { color: #ffdfbd; }
-.record-empty-note { opacity: .85; }
+.record-empty-note { flex: 0 0 auto; white-space: nowrap; opacity: .85; }
 .room-ui .record-panel {
   position: absolute;
   z-index: 8;
