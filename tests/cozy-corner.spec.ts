@@ -90,6 +90,9 @@ test('the cat can be approached smoothly, framed closely and left without losing
     await page.screenshot({path:'test-results/cozy-room.png'});
     await page.evaluate(()=>{(window as any).__cozyFrames=[];});
     await page.locator('#cozy-view').click();await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','true',{timeout:15000});
+    await expect(page.locator('#open-book')).toBeHidden();
+    await expect(page.locator('#open-book')).toBeDisabled();
+    await expect(page.locator('#scene-hint')).toBeHidden();
     const nook=await snapshot();expect(nook.catVisible).toBe(true);
     expect(nook.catDistance).toBeLessThan(2);
     expect(nook.catDistance).toBeLessThan(room.catDistance*.65);
@@ -114,12 +117,6 @@ test('the cat can be approached smoothly, framed closely and left without losing
     expect(frames.some((frame:any)=>distance(frame.t,room.target)>.01&&distance(frame.t,nook.target)>.01)).toBe(true);
     expect(new Set(frames.map((frame:any)=>frame.breath.toFixed(7))).size).toBeGreaterThan(1);
     await page.screenshot({path:'test-results/cozy-cat.png'});
-    await page.locator('#open-book').click();await ready();
-    await page.locator('#close-book').click();await expect(page.locator('#room-ui')).toBeVisible({timeout:60000});
-    const returned=await snapshot();expect(distance(returned.position,nook.position)).toBeLessThan(.000001);
-    expect(distance(returned.target,nook.target)).toBeLessThan(.000001);
-    expect(returned.fov).toBe(nook.fov);
-    await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','true');
     await page.setViewportSize({width:390,height:844});
     await expect.poll(async()=>(await snapshot()).fov).toBe(54);
     const mobile=await snapshot();expect(mobile.catVisible).toBe(true);
@@ -137,10 +134,19 @@ test('the cat can be approached smoothly, framed closely and left without losing
       {x:mobile.catPixels.left,y:mobile.catPixels.bottom},{x:mobile.catPixels.right,y:mobile.catPixels.bottom},
     ])expect(await page.evaluate(({x,y})=>document.elementFromPoint(x,y)?.tagName,point)).toBe('CANVAS');
     await page.screenshot({path:'test-results/cozy-cat-mobile.png'});
+    await expect(page.locator('#open-book')).toBeHidden();
     await page.locator('#cozy-view').click();await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','false',{timeout:15000});
     const desk=await snapshot();expect(distance(desk.position,[.55,1.65,1.15])).toBeLessThan(.000001);
     expect(distance(desk.target,[.15,1.05,-1.4])).toBeLessThan(.000001);expect(desk.fov).toBe(50);
     await expect(page.locator('#cozy-credit')).toBeHidden();
+    await expect(page.locator('#open-book')).toBeVisible();
+    await expect(page.locator('#open-book')).toBeEnabled();
+    await page.locator('#open-book').click();await ready();
+    await page.locator('#close-book').click();await expect(page.locator('#room-ui')).toBeVisible({timeout:60000});
+    const returned=await snapshot();expect(distance(returned.position,desk.position)).toBeLessThan(.000001);
+    expect(distance(returned.target,desk.target)).toBeLessThan(.000001);expect(returned.fov).toBe(desk.fov);
+    await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','false');
+    await expect(page.locator('#open-book')).toBeVisible();
     for(const point of [desk.book,desk.rose])expect(await page.evaluate(({x,y})=>document.elementFromPoint(x,y)?.tagName,point)).toBe('CANVAS');
     // Rotate the phone while physically approaching. Resize must redirect the
     // remaining movement without replacing the current eye or viewing angle.

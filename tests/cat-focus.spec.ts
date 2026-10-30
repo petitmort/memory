@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { mockExperienceScene, enterFixtureRoom, finishSceneStep } from './helpers/experience-scene';
+import { mockExperienceScene, enterFixtureRoom, finishSceneStep, openFixtureBook, closeFixtureBook } from './helpers/experience-scene';
 
 const counts = (page: Page) => page.evaluate(() => {
   const { views, pets, petAttempts } = (window as any).__experience;
@@ -16,10 +16,13 @@ test.beforeEach(async ({ page }) => {
 
 test('a desk cat click approaches once and pets only after arrival; nearby clicks stay nearby', async ({ page }) => {
   await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('#open-book')).toBeVisible();
   expect(await touchCat(page)).toBe(true);
   expect(await counts(page)).toEqual({ views: 1, pets: 0, petAttempts: 0 });
   for (const selector of ['#cozy-view', '#open-book', '#pet-cat', '#choose-record', '#record-toggle'])
     await expect(page.locator(selector)).toBeDisabled();
+  await expect(page.locator('#open-book')).toBeHidden();
+  await expect(page.locator('#scene-hint')).toBeHidden();
   expect(await touchCat(page)).toBe(false);
   await page.evaluate(() => {
     document.getElementById('open-book')!.click();
@@ -31,16 +34,36 @@ test('a desk cat click approaches once and pets only after arrival; nearby click
   await finishSceneStep(page, 'view');
   await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#pet-cat')).toBeVisible();
+  await expect(page.locator('#open-book')).toBeHidden();
+  await expect(page.locator('#open-book')).toBeDisabled();
+  await page.evaluate(() => (window as any).__experience.interact());
+  expect(await page.evaluate(() => (window as any).__experience.opens)).toBe(0);
   expect(await counts(page)).toEqual({ views: 1, pets: 1, petAttempts: 1 });
   expect(await touchCat(page)).toBe(true);
   expect(await counts(page)).toEqual({ views: 1, pets: 2, petAttempts: 2 });
   await expect(page.locator('#reader')).toBeHidden();
+
+  // Reading becomes available only after the eye has actually returned to the desk.
+  await page.locator('#cozy-view').click();
+  await expect(page.locator('#open-book')).toBeHidden();
+  await expect(page.locator('#open-book')).toBeDisabled();
+  await finishSceneStep(page, 'view');
+  await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('#open-book')).toBeVisible();
+  await expect(page.locator('#open-book')).toBeEnabled();
+  await openFixtureBook(page); await closeFixtureBook(page);
+  await expect(page.locator('#open-book')).toBeVisible();
 });
 
 test('the view button still approaches without automatically petting', async ({ page }) => {
   await page.locator('#cozy-view').click();
+  await expect(page.locator('#open-book')).toBeHidden();
   await finishSceneStep(page, 'view');
   await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#open-book')).toBeHidden();
+  await page.locator('#cozy-view').focus();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#open-book')).not.toBeFocused();
   expect(await counts(page)).toEqual({ views: 1, pets: 0, petAttempts: 0 });
   await page.locator('#pet-cat').click();
   expect(await counts(page)).toEqual({ views: 1, pets: 1, petAttempts: 1 });
@@ -59,6 +82,7 @@ test('hiding during approach cancels the pending pet even after the page returns
   });
   await finishSceneStep(page, 'view');
   await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#open-book')).toBeHidden();
   expect(await counts(page)).toEqual({ views: 1, pets: 0, petAttempts: 0 });
   await page.locator('#pet-cat').click();
   expect(await counts(page)).toEqual({ views: 1, pets: 1, petAttempts: 1 });

@@ -1136,7 +1136,7 @@ export function createScene(
   }
   function markExplored() { explored = true; stopIdleHint(); }
   function hintInteractionsOnce() {
-    if (idleGuidanceShown || explored || !canPet()) return;
+    if (idleGuidanceShown || explored || nookFocused || !canPet()) return;
     const object = bouquetParked ? book : bouquet;
     object.updateWorldMatrix(true, true);
     camera.updateMatrixWorld(true);
@@ -1198,7 +1198,7 @@ export function createScene(
   function catHit(e: PointerEvent) { return canPet() && visibleHit(cat.group, e); }
   function recordHit(e: PointerEvent) { return canPet() && visibleHit(recordPlayer.group, e); }
   function hit(e: PointerEvent) {
-    if (!interactionEnabled || disposed || unavailableError || animating || current === "book" || document.hidden) return false;
+    if (!interactionEnabled || disposed || unavailableError || animating || current === "book" || (current === "room" && nookFocused) || document.hidden) return false;
     pointRay(e);
     return current === "entry" ? ray.intersectObject(door, true).length > 0 : visibleHit(bouquetParked ? book : bouquet, e);
   }

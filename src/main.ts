@@ -21,6 +21,7 @@ let scene: ReturnType<typeof createScene> | undefined;
 let sceneAvailable = false;
 let readingScene: ReturnType<typeof createScene> | undefined;
 let changingView = false;
+let cozyViewRequested = false;
 let catIntentVersion = 0;
 
 function setBackgroundInert(value: boolean) {
@@ -100,10 +101,16 @@ const readerController = createReaderController({
   onClose: () => void closeBook(),
 });
 const exploration = createExplorationGuide();
+function viewingCat() {
+  return cozyViewRequested || (sceneAvailable && (scene?.isCozyFocused?.() ?? false));
+}
 function syncControls() {
   const inRoom = flow.getState() === "room" && !changingView;
+  const catContext = viewingCat();
   for (const id of ["open-book", "cozy-view", "pet-cat", "choose-record", "record-toggle"])
-    el<HTMLButtonElement>(id).disabled = !inRoom || (id === "pet-cat" && el(id).dataset.busy === "true");
+    el<HTMLButtonElement>(id).disabled = !inRoom || (id === "open-book" && catContext) || (id === "pet-cat" && el(id).dataset.busy === "true");
+  el("open-book").classList.toggle("hidden", catContext);
+  el("scene-hint").classList.toggle("hidden", catContext || flow.getState() !== "room");
   const interactive = !changingView && ["fog", "door", "room"].includes(flow.getState());
   scene?.setInteractionEnabled?.(interactive);
   if (!interactive) scene?.clearInteractionFeedback?.();
@@ -130,6 +137,7 @@ document.addEventListener("visibilitychange", () => {
   if (document.hidden) ++catIntentVersion;
 }, { signal: flow.signal });
 function updateCozyControls(focused: boolean) {
+  cozyViewRequested = focused;
   el("cozy-view").setAttribute("aria-pressed",String(focused));
   el("pet-cat").classList.toggle("hidden",!focused);
   el("cozy-details").classList.toggle("hidden",!focused);
@@ -194,7 +202,7 @@ async function enter() {
 }
 el("enter").onclick = enter;
 async function openBook() {
-  if (flow.disposed || changingView || (flow.getState() !== "room" && flow.getState() !== "fallback")) return;
+  if (flow.disposed || changingView || (sceneAvailable && viewingCat()) || (flow.getState() !== "room" && flow.getState() !== "fallback")) return;
   lastFocus = document.activeElement as HTMLElement;
   const operation = flow.beginTransition();
   const generation = flow.sceneVersion;
@@ -305,6 +313,7 @@ async function closeBook() {
   el("scene-hint").classList.remove("hidden");
   el("room-ui").querySelector("p")!.textContent = "花留在桌边，故事还在画册里。";
   step(1);
+  syncControls();
   (lastFocus?.isConnected && !lastFocus.closest("[inert],.hidden") ? lastFocus : el("open-book")).focus({preventScroll:true});
 }
 el("open-book").onclick = openBook;
@@ -314,6 +323,7 @@ async function changeCozyView(focus: boolean, petAfter = false) {
   const generation = flow.sceneVersion;
   const intent = ++catIntentVersion;
   let focused = false;
+  cozyViewRequested = focus;
   changingView = true;
   syncControls();
   sound.stopCat();
@@ -324,6 +334,7 @@ async function changeCozyView(focus: boolean, petAfter = false) {
   } catch (error) {
     onSceneUnavailable(error);
   } finally {
+    cozyViewRequested = focused;
     changingView = false;
     if (!flow.disposed) syncControls();
   }

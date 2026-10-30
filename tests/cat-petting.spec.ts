@@ -298,12 +298,13 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
     await cdp.detach();expect((await snapshot()).accepted).toBe(1);
 
-    // A real stroke acts once, even if its release ends over a reading control.
+    // A real stroke acts once, even if its release ends over another room control.
     await page.mouse.move(resting.point.x,resting.point.y);await page.mouse.down();
     await page.mouse.move(resting.point.x+18,resting.point.y,{steps:3});
     await expect.poll(()=>page.evaluate(()=>(window as any).__petAccepted)).toBe(2);
-    const open=await page.locator('#open-book').boundingBox();
-    await page.mouse.move(open!.x+open!.width/2,open!.y+open!.height/2,{steps:3});await page.mouse.up();
+    await expect(page.locator('#open-book')).toBeHidden();
+    const view=await page.locator('#cozy-view').boundingBox();
+    await page.mouse.move(view!.x+view!.width/2,view!.y+view!.height/2,{steps:3});await page.mouse.up();
     await expect(page.locator('#reader')).toBeHidden();await settled();
 
     // Muting controls this same context and must not queue a purr for later.
@@ -317,12 +318,13 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await settled();
 
     // The keyboard alternative uses the same reaction and prepared sound.
-    // Open the book in the same browser task after the real button handler
-    // starts the purr. A slow screenshot/input round trip can outlast 2.6 s.
+    // Returning to the desk interrupts the current purr in the same task.
+    // The book becomes available after arrival, with no reading shortcut left
+    // in the cat view. A slow input round trip can outlast a short call.
     await page.evaluate(()=>{
       document.getElementById('pet-cat')!.addEventListener('click',()=>{
         (window as any).__petBookInterrupt={accepted:(window as any).__petAccepted,audio:{...(window as any).__petAudio}};
-        document.getElementById('open-book')!.click();
+        document.getElementById('cozy-view')!.click();
       },{once:true});
     });
     await page.locator('#pet-cat').focus();await page.keyboard.press('Enter');
@@ -330,6 +332,10 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     const interrupted=await page.evaluate(()=>(window as any).__petBookInterrupt);
     expect(interrupted.accepted).toBe(4);
     expect(interrupted.audio.starts).toBe(muted.audio.starts+1);expect(interrupted.audio.active).toBe(1);
+    await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','false',{timeout:30000});
+    await expect(page.locator('#open-book')).toBeVisible();
+    await expect(page.locator('#open-book')).toBeEnabled();
+    await page.locator('#open-book').click();
     await ready();
     const reading=await snapshot();expect(reading.active).toBe(false);expect(reading.maxAngle).toBeLessThan(1e-7);
     expect(reading.audio.stops).toBeGreaterThan(interrupted.audio.stops);
@@ -338,7 +344,11 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await page.locator('#close-book').click();await expect(page.locator('#room-ui')).toBeVisible({timeout:60000});
     expect((await snapshot()).audio.starts).toBe(reading.audio.starts);
 
-    await page.setViewportSize({width:390,height:844});await expect(page.locator('#pet-cat')).toBeVisible();
+    await page.setViewportSize({width:390,height:844});
+    await page.locator('#cozy-view').click();
+    await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','true',{timeout:30000});
+    await expect(page.locator('#open-book')).toBeHidden();
+    await expect(page.locator('#pet-cat')).toBeVisible();
     const phone=await snapshot();
     expect(phone.point.x).toBeGreaterThan(40);expect(phone.point.x).toBeLessThan(350);expect(phone.point.y).toBeLessThan(600);
     expect(await page.evaluate(({x,y})=>document.elementFromPoint(x,y)?.tagName,phone.point)).toBe('CANVAS');

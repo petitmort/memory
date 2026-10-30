@@ -38,10 +38,16 @@ test('entry has an explicit door state and repeated gestures cannot overlap jour
   await page.evaluate(() => { (window as any).__experience.interact(); });
   expect(await page.evaluate(() => (window as any).__experience.opens)).toBe(0);
   await finishSceneStep(page, 'view');
-  await expect(page.locator('#open-book')).toBeEnabled();
+  await expect(page.locator('#open-book')).toBeHidden();
+  await expect(page.locator('#open-book')).toBeDisabled();
   await expect(page.locator('#cozy-view')).toBeEnabled();
   await expect(page.locator('#explore-guide')).toBeHidden();
 
+  await page.locator('#cozy-view').click();
+  await expect(page.locator('#open-book')).toBeHidden();
+  await finishSceneStep(page, 'view');
+  await expect(page.locator('#open-book')).toBeVisible();
+  await expect(page.locator('#open-book')).toBeEnabled();
   await page.locator('#open-book').click();
   await page.waitForFunction(() => (window as any).__experience.pending === 'opening');
   await expect(page.locator('#reader')).toHaveAttribute('aria-busy', 'true');
