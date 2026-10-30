@@ -106,6 +106,24 @@ test('the record streams only after a gesture and resumes its position without a
   } finally { music.dispose(); }
 });
 
+test('a deferred default has no native source until play and only attaches once', async () => {
+  const { media, music } = fixture();
+  try {
+    music.load('/music/default.mp3', 'Default', { deferSource: true });
+    expect(music.getState()).toEqual({ status: 'paused', title: 'Default' });
+    expect(media.src).toBe(''); expect(media.plays).toBe(0);
+    music.setPageVisible(false); music.setPageVisible(true);
+    expect(media.src).toBe('');
+    const playing = music.toggle();
+    expect(media.src).toBe('/music/default.mp3'); expect(media.plays).toBe(1);
+    await playing;
+    const loads = media.loads;
+    media.currentTime = 23;
+    await music.toggle(); await music.toggle();
+    expect(media.currentTime).toBe(23); expect(media.loads).toBe(loads);
+  } finally { music.dispose(); }
+});
+
 test('rapid pause, replacement and stale play promises cannot restart or pause the newer record', async () => {
   const { media, music } = fixture(); media.automaticPlay = false;
   try {

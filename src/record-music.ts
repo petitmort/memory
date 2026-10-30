@@ -15,7 +15,7 @@ export function createRecordMusic(
   audio.loop = false;
   audio.volume = .55;
   let state: RecordMusicState = { status: "empty", title: "" };
-  let source = "", wanted = false, visible = true, disposed = false, version = 0;
+  let source = "", attached = false, wanted = false, visible = true, disposed = false, version = 0;
 
   function publish(status: RecordMusicState["status"], error?: string) {
     if (disposed || (state.status === status && state.error === error)) return;
@@ -25,7 +25,7 @@ export function createRecordMusic(
   function currentResource() {
     // A resource-selection event queued for the previous source cannot change
     // the new record while the browser is still switching its currentSrc.
-    return !!source && (!audio.currentSrc || audio.currentSrc === audio.src);
+    return attached && !!source && (!audio.currentSrc || audio.currentSrc === audio.src);
   }
   function pause() {
     if (disposed) return;
@@ -69,17 +69,18 @@ export function createRecordMusic(
   for (const [name, listener] of events) audio.addEventListener(name, listener);
 
   return {
-    load(nextSource: string, title: string) {
+    load(nextSource: string, title: string, options: { deferSource?: boolean } = {}) {
       if (disposed) return;
       const trimmedSource = nextSource.trim();
       if (trimmedSource === source && title === state.title && state.status !== "error") return;
       wanted = false;
       ++version;
       source = "";
+      attached = false;
       audio.pause();
       state = { status: "empty", title };
       source = trimmedSource;
-      if (source) audio.src = source;
+      if (source && !options.deferSource) { audio.src = source; attached = true; }
       else audio.removeAttribute("src");
       audio.load();
       state = { status: source ? "paused" : "empty", title };
@@ -92,6 +93,9 @@ export function createRecordMusic(
       wanted = true;
       publish("loading");
       try {
+        // preload="none" alone still permits a browser to request metadata.
+        // The bundled record has no native source until this trusted gesture.
+        if (!attached) { audio.src = source; attached = true; audio.load(); }
         if (audio.ended) audio.currentTime = 0;
         // Keep play() in this native click/touch task. Awaiting preparation
         // first would lose user activation on mobile browsers.
@@ -123,6 +127,7 @@ export function createRecordMusic(
       disposed = true;
       wanted = false;
       source = "";
+      attached = false;
       ++version;
       for (const [name, listener] of events) audio.removeEventListener(name, listener);
       audio.pause();

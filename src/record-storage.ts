@@ -60,6 +60,9 @@ export function createRecordStorage() {
   }
 
   return {
+    clear(): Promise<void> {
+      return enqueue(async () => { await transaction("readwrite", store => store.delete(CURRENT_RECORD)); });
+    },
     read(): Promise<File | undefined> {
       return enqueue(async () => {
         const saved: unknown = await transaction("readonly", store => store.get(CURRENT_RECORD));

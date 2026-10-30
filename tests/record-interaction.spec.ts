@@ -116,9 +116,12 @@ test('the desk record accepts and remembers music, resumes in place and stays in
     await expect(page.locator('#record-toggle')).toBeHidden();
     await page.locator('#enter').click(); await expect(page.locator('#enter')).toBeEnabled();
     await page.locator('#enter').click(); await expect(page.locator('#room-ui')).toBeVisible({ timeout: 60000 });
-    await expect(page.locator('#record-toggle')).toHaveAttribute('aria-label', '上传音乐');
-    await expect(page.locator('#record-status')).toHaveText('上传一首你喜欢的音乐，轻触唱片机播放。');
-    await expect(page.locator('#record-track')).toBeHidden();
+    await expect(page.locator('#record-toggle')).toHaveAttribute('aria-label', '播放唱片');
+    await expect(page.locator('#record-status')).toContainText('已暂停');
+    await expect(page.locator('#record-track')).toContainText('Merry Christmas Mr. Lawrence');
+    // The default metadata is ready, but its remote source stays unattached
+    // until playback so entering the room cannot download the whole track.
+    expect((await media()).source).toBe('');
     const initial = await room();
     await expect(page.locator('.scene-object-feedback[data-phase="hint"]')).toBeVisible({ timeout: 12000 });
     await page.mouse.move(initial.point.x, initial.point.y);
@@ -127,10 +130,15 @@ test('the desk record accepts and remembers music, resumes in place and stays in
     await expect(feedback).toHaveAttribute('data-phase', 'hover');
     expect(await feedback.evaluate(element => getComputedStyle(element).pointerEvents)).toBe('none');
     expect(await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.tagName, initial.point)).toBe('CANVAS');
-    const choose = page.waitForEvent('filechooser', { timeout: 30000 });
     await page.mouse.down();
     await expect(feedback).toHaveAttribute('data-phase', 'press');
     await page.mouse.up();
+    await playing();
+    expect((await media()).source).toMatch(/default-record.*\.mp3/);
+    expect((await media()).duration).toBeGreaterThan(60);
+    await page.mouse.click(initial.point.x, initial.point.y); await paused();
+    const choose = page.waitForEvent('filechooser', { timeout: 30000 });
+    await page.locator('#choose-record').click();
     await (await choose).setFiles({ name: 'test-record.wav', mimeType: 'audio/wav', buffer: testRecord() });
     await playing();
     await expect(page.locator('#record-state')).toHaveText('播放中');

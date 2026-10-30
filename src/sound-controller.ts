@@ -24,6 +24,10 @@ const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElem
 const statusLabels: Record<RecordMusicState["status"], string> = {
   empty: "未选择音乐", loading: "加载中", playing: "播放中", paused: "已暂停", error: "播放失败",
 };
+const defaultRecord = {
+  title: "Merry Christmas Mr. Lawrence — 坂本龍一",
+  source: new URL("./assets/default-record.mp3", import.meta.url).href,
+};
 
 /** The room's single effects device and native music player, with one lifecycle. */
 export function createSoundController(options: SoundOptions) {
@@ -38,6 +42,7 @@ export function createSoundController(options: SoundOptions) {
   const nodes: AudioNode[] = [], sources: AudioScheduledSourceNode[] = [];
   let recordState: RecordMusicState = { status: "empty", title: "我的音乐" };
   let recordObjectUrl: string | undefined, recordSelectionVersion = 0;
+  let restoreAllowed = true, customRecord = false;
   let petHintTimer: number | undefined;
   const storage = createRecordStorage();
 
@@ -57,10 +62,10 @@ export function createSoundController(options: SoundOptions) {
   panel.className = "record-panel hidden";
   panel.setAttribute("role", "group");
   panel.setAttribute("aria-label", "唱片机");
-  panel.innerHTML = `<div class="record-panel-content"><span class="record-panel-heading">桌上的唱片机</span><button type="button" class="record-panel-close" id="record-panel-close" aria-label="收起唱片机说明">×</button><span class="record-description" id="record-description">不放唱片，也可以只听海浪。</span><button type="button" class="record-panel-action" id="record-panel-toggle">上传音乐</button><span class="record-storage-note">音乐仅保存在此设备的当前浏览器。清除网站数据后需重新上传。</span></div>`;
+  panel.innerHTML = `<div class="record-panel-content"><span class="record-panel-heading">桌上的唱片机</span><button type="button" class="record-panel-close" id="record-panel-close" aria-label="收起唱片机说明">×</button><span class="record-description" id="record-description">也可以只听海浪。</span><button type="button" class="record-panel-action" id="record-panel-toggle">播放唱片</button><button type="button" class="record-panel-action hidden" id="restore-record">恢复默认唱片</button><span class="record-storage-note">默认唱片随房间提供；你更换的音乐仅保存在当前浏览器。清除网站数据后会恢复默认唱片。</span></div>`;
   row.append(panel);
   const recordMusic = createRecordMusic(onRecordState);
-  recordMusic.load("", recordState.title);
+  recordMusic.load(defaultRecord.source, defaultRecord.title, { deferSource: true });
   updateSoundControl();
 
   function updateSoundControl() {
@@ -75,7 +80,8 @@ export function createSoundController(options: SoundOptions) {
     el("record-state").textContent = `${statusLabels[recordState.status]}${!soundEnabled && recordState.status !== "empty" ? " · 静音" : ""}`;
     panel.dataset.status = recordState.status;
     row.dataset.status = recordState.status;
-    emptyNote.classList.toggle("hidden", recordState.status !== "empty");
+    emptyNote.classList.toggle("hidden", recordState.status !== "empty" && (customRecord || recordState.status !== "paused"));
+    el("restore-record").classList.toggle("hidden", !customRecord);
   }
   function updateContext() {
     if (disposed) return;
@@ -123,6 +129,7 @@ export function createSoundController(options: SoundOptions) {
   }
   function chooseRecord() {
     if (disposed || !["room", "fallback"].includes(options.getState())) return;
+    restoreAllowed = false;
     panel.classList.remove("hidden");
     const input = el<HTMLInputElement>("record-file");
     input.value = "";
@@ -130,12 +137,14 @@ export function createSoundController(options: SoundOptions) {
   }
   function onRecord() {
     if (disposed || options.getState() !== "room") return;
+    restoreAllowed = false;
     if (recordState.status === "empty") chooseRecord();
     else void recordMusic.toggle();
   }
   function loadRecordFile(file: File) {
     const previous = recordObjectUrl;
     recordObjectUrl = URL.createObjectURL(file);
+    customRecord = true;
     const title = file.name.replace(/\.[^.]+$/, "").trim() || "我的音乐";
     recordMusic.load(recordObjectUrl, title);
     if (previous) URL.revokeObjectURL(previous);
@@ -145,6 +154,7 @@ export function createSoundController(options: SoundOptions) {
     if (!file || disposed || options.getState() !== "room") return;
     if (!file.size) { toast("这份音频是空的，请换一份文件。"); return; }
     const selection = ++recordSelectionVersion;
+    restoreAllowed = false;
     loadRecordFile(file);
     panel.classList.add("hidden");
     // Keep native play inside the file-selection gesture; storage runs separately.
@@ -158,8 +168,26 @@ export function createSoundController(options: SoundOptions) {
     });
   }
   void storage.read().then(file => {
-    if (file && !disposed && recordSelectionVersion === 0) loadRecordFile(file);
+    if (file && !disposed && restoreAllowed && recordSelectionVersion === 0) loadRecordFile(file);
   }).catch(() => { /* Local playback remains available when storage is blocked. */ });
+
+  function restoreDefaultRecord() {
+    if (disposed || options.getState() !== "room") return;
+    const selection = ++recordSelectionVersion;
+    restoreAllowed = false;
+    customRecord = false;
+    const previous = recordObjectUrl;
+    recordObjectUrl = undefined;
+    recordMusic.load(defaultRecord.source, defaultRecord.title, { deferSource: true });
+    if (previous) URL.revokeObjectURL(previous);
+    panel.classList.add("hidden");
+    void recordMusic.toggle();
+    void storage.clear().then(() => {
+      if (!disposed && selection === recordSelectionVersion) toast("已换回默认唱片。");
+    }).catch(() => {
+      if (!disposed && selection === recordSelectionVersion) toast("本次已换回默认唱片，但暂未记住这个选择。");
+    });
+  }
 
   function prepare() {
     // Optional Web Audio support must never decide whether the 3D room works.
@@ -290,6 +318,7 @@ export function createSoundController(options: SoundOptions) {
   listen(el("choose-record"), "click", chooseRecord);
   listen(el("record-file"), "change", fileChanged);
   listen(el("record-panel-toggle"), "click", onRecord);
+  listen(el("restore-record"), "click", restoreDefaultRecord);
   listen(el("record-panel-close"), "click", () => {
     panel.classList.add("hidden");
     el("choose-record").focus({ preventScroll: true });

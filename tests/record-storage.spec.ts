@@ -49,6 +49,17 @@ test('rapid replacements leave only the newest selected file', async ({ page }) 
   expect(restored).toEqual({ name: 'last.m4a', text: 'last' });
 });
 
+test('restoring the default clears only the selected personal record in save order', async ({ page }) => {
+  await blankOrigin(page);
+  const cleared = await page.evaluate(async () => {
+    const { createRecordStorage } = await import('/src/record-storage.ts');
+    const storage = createRecordStorage();
+    await Promise.all([storage.save(new File(['personal'], 'personal.mp3')), storage.clear()]);
+    return (await createRecordStorage().read()) === undefined;
+  });
+  expect(cleared).toBe(true);
+});
+
 test('quota failure preserves the previous record and does not poison later saves', async ({ page }) => {
   await blankOrigin(page);
   const result = await page.evaluate(async () => {
