@@ -44,6 +44,7 @@ export function createScene(
   onPet?: () => (() => number) | undefined,
   onRecord?: () => void,
   onQualityChange?: (low: boolean) => void,
+  onCatInteract?: () => boolean,
 ) {
   const listeners = new AbortController();
   const listenerOptions = { signal: listeners.signal };
@@ -1166,6 +1167,11 @@ export function createScene(
     requestRender();
     return true;
   }
+  function requestPet(e: PointerEvent) {
+    const nearby = nookFocused;
+    if (!(onCatInteract ? onCatInteract() : performPet())) return;
+    showFeedback("cat", e, "activate", nearby ? "小猫舒服地蹭了蹭" : "走近看看小猫…");
+  }
   function pointRay(e: PointerEvent) {
     pointer.set((e.clientX / innerWidth) * 2 - 1, (-e.clientY / innerHeight) * 2 + 1);
     ray.far = Infinity;
@@ -1240,7 +1246,7 @@ export function createScene(
     if (petStroke?.id === e.pointerId) {
       const stroke = petStroke;
       petStroke = null;
-      if (!stroke.stroked && stroke.length < 10 && catHit(e) && performPet()) showFeedback("cat", e, "activate", "小猫舒服地蹭了蹭");
+      if (!stroke.stroked && stroke.length < 10 && catHit(e)) requestPet(e);
       if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
       return; // A stroke ending over the desk must never open the album.
     }
@@ -1265,7 +1271,7 @@ export function createScene(
       petStroke.x = e.clientX; petStroke.y = e.clientY;
       if (!petStroke.stroked && petStroke.length >= 10 && catHit(e)) {
         petStroke.stroked = true;
-        if (performPet()) showFeedback("cat", e, "activate", "小猫舒服地蹭了蹭");
+        requestPet(e);
       }
       canvas.style.cursor = "grabbing";
     } else if (objectPress?.id === e.pointerId) {

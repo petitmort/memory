@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 /**
- * Two small anatomical poses for the locally adapted scan, authored in metres.
+ * Four anatomical poses for the locally adapted scan, authored in metres.
  * Construct once before shader compilation; animation only changes GPU weights.
  */
 export function prepareCatPetting(mesh: THREE.Mesh) {
@@ -9,9 +9,41 @@ export function prepareCatPetting(mesh: THREE.Mesh) {
   const position = geometry.getAttribute("position");
   const count = position.count;
   const base = Float32Array.from(position.array);
-  const head = base.slice(), ears = base.slice();
+  const head = base.slice(), ears = base.slice(), stretch = base.slice(), tail = base.slice();
   const smooth = THREE.MathUtils.smoothstep;
   const bell = (value: number, centre: number, width: number) => Math.exp(-(((value-centre)/width)**2));
+
+  // The reconstructed tail is a separate connected surface. Identify it from
+  // topology instead of a coordinate-only mask, which would bend the hind leg
+  // immediately beneath it. Welding also keeps duplicate UV seam vertices in
+  // the same component and gives the normal calculation a shared surface.
+  const welded=new Int32Array(count),welds=new Map<string,number>();
+  for(let i=0;i<count;i++) {
+    const k=i*3,key=`${Math.round(base[k]*1e6)},${Math.round(base[k+1]*1e6)},${Math.round(base[k+2]*1e6)}`;
+    let id=welds.get(key);
+    if(id===undefined){id=welds.size;welds.set(key,id);}
+    welded[i]=id;
+  }
+  const parents=Int32Array.from({length:welds.size},(_,i)=>i);
+  function root(vertex:number) {
+    while(parents[vertex]!==vertex){parents[vertex]=parents[parents[vertex]];vertex=parents[vertex];}
+    return vertex;
+  }
+  const indices=geometry.index,triangleVertices=indices?.count??count;
+  for(let i=0;i<triangleVertices;i+=3) {
+    const a=root(welded[indices?indices.getX(i):i]);
+    for(let j=1;j<3;j++)parents[root(welded[indices?indices.getX(i+j):i+j])]=a;
+  }
+  const components=new Map<number,{count:number;minX:number;minZ:number;maxZ:number}>();
+  for(let i=0;i<count;i++) {
+    const id=root(welded[i]),component=components.get(id)??{count:0,minX:Infinity,minZ:Infinity,maxZ:-Infinity};
+    component.count++;component.minX=Math.min(component.minX,base[i*3]);
+    component.minZ=Math.min(component.minZ,base[i*3+2]);component.maxZ=Math.max(component.maxZ,base[i*3+2]);
+    components.set(id,component);
+  }
+  const tailComponents=new Set([...components].filter(([,part])=>
+    part.count>100&&part.count<count/4&&part.minX>.09&&part.minZ>0&&part.maxZ>.14
+  ).map(([id])=>id));
 
   for (let i=0;i<count;i++) {
     const offset=i*3,x=base[offset],y=base[offset+1],z=base[offset+2];
@@ -19,7 +51,7 @@ export function prepareCatPetting(mesh: THREE.Mesh) {
     // the head tips upward from its neck rather than lifting the whole cat.
     const skull = smooth(-x,.065,.130)*smooth(z,-.100,-.030)*smooth(y,.006,.026);
     const dx=x+.085,dy=y-.048,dz=z+.040;
-    const tilt=-.175*skull,yaw=-.060*skull;
+    const tilt=-.34*skull,yaw=-.14*skull;
     const cx=dx*Math.cos(tilt)-dy*Math.sin(tilt);
     const cy=dx*Math.sin(tilt)+dy*Math.cos(tilt);
     head[offset]=-.085+cx*Math.cos(yaw)+dz*Math.sin(yaw);
@@ -29,26 +61,37 @@ export function prepareCatPetting(mesh: THREE.Mesh) {
     // Inner upright ear turns briefly back from its root. Separate spatial
     // falloffs avoid bending the neighbouring shoulder or skull with its tip.
     const inner=bell(x,-.114,.027)*bell(z,.018,.028)*smooth(y,.073,.104);
-    const earY=y-.076,earZ=z-.018,angle=.36*inner;
+    const earY=y-.076,earZ=z-.018,angle=.44*inner;
     ears[offset+1]=.076+earY*Math.cos(angle)-earZ*Math.sin(angle);
     ears[offset+2]=.018+earY*Math.sin(angle)+earZ*Math.cos(angle);
     // The flattened outer ear responds more quietly, staying attached at its
     // base instead of appearing as an independent geometric piece.
     const outer=smooth(-x,.176,.207)*bell(z,.007,.035)*smooth(y,.005,.026);
-    const ox=x+.176,oy=y-.032,outerAngle=-.20*outer;
+    const ox=x+.176,oy=y-.032,outerAngle=-.28*outer;
     ears[offset]+=(ox*Math.cos(outerAngle)-oy*Math.sin(outerAngle))-ox;
     ears[offset+1]+=(ox*Math.sin(outerAngle)+oy*Math.cos(outerAngle))-oy;
+
+    // Stretch only the upper shoulder/neck. The back and folded hind legs stay
+    // still; the smoothly vanishing lower mask pins the paws and support plane.
+    const shoulder=smooth(y,.015,.065)*smooth(x,-.15,-.075)*(1-smooth(x,.025,.10))*
+      (1-smooth(Math.abs(z+.035),.085,.14));
+    stretch[offset]-=.012*shoulder;
+    stretch[offset+1]+=.014*shoulder;
+    stretch[offset+2]-=.004*shoulder;
+
+    if(tailComponents.has(root(welded[i]))) {
+      // Leave the attached first third completely fixed. The distal curve
+      // lifts and sweeps out from the flank, away from the folded hind leg.
+      const tip=smooth(z,.070,.145),angle=.26*tip;
+      const tx=x-.185,tz=z-.085;
+      tail[offset]=.185+tx*Math.cos(angle)+tz*Math.sin(angle);
+      tail[offset+1]+=.018*tip;
+      tail[offset+2]=.085-tx*Math.sin(angle)+tz*Math.cos(angle);
+    }
   }
 
   // Weld normals across the scan's duplicate UV vertices. Derive normal deltas
   // against the same rest calculation so unchanged fur has exactly zero delta.
-  const welded=new Int32Array(count),welds=new Map<string,number>();
-  for(let i=0;i<count;i++) {
-    const k=i*3,key=`${Math.round(base[k]*1e6)},${Math.round(base[k+1]*1e6)},${Math.round(base[k+2]*1e6)}`;
-    let id=welds.get(key);
-    if(id===undefined){id=welds.size;welds.set(key,id);}
-    welded[i]=id;
-  }
   function normals(points:Float32Array) {
     const sums=new Float32Array(welds.size*3),indices=geometry.index;
     const triangles=indices?.count??count;
@@ -73,7 +116,7 @@ export function prepareCatPetting(mesh: THREE.Mesh) {
   geometry.morphTargetsRelative=true;
   geometry.morphAttributes.position=[];
   geometry.morphAttributes.normal=[];
-  for(const [name,pose] of [["pet-head-nuzzle",head],["pet-ear-flick",ears]] as const) {
+  for(const [name,pose] of [["pet-head-nuzzle",head],["pet-ear-flick",ears],["pet-shoulder-stretch",stretch],["pet-tail-tip",tail]] as const) {
     const poseNormals=normals(pose),delta=new Float32Array(base.length),normalDelta=new Float32Array(base.length);
     for(let i=0;i<base.length;i++){delta[i]=pose[i]-base[i];normalDelta[i]=poseNormals[i]-restNormals[i];}
     const attribute=new THREE.BufferAttribute(delta,3);attribute.name=name;

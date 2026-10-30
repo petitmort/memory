@@ -21,6 +21,7 @@ let scene: ReturnType<typeof createScene> | undefined;
 let sceneAvailable = false;
 let readingScene: ReturnType<typeof createScene> | undefined;
 let changingView = false;
+let catIntentVersion = 0;
 
 function setBackgroundInert(value: boolean) {
   document.querySelectorAll<HTMLElement>("#world,.header,.footer,main > :not(#reader),#fallback")
@@ -124,6 +125,10 @@ flow.own(() => sound.dispose());
 flow.own(() => scene?.dispose());
 flow.own(() => window.clearTimeout(toastTimer));
 window.addEventListener("pagehide", event => { if (!event.persisted) flow.dispose(); }, { signal: flow.signal });
+document.addEventListener("visibilitychange", () => {
+  // A paused approach may resume, but its pet must not play later on return.
+  if (document.hidden) ++catIntentVersion;
+}, { signal: flow.signal });
 function updateCozyControls(focused: boolean) {
   el("cozy-view").setAttribute("aria-pressed",String(focused));
   el("pet-cat").classList.toggle("hidden",!focused);
@@ -303,29 +308,42 @@ async function closeBook() {
   (lastFocus?.isConnected && !lastFocus.closest("[inert],.hidden") ? lastFocus : el("open-book")).focus({preventScroll:true});
 }
 el("open-book").onclick = openBook;
-el("cozy-view").onclick = async () => {
-  if (flow.getState() !== "room" || !sceneAvailable || changingView) return;
+async function changeCozyView(focus: boolean, petAfter = false) {
+  if (flow.disposed || document.hidden || flow.getState() !== "room" || !sceneAvailable || changingView) return;
+  const activeScene = scene!;
+  const generation = flow.sceneVersion;
+  const intent = ++catIntentVersion;
+  let focused = false;
   changingView = true;
   syncControls();
   sound.stopCat();
-  const button = el<HTMLButtonElement>("cozy-view");
-  const open = el<HTMLButtonElement>("open-book");
-  const pet = el<HTMLButtonElement>("pet-cat");
-  button.disabled = open.disabled = pet.disabled = true;
   try {
-    const focused = await scene!.focusCozyCorner(button.getAttribute("aria-pressed") !== "true");
-    updateCozyControls(focused);
+    focused = await activeScene.focusCozyCorner(focus);
+    if (!flow.disposed && sceneAvailable && generation === flow.sceneVersion)
+      updateCozyControls(focused);
   } catch (error) {
     onSceneUnavailable(error);
   } finally {
     changingView = false;
-    button.disabled = open.disabled = pet.disabled = false;
-    syncControls();
+    if (!flow.disposed) syncControls();
   }
+  if (petAfter && focused && intent === catIntentVersion && !flow.disposed && !document.hidden &&
+      sceneAvailable && generation === flow.sceneVersion && flow.getState() === "room")
+    activeScene.petCat();
+}
+function requestCatPet() {
+  if (flow.disposed || document.hidden || flow.getState() !== "room" || !sceneAvailable || changingView) return false;
+  if (scene!.isCozyFocused()) return scene!.petCat();
+  // Resume the prepared audio during the original gesture; sound starts only
+  // after arrival, through the same pet/audio clock used by the nearby button.
+  void sound.unlock();
+  void changeCozyView(true, true);
+  return true;
+}
+el("cozy-view").onclick = () => {
+  void changeCozyView(el("cozy-view").getAttribute("aria-pressed") !== "true");
 };
-el("pet-cat").onclick = () => {
-  if (flow.getState() === "room" && sceneAvailable && !changingView) scene?.petCat();
-};
+el("pet-cat").onclick = requestCatPet;
 el("fallback-read").onclick = openBook;
 el("reload-scene").onclick = () => {
   try { sessionStorage.setItem("tideline-retry-chapter", String(readerController.getChapter())); } catch {}
@@ -361,6 +379,7 @@ try {
     sound.onCatPet,
     sound.onRecord,
     low => updateQualityLabel(low),
+    requestCatPet,
   );
   // Prepare alongside GPU loading, before continuous scene drawing starts.
   // Browsers requiring gesture-time construction retain the lazy fallback.

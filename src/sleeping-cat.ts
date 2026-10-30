@@ -12,14 +12,17 @@ export function createSleepingCat() {
   const controller=new AbortController();
   let disposed=false;
   const petMeshes:THREE.Mesh[]=[];
-  let reaction:{elapsed:number;startedAt:number|null;clock?:()=>number;gentle:boolean}|null=null;
-  let cooldownUntil=-Infinity,lastTime=0;
-  function pose(head:number,ears:number) {
+  let reaction:{elapsed:number;startedAt:number|null;clock?:()=>number;gentle:boolean;variant:number}|null=null;
+  let cooldownUntil=-Infinity,lastTime=0,nextVariant=0;
+  function pose(head:number,ears:number,stretch=0,tail=0) {
     let changed=false;
+    const values=[head,ears,stretch,tail];
     for(const mesh of petMeshes) {
       const weights=mesh.morphTargetInfluences!;
-      if(Math.abs(weights[0]-head)>1e-6||Math.abs(weights[1]-ears)>1e-6)changed=true;
-      weights[0]=head;weights[1]=ears;
+      for(let i=0;i<values.length;i++) {
+        if(Math.abs(weights[i]-values[i])>1e-6)changed=true;
+        weights[i]=values[i];
+      }
     }
     return changed;
   }
@@ -66,7 +69,8 @@ export function createSleepingCat() {
     group,ready,
     pet(time:number,reduced:boolean) {
       if(disposed||!petMeshes.length||reaction||!Number.isFinite(time)||time<cooldownUntil)return false;
-      reaction={elapsed:0,startedAt:null,gentle:reduced};
+      reaction={elapsed:0,startedAt:null,gentle:reduced,variant:nextVariant};
+      nextVariant=(nextVariant+1)%3;
       return true;
     },
     setReactionClock(clock: (()=>number)|undefined) { if(reaction)reaction.clock=clock; },
@@ -86,12 +90,12 @@ export function createSleepingCat() {
       // scene time from the first draw; neither clock stretches on slow frames.
       if(reaction.startedAt===null)reaction.startedAt=time;
       reaction.elapsed=Math.max(reaction.elapsed,reaction.clock?.()??time-reaction.startedAt);
-      const frame=sampleCatReaction(reaction.elapsed,reaction.gentle);
+      const frame=sampleCatReaction(reaction.elapsed,reaction.gentle,reaction.variant);
       if(frame.done) {
         reaction=null;cooldownUntil=time+.20;
         return pose(0,0);
       }
-      return pose(frame.head,frame.ears);
+      return pose(frame.head,frame.ears,frame.stretch,frame.tail);
     },
     dispose() {
       if(disposed)return;

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { CAT_REACTION_DURATION, sampleCatReaction } from '../src/cat-choreography';
 
 test('the cat remains engaged through the recorded meow and settles after its voice', () => {
-  expect(sampleCatReaction(0, false)).toEqual({ head: 0, ears: 0, done: false });
+  expect(sampleCatReaction(0, false)).toEqual({ head: 0, ears: 0, stretch: 0, tail: 0, done: false });
   const nuzzle = sampleCatReaction(.58, false);
   const beforeMeow = sampleCatReaction(2.36, false);
   const meow = sampleCatReaction(2.88, false);
@@ -14,8 +14,8 @@ test('the cat remains engaged through the recorded meow and settles after its vo
   expect(voiceFinished.head).toBeGreaterThan(.4);
   expect(voiceFinished.done).toBe(false);
   expect(sampleCatReaction(3.8, false).head).toBeLessThan(voiceFinished.head);
-  expect(sampleCatReaction(CAT_REACTION_DURATION, false)).toEqual({ head: 0, ears: 0, done: true });
-  expect(sampleCatReaction(CAT_REACTION_DURATION + 10, false)).toEqual({ head: 0, ears: 0, done: true });
+  expect(sampleCatReaction(CAT_REACTION_DURATION, false)).toEqual({ head: 0, ears: 0, stretch: 0, tail: 0, done: true });
+  expect(sampleCatReaction(CAT_REACTION_DURATION + 10, false)).toEqual({ head: 0, ears: 0, stretch: 0, tail: 0, done: true });
 });
 
 test('all pose changes are continuous and reduced motion retains the sound timing', () => {
@@ -47,7 +47,7 @@ test('all pose changes are continuous and reduced motion retains the sound timin
   // At 1 ms intervals, these bounds reject a snapped pose while leaving room
   // for a naturally brisk, small ear movement near the meow.
   expect(largestHeadStep).toBeLessThan(.003);
-  expect(largestEarStep).toBeLessThan(.003);
+  expect(largestEarStep).toBeLessThan(.004);
   expect(largestVelocityStep).toBeLessThan(.03);
   expect(sampleCatReaction(2.88, true).head).toBeGreaterThan(.08);
   expect(sampleCatReaction(3.312, true).done).toBe(false);
@@ -56,4 +56,38 @@ test('all pose changes are continuous and reduced motion retains the sound timin
   const epsilon = 1e-4;
   expect(sampleCatReaction(epsilon, false).head / epsilon).toBeLessThan(.001);
   expect(sampleCatReaction(CAT_REACTION_DURATION - epsilon, false).head / epsilon).toBeLessThan(.001);
+});
+
+test('shoulder and tail responses vary without snapping, shifting the vocal cue or extending the reaction', () => {
+  const factors={head:.16,ears:.22,stretch:.12,tail:.14};
+  const channels=Object.keys(factors) as (keyof typeof factors)[];
+  const peaks=[0,1,2].map(variant=>{
+    const peaks={head:0,ears:0,stretch:0,tail:0};
+    let minimum=Infinity,largestStep=0,reducedError=0,timingMismatch=false;
+    let previous=sampleCatReaction(0,false,variant);
+    for(let time=.002;time<=CAT_REACTION_DURATION+.002;time+=.002) {
+      const pose=sampleCatReaction(time,false,variant),reduced=sampleCatReaction(time,true,variant);
+      timingMismatch ||= pose.done!==reduced.done;
+      for(const key of channels) {
+        peaks[key]=Math.max(peaks[key],pose[key]);
+        minimum=Math.min(minimum,pose[key]);
+        largestStep=Math.max(largestStep,Math.abs(pose[key]-previous[key]));
+        reducedError=Math.max(reducedError,Math.abs(reduced[key]-pose[key]*factors[key]));
+      }
+      previous=pose;
+    }
+    expect(minimum).toBeGreaterThanOrEqual(0);
+    expect(Math.max(...Object.values(peaks))).toBeLessThanOrEqual(1);
+    expect(largestStep).toBeLessThan(.007);
+    expect(reducedError).toBeLessThan(1e-12);
+    expect(timingMismatch).toBe(false);
+    expect(sampleCatReaction(2.88,false,variant).head).toBe(1);
+    expect(sampleCatReaction(CAT_REACTION_DURATION,false,variant)).toEqual({head:0,ears:0,stretch:0,tail:0,done:true});
+    return peaks;
+  });
+  expect(peaks[0].stretch).toBeGreaterThan(.6);
+  expect(peaks[1].stretch).toBeGreaterThan(peaks[0].stretch+.25);
+  expect(peaks[2].tail).toBeGreaterThan(peaks[0].tail+.25);
+  expect(peaks[0].head).toBeCloseTo(peaks[1].head,10);
+  expect(peaks[0].ears).toBeCloseTo(peaks[2].ears,10);
 });

@@ -1,15 +1,21 @@
 import { expect, type Page } from '@playwright/test';
 
 /** Keep real DOM/controllers and replace only slow rendering with drawn-frame gates. */
-function sceneFixture(_container: HTMLElement, interact: () => void, _reduced: boolean, onUnavailable: () => void) {
-  let lost = false, focused = false;
+function sceneFixture(
+  _container: HTMLElement, interact: () => void, _reduced: boolean, onUnavailable: () => void,
+  onPet?: () => unknown, _onRecord?: () => void, _onQuality?: (low: boolean) => void,
+  onCatInteract?: () => boolean,
+) {
+  let lost = false, focused = false, disposed = false, interactive = false;
   let rejectLoss!: (error: Error) => void;
   const loss = new Promise<never>((_, reject) => { rejectLoss = reject; });
   void loss.catch(() => {});
   let complete: (() => void) | undefined;
   const probe = (window as any).__experience = {
     pending: '', clears: 0, enters: 0, opens: 0, views: 0, returns: 0, quality: false,
+    pets: 0, petAttempts: 0, disposed: false,
     complete: () => complete?.(), interact,
+    catInteract: () => onCatInteract?.() ?? false,
     fail() {
       if (lost) return;
       lost = true; onUnavailable(); rejectLoss(new Error('Renderer unavailable'));
@@ -46,10 +52,18 @@ function sceneFixture(_container: HTMLElement, interact: () => void, _reduced: b
     isCozyFocused: () => focused,
     getBookProjection: projection,
     setBookChapter() {}, setBookPageCanvases() {}, setBookVisibility() {},
-    setRecordPlaying() {}, setInteractionEnabled() {}, clearInteractionFeedback() {}, hintInteractionsOnce() {},
+    setRecordPlaying() {}, setInteractionEnabled(value: boolean) { interactive = value; }, clearInteractionFeedback() {}, hintInteractionsOnce() {},
     getQuality: () => ({ low: probe.quality, manual: false }),
     setQuality(value: boolean) { probe.quality = value; },
-    petCat() { return true; }, dispose() {},
+    petCat() {
+      probe.petAttempts++;
+      if (lost || disposed || !interactive) return false;
+      probe.pets++; onPet?.(); return true;
+    },
+    dispose() {
+      disposed = probe.disposed = true;
+      rejectLoss(new Error('Scene disposed'));
+    },
   };
 }
 

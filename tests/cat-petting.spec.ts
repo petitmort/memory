@@ -31,11 +31,12 @@ test('the real scan has localized petting poses without lifting its support or c
     prepareCatPetting(mesh);
     expect(geometry.index!.count).toBe(indexCount);
     expect(new Uint8Array(geometry.getAttribute('position').array.buffer)).toEqual(new Uint8Array(original.buffer));
-    expect(mesh.morphTargetInfluences).toEqual([0,0]);
+    expect(mesh.morphTargetInfluences).toEqual([0,0,0,0]);
     const poses=geometry.morphAttributes.position;
-    expect(poses).toHaveLength(2);
+    expect(poses).toHaveLength(4);
     let floorVertices=0,torsoVertices=0;
-    const maximum=[0,0];
+    const maximum=[0,0,0,0];
+    let largestPinnedDelta=0,invalidNormals=0;
     for(let i=0;i<original.length/3;i++) {
       const x=original[i*3],y=original[i*3+1];
       if(y<=.005)floorVertices++;
@@ -43,20 +44,23 @@ test('the real scan has localized petting poses without lifting its support or c
       for(let p=0;p<poses.length;p++) {
         const delta=Math.hypot(poses[p].getX(i),poses[p].getY(i),poses[p].getZ(i));
         maximum[p]=Math.max(maximum[p],delta);
-        if(y<=.005||x>.01)expect(delta).toBe(0);
+        if(y<=.005 || (p<2 && x>.01) || (p===2 && x>.10) || (p===3 && original[i*3+2]<=.07))largestPinnedDelta=Math.max(largestPinnedDelta,delta);
         const normals=geometry.morphAttributes.normal[p];
-        expect(Number.isFinite(normals.getX(i)+normals.getY(i)+normals.getZ(i))).toBe(true);
+        if(!Number.isFinite(normals.getX(i)+normals.getY(i)+normals.getZ(i)))invalidNormals++;
       }
     }
     expect(floorVertices).toBeGreaterThan(50);expect(torsoVertices).toBeGreaterThan(1000);
-    expect(maximum[0]).toBeGreaterThan(.012);expect(maximum[0]).toBeLessThan(.04);
+    expect(largestPinnedDelta).toBe(0);expect(invalidNormals).toBe(0);
+    expect(maximum[0]).toBeGreaterThan(.04);expect(maximum[0]).toBeLessThan(.055);
     expect(maximum[1]).toBeGreaterThan(.003);expect(maximum[1]).toBeLessThan(.025);
+    expect(maximum[2]).toBeGreaterThan(.01);expect(maximum[2]).toBeLessThan(.022);
+    expect(maximum[3]).toBeGreaterThan(.025);expect(maximum[3]).toBeLessThan(.038);
   } finally { geometry.dispose();material.dispose(); }
 });
 
 test('petting the visible cat reacts once, purrs gently and remains safe with touch, mute and reading',async({browser})=>{
   test.setTimeout(240000);
-  const context=await browser.newContext({viewport:{width:1100,height:800},hasTouch:true,reducedMotion:'reduce'});
+  const context=await browser.newContext({viewport:{width:1600,height:900},hasTouch:true,reducedMotion:'reduce'});
   const page=await context.newPage(),errors:string[]=[];
   page.on('pageerror',error=>errors.push(error.message));
   await page.addInitScript(()=>{
@@ -173,7 +177,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     expect(Math.abs(observed.meow.weights[0]-expected.head)).toBeLessThan(.004);
     expect(Math.abs(observed.meow.weights[1]-expected.ears)).toBeLessThan(.004);
     expect(observed.finished,'The same audio clock must include the quiet settling tail').toBeDefined();
-    expect(observed.finished.weights).toEqual([0,0]);
+    expect(observed.finished.weights).toEqual([0,0,0,0]);
     expect(observed.finished.clock.before.elapsed).toBeGreaterThanOrEqual(CAT_REACTION_DURATION-.005);
     expect(observed.finished.previous.clock.after.elapsed).toBeLessThan(CAT_REACTION_DURATION+.02);
   };
@@ -183,22 +187,25 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await page.locator('#enter').click();await expect(page.locator('#enter')).toBeEnabled();await page.locator('#enter').click();
     await expect(page.locator('#room-ui')).toBeVisible({timeout:30000});
     await expect(page.locator('#pet-cat')).toBeHidden();
-    await page.locator('#cozy-view').click();await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','true',{timeout:15000});
-    await expect(page.locator('#pet-cat')).toBeVisible();await expect(page.locator('#pet-hint')).toBeVisible();
     await expect.poll(()=>page.evaluate(()=>(window as any).__petAudio.decoded)).toBe(true);
-    const before=await snapshot();expect(before.audio.contexts).toBe(1);expect(before.weights).toEqual([0,0]);
+    const before=await snapshot();expect(before.audio.contexts).toBe(1);expect(before.weights).toEqual([0,0,0,0]);
     await page.evaluate(()=>{(window as any).__petFrames=[];});
+    // Clicking the actual visible scan from the desk approaches before the
+    // first reaction; the same gesture must not be consumed by the album.
+    await page.screenshot({path:test.info().outputPath('cat-desk-before.png')});
     await page.mouse.click(before.point.x,before.point.y);await page.mouse.click(before.point.x,before.point.y);
+    await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','true',{timeout:15000});
+    await expect(page.locator('#pet-cat')).toBeVisible();await expect(page.locator('#pet-hint')).toBeVisible();
     await expect.poll(()=>page.evaluate(()=>(window as any).__petAccepted)).toBe(1);
     await page.waitForFunction(()=>(window as any).__petObserved?.accepted===1,undefined,{timeout:10000});
     const reacting=await page.evaluate(()=>(window as any).__petObserved);
-    expect(reacting.headDelta).toBeGreaterThan(.0005);expect(reacting.floorDelta).toBe(0);expect(reacting.torsoDelta).toBe(0);
+    expect(reacting.headDelta).toBeGreaterThan(.0005);expect(reacting.floorDelta).toBe(0);expect(reacting.torsoDelta).toBeLessThan(.012);
     expect(reacting.audio.starts).toBe(1);expect(reacting.audio.contexts).toBe(1);
     expect(reacting.gpu).toEqual(before.gpu);
-    await page.screenshot({path:'test-results/cat-pet-reaction.png'});
+    await page.screenshot({path:test.info().outputPath('cat-pet-reaction.png')});
     await settled();
     await expectSynchronizedResponse(1);
-    const resting=await snapshot();expect(resting.weights).toEqual([0,0]);expect(resting.headDelta).toBe(0);
+    const resting=await snapshot();expect(resting.weights).toEqual([0,0,0,0]);expect(resting.headDelta).toBe(0);
     expect(await page.evaluate(()=>(window as any).__petFrames.some((frame:any)=>frame.weights?.[1]>0))).toBe(true);
     expect(resting.gpu).toEqual(before.gpu);
 
@@ -245,7 +252,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     expect(interrupted.accepted).toBe(4);
     expect(interrupted.audio.starts).toBe(muted.audio.starts+1);expect(interrupted.audio.active).toBe(1);
     await ready();
-    const reading=await snapshot();expect(reading.active).toBe(false);expect(reading.weights).toEqual([0,0]);
+    const reading=await snapshot();expect(reading.active).toBe(false);expect(reading.weights).toEqual([0,0,0,0]);
     expect(reading.audio.stops).toBeGreaterThan(interrupted.audio.stops);
     await page.mouse.click(before.point.x,before.point.y);
     expect((await snapshot()).accepted).toBe(4);
@@ -262,7 +269,7 @@ test('petting the visible cat reacts once, purrs gently and remains safe with to
     await page.waitForFunction(()=>(window as any).__petObserved?.accepted===5,undefined,{timeout:10000});
     const phoneReaction=await page.evaluate(()=>(window as any).__petObserved);
     expect(phoneReaction.headDelta).toBeGreaterThan(.0005);expect(phoneReaction.floorDelta).toBe(0);
-    await expect(page.locator('#reader')).toBeHidden();await page.screenshot({path:'test-results/cat-pet-mobile.png'});
+    await expect(page.locator('#reader')).toBeHidden();await page.screenshot({path:test.info().outputPath('cat-pet-mobile.png')});
     await settled();
     await expect.poll(()=>page.evaluate(()=>(window as any).__petAudio.active),{timeout:10000}).toBe(0);
     await expectSynchronizedResponse(5);
