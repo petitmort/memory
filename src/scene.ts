@@ -63,7 +63,7 @@ export function createScene(
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
+  renderer.toneMappingExposure = 1.04;
   container.appendChild(renderer.domElement);
   const feedback = createInteractionFeedback(container);
   const scene = new THREE.Scene();
@@ -81,9 +81,10 @@ export function createScene(
   courtyardFog.update(0, 0, reducedMotion);
   scene.add(courtyardFog.group);
   const target = new THREE.Vector3();
-  const ambient = new THREE.HemisphereLight("#e1e8e5", "#aa9273", 1.65);
+  // Keep clear daylight while letting the sun describe wood, plaster and cloth.
+  const ambient = new THREE.HemisphereLight("#e4edf0", "#b6a28b", 1.45);
   scene.add(ambient);
-  const sun = new THREE.DirectionalLight("#fff2dc", 3.5);
+  const sun = new THREE.DirectionalLight("#fff3e0", 3.35);
   sun.position.set(-3, 4.5, -8);
   sun.castShadow = true;
   sun.shadow.mapSize.set(
@@ -98,7 +99,7 @@ export function createScene(
   sun.shadow.autoUpdate = false;
   sun.shadow.needsUpdate = true;
   scene.add(sun);
-  const fill = new THREE.DirectionalLight("#ffe9cd", 1.05);
+  const fill = new THREE.DirectionalLight("#fff4e4", .9);
   fill.position.set(3, 5, 8);
   scene.add(fill);
   const mat = (color: string, roughness = 0.8, metalness = 0) =>
@@ -107,7 +108,7 @@ export function createScene(
   const plaster = palette.plaster,
     trim = palette.trim,
     darkWood = mat("#6b513a"),
-    brass = mat("#ac8d55", 0.42, 0.65),
+    brass = mat("#a58b60", 0.54, 0.62),
     green = mat("#295a72"),
     paper = mat("#e8dec5");
   function box(

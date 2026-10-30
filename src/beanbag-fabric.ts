@@ -27,14 +27,14 @@ export function createBeanbagFabric() {
     normalScale: new THREE.Vector2(.65, .65),
     roughnessMap: clothMap(roughnessUrl), roughness: .98,
     color: "#ffffff", metalness: 0, clearcoat: 0, ior: 1.46,
-    specularIntensity: .3, sheen: .38, sheenRoughness: .93,
-    sheenColor: new THREE.Color("#ecd3a3"),
+    specularIntensity: .25, sheen: .32, sheenRoughness: .95,
+    sheenColor: new THREE.Color("#eee0c4"),
   });
   shell.name = "ochre-cotton-canvas-cover";
   const cushion = shell.clone();
   cushion.name = "soft-stretch-cotton-seat";
   cushion.normalScale.set(.52, .52);
-  cushion.sheen = .42;
+  cushion.sheen = .36;
   const seam = new THREE.MeshStandardMaterial({ color: "#b58c42", roughness: 1 });
   seam.name = "cotton-cover-sewing-thread";
   return {

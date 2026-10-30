@@ -90,12 +90,12 @@ export function createOcean() {
         // Compress the peak smoothly instead of clipping a large white patch.
         color+=vec3(1.,.94,.82)*(.28*glint/(.7+glint));
         float crest=smoothstep(.46,.81,wave.x)*smoothstep(.25,.55,length(wave.yz));
-        color=mix(color,vec3(.60,.74,.72),crest*.085);
+        color=mix(color,vec3(.54,.69,.70),crest*.065);
         float wash=0.;
         ${reefWash}
         color=mix(color,vec3(.78,.86,.81),wash);
         float distanceToEye=length(cameraPosition-vWorld);
-        color=mix(color,vec3(.50,.68,.74),smoothstep(55.,235.,distanceToEye)*.75);
+        color=mix(color,vec3(.48,.65,.71),smoothstep(55.,235.,distanceToEye)*.80);
         gl_FragColor=vec4(color,1.);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>

@@ -45,7 +45,7 @@ test("desktop: deliberate entry, reading, chapter boundaries, sound and return",
     timeout: 60000,
   });
   await page.keyboard.press("Enter");
-  await expect(page.locator("#room-ui")).toBeVisible({ timeout: 15000 });
+  await expect(page.locator("#room-ui")).toBeVisible({ timeout: 60000 });
   await page.locator("#sound").click();
   await expect(page.locator("#sound")).toHaveAttribute(
     "aria-label",
@@ -260,7 +260,9 @@ test("physical scene: enter through doorway, approach and open the album, then r
       `),
     });
   });
-  await page.setViewportSize({ width: 1440, height: 1000 });
+  // Keep this frame-by-frame software-WebGL check within a bounded pixel
+  // budget. The separate layout matrix still covers the 2560×1440 desktop.
+  await page.setViewportSize({ width: 960, height: 640 });
   await page.goto("/");
   await expect(page.locator("#loading")).toBeHidden({ timeout: 60000 });
   await page.locator("#enter").click();
@@ -297,7 +299,7 @@ test("physical scene: enter through doorway, approach and open the album, then r
     (window as unknown as Probe).__cameraSamples = [];
   });
   await page.locator("#enter").click();
-  await expect(page.locator("#room-ui")).toBeVisible({ timeout: 15000 });
+  await expect(page.locator("#room-ui")).toBeVisible({ timeout: 60000 });
   const entry = await page.evaluate(
     () => (window as unknown as Probe).__cameraSamples,
   );

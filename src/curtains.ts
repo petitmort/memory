@@ -91,28 +91,35 @@ export function createCurtains({ width, height, sill, back }: CurtainWindow) {
   }
 
   let lastTime = -1;
+  let lastReducedMotion: boolean | undefined;
   function update(time: number, reducedMotion: boolean) {
-    // Reduced motion retains an almost imperceptible natural breathing of the cloth.
+    // The wind comes and settles over longer, unequal intervals. Compute its
+    // envelope once per panel, leaving the original mesh and lace together.
     const t = time * (reducedMotion ? 0.16 : 1);
-    if (Math.abs(t - lastTime) < 1 / 65 && lastTime >= 0) return;
+    if (Math.abs(t - lastTime) < 1 / 65 && lastTime >= 0 && lastReducedMotion === reducedMotion) return;
     lastTime = t;
+    lastReducedMotion = reducedMotion;
+    const weather = 0.15 * Math.sin(t * 0.073 - 0.8);
+    const motionScale = reducedMotion ? 0.15 : 1;
     for (const { side, mesh, coordinates, rest } of panels) {
       const positions = mesh.geometry.attributes.position;
+      const phase = side * 1.9;
+      const gust = THREE.MathUtils.smoothstep(0.5 + 0.35 * Math.sin(t * 0.19 + side * 0.3) + weather, 0.25, 0.78);
+      const wind = (0.16 + 0.84 * gust * gust) * motionScale;
       for (let i = 0; i < positions.count; i++) {
         const u = coordinates[i * 2];
         const v = coordinates[i * 2 + 1];
         const free = rest[i * 4 + 3];
-        const phase = side * 1.9;
         const breath =
-          (0.064 * Math.sin(t * 0.74 + v * 4.1 + u * 2.2 + phase) +
-            0.025 * Math.sin(t * 1.31 - v * 3.7 + u * 8.7 - phase)) *
-          free;
+          (0.041 * Math.sin(t * 0.74 + v * 4.1 + u * 2.2 + phase) +
+            0.014 * Math.sin(t * 1.31 - v * 3.7 + u * 8.7 - phase)) *
+          free * wind;
         const drift =
-          0.022 * free * Math.sin(t * 0.93 + u * 5.4 + v * 2.1 + phase);
+          0.012 * free * wind * Math.sin(t * 0.93 + u * 5.4 + v * 2.1 + phase);
         positions.setXYZ(
           i,
           rest[i * 4] + drift,
-          rest[i * 4 + 1] + 0.006 * free * Math.sin(t * 1.2 + u * 9 + phase),
+          rest[i * 4 + 1] + 0.003 * free * wind * Math.sin(t * 1.2 + u * 9 + phase),
           rest[i * 4 + 2] + breath,
         );
       }

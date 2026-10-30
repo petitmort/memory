@@ -21,7 +21,8 @@
   min-width: 84px;
   padding: 10px 8px;
   font-size: 11px;
-  color: #f0eadbd9;
+  color: var(--room-paper);
+  text-shadow: var(--room-text-shadow);
 }
 .room-ui .cozy-view {
   min-height: 44px;
@@ -33,9 +34,21 @@
   min-height: 44px;
 }
 .room-ui .cozy-actions { flex-wrap: wrap; }
-.room-ui .primary-button { max-width: 100%; }
+.room-ui .primary-button {
+  max-width: 100%;
+  border-color: var(--room-paper-border);
+  border-radius: var(--room-radius);
+  background: var(--room-paper);
+  color: var(--room-ink);
+  box-shadow: var(--room-shadow);
+}
+.room-ui .primary-button:hover:not(:disabled) { background: #fff9ec; }
 .room-ui { animation: none; }
-.scene-hint { pointer-events: none; }
+.scene-hint {
+  color: var(--room-paper);
+  text-shadow: var(--room-text-shadow);
+  pointer-events: none;
+}
 .room-arriving,
 #explore-guide:not(.hidden) { animation: room-arriving 450ms ease-out both; }
 @keyframes room-arriving {
@@ -46,8 +59,9 @@
 .journey-status {
   position: fixed; z-index: 16; top: max(95px, calc(env(safe-area-inset-top) + 75px));
   left: 50%; transform: translateX(-50%); max-width: calc(100vw - 32px);
-  padding: 9px 15px; border-radius: 18px; background: #28453cdb;
-  color: #f9efda; font-size: 12px; line-height: 1.7; text-align: center;
+  padding: 9px 15px; border-radius: var(--room-pill); background: var(--room-surface);
+  color: var(--room-paper); font-size: 12px; line-height: 1.7; text-align: center;
+  box-shadow: var(--room-shadow);
   pointer-events: none;
 }
 
@@ -71,15 +85,15 @@
   max-width: min(480px, calc(100vw - 32px));
   margin: 0;
   padding: 11px 17px;
-  border: 1px solid #f0e4ca3b;
-  border-radius: 12px;
-  background: #28453cdb;
-  color: #f9efda;
+  border: 1px solid var(--room-border);
+  border-radius: var(--room-radius);
+  background: var(--room-surface);
+  color: var(--room-paper);
   font-size: 13px;
   line-height: 1.8;
   text-align: center;
   text-wrap: pretty;
-  box-shadow: 0 4px 22px #162f2b20;
+  box-shadow: var(--room-shadow);
   pointer-events: none;
 }
 button:active:not(:disabled) { filter: brightness(.96); }

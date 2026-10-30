@@ -5,6 +5,8 @@ async function expectRoomControlsClear(page: Page) {
   const original = page.viewportSize()!;
   for (const [width, height] of [[320,568], [390,844], [670,344], [759,600], [760,540], [844,390], [960,540], [1280,720], [1280,800], [1920,1080], [2560,1440]]) {
     await page.setViewportSize({ width, height });
+    // Measure the settled media-query layout, after resize and its next paint.
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve(null)))));
     const result = await page.evaluate(() => {
       const selectors = ['#open-book', '#cozy-view', '#pet-cat', '#choose-record', '#scene-hint', '#record-track', '#record-state', '.record-empty-note', '#pet-hint', '#cozy-credit', '#quality', '.journey'];
       const boxes = selectors.flatMap(selector => {

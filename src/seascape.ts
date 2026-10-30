@@ -38,13 +38,13 @@ export function createSeascape() {
   const glowMap = new THREE.CanvasTexture(glowCanvas);
   const auraMaterial = new THREE.SpriteMaterial({
     map: glowMap, transparent: true, depthWrite: false,
-    blending: THREE.AdditiveBlending, fog: false, toneMapped: false, opacity: .62,
+    blending: THREE.AdditiveBlending, fog: false, toneMapped: false, opacity: .38,
   });
   const aura = new THREE.Sprite(auraMaterial);
-  aura.name = "solar-outer-glow"; aura.scale.set(22, 22, 1); aura.position.z = -4.5; helios.add(aura);
+  aura.name = "solar-outer-glow"; aura.scale.set(14.4, 14.4, 1); aura.position.z = -4.5; helios.add(aura);
   const corona = new THREE.Sprite(auraMaterial.clone());
-  corona.name = "solar-inner-corona"; corona.material.opacity = .45;
-  corona.scale.set(10, 10, 1); corona.position.z = -3.5; helios.add(corona);
+  corona.name = "solar-inner-corona"; corona.material.opacity = .34;
+  corona.scale.set(7.8, 7.8, 1); corona.position.z = -3.5; helios.add(corona);
   helios.lookAt(new THREE.Vector3(1.1, 1.65, .75));
 
   return { group, update(t: number, reduced: boolean) {

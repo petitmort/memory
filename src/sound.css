@@ -7,11 +7,11 @@
   max-width: 100%;
   min-height: 18px;
   margin-top: 6px;
-  color: #fff5e6;
+  color: var(--room-paper);
   font-family: var(--sans);
   font-size: 12px;
   line-height: 1.5;
-  text-shadow: 0 1px 3px #233b32;
+  text-shadow: var(--room-text-shadow);
   pointer-events: none;
 }
 .room-ui .record-music-row .record-track {
@@ -43,11 +43,11 @@
   max-height: min(300px, 45svh);
   overflow: auto;
   padding: 18px;
-  border: 1px solid #d9cbb1;
-  border-radius: 12px;
-  background: #f7f1e4fa;
-  color: #3c514a;
-  box-shadow: 0 8px 28px #12292030;
+  border: 1px solid var(--room-paper-border);
+  border-radius: var(--room-radius);
+  background: var(--room-paper);
+  color: var(--room-ink);
+  box-shadow: var(--room-shadow);
 }
 .record-panel-heading { padding-right: 35px; font-size: 14px; }
 .record-panel-close {
@@ -61,25 +61,25 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: #50634e;
+  color: var(--room-ink);
   font-size: 25px;
   cursor: pointer;
 }
-.record-panel-close:hover { background: #546d4d14; }
+.record-panel-close:hover { background: #294b5010; }
 .record-description { font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }
 .record-storage-note { font-size: 12px; line-height: 1.75; color: #68766e; }
 .record-panel-action {
   min-height: 44px;
   padding: 9px 17px;
-  border: 1px solid #667c69;
-  border-radius: 22px;
-  background: #496454;
-  color: #fff7e7;
+  border: 1px solid var(--room-border);
+  border-radius: var(--room-pill);
+  background: var(--room-surface);
+  color: var(--room-paper);
   font: inherit;
   font-size: 14px;
   cursor: pointer;
 }
-.record-panel-action:hover { background: #355140; }
+.record-panel-action:hover { background: var(--room-surface-hover); }
 .record-panel-action:active { transform: translateY(1px); }
 @media (max-width: 759px) {
   .room-ui .record-music-row { justify-content: center; }

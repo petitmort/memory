@@ -7,6 +7,16 @@
   --cream: #f0eadb;
   --ink: #304c46;
   --gold: #c6b894;
+  --room-paper: #f5efdf;
+  --room-ink: #294b50;
+  --room-surface: rgba(38, 62, 58, .84);
+  --room-surface-hover: rgba(43, 71, 66, .96);
+  --room-border: rgba(245, 239, 223, .3);
+  --room-paper-border: #d6cbb5;
+  --room-radius: 12px;
+  --room-pill: 24px;
+  --room-shadow: 0 3px 16px rgba(20, 43, 37, .16);
+  --room-text-shadow: 0 1px 3px rgba(20, 43, 37, .9);
 }
 * {
   box-sizing: border-box;
@@ -123,18 +133,19 @@ button svg {
   opacity: 0.7;
 }
 .icon-button {
-  border: 1px solid #eee7d139;
+  border: 1px solid var(--room-border);
   border-radius: 50%;
   width: 40px;
   height: 40px;
   display: grid;
   place-items: center;
-  background: #293d3522;
-  color: var(--cream);
+  background: var(--room-surface);
+  color: var(--room-paper);
+  box-shadow: var(--room-shadow);
   transition: background 0.2s;
 }
 .icon-button:hover {
-  background: #ebe5d333;
+  background: var(--room-surface-hover);
 }
 .intro {
   position: absolute;
@@ -699,9 +710,11 @@ button svg {
   opacity: 0;
   pointer-events: none;
   padding: 13px 22px;
-  background: #203d35ee;
-  border: 1px solid #e9e3cb33;
-  border-radius: 3px;
+  background: var(--room-surface);
+  color: var(--room-paper);
+  border: 1px solid var(--room-border);
+  border-radius: var(--room-radius);
+  box-shadow: var(--room-shadow);
   font-size: 11px;
   letter-spacing: 1px;
   transition: 0.25s;
@@ -1289,14 +1302,15 @@ button svg {
   min-height: 36px;
   margin: 9px 0 0 auto;
   padding: 7px 15px;
-  border: 1px solid #f2e7d44d;
-  border-radius: 24px;
-  background: #344e48c9;
-  color: #f4ecda;
+  border: 1px solid var(--room-border);
+  border-radius: var(--room-pill);
+  background: var(--room-surface);
+  color: var(--room-paper);
+  box-shadow: var(--room-shadow);
   font-size: 11px;
   pointer-events: auto;
 }
-.room-ui .cozy-view:hover:not(:disabled) { background: #455d50e6; }
+.room-ui .cozy-view:hover:not(:disabled) { background: var(--room-surface-hover); }
 @media (min-width: 760px) {
   .scene-hint { bottom: calc(9% + 118px); }
 }
@@ -1338,16 +1352,16 @@ button svg {
 
 .room-ui .cozy-credit {
   display: block; width: max-content; margin: 6px 0 0 auto; padding: 2px 5px;
-  color: #fff5df; font-size: 10px; text-underline-offset: 3px;
-  text-shadow: 0 1px 4px #233b32; pointer-events: auto;
+  color: var(--room-paper); font-size: 10px; text-underline-offset: 3px;
+  text-shadow: var(--room-text-shadow); pointer-events: auto;
 }
 @media (max-width: 759px) { .room-ui .cozy-credit { margin: 6px auto 0; } }
 
 .room-ui .cozy-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:9px; }
 .room-ui .cozy-actions .cozy-view { margin:0; }
-.room-ui .cozy-notes { display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-top:6px; font-size:10px; color:#fff5df; text-shadow:0 1px 4px #233b32; }
+.room-ui .cozy-notes { display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-top:6px; font-size:10px; color:var(--room-paper); text-shadow:var(--room-text-shadow); }
 .room-ui .cozy-notes .cozy-credit { margin:0; }
-.room-ui .record-track { max-width:100%; margin-top:7px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; font-size:10px; line-height:1.5; color:#fff5df; text-shadow:0 1px 4px #233b32; }
+.room-ui .record-track { max-width:100%; margin-top:7px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; font-size:10px; line-height:1.5; color:var(--room-paper); text-shadow:var(--room-text-shadow); }
 @media (max-width:759px) {
   .room-ui .cozy-actions,.room-ui .cozy-notes { justify-content:center; }
   .room-ui .record-track { text-align:center; }

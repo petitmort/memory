@@ -69,12 +69,12 @@ export function createRecordPlayer() {
     }
   });
   if (grooveDirection) grooveDirection.colorSpace = THREE.NoColorSpace;
-  const wood = new THREE.MeshStandardMaterial({ map: timber, bumpMap: timber, bumpScale: .00012, roughness: .65 });
+  const wood = new THREE.MeshStandardMaterial({ map: timber, bumpMap: timber, bumpScale: .00012, roughness: .71 });
   const dark = new THREE.MeshStandardMaterial({ color: "#252c29", roughness: .73 });
   const bronze = new THREE.MeshStandardMaterial({ color: "#a18a62", roughness: .46, metalness: .64 });
   const silver = new THREE.MeshStandardMaterial({ color: "#b8b9b2", roughness: .35, metalness: .72 });
-  const smokedGlass = new THREE.MeshPhysicalMaterial({ color: "#a48261", transparent: true, opacity: .23,
-    roughness: .13, metalness: 0, clearcoat: .45, clearcoatRoughness: .1,
+  const smokedGlass = new THREE.MeshPhysicalMaterial({ color: "#a5927e", transparent: true, opacity: .18,
+    roughness: .18, metalness: 0, clearcoat: .28, clearcoatRoughness: .16,
     depthWrite: false, side: THREE.DoubleSide });
   const vinyl = new THREE.MeshPhysicalMaterial({ map: grooves, roughness: .44, metalness: .06,
     specularIntensity: .08, anisotropy: .8, anisotropyMap: grooveDirection });

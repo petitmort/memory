@@ -23,6 +23,7 @@ function islandGeometry(width: number, depth: number, height: number, phase: num
   const stone = new THREE.Color("#8f9285");
   const scrub = new THREE.Color("#6c7868");
   const shore = new THREE.Color("#b2a58e");
+  const distantHaze = new THREE.Color("#b8cad0");
   const rock = new THREE.Color();
   for (let ring = 0; ring <= rings; ring++) {
     const radial = ring / rings;
@@ -53,6 +54,8 @@ function islandGeometry(width: number, depth: number, height: number, phase: num
       rock.copy(stone).lerp(scrub, vegetation * patch * .65);
       rock.lerp(shore, (1 - smoothstep(.2, 1.6, y)) * .52);
       rock.multiplyScalar(1 + relief * .055);
+      // These fixed distant islands have less local contrast than nearby reefs.
+      rock.lerp(distantHaze, .1);
       colors.push(rock.r, rock.g, rock.b);
       if (ring < rings && j < segments) {
         const a = ring * (segments + 1) + j, b = a + segments + 1;

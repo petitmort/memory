@@ -127,21 +127,21 @@ export function createPalette() {
     plaster: new THREE.MeshStandardMaterial({
       map: lime,
       bumpMap: lime,
-      bumpScale: 0.0018,
-      roughness: 0.97,
+      bumpScale: 0.0012,
+      roughness: 0.98,
     }),
-    trim: new THREE.MeshStandardMaterial({ color: "#f8f5eb", roughness: 0.85 }),
+    trim: new THREE.MeshStandardMaterial({ color: "#f6f2e9", roughness: 0.9 }),
     stone: new THREE.MeshStandardMaterial({
       map: stone,
       bumpMap: stone,
-      bumpScale: 0.003,
-      roughness: 0.84,
+      bumpScale: 0.0024,
+      roughness: 0.9,
     }),
     wood: new THREE.MeshStandardMaterial({
-      map: timber, bumpMap: timber, bumpScale: .00035, roughness: .76,
+      map: timber, bumpMap: timber, bumpScale: .00028, roughness: .71,
     }),
     tableWood: new THREE.MeshStandardMaterial({
-      map: horizontalTimber, bumpMap: horizontalTimber, bumpScale: .00035, roughness: .76,
+      map: horizontalTimber, bumpMap: horizontalTimber, bumpScale: .00028, roughness: .71,
     }),
     blue: new THREE.MeshStandardMaterial({
       map: painted,
