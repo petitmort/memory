@@ -7,7 +7,8 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:5173",
     launchOptions: {
-      executablePath: "/usr/bin/chromium",
+      executablePath: process.env.CHROMIUM_PATH || (process.platform === "darwin"
+        ? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" : "/usr/bin/chromium"),
       args: ["--no-sandbox", "--enable-unsafe-swiftshader"],
     },
   },

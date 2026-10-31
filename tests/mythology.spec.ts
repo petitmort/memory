@@ -14,7 +14,7 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
       const screen=o=>{const v=o.getWorldPosition(new THREE.Vector3()).project(camera);return {x:(v.x+1)*innerWidth/2,y:(1-v.y)*innerHeight/2};};
       const bounds=name=>{const b=new THREE.Box3().setFromObject(scene.getObjectByName(name),true);return {min:b.min.toArray(),max:b.max.toArray()};};
       const painting=scene.getObjectByName('classical-myth-oil-painting');
-      window.__myth={paintingReady:painting?.material.map.image?.naturalWidth===1024,woodReady:tabletop.material.map.image?.naturalWidth===1024,removed:['classical-carved-harp','greek-gods-tapestry','distant-kraken','whirlpool'].map(n=>!scene.getObjectByName(n)),collection:{vessel:bounds('classical-relief-amphora'),console:bounds('console-top'),painting:bounds('vintage-framed-seascape'),rotation:scene.getObjectByName('console').rotation.y},supports:{desk:bounds('tabletop'),shelf:bounds('entry-collection-shelf-top'),horn:bounds('mythic-drinking-horn'),hammer:bounds('dwarven-forged-hammer'),trident:bounds('poseidon-trident')},basket:bounds('woven-market-basket'),composition:['helios-radiant-sun','mythic-sailing-ship'].map(n=>{const o=scene.getObjectByName(n);const top=new THREE.Vector3(0,n==='helios-radiant-sun'?6.4:0,0).applyMatrix4(o.matrixWorld).project(camera);return {...screen(o),top:(1-top.y)*innerHeight/2,distance:o.getWorldPosition(new THREE.Vector3()).distanceTo(camera.position)};}),width:innerWidth,book:screen(book),rose:screen(bouquet),details:['mythic-sailing-ship','aegean-natural-coast','helios-radiant-sun','poseidon-trident','mythic-drinking-horn','dwarven-forged-hammer','cliff-foundation','classical-relief-amphora','classical-myth-oil-painting'].map(n=>!!scene.getObjectByName(n))};
+      window.__myth={paintingReady:painting?.material.map.image?.naturalWidth===1024,woodReady:tabletop.material.map.image?.naturalWidth===1024,removed:['classical-carved-harp','greek-gods-tapestry','distant-kraken','whirlpool'].map(n=>!scene.getObjectByName(n)),collection:{vessel:bounds('classical-relief-amphora'),console:bounds('console-top'),painting:bounds('vintage-framed-seascape'),rotation:scene.getObjectByName('console').rotation.y},supports:{desk:bounds('tabletop'),shelf:bounds('entry-collection-shelf-top'),horn:bounds('mythic-drinking-horn'),hammer:bounds('dwarven-forged-hammer'),trident:bounds('poseidon-trident')},basket:bounds('woven-market-basket'),composition:['helios-radiant-sun','mythic-sailing-ship'].map(n=>{const o=scene.getObjectByName(n);const top=new THREE.Vector3(0,n==='helios-radiant-sun'?6.4:0,0).applyMatrix4(o.matrixWorld).project(camera);return {...screen(o),top:(1-top.y)*innerHeight/2,distance:o.getWorldPosition(new THREE.Vector3()).distanceTo(camera.position)};}),environment:environment.snapshot(),sunWorld:scene.getObjectByName('helios-radiant-sun').getWorldPosition(new THREE.Vector3()).toArray(),width:innerWidth,book:screen(book),rose:screen(bouquet),details:['mythic-sailing-ship','aegean-natural-coast','helios-radiant-sun','poseidon-trident','mythic-drinking-horn','dwarven-forged-hammer','cliff-foundation','classical-relief-amphora','classical-myth-oil-painting'].map(n=>!!scene.getObjectByName(n))};
       if(current==='entry' && !window.__courtyardChecked){
         const probeRay=new THREE.Raycaster();let exposed=0;
         for(const x of [-.95,-.5,0,.5,.95])for(const y of [-.95,-.5,0,.5,.95]){
@@ -61,12 +61,12 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
   expect(supports.horn.min[2]).toBeGreaterThan(2.3);
   expect(supports.hammer.min[2]).toBeGreaterThan(2.3);
   expect(supports.desk.min[0]-sideboard.max[0]).toBeGreaterThan(1.2);
-  const composition=await page.evaluate(()=>(window as any).__myth.composition);
-  const [sun,ship]=composition;
-  expect(sun.x).toBeGreaterThan(1440*.65);
-  expect(sun.y).toBeLessThan(1000*.3);
-  expect(sun.top).toBeGreaterThan(40);
-  expect(sun.x).toBeGreaterThan(ship.x);
+  // The calendar now moves the Sun and schedules vessels; their former fixed
+  // screen coordinates are no longer the composition contract.
+  const dynamic=await page.evaluate(()=>(window as any).__myth);
+  const direction=dynamic.environment.celestial.sun.direction;
+  for(let axis=0;axis<3;axis++) expect(dynamic.sunWorld[axis]).toBeCloseTo(direction[axis]*235-(axis===1?8:0),5);
+  expect(dynamic.environment.vessels.length).toBeLessThanOrEqual(5);
   const basket=await page.evaluate(()=>(window as any).__myth.basket);
   expect(basket.min[1]).toBeCloseTo(.001,4);
   expect(basket.min[2]).toBeGreaterThan(2.7);
@@ -85,9 +85,9 @@ test('mythic courtyard reveal and direct album reopening stay clear of mobile co
   await page.setViewportSize({width:390,height:844});
   await page.waitForFunction(()=>(window as any).__myth.width===390);
   await page.waitForTimeout(500);
-  const mobileShip=await page.evaluate(()=>(window as any).__myth.composition[1]);
-  expect(mobileShip.x).toBeGreaterThan(390*.15);
-  expect(mobileShip.x).toBeLessThan(390*.8);
+  const mobileWorld=await page.evaluate(()=>(window as any).__myth.environment);
+  expect(mobileWorld.vessels.length).toBeLessThanOrEqual(5);
+  for(const ship of mobileWorld.vessels) expect(ship.position[2]).toBeLessThan(-20);
   const clear=await page.evaluate(()=>{const {book,rose}=(window as any).__myth;return [book,rose].map(p=>({ ...p,tag:document.elementFromPoint(p.x,p.y)?.tagName,id:document.elementFromPoint(p.x,p.y)?.id }));});
   await page.screenshot({path:'test-results/mythic-mobile.png'});
   expect(clear.map(p=>p.tag)).toEqual(['CANVAS','CANVAS']);

@@ -17,8 +17,9 @@ const viewport = { width: number('width', 960), height: number('height', 640) };
 const scale = number('dpr', 1), cpu = number('cpu', 1), sampleMs = number('sample-ms', 5000);
 const url = options.url || 'http://127.0.0.1:5173/';
 const output = resolve(options.output || '.work/performance/latest.json');
+const executablePath = process.env.CHROMIUM_PATH || '/usr/bin/chromium';
 const browser = await chromium.launch({
-  executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
+  executablePath,
   args: ['--no-sandbox', '--enable-unsafe-swiftshader'],
 });
 const context = await browser.newContext({ viewport, deviceScaleFactor: scale, hasTouch: true, reducedMotion: 'reduce' });
@@ -76,8 +77,9 @@ const percentile = (values, fraction) => {
 const result = {
   schema: 1, environment: {
     viewport, deviceScaleFactor: scale, cpuThrottle: cpu, sampleMs,
-    browser: browser.version(), reducedMotion: true,
-    note: 'Chromium with SwiftShader in a cloud Linux container; CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.',
+    platform: process.platform, architecture: process.arch, node: process.version,
+    browser: browser.version(), browserExecutable: executablePath, reducedMotion: true,
+    note: 'Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.',
   },
   errors: failures,
 };
@@ -91,10 +93,15 @@ try {
     const canvas = document.querySelector('#world canvas');
     const gl = canvas?.getContext('webgl2');
     const debug = gl?.getExtension('WEBGL_debug_renderer_info');
+    const renderer = gl ? gl.getParameter(debug ? debug.UNMASKED_RENDERER_WEBGL : gl.RENDERER) : null;
     return {
       hardwareConcurrency: navigator.hardwareConcurrency,
       deviceMemoryGiB: navigator.deviceMemory ?? null,
-      renderer: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : null,
+      userAgent: navigator.userAgent,
+      renderer,
+      vendor: gl ? gl.getParameter(debug ? debug.UNMASKED_VENDOR_WEBGL : gl.VENDOR) : null,
+      unmaskedRendererAvailable: !!debug,
+      softwareRendererDetected: renderer ? /swiftshader|llvmpipe|softpipe|swrast|software rasterizer/i.test(renderer) : null,
     };
   });
   const enteringStart = performance.now();

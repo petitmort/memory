@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { sampleWaterHeight } from "./water-surface";
 import { createSailingShip } from "./sailing-ship";
 import { createCoastalEnvironment } from "./coastal-environment";
+import { createVesselController } from "./vessel-controller";
 
 // Metres in the world; positions are composed through the study's real window.
 export const seaComposition = {
@@ -9,13 +10,15 @@ export const seaComposition = {
   sun: new THREE.Vector3(-18, 9.5, -145),
 };
 
-export function createSeascape() {
+export function createSeascape(dynamic = false) {
   const group = new THREE.Group();
   group.name = "aegean-seascape";
   const ship = createSailingShip();
   ship.position.copy(seaComposition.ship);
   ship.rotation.y = ship.userData.recommendedYaw ?? -.1;
   group.add(ship);
+  const vessels = dynamic ? createVesselController({ legacyShip: ship }) : undefined;
+  if (vessels) group.add(vessels.group);
   const coast = createCoastalEnvironment();
   group.add(coast.group);
 
@@ -47,16 +50,18 @@ export function createSeascape() {
   corona.scale.set(7.8, 7.8, 1); corona.position.z = -3.5; helios.add(corona);
   helios.lookAt(new THREE.Vector3(1.1, 1.65, .75));
 
-  return { group, update(t: number, reduced: boolean) {
+  return { group, sunGroup: helios, vessels, update(t: number, reduced: boolean) {
     const a = reduced ? t * .12 : t;
     const waterTime = t * (reduced ? .15 : 1);
     const waterline = sampleWaterHeight(ship.position.x, ship.position.z, waterTime);
     const offsetX = Math.cos(ship.rotation.y) * 4, offsetZ = -Math.sin(ship.rotation.y) * 4;
     const bow = sampleWaterHeight(ship.position.x + offsetX, ship.position.z + offsetZ, waterTime);
     const stern = sampleWaterHeight(ship.position.x - offsetX, ship.position.z - offsetZ, waterTime);
-    ship.position.y = seaComposition.ship.y + waterline - .12;
-    ship.rotation.z = Math.max(-.045, Math.min(.045, (bow - stern) / 8)) * .7;
-    ship.rotation.x = Math.sin(a * .41) * .009;
+    if (!vessels) {
+      ship.position.y = seaComposition.ship.y + waterline - .12;
+      ship.rotation.z = Math.max(-.045, Math.min(.045, (bow - stern) / 8)) * .7;
+      ship.rotation.x = Math.sin(a * .41) * .009;
+    }
     coast.update(t, reduced);
   } };
 }

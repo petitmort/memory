@@ -13,12 +13,20 @@ export function createOcean() {
     uniforms: {
       time: { value: 0 },
       sunPosition: { value: seaComposition.sun.clone() },
+      moonPosition: { value: new THREE.Vector3(0, 80, -150) },
+      skyHorizon: { value: new THREE.Color(.41, .59, .67) },
+      skyZenith: { value: new THREE.Color(.13, .32, .44) },
+      waterTint: { value: new THREE.Color(1, 1, 1) },
+      lightColor: { value: new THREE.Color(1, .94, .82) },
+      lightStrength: { value: 1 }, moonStrength: { value: 0 },
+      waveScale: { value: 1 }, rainAmount: { value: 0 }, fogDensity: { value: .005 },
     },
     vertexShader: `${waves}
       varying vec3 vWorld;
+      uniform float waveScale;
       void main() {
         vec4 world=modelMatrix*vec4(position,1.);
-        world.y+=surface(world.xz).x;
+        world.y+=surface(world.xz).x*waveScale;
         vWorld=world.xyz;
         gl_Position=projectionMatrix*viewMatrix*world;
       }
@@ -26,6 +34,8 @@ export function createOcean() {
     fragmentShader: `${waves}
       varying vec3 vWorld;
       uniform vec3 sunPosition;
+      uniform vec3 moonPosition, skyHorizon, skyZenith, waterTint, lightColor;
+      uniform float lightStrength, moonStrength, waveScale, rainAmount, fogDensity;
       float fifth(float x) { float x2=x*x;return x2*x2*x; }
       float windHash(vec2 p) {
         vec3 h=fract(vec3(p.xyx)*.1031);
@@ -52,10 +62,10 @@ export function createOcean() {
       }
       void main() {
         float footprint=max(length(dFdx(vWorld.xz)),length(dFdy(vWorld.xz)));
-        vec3 wave=surface(vWorld.xz,footprint);
+        vec3 wave=surface(vWorld.xz,footprint)*waveScale;
         vec3 grain=windGrain(vWorld.xz*.37+vec2(time*.018,-time*.011));
         float grainFilter=1.-smoothstep(.35,1.25,footprint*.37);
-        vec2 slope=wave.yz+grain.yz*(.07*grainFilter);
+        vec2 slope=wave.yz+grain.yz*((.07+.045*rainAmount)*grainFilter);
         vec3 normal=normalize(vec3(-slope.x,1.,-slope.y));
         vec3 viewDir=normalize(cameraPosition-vWorld);
         vec3 lightDir=normalize(sunPosition-vWorld);
@@ -68,10 +78,10 @@ export function createOcean() {
 
         // Deep blue-green body colour is seen through the water; grazing waves
         // reflect the pale horizon and the bluer sky, rather than a white coat.
-        vec3 water=mix(vec3(.009,.065,.105),vec3(.028,.18,.205),clamp(.46+wave.x*.3,0.,1.));
+        vec3 water=mix(vec3(.009,.065,.105),vec3(.028,.18,.205),clamp(.46+wave.x*.3,0.,1.))*waterTint;
         vec3 reflected=reflect(-viewDir,normal);
-        vec3 sky=mix(vec3(.41,.59,.67),vec3(.13,.32,.44),smoothstep(0.,.65,reflected.y));
-        vec3 reflection=mix(vec3(.055,.15,.20),sky,smoothstep(-.12,.13,reflected.y));
+        vec3 sky=mix(skyHorizon,skyZenith,smoothstep(0.,.65,reflected.y));
+        vec3 reflection=mix(vec3(.055,.15,.20)*waterTint,sky,smoothstep(-.12,.13,reflected.y));
         vec3 color=mix(water,reflection,fresnel);
 
         // A rough-water GGX lobe forms a broken trail below the visible sun.
@@ -88,14 +98,18 @@ export function createOcean() {
         float sunFresnel=.0204+.9796*fifth(1.-vh);
         float glint=distribution*visibility*sunFresnel*nl;
         // Compress the peak smoothly instead of clipping a large white patch.
-        color+=vec3(1.,.94,.82)*(.28*glint/(.7+glint));
+        color+=lightColor*(.28*glint/(.7+glint))*lightStrength;
+        vec3 moonDir=normalize(moonPosition-vWorld);
+        float moonAlignment=pow(max(dot(normal,normalize(moonDir+viewDir)),0.),110.);
+        color+=vec3(.48,.62,.79)*moonAlignment*.12*moonStrength;
         float crest=smoothstep(.46,.81,wave.x)*smoothstep(.25,.55,length(wave.yz));
-        color=mix(color,vec3(.54,.69,.70),crest*.065);
+        color=mix(color,skyHorizon*.7,crest*.065);
         float wash=0.;
         ${reefWash}
-        color=mix(color,vec3(.78,.86,.81),wash);
+        color=mix(color,skyHorizon*.88,wash);
         float distanceToEye=length(cameraPosition-vWorld);
-        color=mix(color,vec3(.48,.65,.71),smoothstep(55.,235.,distanceToEye)*.80);
+        float haze=max(smoothstep(55.,235.,distanceToEye)*.8,1.-exp(-distanceToEye*distanceToEye*fogDensity*fogDensity));
+        color=mix(color,skyHorizon,haze);
         gl_FragColor=vec4(color,1.);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -106,8 +120,8 @@ export function createOcean() {
   // The plane's local Z becomes world Y after rotation. Include all six waves'
   // maximum combined displacement (less than 1.1 m) in its CPU culling bounds.
   geometry.computeBoundingBox();
-  geometry.boundingBox!.min.z = -1.2;
-  geometry.boundingBox!.max.z = 1.2;
+  geometry.boundingBox!.min.z = -1.8;
+  geometry.boundingBox!.max.z = 1.8;
   geometry.boundingSphere = geometry.boundingBox!.getBoundingSphere(new THREE.Sphere());
   const ocean = new THREE.Mesh(geometry, material);
   ocean.rotation.x = -Math.PI / 2;

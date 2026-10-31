@@ -1,0 +1,50 @@
+.environment-debug {
+  position: fixed;
+  z-index: 26;
+  top: max(12px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  width: min(300px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  color: #e8efea;
+  background: #203c3bea;
+  border: 1px solid #e8efea40;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px #0a181a30;
+  font: 14px/1.45 system-ui, sans-serif;
+  color-scheme: dark;
+  text-align: left;
+}
+.environment-debug:not([open]) { width: fit-content; }
+.environment-debug summary { min-height: 44px; padding: 12px 16px; box-sizing: border-box; cursor: pointer; }
+.environment-debug-content {
+  padding: 0 14px 14px;
+  max-height: min(650px, calc(100dvh - 100px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.environment-debug-note { margin: 0 0 10px; font-size: 12px; color: #c5d9d3; }
+.environment-debug-status { display: block; margin-bottom: 12px; font-size: 12px; line-height: 1.65; white-space: pre-line; }
+.environment-debug-field { display: grid; gap: 4px; margin: 10px 0; }
+.environment-debug-field > span { font-size: 12px; }
+.environment-debug-field input, .environment-debug-field select, .environment-debug-reset {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid #d2dfd34d;
+  border-radius: 6px;
+  background: #152e30;
+  color: #f1f3e9;
+  font: inherit;
+  letter-spacing: normal;
+}
+.environment-debug-field input:focus-visible, .environment-debug-field select:focus-visible,
+.environment-debug-reset:focus-visible, .environment-debug summary:focus-visible { outline: 2px solid #c7ddd1; outline-offset: 2px; }
+.environment-debug-field input[type="range"] { padding: 0; accent-color: #c7ddd1; }
+.environment-debug-toggle { grid-template-columns: 1fr 44px; align-items: center; }
+.environment-debug-toggle input { width: 22px; height: 22px; min-height: 22px; margin: 11px; accent-color: #c7ddd1; }
+.environment-debug-error { color: #ffcfac; font-size: 12px; }
+.environment-debug-reset { margin-top: 8px; cursor: pointer; }
+body.reading .environment-debug, body.book-transition .environment-debug { display: none; }

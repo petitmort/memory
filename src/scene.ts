@@ -25,6 +25,7 @@ import { advanceReadingClock, createReadingPath, readingRetargetDuration, retarg
 import { createInteractionFeedback, type InteractionKind } from "./interaction-feedback";
 import { createQualityPolicy } from "./quality-policy";
 import { createEntryPath } from "./entry-motion";
+import { createEnvironmentController } from "./environment-controller";
 import type { CatReactionProfile } from "./cat-reactions";
 
 export type PageProjection = { corners: { x: number; y: number }[] };
@@ -298,17 +299,14 @@ export function createScene(
   const ocean = createOcean();
   const seaMat = ocean.material;
   scene.add(ocean);
-  const mythology = createMythology();
+  const mythology = createMythology(true);
   scene.add(mythology.group);
-  const skyMat = new THREE.ShaderMaterial({
-    side: THREE.BackSide,
-    vertexShader:
-      "varying vec3 vPos;void main(){vPos=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
-    fragmentShader:
-      "varying vec3 vPos;void main(){float h=normalize(vPos).y;vec3 col=mix(vec3(.84,.92,.95),vec3(.36,.65,.82),smoothstep(0.,.8,h));gl_FragColor=vec4(col,1.);}",
+  const environment = createEnvironmentController({
+    scene, camera, ambient, sun, fill, ocean: seaMat,
+    sunGroup: mythology.seascape.sunGroup, vessels: mythology.seascape.vessels!,
+    invalidate: requestRender,
+    quality(value) { qualityPolicy.setManual(value); applyQuality(qualityPolicy.low); },
   });
-  const sky = new THREE.Mesh(new THREE.SphereGeometry(350, 24, 12), skyMat);
-  scene.add(sky);
   const rug = box(
     D.rug.width,
     D.rug.thickness,
@@ -813,7 +811,7 @@ export function createScene(
     // Asset factories own their loading cancellation and private resources.
     // Release the remaining room resources once, including Points and uniforms.
     const resources = collectResources(scene);
-    for (const owned of [cat.group, recordPlayer.group, courtyardFog.group]) {
+    for (const owned of [cat.group, recordPlayer.group, courtyardFog.group, ...environment.ownedGroups]) {
       const asset = collectResources(owned);
       asset.geometries.forEach(value => resources.geometries.delete(value));
       asset.materials.forEach(value => resources.materials.delete(value));
@@ -826,6 +824,7 @@ export function createScene(
     recordPlayer.dispose();
     lounge.dispose();
     courtyardFog.dispose();
+    environment.dispose();
     resources.geometries.forEach(value => value.dispose());
     resources.materials.forEach(value => value.dispose());
     resources.textures.forEach(value => value.dispose());
@@ -938,12 +937,14 @@ export function createScene(
   }
   function visibilityChanged() {
     if (document.hidden) {
+      environment.pause();
       clearInteractionFeedback();
       qualityPolicy.resetSamples();
       if (cat.cancelPet()) sun.shadow.needsUpdate = true;
       pauseFrames();
     }
     else {
+      if (!readerBackdropFrozen) environment.resume();
       if (!readerBackdropFrozen || singleRenderRequested) scheduleFrame();
     }
   }
@@ -991,6 +992,7 @@ export function createScene(
       if (cat.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
       if (recordPlayer.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
     }
+    if (!readerBackdropFrozen) environment.update(t * (reducedMotion ? .15 : 1), low, reducedMotion, roomRevealed);
     let finishLookFrame: (() => void) | undefined;
     if (lookMotion) {
       const motion = lookMotion;
@@ -1087,6 +1089,7 @@ export function createScene(
           animating = false;
           current = motion.kind === "opening" ? "book" : "room";
           readerBackdropFrozen = motion.kind === "opening";
+          if (readerBackdropFrozen) environment.pause();
           motion.done();
         };
       }
@@ -1369,12 +1372,17 @@ export function createScene(
   }, listenerOptions);
   camera.lookAt(target);
   camera.updateMatrixWorld(true);
+  if (environment.initialQuality !== undefined) {
+    qualityPolicy.setManual(environment.initialQuality);
+    applyQuality(qualityPolicy.low);
+  }
+  environment.update(0, low, reducedMotion, false);
   // Warm the two-sided paper shader before its first visible turn.
   album.leaf.visible = true;
   const ready = whileAvailable(Promise.all([cat.ready, lounge.ready])).then(() => {
     requireAvailable();
     return whileAvailable(renderer.compileAsync(scene, camera));
-  }).then(() => whileAvailable(warmSceneResources(renderer, scene, camera, shelteredDetails, requireAvailable))).then(() => {
+  }).then(() => whileAvailable(warmSceneResources(renderer, scene, camera, [...shelteredDetails, ...environment.warmObjects], requireAvailable))).then(() => {
     requireAvailable();
     album.leaf.visible = false;
     renderer.render(scene, camera);
@@ -1444,6 +1452,7 @@ export function createScene(
       roomBeforeReading = { p: camera.position.clone(), t: target.clone(), fov: camera.fov, mobile: mobile() };
       animating = true;
       readerBackdropFrozen = false;
+      environment.resume();
       current = "book";
       setAlbumVisibility(1);
       await whileAvailable(Promise.all([parkBouquet(), paperReady]));
@@ -1503,6 +1512,7 @@ export function createScene(
       qualityPolicy.resetSamples();
       animating = true;
       readerBackdropFrozen = false;
+      environment.resume();
       lastDraw = null;
       singleRenderRequested = true;
       scheduleFrame();

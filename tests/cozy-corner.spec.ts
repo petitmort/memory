@@ -36,7 +36,9 @@ test('the cat can be approached smoothly, framed closely and left without losing
         farCamera.lookAt(point);farCamera.updateProjectionMatrix();farCamera.updateMatrixWorld(true);
         const sight=new THREE.Raycaster();sight.setFromCamera(new THREE.Vector2(projected.x,projected.y),camera);
         // Dust points use a large picking tolerance and do not occlude a cat.
-        let first=sight.intersectObjects(scene.children,true).find(hit=>hit.object.isMesh&&hit.object.visible)?.object,catVisible=false;
+        // Hidden pooled models still have raycastable children; use the same
+        // ancestor visibility rule as the shipping scene picker.
+        let first=sight.intersectObjects(scene.children,true).find(hit=>visibleMesh(hit.object))?.object,catVisible=false;
         for(;first;first=first.parent)if(first===cat.group)catVisible=true;
         let meshes=0,triangles=0;
         lounge.group.traverse(object=>{if(object.isMesh){meshes++;triangles+=(object.geometry.index?.count??object.geometry.attributes.position.count)/3;}});
