@@ -3,11 +3,11 @@ export type CalendarLocation = {
   latitude: number;
   longitude: number;
   timeZone: string;
-  /** Rotate geographic north (-Z) around world +Y. The sea window faces south. */
+  /** Rotate geographic north (-Z) around world +Y. The default sea window faces west. */
   northYaw?: number;
 };
 export const DEFAULT_LOCATION: Readonly<CalendarLocation> = Object.freeze({
-  latitude: 36.3932, longitude: 25.4615, timeZone: "Europe/Athens", northYaw: Math.PI,
+  latitude: 36.3932, longitude: 25.4615, timeZone: "Europe/Athens", northYaw: Math.PI * 1.5,
 });
 export type Season = "spring" | "summer" | "autumn" | "winter";
 export type CalendarSnapshot = {

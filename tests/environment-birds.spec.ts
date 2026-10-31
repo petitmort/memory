@@ -3,10 +3,10 @@ import * as THREE from 'three';
 import { BIRD_DEPARTURE_INTERVAL, BIRD_KINDS, createBirdController, createBirdJourney, getBirdSchedule, sampleBirdFlight } from '../src/bird-controller';
 import { sampleWeather } from '../src/weather-controller';
 
-function example(kind: typeof BIRD_KINDS[number], minCount = 1) {
-  for (let id = 8_000_000; id < 8_001_000; id++) {
+function example(kind: typeof BIRD_KINDS[number], firstId = 8_000_000) {
+  for (let id = firstId; id < firstId + 1_000; id++) {
     const journey = createBirdJourney(id);
-    if (journey.kind === kind && journey.admission < .76 && journey.count >= minCount) return journey;
+    if (journey.kind === kind && getBirdSchedule(journey.startMs + journey.durationMs / 2).some(value => value.id === id)) return journey;
   }
   throw new Error(`No deterministic ${kind} example`);
 }
@@ -14,6 +14,7 @@ function example(kind: typeof BIRD_KINDS[number], minCount = 1) {
 test('all coastal bird species follow deterministic outdoor trajectories, tangent headings and quiet absolute schedules', () => {
   for (const kind of BIRD_KINDS) {
     const journey = example(kind);
+    expect(journey.count).toBe(1);
     expect(createBirdJourney(journey.id)).toEqual(journey);
     const before = sampleBirdFlight(journey, journey.startMs - 1), start = sampleBirdFlight(journey, journey.startMs);
     const end = sampleBirdFlight(journey, journey.startMs + journey.durationMs);
@@ -38,15 +39,36 @@ test('all coastal bird species follow deterministic outdoor trajectories, tangen
     expect(getBirdSchedule(midpoint)).toEqual(getBirdSchedule(midpoint));
     expect(getBirdSchedule(journey.startMs + journey.durationMs + 10_000)).not.toContainEqual(journey);
   }
-  let active = 0, empty = 0;
+  let active = 0, empty = 0, quietMs = 0, longestQuietMs = 0;
   const base = 8_000_000 * BIRD_DEPARTURE_INTERVAL;
   for (let elapsed = 0; elapsed < 86_400_000; elapsed += 10_000) {
     const schedule = getBirdSchedule(base + elapsed);
-    if (schedule.length) active++; else empty++;
+    if (schedule.length) { active++; quietMs = 0; }
+    else { empty++; quietMs += 10_000; longestQuietMs = Math.max(longestQuietMs, quietMs); }
     expect(schedule.length).toBeLessThanOrEqual(1);
+    for (const journey of schedule) expect(journey.count).toBe(1);
   }
-  expect(active).toBeGreaterThan(300); expect(empty).toBeGreaterThan(active);
+  expect(active).toBeGreaterThan(300); expect(empty).toBeGreaterThan(active * 3);
+  expect(longestQuietMs).toBeGreaterThan(120_000);
   expect(getBirdSchedule(NaN)).toEqual([]);
+});
+
+test('each single bird has deterministic individual wingbeat and glide timing rather than a copied flock cycle', () => {
+  for (const kind of BIRD_KINDS) {
+    const first = example(kind), next = example(kind, first.id + 1);
+    expect(first.flapHz).not.toBe(next.flapHz);
+    expect(first.glideSeconds).not.toBe(next.glideSeconds);
+    expect(first.wingPhase).not.toBe(next.wingPhase);
+    const firstWings: number[] = [], nextWings: number[] = [];
+    for (let elapsed = 0; elapsed < 25_000; elapsed += 100) {
+      const pose = sampleBirdFlight(first, first.startMs + elapsed);
+      expect(sampleBirdFlight(createBirdJourney(first.id), first.startMs + elapsed)).toEqual(pose);
+      firstWings.push(pose.flap);
+      nextWings.push(sampleBirdFlight(next, next.startMs + elapsed).flap);
+    }
+    expect(firstWings).not.toEqual(nextWings);
+    expect(firstWings.every(value => Number.isFinite(value) && Math.abs(value - .055) <= .48)).toBe(true);
+  }
 });
 
 test('bird flaps include true glides and reduced motion changes wing amplitude without resetting a flight', () => {
@@ -65,7 +87,7 @@ test('bird flaps include true glides and reduced motion changes wing amplitude w
 });
 
 test('pooled birds fade with storms and quality, restore absolute positions and dispose shared resources once', () => {
-  const journey = example('gull', 4), now = journey.startMs + journey.durationMs * .5;
+  const journey = example('gull'), now = journey.startMs + journey.durationMs * .5;
   const clear = sampleWeather(now, { kind: 'clear' }), rain = sampleWeather(now, { kind: 'heavy-rain' });
   const controller = createBirdController(), fresh = createBirdController();
   const mesh = controller.group.children[0] as THREE.InstancedMesh;
@@ -74,18 +96,19 @@ test('pooled birds fade with storms and quality, restore absolute positions and 
   let geometryDisposals = 0, materialDisposals = 0;
   geometry.addEventListener('dispose', () => geometryDisposals++); material.addEventListener('dispose', () => materialDisposals++);
   controller.update(now, clear, false, false, 1); fresh.update(now, clear, false, false, 1);
-  expect(controller.snapshot()).toHaveLength(4); expect(controller.snapshot()).toEqual(fresh.snapshot());
-  expect(mesh.count).toBe(4); expect(controller.group.userData.visibleBirds).toBe(4);
+  expect(controller.snapshot()).toHaveLength(1); expect(controller.snapshot()).toEqual(fresh.snapshot());
+  expect(mesh.count).toBe(1); expect(controller.group.userData.visibleBirds).toBe(1);
+  expect(controller.group.userData.capacity).toBe(1);
   expect(controller.warmObjects).toContain(mesh);
   const before = controller.snapshot();
   controller.update(now + 16, rain, false, false, 1);
   const fading = controller.snapshot();
-  expect(fading).toHaveLength(4);
+  expect(fading).toHaveLength(1);
   expect(fading[0].opacity).toBeGreaterThan(.8); expect(fading[0].opacity).toBeLessThan(before[0].opacity);
   for (let i = 2; i <= 300; i++) controller.update(now + i * 16, rain, false, false, 1);
   expect(controller.snapshot()).toHaveLength(0);
   fresh.update(now + 10000, rain, false, false, 1); expect(fresh.snapshot()).toHaveLength(0);
-  fresh.update(now + 20000, clear, true, false, 1); expect(fresh.snapshot()).toHaveLength(2);
+  fresh.update(now + 20000, clear, true, false, 1); expect(fresh.snapshot()).toHaveLength(1);
   fresh.update(now + 30000, clear, false, false, 0); expect(fresh.snapshot()).toHaveLength(0);
   controller.update(now + 300000, clear, false, false, 1);
   const recovered = createBirdController(); recovered.update(now + 300000, clear, false, false, 1);

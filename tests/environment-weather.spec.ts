@@ -152,7 +152,8 @@ test('debug wind changes preserve cloud positions, zero wind remains still and p
   const now = Date.parse('2026-10-31T12:00:00Z'), state = sampleWeather(now, { kind: 'cloudy', windSpeed: 0 });
   const options = { windSpeed: 0, revision: 1 };
   let disposals = 0;
-  for (const resource of [mesh.geometry, mesh.material, mesh.material.uniforms.cloudMap.value]) resource.addEventListener('dispose', () => disposals++);
+  // InstancedMesh owns the instanceMatrix GPU buffer separately from geometry.
+  for (const resource of [mesh, mesh.geometry, mesh.material, mesh.material.uniforms.cloudMap.value]) resource.addEventListener('dispose', () => disposals++);
   clouds.update(now, state, false, false, 1, undefined, options);
   fresh.update(now, state, false, false, 1, undefined, options);
   expect(Array.from((fresh.group.children[0] as any).instanceMatrix.array)).toEqual(positions());
@@ -180,7 +181,7 @@ test('debug wind changes preserve cloud positions, zero wind remains still and p
   expect(mesh.count).toBe(36);
   expect(mesh.instanceMatrix.array).toBe(matrixBuffer); expect(style.array).toBe(styleBuffer);
   expect(clouds.group.userData.windCache.cachedHours).toBeLessThanOrEqual(10);
-  clouds.dispose(); clouds.dispose(); fresh.dispose(); expect(disposals).toBe(3);
+  clouds.dispose(); clouds.dispose(); fresh.dispose(); expect(disposals).toBe(4);
 });
 
 function roomCamera(mobile: boolean) {

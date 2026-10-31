@@ -49,6 +49,51 @@ async function clearFog(page: Page) {
   await expect(page.locator('#enter')).toContainText('推开这扇门');
 }
 
+for (const reduced of [false,true]) test(`fog completion survives a rounded clear frame and a background pause (${reduced?'reduced':'normal'} motion)`, async ({ page }) => {
+  await page.emulateMedia({reducedMotion:reduced?'reduce':'no-preference'});
+  await page.route(/\/src\/scene\.ts(?:\?.*)?$/, async route => {
+    const response = await route.fetch(); let body = await response.text();
+    const marker = 'const ray = new THREE.Raycaster();';
+    const clock = 'const a = advanceReadingClock(motion, now);';
+    expect(body).toContain(marker); expect(body).toContain(clock);
+    body = body.replace(marker, `
+      window.__fogProbe = { injected:false, held:false, frames:[], record(completed) {
+        if (!this.injected) return;
+        this.frames.push({clearance:fogClearance,pending:!!fogMotion,elapsed:fogMotion?.elapsed,duration:fogMotion?.duration,completed});
+        if (!this.held && fogMotion && fogClearance===1) {
+          this.held=true;
+          Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
+          document.dispatchEvent(new Event('visibilitychange'));
+        }
+      }};${marker}
+    `).replace(clock, `
+      if (!window.__fogProbe.injected) {
+        motion.elapsed=motion.duration*(1-1e-9); motion.lastDrawAt=now;
+        window.__fogProbe.injected=true;
+      }
+      ${clock}
+    `).replace('renderer.render(scene, camera);',
+      'renderer.render(scene, camera); window.__fogProbe.record(!!finishFogFrame);');
+    await route.fulfill({response,body});
+  });
+  await page.goto('/');
+  await expect(page.locator('#loading')).toBeHidden({timeout:60000});
+  await page.locator('#enter').click();
+  await page.waitForFunction(()=>(window as any).__fogProbe.held);
+  const held=await page.evaluate(()=>(window as any).__fogProbe.frames);
+  const last=held.at(-1)!;
+  expect(last.clearance).toBe(1); expect(last.pending).toBe(true);
+  expect(last.elapsed).toBeLessThan(last.duration); expect(last.completed).toBe(false);
+  await expect(page.locator('#enter')).toBeDisabled();
+  await page.waitForTimeout(150);
+  expect(await page.evaluate(()=>(window as any).__fogProbe.frames)).toEqual(held);
+  await resume(page);
+  await expect(page.locator('#enter')).toHaveText('推开这扇门',{timeout:5000});
+  const frames=await page.evaluate(()=>(window as any).__fogProbe.frames);
+  expect(frames.some(frame=>frame.completed&&frame.clearance===1&&!frame.pending)).toBe(true);
+  await test.info().attach('fog-rounded-endpoint',{body:JSON.stringify(frames,null,2),contentType:'application/json'});
+});
+
 test('entry curve keeps eye height and doorway clearance, with continuous speed after responsive retargeting', async ({ page }) => {
   await page.route('**/__entry-motion', route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Entry motion</title>' }));
   await page.goto('/__entry-motion');

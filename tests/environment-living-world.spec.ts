@@ -3,7 +3,7 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import * as THREE from 'three';
 import { calendarAt } from '../src/calendar-seed';
-import { BIRD_DEPARTURE_INTERVAL, BIRD_KINDS, createBirdJourney, sampleBirdFlight, type BirdKind } from '../src/bird-controller';
+import { BIRD_DEPARTURE_INTERVAL, BIRD_KINDS, createBirdJourney, getBirdSchedule, sampleBirdFlight, type BirdKind } from '../src/bird-controller';
 import { STORM_SLOT_MS, stormEventForSlot } from '../src/storm-controller';
 
 const evidence = process.env.LIVING_ENV_EVIDENCE ?? '/tmp/memory-living-weather-qa';
@@ -28,7 +28,7 @@ function localDate(timestamp: number) {
 }
 
 /** Pick visible absolute visits, without adding a force-birds production path. */
-function visibleVisit(kind: BirdKind, mobile = false, minCount = 1) {
+function visibleVisit(kind: BirdKind, mobile = false) {
   const camera = new THREE.PerspectiveCamera(50, mobile ? 390 / 844 : 1000 / 740, .1, 500);
   camera.position.set(mobile ? .55 : 1.1, 1.65, mobile ? 1.15 : .75);
   camera.lookAt(mobile ? .15 : -.2, mobile ? 1.05 : .95, mobile ? -1.4 : -1.5);
@@ -36,7 +36,7 @@ function visibleVisit(kind: BirdKind, mobile = false, minCount = 1) {
   const beginning = Math.floor(Date.parse('2026-06-21T08:00:00Z') / BIRD_DEPARTURE_INTERVAL);
   for (let slot = beginning; slot < beginning + 80; slot++) {
     const journey = createBirdJourney(slot);
-    if (journey.kind !== kind || journey.admission >= .76 || journey.count < minCount) continue;
+    if (journey.kind !== kind || !getBirdSchedule(journey.startMs + 1).some(value => value.id === journey.id)) continue;
     const hour = calendarAt(journey.startMs).secondsOfDay / 3600;
     if (hour < 9 || hour > 18) continue;
     for (const progress of [.32, .4, .48, .56, .64]) {
@@ -53,7 +53,6 @@ function visibleVisit(kind: BirdKind, mobile = false, minCount = 1) {
 }
 
 const desktopVisits = Object.fromEntries(BIRD_KINDS.map(kind => [kind, visibleVisit(kind)])) as Record<BirdKind, ReturnType<typeof visibleVisit>>;
-const flockVisit = visibleVisit('gull', false, 4);
 
 async function observe(page: Page) {
   const errors: string[] = [];
@@ -195,6 +194,7 @@ test('the live desktop world renders storms, sea rain impacts and all bird speci
       await seek(page, visit.timestamp);
       await expect.poll(async () => (await snapshot(page)).birdProjection.some(bird => bird.id === visit.journey.id && bird.kind === kind && bird.throughWindow && bird.opacity > .1)).toBe(true);
       const first = await snapshot(page);
+      expect(first.birds).toHaveLength(1);
       await page.waitForTimeout(350);
       const after = await snapshot(page), beforeBird = first.birds.find(bird => bird.id === visit.journey.id)!;
       const afterBird = after.birds.find(bird => bird.id === visit.journey.id && bird.member === beforeBird.member)!;
@@ -211,10 +211,10 @@ test('the live desktop world renders storms, sea rain impacts and all bird speci
     expect(birdsRendered.counters.buffers).toBe(loaded.counters.buffers);
     expect(birdsRendered.resources).toEqual(entered.resources);
 
-    await seek(page, flockVisit.timestamp);
+    await seek(page, desktopVisits.gull.timestamp);
     await page.locator('#env-quality').selectOption('low');
     await expect.poll(async () => (await snapshot(page)).low).toBe(true);
-    await expect.poll(async () => (await snapshot(page)).birds.length, { timeout: 10_000 }).toBeLessThanOrEqual(2);
+    await expect.poll(async () => (await snapshot(page)).birds.length, { timeout: 10_000 }).toBeLessThanOrEqual(1);
     const low = await snapshot(page);
     await page.locator('#env-quality').selectOption('normal');
     await expect.poll(async () => (await snapshot(page)).low).toBe(false);

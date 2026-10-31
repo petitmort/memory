@@ -111,10 +111,10 @@ test('Santorini solar rise and set follow seasonal astronomy rather than fixed s
   const rise = calculateCelestial(summer.sunrise!), set = calculateCelestial(summer.sunset!);
   expect(rise.sun.azimuth).toBeLessThan(Math.PI);
   expect(set.sun.azimuth).toBeGreaterThan(Math.PI);
-  // South-facing window, east is world -X and west is +X.
-  expect(rise.sun.direction[0]).toBeLessThan(0);
-  expect(set.sun.direction[0]).toBeGreaterThan(0);
-  expect(summer.sun.direction[2]).toBeLessThan(0);
+  // West-facing sea window: east is world +Z, north +X.
+  expect(rise.sun.direction[2]).toBeGreaterThan(0);
+  expect(set.sun.direction[2]).toBeLessThan(0);
+  expect(summer.sun.direction[0]).toBeLessThan(0);
 });
 
 test('known 2024 new, quarter and full moons produce continuous illumination and reasonable orbital positions', () => {

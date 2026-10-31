@@ -24,7 +24,7 @@
 | L01 | 确定性日内天气与分阶段过渡 | 完成（逻辑 / 适配器） | 新增五项天气逻辑、季节与毫秒连续性、真实适配器六秒分阶段 / 中断续接测试通过；自然锋面32–88分钟 / 过渡6–10分钟 |
 | L02 | 远处雷电、延迟雷声与风雨声音 | 完成（Chrome画面 / 原生音频信号） | 雷暴 / 雷声门控、两项原生离线信号、音频失败注入和原生降级通过；实际海上雷闪、减少动态关闭闪光、单设备及平滑静音 / 唱片压低通过 |
 | L03 | 海面雨点与波面光照联动 | 完成（真实像素） | 四邻域扩散雨圈 / 法线微扰在真实海面产生像素差异；室外降雨边界、低画质 / 减少动态通过；复用原网格与纹理 |
-| L04 | 飞鸟模型、飞行路径、调度和天气联动 | 完成（真实像素 / 运动） | 小鸟 / 海鸥 / 老鹰一笔实例绘制，普通最多4 / 省电目标2；四项轨迹 / 朝向 / 滑翔 / 天气渐隐 / 刷新及三类鸟窗内像素 / 移动通过 |
+| L04 | 飞鸟模型、飞行路径、调度和天气联动 | 完成（真实像素 / 运动） | 小鸟 / 海鸥 / 老鹰一笔实例绘制，首轮普通最多4 / 省电目标2（后续A02修订为单只）；四项轨迹 / 朝向 / 滑翔 / 天气渐隐 / 刷新及三类鸟窗内像素 / 移动通过 |
 | L05 | 类型 / 构建 / 自动测试、真实渲染和声音信号验证 | 完成（本机范围） | 首批42项、问题修复后34项及最终全套185项通过（7.1分钟）；最终类型 / 生产构建通过，八种桌面 / 手机生产场景通过，性能与Safari原生复验通过；实体设备及主观试听另记 |
 | L06 | 性能比较、文档、分支交付 | 完成（本机范围） | 三次同条件基准 / 大雨省电CPU4× / Safari原生复验通过；README、技术 / 性能 / 方案及JSON同步，普通推送开发分支 |
 
@@ -81,3 +81,37 @@
 - 本机证据目录：`/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-living-weather`。仅代码 / 文档开发分支交付与4173本地预览，`docs/`、部署和依赖配置未变。
 
 - 磁盘基线：项目185,460KiB、共享store1,445,180KiB；本轮源码 / 本地构建 / 测试图产生项目内增长，截图 / Safari / 诊断另存仓库外。提交后的最终`du -sk`、差值、提交号与远端状态写入上述证据目录`delivery.json`，不清理用户输出以缩小数字。
+
+## 太阳、云层与单只飞鸟修订（2026-10-31）
+
+基线`9640e9d`，本地Codex；作者反馈窗外只有亮光、看不到云与太阳，鸟群同步动作不自然。此批只修天空 / 太阳窗景和单鸟，不发布网站，不变更原始环境需求与47项统计。
+
+| 步骤 | 内容 | 状态 | 依据 / 下一步 |
+| --- | --- | --- | --- |
+| A00 | 核查真实窗景与天体投影 | 完成 | 当前 / 10月31日落 / 夏季多云三组修改前截图已保存；原南向窗在全年5分钟采样中太阳中心无透窗交点，低空渐变偏灰白且云缺少明暗对比 |
+| A01 | 西向场景地理朝向、蓝天与云层层次 | 完成（真实像素） | 保留房间和相机；默认northYaw改为3π/2，让傍晚太阳可进入窗景；太阳 / 月亮 / 光照 / 海面方向共同计算。桌面 / 手机太阳圆盘、低空蓝色及普通 / 省电云层实际像素断言通过 |
+| A02 | 稀疏单只飞鸟与独立节奏 | 完成（逻辑 / 真实场景） | 普通 / 省电均1只，5分钟候选 / 60%出现，每航次确定性翼拍频率 / 滑翔周期 / 相位变化；5项纯测试及三类鸟实际窗内像素、移动、天气渐隐 / 阅读返回通过 |
+| A03 | 回归、生产预览、文档与分支交付 | 完成（本机范围） | 45项相关回归及云释放补强后11项重叠复验、最终类型 / 构建、六个生产场景和同机性能抽样通过；代码 / 方案 / README / 技术 / 性能 / JSON同批交付开发分支，提交与推送结果由Git及外部delivery.json追踪 |
+
+太阳继续沿真实天文轨迹；正午过高、夜晚落下或位于窗框外时不强制可见。西向窗优先展示下午 / 傍晚太阳，存在季节和手机裁切差异。
+
+### A03 · 首轮验证与清雾问题
+
+- 首轮相关40项39通过；桌面 / 手机真实日落圆盘像素与海面反射方向、三类单鸟及关键流程通过。云层测试在清雾按钮停留“风正在经过…”时失败，尚未执行云像素断言，保留`/tmp/memory-sky-birds-tests/`。
+- 实际绘制时钟在结束前，`a<1`但`smoothstep(a)`可能舍入到1，旧`fogClearance<1`判断从下一帧跳过仍活跃的动画，完成回调永久无法触发。新测试注入这个边界并实际渲染、暂停后台、恢复；旧代码稳定失败（`/tmp/memory-fog-rounded-before/`），不是通过延长等待掩盖。
+- 仅将清雾更新条件扩展为“仍有活动动画或尚未清空”，保留真实末帧绘制后才完成、后台暂停与两次入室点击。分别补验100ms减少动态与1850ms普通动画；没有修改时长、门扇 / 镜头路径或操作顺序。
+
+### A03 · 自动回归与生产构建
+
+- `project-node node_modules/@playwright/test/cli.js test tests/environment-window-sky.spec.ts tests/environment-birds.spec.ts tests/environment-celestial.spec.ts tests/environment-weather.spec.ts tests/environment-sky.spec.ts tests/environment-controller.spec.ts tests/environment-integration.spec.ts tests/environment-living-world.spec.ts tests/performance.spec.ts tests/experience.spec.ts tests/mythology.spec.ts tests/entry-motion.spec.ts --workers=1 --output=/tmp/memory-sky-birds-final-tests`：**45/45通过，3.3分钟**。包含两种清雾时长的舍入 / 暂停边界、两次点击 / 门先镜头后、太阳 / 反射方向、云窗内像素、三类单鸟、雨雪 / 手机横竖屏、看猫 / 开册切章返回 / 声音状态 / WebGL兜底及阅读 / 后台停绘制。
+- 日落圆盘在1280×800与390×844实际贡献可见像素；多云正午低空蓝色的B−R均值大于30、云体改变超过200像素，普通 / 省电均一笔云绘制且几何数量稳定。截图库保存在外部`memory-sky-birds`目录；正午高太阳保持窗外真实方位。
+- 只读复查发现云实例释放遗漏`InstancedMesh.dispose()`，它拥有独立的instanceMatrix缓冲；补齐该调用与幂等释放断言。修改后`project-node node_modules/@playwright/test/cli.js test tests/environment-weather.spec.ts --workers=1 --output=/tmp/memory-sky-cloud-dispose-tests`：11/11通过（4.5秒），复验含实际云shader / 雨雪缓冲与全天窗内云分布；与上述45项重叠，不计为56个唯一用例。
+- 最终`project-node node_modules/typescript/bin/tsc --noEmit`与`project-node node_modules/vite/bin/vite.js build`通过，85模块、应用包`index-BGQx3S7h.js`295.97KB / gzip109.38KB；既有Three.js大分包提示保留。未安装依赖、未修改部署与发布产物。
+
+### A03 · 生产画面、性能与交付边界
+
+- 最终构建4173预览，临时Playwright脚本`/tmp/memory-sky-production.mjs`完成六场景：桌面 / 手机10月31日17:10晴朗日落，桌面多云正午、手机多云省电、844×390雨暮、桌面夜间。夜间另完成看猫抚摸 / 回桌 / 开册 / 切章 / 返回；六场景均无页面 / 控制台错误、横向溢出或兜底误触发。截图逐张复核，生产状态摘要写入[天空专项JSON](benchmark/sky-window-2026-10-31.json)。
+- `CHROMIUM_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' project-node scripts/measure-performance.mjs --output=/tmp/memory-sky-birds-performance.json`：960×640 / DPR1 / 减少动态 / 5秒，Chrome156 / ANGLE Metal Apple M1 Pro，60FPS、帧间隔P95 17.4ms、CPU提交P95 1.1ms、加载1110.1ms、入室2508.3ms；251几何 / 39纹理 / 54程序，131绘制调用，无错误或自动降档。
+- 对照上一批历史三次中位60.004FPS / P95 17.7ms / CPU提交1.4ms，固定资源不变；本轮只取一次，天气与绝对航次未锁同，缓存 / GC亦影响加载与堆，不声称提速、节省内存或长期无泄漏。未重跑整套185项、Safari与180秒持续实验；扬声器试听、实体手机、低端设备温度 / 电池 / 进程 / GPU内存仍待验。
+- 复用`~/.nvm/versions/node/v24.14.0`、`~/.local/bin/project-node`、既有`node_modules`与`~/Library/pnpm/store/v11`；文档 / JSON使用共享`document-python`，没有安装、环境迁移、手动清理或新隔离环境。最终磁盘快照及与上一交付快照的差值记录外部`memory-sky-birds/delivery.json`，包含源码、Git、忽略的构建 / 测试缓存，不能归为环境占用优化；共享store仍1,445,180KiB。
+- 原47项 / 15完成、完整需求原文、部署 / 依赖配置校验保留；源码与文档普通提交 / 推送`codex/calendar-environment-requirements`，不合入main、不改docs、不发布。新增测试为`environment-window-sky.spec.ts`与既有鸟 / 天文 / 云 / 入室回归补强；README与AGENTS交接规则已同步。

@@ -26,10 +26,11 @@ export function createSeascape(dynamic = false) {
   helios.position.copy(seaComposition.sun); group.add(helios);
   // A simple sun disc: the light itself is the subject, with no sculpted face or rays.
   const solarDisc = new THREE.Mesh(new THREE.CircleGeometry(2.4, 64), new THREE.MeshBasicMaterial({
-    color: "#fffdf3", fog: false, toneMapped: false,
+    color: "#fffdf3", fog: false, toneMapped: false, transparent: true, depthWrite: false,
   }));
   helios.add(solarDisc);
   solarDisc.name = "solar-disc";
+  solarDisc.renderOrder = -4;
   const glowCanvas = document.createElement("canvas"); glowCanvas.width = glowCanvas.height = 256;
   const gc = glowCanvas.getContext("2d")!, gradient = gc.createRadialGradient(128, 128, 26, 128, 128, 128);
   gradient.addColorStop(0, "rgba(255,248,217,.95)");
@@ -45,8 +46,10 @@ export function createSeascape(dynamic = false) {
   });
   const aura = new THREE.Sprite(auraMaterial);
   aura.name = "solar-outer-glow"; aura.scale.set(14.4, 14.4, 1); aura.position.z = -4.5; helios.add(aura);
+  aura.renderOrder = -6;
   const corona = new THREE.Sprite(auraMaterial.clone());
   corona.name = "solar-inner-corona"; corona.material.opacity = .34;
+  corona.renderOrder = -5;
   corona.scale.set(7.8, 7.8, 1); corona.position.z = -3.5; helios.add(corona);
   helios.lookAt(new THREE.Vector3(1.1, 1.65, .75));
 

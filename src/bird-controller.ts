@@ -5,30 +5,35 @@ import type { WeatherState } from "./weather-controller";
 export const BIRD_KINDS = ["small-bird", "gull", "eagle"] as const;
 export type BirdKind = typeof BIRD_KINDS[number];
 /** Visits have quiet gaps; this grid never restarts at midnight or page load. */
-export const BIRD_DEPARTURE_INTERVAL = 210_000;
-const CAPACITY = 4;
+export const BIRD_DEPARTURE_INTERVAL = 300_000;
+const CAPACITY = 1, ADMISSION_RATE = .6;
 const smooth = (value: number) => { const t = Math.max(0, Math.min(1, value)); return t * t * (3 - 2 * t); };
 export type BirdJourney = {
-  id: number; kind: BirdKind; count: number; startMs: number; durationMs: number;
+  id: number; kind: BirdKind; count: 1; startMs: number; durationMs: number;
   direction: number; phase: number; turns: number; rise: number; retreat: number; admission: number;
+  flapHz: number; glideSeconds: number; wingPhase: number;
 };
 
 export function createBirdJourney(id: number): BirdJourney {
   const random = createSeededRandom(Math.imul(id, 7919) + 601031);
   const roll = random(), kind: BirdKind = roll < .17 ? "small-bird" : roll < .84 ? "gull" : "eagle";
   return {
-    id, kind, count: kind === "eagle" ? 1 : kind === "small-bird" ? 2 : 1 + Math.floor(random() * 4),
+    id, kind, count: 1,
     startMs: id * BIRD_DEPARTURE_INTERVAL + random() * 35_000,
     durationMs: (kind === "small-bird" ? 28 + random() * 10 : kind === "gull" ? 66 + random() * 25 : 100 + random() * 28) * 1000,
     direction: random() < .5 ? -1 : 1, phase: random() * Math.PI * 2,
     turns: 1.7 + random() * .7, rise: kind === "eagle" ? 25 + random() * 7 : 14 + random() * 5,
     retreat: kind === "eagle" ? 205 : 145, admission: random(),
+    flapHz: (kind === "small-bird" ? 5.8 : kind === "gull" ? 1.8 : .95) * (.9 + random() * .2),
+    glideSeconds: (kind === "eagle" ? 18 : 11) * (.82 + random() * .36),
+    wingPhase: random() * Math.PI * 2,
   };
 }
 
 /** Analytic flight and tangent: no frame counters, integration drift or reset. */
 export function sampleBirdFlight(journey: BirdJourney, timestampMs: number, member = 0, reduced = false) {
-  const progress = (timestampMs - journey.startMs - member * 1150) / journey.durationMs;
+  const startMs = journey.startMs + member * 1150;
+  const progress = (timestampMs - startMs) / journey.durationMs;
   const u = Math.max(0, Math.min(1, progress)), angle = journey.phase + u * journey.turns * Math.PI * 2;
   const rate = journey.turns * Math.PI * 2, envelope = Math.sin(Math.PI * u), envelopeD = Math.PI * Math.cos(Math.PI * u);
   const lateral = (member - (journey.count - 1) * .5) * 2.25;
@@ -53,16 +58,14 @@ export function sampleBirdFlight(journey: BirdJourney, timestampMs: number, memb
     ddz = -2 * journey.retreat + depth * (-(Math.PI ** 2) * envelope * Math.cos(angle) - 2 * envelopeD * Math.sin(angle) * rate - envelope * Math.cos(angle) * rate * rate);
   }
   const seconds = Math.max(0, timestampMs - journey.startMs) / 1000;
-  const flapHz = journey.kind === "small-bird" ? 5.8 : journey.kind === "gull" ? 1.8 : .95;
-  const burstCycle = journey.kind === "eagle" ? 18 : 11;
-  const burst = .5 + .5 * Math.sin(seconds / burstCycle * Math.PI * 2 + journey.phase);
+  const burst = .5 + .5 * Math.sin(seconds / journey.glideSeconds * Math.PI * 2 + journey.phase);
   const flapping = journey.kind === "small-bird" ? 1 : smooth((burst - (journey.kind === "eagle" ? .8 : .55)) / .2);
-  const flap = .055 + Math.sin(seconds * flapHz * Math.PI * 2 + member * .8) * .48 * flapping * (reduced ? .18 : 1);
+  const flap = .055 + Math.sin(seconds * journey.flapHz * Math.PI * 2 + journey.wingPhase) * .48 * flapping * (reduced ? .18 : 1);
   const yawRate = (dz * ddx - dx * ddz) / Math.max(1, dx * dx + dz * dz);
   return {
     x, y, z, dx, dy, dz, progress, yaw: Math.atan2(-dz, dx), pitch: Math.atan2(dy, Math.hypot(dx, dz)),
     bank: THREE.MathUtils.clamp(yawRate * .15, -.24, .24) * (reduced ? .3 : 1), flap,
-    alpha: progress >= 0 && progress < 1 ? smooth(u / .06) * smooth((1 - u) / .17) : 0,
+    alpha: timestampMs >= startMs && timestampMs < startMs + journey.durationMs ? smooth(u / .06) * smooth((1 - u) / .17) : 0,
   };
 }
 
@@ -71,7 +74,7 @@ export function getBirdSchedule(timestampMs: number): BirdJourney[] {
   const slot = Math.floor(timestampMs / BIRD_DEPARTURE_INTERVAL), journeys: BirdJourney[] = [];
   for (let id = slot - 1; id <= slot; id++) {
     const journey = createBirdJourney(id);
-    if (journey.admission < .76 && timestampMs >= journey.startMs
+    if (journey.admission < ADMISSION_RATE && timestampMs >= journey.startMs
       && timestampMs < journey.startMs + journey.durationMs + (journey.count - 1) * 1150) journeys.push(journey);
   }
   return journeys;
@@ -145,7 +148,7 @@ export function createBirdController() {
   const position = new THREE.Vector3(), scale = new THREE.Vector3();
   const actors = Array.from({ length: CAPACITY }, () => ({ journey: null as BirdJourney | null, member: 0, opacity: 0, point: null as ReturnType<typeof sampleBirdFlight> | null }));
   let disposed = false, previousTime: number | undefined, scheduleSlot = NaN, schedule: BirdJourney[] = [], updates = 0;
-  function update(timestampMs: number, weather: WeatherState, low: boolean, reduced: boolean, daylight: number) {
+  function update(timestampMs: number, weather: WeatherState, _low: boolean, reduced: boolean, daylight: number) {
     if (disposed || !Number.isFinite(timestampMs)) return;
     const restoring = previousTime === undefined || timestampMs < previousTime || timestampMs - previousTime > 1000;
     const dt = previousTime === undefined ? 0 : THREE.MathUtils.clamp((timestampMs - previousTime) / 1000, 0, .1);
@@ -158,9 +161,10 @@ export function createBirdController() {
     }
     const weatherWeight = smooth((daylight - .12) / .3) * (1 - smooth((weather.precipitation - .015) / .28))
       * (1 - smooth((weather.windSpeed - 6) / 5)) * (1 - smooth(weather.snow / .15));
-    const limit = low ? 2 : CAPACITY;
+    // A single occasional visitor stays quiet at both normal and low quality.
+    const limit = CAPACITY;
     const wanted: { journey: BirdJourney; member: number }[] = [];
-    for (const journey of schedule) if (journey.admission < .76 && timestampMs >= journey.startMs
+    for (const journey of schedule) if (journey.admission < ADMISSION_RATE && timestampMs >= journey.startMs
       && timestampMs < journey.startMs + journey.durationMs + (journey.count - 1) * 1150) {
       for (let member = 0; member < journey.count && wanted.length < limit; member++) wanted.push({ journey, member });
     }

@@ -13,7 +13,9 @@ function cloudSeed(index: number): CloudSeed {
   const random = createSeededRandom(893181 + index * 77917), layer = index % 3;
   return {
     phase: random(), offset: index / CAPACITY * CLOUD_LIFETIME + random() * 30000,
-    z: -55 - layer * 55 - random() * 45, y: 7 + layer * 5 + random() * 17,
+    // A low coastal bank stays in the study's shallow sky aperture. The upper
+    // part of the old 17 m spread lived almost entirely above the window.
+    z: -55 - layer * 55 - random() * 45, y: 5 + layer * 2.8 + random() * 8,
     width: 15 + layer * 14 + random() * 15, height: 7 + layer * 3 + random() * 7,
     shade: .82 + random() * .18, layer,
   };
@@ -60,7 +62,7 @@ function cloudAtlas() {
       const x = left + 23 + random() * 82, y = top + 48 + random() * 32;
       const radius = 13 + random() * 20;
       const gradient = context.createRadialGradient(x, y, radius * .12, x, y, radius);
-      gradient.addColorStop(0, "rgba(255,255,255,.35)"); gradient.addColorStop(.5, "rgba(255,255,255,.18)"); gradient.addColorStop(1, "rgba(255,255,255,0)");
+      gradient.addColorStop(0, "rgba(255,255,255,.5)"); gradient.addColorStop(.6, "rgba(255,255,255,.34)"); gradient.addColorStop(.83, "rgba(255,255,255,.12)"); gradient.addColorStop(1, "rgba(255,255,255,0)");
       context.fillStyle = gradient; context.fillRect(Math.max(left, x - radius), Math.max(top, y - radius), Math.min(128, radius * 2), Math.min(128, radius * 2));
     }
     context.restore();
@@ -79,8 +81,9 @@ export function createCloudController() {
   const styleAttribute = new THREE.InstancedBufferAttribute(styles, 4).setUsage(THREE.DynamicDrawUsage);
   geometry.setAttribute("cloudStyle", styleAttribute);
   const material = new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false, fog: true,
-    uniforms: { ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog), cloudMap: { value: atlas }, cloudCover: { value: 0 }, daylight: { value: 1 }, lightDirection: { value: new THREE.Vector3(0, 1, -1) }, cold: { value: 0 } },
+    transparent: true, depthWrite: false, fog: true, toneMapped: false,
+    uniforms: { ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog), cloudMap: { value: atlas }, cloudCover: { value: 0 }, daylight: { value: 1 }, lightDirection: { value: new THREE.Vector3(0, 1, -1) }, cold: { value: 0 },
+      cloudLight: { value: new THREE.Color("#f4f3ed") }, cloudShade: { value: new THREE.Color("#859caa") }, cloudNight: { value: new THREE.Color("#192a3a") } },
     vertexShader: `
       attribute vec4 cloudStyle;
       varying vec2 vCloudUv;
@@ -99,6 +102,7 @@ export function createCloudController() {
       uniform float daylight;
       uniform float cold;
       uniform vec3 lightDirection;
+      uniform vec3 cloudLight, cloudShade, cloudNight;
       varying vec2 vCloudUv;
       varying vec4 vCloudStyle;
       #include <fog_pars_fragment>
@@ -109,15 +113,15 @@ export function createCloudController() {
         if(mod(variant,2.)>0.5) uv.x=1.-uv.x;
         float shape=texture2D(cloudMap,(tile+uv)/vec2(4.,2.)).a;
         float density=smoothstep(vCloudStyle.z-.16,vCloudStyle.z+.16,cloudCover);
-        float alpha=shape*density*(.48+.35*cloudCover)*vCloudStyle.w;
+        float body=mix(shape,smoothstep(.08,.76,shape),.45);
+        float alpha=body*density*(.6+.25*cloudCover)*vCloudStyle.w*(.45+.55*daylight);
         if(alpha<.004) discard;
-        float lit=clamp(.72+(uv.y-.45)*.18+dot(vec2(uv.x-.5,uv.y-.5),lightDirection.xy)*.15,.5,1.);
-        vec3 day=mix(vec3(.72,.77,.80),vec3(.98,.97,.93),lit)*(1.-cloudCover*.18);
-        vec3 night=vec3(.10,.14,.21)*(1.+lit*.25);
+        float lit=clamp(smoothstep(.15,.85,uv.y)+dot(vec2(uv.x-.5,uv.y-.5),lightDirection.xy)*.16,.12,1.);
+        vec3 day=mix(cloudShade,cloudLight,lit)*(1.-cloudCover*.24);
+        vec3 night=cloudNight*(.75+lit*.25);
         vec3 color=mix(night,day,daylight)*vCloudStyle.y;
         color=mix(color,color*vec3(.91,.97,1.06),cold*.35);
         gl_FragColor=vec4(color,alpha);
-        #include <tonemapping_fragment>
         #include <colorspace_fragment>
         #include <fog_fragment>
       }
@@ -241,7 +245,7 @@ export function createCloudController() {
     },
     dispose() {
       if (disposed) return;
-      disposed = true; wind.clear(); group.removeFromParent(); geometry.dispose(); material.dispose(); atlas.dispose(); group.clear();
+      disposed = true; wind.clear(); group.removeFromParent(); mesh.dispose(); geometry.dispose(); material.dispose(); atlas.dispose(); group.clear();
     },
   };
 }

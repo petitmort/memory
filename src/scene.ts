@@ -970,7 +970,9 @@ export function createScene(
     const t = simulationTime;
     let finishFogFrame: (() => void) | undefined;
     let updateFog = false;
-    if (current === "entry" && fogClearance < 1) {
+    // Easing can round to one before its clock ends; still draw and finish the
+    // active motion so the second entry click is released after the last frame.
+    if (current === "entry" && (fogClearance < 1 || fogMotion !== null)) {
       if (fogMotion) {
         const motion = fogMotion;
         // Clearing begins on an actual draw and pauses with a hidden tab.

@@ -1,0 +1,603 @@
+{
+  "date": "2026-10-31",
+  "baselineCommit": "9640e9d",
+  "source": "local Codex",
+  "changes": [
+    "West-facing geographic scene orientation; sun/moon/light/reflection stay aligned",
+    "Low-altitude sky color and readable layered cloud bodies",
+    "One occasional coastal bird at both quality levels; independent seeded wingbeat/glide rhythm",
+    "Rounded fog endpoint completion and cloud instance-buffer disposal"
+  ],
+  "validation": {
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "productionAsset": "index-BGQx3S7h.js",
+    "playwright": {
+      "focusedUniquePassed": 45,
+      "finalFocusedDurationMinutes": 3.3,
+      "cloudDisposalFollowupPassed": 11,
+      "followupOverlapsFocusedSuite": true,
+      "firstFocusedRun": {
+        "passed": 39,
+        "failed": 1,
+        "cause": "Fog easing rounded to one before the elapsed clock ended; active motion was then skipped."
+      },
+      "deterministicOldCodeRegression": "failed as expected",
+      "finalFogBoundaryModes": [
+        "normal 1850ms",
+        "reduced 100ms"
+      ],
+      "fullSuiteRerun": false
+    },
+    "renderAssertions": {
+      "sunDiscChangedPixelsGreaterThan": 20,
+      "sunDiscMaxRgbDifferenceGreaterThan": 30,
+      "lowSkyMeanBlueMinusRedGreaterThan": 30,
+      "cloudChangedPixelsGreaterThan": 200,
+      "cloudMaxRgbDifferenceGreaterThan": 18,
+      "cloudDrawCalls": 1,
+      "viewports": [
+        "1280x800",
+        "390x844"
+      ],
+      "cloudQualities": [
+        "normal",
+        "low"
+      ]
+    },
+    "productionCases": [
+      {
+        "name": "sunset-desktop",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-10-31 17:10 · Europe/Athens\n模拟天气：晴天\n太阳高度 1.6° · 月相 70.6%\n航行 2 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "clouds-desktop",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-06-21 12:00 · Europe/Athens\n模拟天气：多云\n太阳高度 68.4° · 月相 23.2%\n航行 2 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "sunset-phone",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "2026-10-31 17:10 · Europe/Athens\n模拟天气：晴天\n太阳高度 1.6° · 月相 70.6%\n航行 2 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "clouds-phone-low",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "2026-06-21 12:00 · Europe/Athens\n模拟天气：多云\n太阳高度 68.4° · 月相 23.2%\n航行 0 艘 · 省电画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "rain-landscape",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "status": "2026-10-01 18:45 · Europe/Athens\n模拟天气：大雨\n太阳高度 2.6° · 月相 68.0%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "night-room",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-06-29 23:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 -21.7° · 月相 49.5%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      }
+    ],
+    "safariRerun": false,
+    "enduranceRerun": false
+  },
+  "performance": {
+    "currentSingleSample": {
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 960,
+          "height": 640
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.74",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1110.0743749999997,
+      "entryMs": 2508.322459,
+      "before": {
+        "calls": 131,
+        "triangles": 369692,
+        "geometries": 251,
+        "textures": 39,
+        "programs": 54,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 131,
+        "triangles": 369692,
+        "geometries": 251,
+        "textures": 39,
+        "programs": 54,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 301,
+        "measuredFps": 60,
+        "frameIntervalMedianMs": 16.69999999552965,
+        "frameIntervalP95Ms": 17.399999998509884,
+        "frameSubmitP95Ms": 1.1000000014901161
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 22.30000000447035,
+            "processingMs": 0.3999999985098839
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 22.900000005960464,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 23.900000005960464,
+            "processingMs": 0.3999999985098839
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 14.700000002980232,
+            "processingMs": 0.20000000298023224
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 14.900000005960464,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 15.5,
+            "processingMs": 0.20000000298023224
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 15.5,
+            "processingMs": 0.20000000298023224
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.700000002980232,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 16.700000002980232,
+            "processingMs": 0.3999999985098839
+          }
+        ],
+        "pointerDispatchMs": [
+          22.700000002980232,
+          14.900000005960464,
+          15.700000002980232
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 25919512,
+        "jsHeapTotalBytes": 52297728,
+        "documents": 6,
+        "nodes": 345,
+        "jsEventListeners": 124
+      }
+    },
+    "historicalPreviousBatchMedian": {
+      "source": "benchmark/living-weather-2026-10-31.json",
+      "fps": 60.004,
+      "frameIntervalP95Ms": 17.7,
+      "frameSubmitP95Ms": 1.4,
+      "geometries": 251,
+      "textures": 39,
+      "programs": 54
+    },
+    "limits": "Single current 5-second sample versus historical three-run median; weather and absolute traffic not locked. No performance-improvement, sustained-memory or physical-phone claim."
+  },
+  "windowDiagnostics": {
+    "before": [
+      {
+        "name": "before-current",
+        "timestamp": 1793459248776,
+        "weather": {
+          "kind": "clear",
+          "cloudCover": 0.03796462443469193,
+          "precipitation": 0,
+          "snow": 0,
+          "windSpeed": 2.620455008864541,
+          "windDirection": 0.9804597976664082,
+          "visibility": 1,
+          "waveScale": 0.9550257364806719,
+          "simulated": true
+        },
+        "sun": {
+          "altitude": 0.03714003841346449,
+          "azimuth": 4.372663872684577,
+          "direction": [
+            0.9421961048671614,
+            0.03713150062229912,
+            -0.3329981255723299
+          ]
+        },
+        "solar": [
+          221.41608464378294,
+          0.7259026462402929,
+          -78.25455950949753
+        ],
+        "projected": [
+          -7.691029292996978,
+          0.6288279992507619,
+          1.0053845862973636
+        ],
+        "through": [
+          10.720843363219775,
+          1.6096461787741791,
+          -2.6999999999999997
+        ],
+        "throughWindow": false,
+        "horizon": [
+          0.5810574504988695,
+          0.3970109149954875,
+          0.3218411145241797
+        ],
+        "zenith": [
+          0.09721469979696323,
+          0.26139713295698414,
+          0.3957630908660187
+        ],
+        "resources": {
+          "geometries": 251,
+          "textures": 39
+        },
+        "errors": []
+      },
+      {
+        "name": "before-sunset",
+        "timestamp": 1793458801427,
+        "weather": {
+          "kind": "clear",
+          "cloudCover": 0.035,
+          "precipitation": 0,
+          "snow": 0,
+          "windSpeed": 2.1,
+          "windDirection": 0.9804597976664082,
+          "visibility": 1,
+          "waveScale": 0.88,
+          "simulated": true
+        },
+        "sun": {
+          "altitude": 0.06176192027098909,
+          "azimuth": 4.352939030668203,
+          "direction": [
+            0.9343056433030181,
+            0.06172266227511452,
+            -0.35108870368299455
+          ]
+        },
+        "solar": [
+          219.56182617620925,
+          6.504825634651912,
+          -82.50584536550372
+        ],
+        "projected": [
+          -8.319324176878885,
+          0.287726563136296,
+          1.005779602937465
+        ],
+        "through": [
+          10.152737342334495,
+          1.8511768466948861,
+          -2.7
+        ],
+        "throughWindow": false,
+        "horizon": [
+          0.6038150817487244,
+          0.4479989175449589,
+          0.38162043613197294
+        ],
+        "zenith": [
+          0.11831113134334716,
+          0.31845162908538194,
+          0.4807958016147483
+        ],
+        "resources": {
+          "geometries": 251,
+          "textures": 39
+        },
+        "errors": []
+      },
+      {
+        "name": "before-clouds",
+        "timestamp": 1782032401405,
+        "weather": {
+          "kind": "cloudy",
+          "cloudCover": 0.58,
+          "precipitation": 0,
+          "snow": 0,
+          "windSpeed": 3.6,
+          "windDirection": 0.40751172740012404,
+          "visibility": 0.86,
+          "waveScale": 1.04,
+          "simulated": true
+        },
+        "sun": {
+          "altitude": 1.1946110503824499,
+          "azimuth": 2.1188312968696357,
+          "direction": [
+            -0.31357307488612546,
+            0.9300728344179787,
+            -0.19140650298296458
+          ]
+        },
+        "solar": [
+          -73.68967259823948,
+          210.567116088225,
+          -44.98052820099667
+        ],
+        "projected": [
+          -2.8037717309883634,
+          23.75397938198756,
+          0.9904081961052765
+        ],
+        "through": [
+          -4.542278377582848,
+          17.41111361181845,
+          -2.7
+        ],
+        "throughWindow": false,
+        "horizon": [
+          0.5013298570279504,
+          0.6070166384966997,
+          0.6431934382630817
+        ],
+        "zenith": [
+          0.17649412920160282,
+          0.37560647233149397,
+          0.5355311818014653
+        ],
+        "resources": {
+          "geometries": 251,
+          "textures": 39
+        },
+        "errors": []
+      }
+    ],
+    "after": [
+      {
+        "name": "after-current",
+        "timestamp": 1793459517909,
+        "weather": {
+          "kind": "clear",
+          "cloudCover": 0.07765554999489077,
+          "precipitation": 0,
+          "snow": 0,
+          "windSpeed": 2.412390480244077,
+          "windDirection": 0.9807571284761832,
+          "visibility": 0.9915497676972845,
+          "waveScale": 0.9594256836932757,
+          "simulated": true
+        },
+        "sun": {
+          "altitude": 0.02224400747863183,
+          "azimuth": 4.384416451281624,
+          "direction": [
+            -0.3220446007762318,
+            0.022242173151918676,
+            -0.9464631851500392
+          ]
+        },
+        "solar": [
+          -75.68048118241448,
+          -2.7730893092991113,
+          -222.4188485102592
+        ],
+        "projected": [
+          0.26925736727400096,
+          0.533993500266069,
+          0.9995103125388259
+        ],
+        "through": [
+          -0.08696073330840659,
+          1.5816228128659253,
+          -2.7
+        ],
+        "throughWindow": true,
+        "horizon": [
+          0.5262594146999894,
+          0.34346348053285114,
+          0.27987067262510357
+        ],
+        "zenith": [
+          0.03810528466417889,
+          0.16154463108731443,
+          0.2793918459239477
+        ],
+        "resources": {
+          "geometries": 251,
+          "textures": 39
+        },
+        "errors": []
+      },
+      {
+        "name": "after-sunset",
+        "timestamp": 1793458801415,
+        "weather": {
+          "kind": "clear",
+          "cloudCover": 0.035,
+          "precipitation": 0,
+          "snow": 0,
+          "windSpeed": 2.1,
+          "windDirection": 0.9804597976664082,
+          "visibility": 1,
+          "waveScale": 0.88,
+          "simulated": true
+        },
+        "sun": {
+          "altitude": 0.06176257835448919,
+          "azimuth": 4.352938498207805,
+          "direction": [
+            -0.35108918687587554,
+            0.06172331910374451,
+            -0.9343054183390214
+          ]
+        },
+        "solar": [
+          -82.50595891583075,
+          6.50497998937996,
+          -219.56177330967003
+        ],
+        "projected": [
+          0.2270227379065894,
+          0.6259718079424743,
+          0.9995043165882787
+        ],
+        "through": [
+          -0.20923805807774198,
+          1.726027171456777,
+          -2.7
+        ],
+        "throughWindow": true,
+        "horizon": [
+          0.5306189256493534,
+          0.40474889620704346,
+          0.3665989589041294
+        ],
+        "zenith": [
+          0.05391631879510198,
+          0.2296808391621906,
+          0.3948446001533585
+        ],
+        "resources": {
+          "geometries": 251,
+          "textures": 39
+        },
+        "errors": []
+      },
+      {
+        "name": "after-clouds",
+        "timestamp": 1782032401415,
+        "weather": {
+          "kind": "cloudy",
+          "cloudCover": 0.58,
+          "precipitation": 0,
+          "snow": 0,
+          "windSpeed": 3.6,
+          "windDirection": 0.40751172740012404,
+          "visibility": 0.86,
+          "waveScale": 1.04,
+          "simulated": true
+        },
+        "sun": {
+          "altitude": 1.1946115499593892,
+          "azimuth": 2.118832500330772,
+          "direction": [
+            -0.1914066382605087,
+            0.930073017951667,
+            0.3135724479416023
+          ]
+        },
+        "solar": [
+          -44.98055999121954,
+          210.56715921864173,
+          73.68952526627653
+        ],
+        "projected": [
+          1.1001770336350092,
+          -4.408109613233776,
+          1.002549582601027
+        ],
+        "through": [
+          3.2795855044207505,
+          -8.231668363936528,
+          -2.7
+        ],
+        "throughWindow": false,
+        "horizon": [
+          0.30838461032875586,
+          0.45493626913199703,
+          0.5394925536253432
+        ],
+        "zenith": [
+          0.16766613294387184,
+          0.3127745042932942,
+          0.43987785853794986
+        ],
+        "resources": {
+          "geometries": 251,
+          "textures": 39
+        },
+        "errors": []
+      }
+    ]
+  },
+  "environment": {
+    "node": "24.14.0",
+    "nodeEntry": "~/.local/bin/project-node",
+    "sharedStore": "~/Library/pnpm/store/v11",
+    "dependencyInstalls": false,
+    "newEnvironments": false
+  },
+  "publication": {
+    "deployed": false,
+    "branch": "codex/calendar-environment-requirements",
+    "docsChanged": false
+  },
+  "limits": [
+    "Solar visibility remains date/time, weather, window aperture and viewport dependent; noon may be above the window.",
+    "Clouds use lightweight textured billboards; bird models and behavior are landscape approximations.",
+    "Physical mobile devices, subjective audio and sustained thermal/battery/process/GPU memory checks remain pending."
+  ]
+}

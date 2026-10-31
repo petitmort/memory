@@ -7,12 +7,11 @@ export function createEnvironmentSky(sunGroup: THREE.Group) {
   const group = new THREE.Group(); group.name = "calendar-sky";
   const horizon = new THREE.Color(), zenith = new THREE.Color();
   const material = new THREE.ShaderMaterial({
-    side: THREE.BackSide, depthWrite: false,
+    side: THREE.BackSide, depthWrite: false, toneMapped: false,
     uniforms: { horizon: { value: horizon }, zenith: { value: zenith } },
     vertexShader: "varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
     fragmentShader: `varying vec3 vDirection;uniform vec3 horizon,zenith;
-      void main(){float h=normalize(vDirection).y;gl_FragColor=vec4(mix(horizon,zenith,smoothstep(-.02,.78,h)),1.);
-      #include <tonemapping_fragment>
+      void main(){float h=normalize(vDirection).y;gl_FragColor=vec4(mix(horizon,zenith,smoothstep(-.035,.32,h)),1.);
       #include <colorspace_fragment>
       }`,
   });
@@ -43,30 +42,33 @@ export function createEnvironmentSky(sunGroup: THREE.Group) {
   const starsGeometry = new THREE.BufferGeometry(); starsGeometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
   const starsMaterial = new THREE.PointsMaterial({ color: "#b3c5d8", size: 1.1, sizeAttenuation: false, transparent: true, opacity: 0, depthWrite: false, fog: false });
   const stars = new THREE.Points(starsGeometry, starsMaterial); stars.name = "quiet-night-stars"; group.add(stars);
-  const nightHorizon = new THREE.Color("#162538"), dayHorizon = new THREE.Color("#cbdce0");
-  const nightZenith = new THREE.Color("#061020"), dayZenith = new THREE.Color("#6dadd0");
-  const sunset = new THREE.Color("#e1a17b"), gray = new THREE.Color("#82939f"), cold = new THREE.Color("#96aebb");
+  const nightHorizon = new THREE.Color("#162538"), dayHorizon = new THREE.Color("#a4cbdc");
+  const nightZenith = new THREE.Color("#061020"), dayZenith = new THREE.Color("#4b95be");
+  const sunset = new THREE.Color("#e1a17b"), gray = new THREE.Color("#899aa5"), cold = new THREE.Color("#96aebb");
+  const solarWhite = new THREE.Color("#fff9e8"), solarWarm = new THREE.Color("#ffd18a");
   return {
     group, horizon, zenith, moon, warmObjects: [group, moon, stars, sunGroup],
     update(celestial: CelestialState, weather: WeatherState, camera: THREE.Camera, flash = 0) {
-      const d = celestial.daylight, overcast = weather.cloudCover * .68;
+      const d = celestial.daylight, overcast = THREE.MathUtils.smoothstep(weather.cloudCover, .12, .98);
       horizon.copy(nightHorizon).lerp(dayHorizon, d);
       zenith.copy(nightZenith).lerp(dayZenith, d);
-      const dusk = Math.exp(-Math.pow(celestial.sun.altitude / .17, 2)) * (1 - overcast) * .6;
+      const dusk = Math.exp(-Math.pow(celestial.sun.altitude / .17, 2)) * (1 - overcast * .85) * .6;
       horizon.lerp(sunset, dusk);
-      horizon.lerp(gray, overcast * d * .65).lerp(cold, weather.snow * .16 * d);
-      zenith.lerp(gray, overcast * d * .85).lerp(cold, weather.snow * .15 * d);
+      horizon.lerp(gray, overcast * d * .94).lerp(cold, weather.snow * .16 * d);
+      zenith.lerp(gray, overcast * d * .98).lerp(cold, weather.snow * .15 * d);
       // A single restrained cloud-light pulse; no new light or post-processing.
       horizon.lerp(dayHorizon, flash * .22); zenith.lerp(dayHorizon, flash * .2);
       sunGroup.position.fromArray(celestial.sun.direction).multiplyScalar(235);
       sunGroup.position.y -= 8;
       sunGroup.lookAt(camera.position);
-      const sunOpacity = THREE.MathUtils.smoothstep(celestial.sun.altitude, -.035, .035) * (1 - weather.cloudCover * .91);
+      const sunOpacity = THREE.MathUtils.smoothstep(celestial.sun.altitude, -.035, .035)
+        * (1 - THREE.MathUtils.smoothstep(weather.cloudCover, .64, .995)) * (1 - weather.cloudCover * .3);
       sunGroup.visible = sunOpacity > .001;
       sunGroup.traverse(object => {
         if (!(object instanceof THREE.Mesh || object instanceof THREE.Sprite)) return;
-        const m = object.material as THREE.Material & { opacity: number };
+        const m = object.material as THREE.Material & { opacity: number; color: THREE.Color };
         m.opacity = sunOpacity * (object.name === "solar-disc" ? 1 : .25);
+        if (object.name === "solar-disc") m.color.copy(solarWarm).lerp(solarWhite, THREE.MathUtils.smoothstep(celestial.sun.altitude, .025, .35));
         m.transparent = true;
       });
       moon.position.fromArray(celestial.moon.direction).multiplyScalar(240); moon.position.y -= 8;
