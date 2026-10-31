@@ -1,320 +1,104 @@
 import * as THREE from "three";
+import { createBouquetDetails } from "./bouquet-details";
 
-/** A small hand-tied garden bouquet. All petals, leaves and stems share draw calls. */
+/** Wide, overlapping petals around a flower axis, with a soft rounded shoulder. */
+function rosePetalGeometry(variant: number) {
+  const geometry = new THREE.BufferGeometry();
+  const positions: number[] = [], colors: number[] = [], indices: number[] = [];
+  const rows = 12, cols = 10, arc = [.98, .82, .68][variant];
+  const rootRadius = [.10, .20, .29][variant];
+  for (let row = 0; row <= rows; row++) for (let col = 0; col <= cols; col++) {
+    const v = row / rows, u = col / cols * 2 - 1;
+    // The broad tip stays rounded; it never collapses into a sharp radial point.
+    const shoulder = v * (1 - .14 * u * u - .025 * Math.exp(-u * u * 13));
+    const radius = THREE.MathUtils.lerp(rootRadius, 1, Math.pow(shoulder, .86));
+    const angle = u * arc * (.10 + .90 * Math.sin(v * Math.PI / 2));
+    const lip = Math.pow(THREE.MathUtils.smoothstep(v, .76, 1), 2);
+    const fold = .035 * Math.sin(u * 4.2 + variant) * Math.sin(v * Math.PI);
+    positions.push(
+      radius * Math.sin(angle),
+      Math.pow(shoulder, .72) - .16 * lip * (1 - .28 * u * u) + fold
+        + .028 * Math.pow(Math.abs(u), 3) * Math.sin(Math.PI * v),
+      radius * Math.cos(angle) + .045 * lip,
+    );
+    const shade = .68 + .28 * v - .055 * Math.pow(Math.abs(u), 3) + .018 * Math.sin(u * 5 + v * 7);
+    colors.push(shade, shade * (.90 + .08 * v), shade * (.91 + .07 * v));
+    if (row < rows && col < cols) {
+      const a = row * (cols + 1) + col, b = a + cols + 1;
+      indices.push(a, b, a + 1, a + 1, b, b + 1);
+    }
+  }
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  geometry.setIndex(indices); geometry.computeVertexNormals();
+  geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+  return geometry;
+}
+
+/** A hand-tied crimson bouquet; static shared batches reuse the scene lifecycle. */
 export function createBouquet() {
-  const bouquet = new THREE.Group();
-  const dummy = new THREE.Object3D();
-  const petals: THREE.Matrix4[] = [],
-    colors: THREE.Color[] = [];
-  const leaves: THREE.Matrix4[] = [],
-    stems: THREE.Matrix4[] = [];
-  const centers: THREE.Matrix4[] = [];
-  const up = new THREE.Vector3(0, 1, 0);
-  const temp = new THREE.Object3D();
+  const bouquet = new THREE.Group(); bouquet.name = "bouquet";
   let seed = 129;
-  const random = () => {
-    seed = (seed * 16807) % 2147483647;
-    return seed / 2147483647;
-  };
-
-  // Four asymmetrical, spoon-shaped petals. Each ends in a rounded, rolled lip.
-  // These are individual surfaces, not sectors of a circular bowl.
-  function petalGeometry(variant: number) {
-    const geometry = new THREE.BufferGeometry();
-    const positions: number[] = [],
-      indices: number[] = [],
-      vertexColors: number[] = [];
-    const across = 16,
-      length = 18;
-    for (let row = 0; row <= length; row++) {
-      const v = row / length;
-      for (let col = 0; col <= across; col++) {
-        const u = (col / across) * 2 - 1;
-        const end = 1 - 0.19 * u * u + 0.025 * u * Math.sin(variant + 1);
-        const along = v * end;
-        const width = 0.103 * Math.pow(Math.sin(Math.PI * along), 0.63);
-        const sideCurl =
-          Math.pow(Math.abs(u), 3) * 0.021 * Math.sin(Math.PI * along);
-        const lip = Math.pow(Math.max(0, (along - 0.72) / 0.28), 2);
-        const wrinkle =
-          0.0025 * Math.sin(u * 6 + variant * 1.7) * Math.sin(Math.PI * along);
-        positions.push(
-          u * width + 0.012 * Math.sin(variant * 2) * along * along,
-          0.13 * Math.sin(along * 1.55) -
-            0.068 * Math.pow(along, 4) +
-            sideCurl -
-            0.025 * lip +
-            wrinkle,
-          0.009 +
-            0.17 * along +
-            0.016 * lip +
-            0.008 * u * Math.sin(variant + 0.4) * along,
-        );
-        const shade = 0.65 + 0.32 * along - Math.abs(u) * 0.04;
-        vertexColors.push(
-          shade,
-          shade * (0.83 + 0.15 * along),
-          shade * (0.82 + 0.17 * along),
-        );
-        if (row < length && col < across) {
-          const a = row * (across + 1) + col,
-            b = a + across + 1;
-          indices.push(a, b, a + 1, b, b + 1, a + 1);
-        }
-      }
-    }
-    geometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(positions, 3),
-    );
-    geometry.setAttribute(
-      "color",
-      new THREE.Float32BufferAttribute(vertexColors, 3),
-    );
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals();
-    return geometry;
-  }
-  const petalMaterial = new THREE.MeshStandardMaterial({
-    color: "#fff5f0",
-    vertexColors: true,
-    roughness: 0.73,
-    side: THREE.DoubleSide,
-  });
-
-  function segment(from: THREE.Vector3, to: THREE.Vector3, radius: number) {
-    dummy.position.copy(from).add(to).multiplyScalar(0.5);
-    dummy.quaternion.setFromUnitVectors(up, to.clone().sub(from).normalize());
-    dummy.scale.set(radius, from.distanceTo(to), radius);
-    dummy.updateMatrix();
-    stems.push(dummy.matrix.clone());
-  }
-  const palette = [
-    "#a8344c",
-    "#c44d61",
-    "#b83c51",
-    "#d7757e",
-    "#a9354b",
-    "#bd495e",
-    "#cf6672",
-  ];
+  const random = () => { seed = seed * 16807 % 2147483647; return seed / 2147483647; };
+  // Keep the original central upper rose as the discoverable interaction anchor.
   const heads = [
-    [-0.23, 0.83, 0.05],
-    [0.06, 0.95, -0.1],
-    [0.27, 0.78, 0.02],
-    [-0.07, 0.73, 0.24],
-    [0.16, 0.77, 0.24],
-    [-0.28, 0.67, 0.23],
-    [0.02, 0.88, -0.25],
-  ];
-  heads.forEach(([x, y, z], flower) => {
-    const tip = new THREE.Vector3(x, y, z);
-    const root = new THREE.Vector3(
-      (random() - 0.5) * 0.07,
-      -0.18,
-      (random() - 0.5) * 0.06,
-    );
-    segment(root, tip, 0.009);
-    temp.position.copy(tip);
-    temp.rotation.set(
-      2.0 + (random() - 0.5) * 0.35,
-      random() * 0.8 - 0.4,
-      (random() - 0.5) * 0.5,
-    );
-    temp.scale.setScalar(0.86 + random() * 0.22);
-    temp.updateMatrix();
-    // A continuous, irregular spiral: no repeated rings or equal-height tiers.
-    const count = 34 + (flower % 4);
+    [-.23,.83,.05], [.06,.95,-.10], [.27,.78,.02],
+    [-.07,.73,.24], [.16,.77,.24], [-.28,.67,.23],
+    [.02,.88,-.25], [-.20,.99,-.18], [.29,.96,-.18],
+  ] as const;
+  const palette = ["#8d0a20", "#930a23", "#9c1129", "#960e25", "#870b20", "#900a22", "#9a0e24", "#8c0a21", "#961027"];
+  const batches = Array.from({length: 3}, () => ({matrices: [] as THREE.Matrix4[], colors: [] as THREE.Color[]}));
+  const crowns: THREE.Matrix4[] = [], crownColors: THREE.Color[] = [];
+  const head = new THREE.Object3D(), petal = new THREE.Object3D();
+  const up = new THREE.Vector3(0, 1, 0), turn = new THREE.Quaternion();
+  heads.forEach(([x,y,z], flower) => {
+    head.position.set(x,y,z);
+    // In the existing reclined bouquet this axis faces upward and into the room.
+    head.rotation.set(2 + (random() - .5) * .18, (random() - .5) * .22, (random() - .5) * .28);
+    head.scale.setScalar(.81 + random() * .12); head.updateMatrix();
+    crowns.push(head.matrix.clone()); crownColors.push(new THREE.Color(palette[flower]).multiplyScalar(.76));
     const phase = random() * Math.PI * 2;
-    for (let p = 0; p < count; p++) {
-      const t = p / (count - 1),
-        spread = Math.pow(t, 0.8);
-      const angle = phase + p * 2.399963 + (random() - 0.5) * 0.34;
-      const size = 0.18 + spread * 0.92;
-      dummy.position.set(
-        Math.sin(angle) * 0.012 * spread,
-        0.073 * (1 - spread) + (random() - 0.5) * 0.017,
-        Math.cos(angle) * 0.012 * spread,
-      );
-      // Rotate the petal around the bud after giving it its own opening angle.
-      dummy.quaternion.setFromEuler(
-        new THREE.Euler(
-          -0.95 * (1 - spread) + 0.18 * spread + (random() - 0.5) * 0.22,
-          0,
-          (random() - 0.5) * 0.25,
-        ),
-      );
-      dummy.quaternion.premultiply(
-        new THREE.Quaternion().setFromAxisAngle(up, angle),
-      );
-      dummy.scale.set(size * (0.82 + random() * 0.3), 0.64 + size * 0.6, size);
-      dummy.updateMatrix();
-      petals.push(temp.matrix.clone().multiply(dummy.matrix));
-      const color = new THREE.Color(palette[flower]);
-      color.multiplyScalar(0.82 + spread * 0.15 + random() * 0.06);
-      colors.push(color);
-    }
-    // Pointed leaves branch off the stem, below the blossom cluster.
-    for (let l = 0; l < 3; l++) {
-      const height = 0.32 + l * 0.14,
-        side = l % 2 ? 1 : -1;
-      dummy.position.set(
-        (x * height) / y + side * 0.065,
-        height,
-        (z * height) / y,
-      );
-      dummy.rotation.set(0.5 + random() * 0.9, random() * 6, side * 0.8);
-      dummy.scale.set(0.045, 0.13, 0.015);
-      dummy.updateMatrix();
-      leaves.push(dummy.matrix.clone());
+    for (let p = 0; p < 33; p++) {
+      const variant = p < 12 ? 0 : p < 26 ? 1 : 2;
+      const f = variant === 0 ? p / 11 : variant === 1 ? (p - 12) / 13 : (p - 26) / 6;
+      const radius = variant === 0 ? (p < 3 ? .007 + p * .0045 : .018 + f * .034) : variant === 1 ? .057 + f * .061 : .124 + f * .031;
+      const height = variant === 0 ? .142 - f * .025 : variant === 1 ? .115 - f * .031 : .083 - f * .022;
+      const angle = phase + (variant === 2 ? (p - 26) * Math.PI * 2 / 7 : p * 2.399963) + (random() - .5) * .16;
+      const radialOffset = p < 3 ? -.006 : .002;
+      petal.position.set(radialOffset * Math.sin(angle), .006 * Math.sin(p * 2.1), radialOffset * Math.cos(angle));
+      petal.quaternion.setFromEuler(new THREE.Euler((variant === 2 ? .12 : variant === 1 ? .04 : -.1) + (random() - .5) * .2, 0, (random() - .5) * .16));
+      turn.setFromAxisAngle(up, angle); petal.quaternion.premultiply(turn);
+      petal.scale.set(radius * (.90 + random() * .20), height * (.95 + random() * .10), radius * (.94 + random() * .12)); petal.updateMatrix();
+      const batch = batches[variant]; batch.matrices.push(head.matrix.clone().multiply(petal.matrix));
+      batch.colors.push(new THREE.Color(palette[flower]).multiplyScalar(.68 + p / 32 * .30 + random() * .035));
     }
   });
-  // Rounded eucalyptus sprigs give the bouquet an irregular silhouette.
-  for (let sprig = 0; sprig < 4; sprig++) {
-    const angle = sprig * 2.4,
-      tip = new THREE.Vector3(
-        Math.cos(angle) * 0.44,
-        0.66 + random() * 0.3,
-        Math.sin(angle) * 0.38,
-      );
-    segment(new THREE.Vector3(0, 0.12, 0), tip, 0.005);
-    for (let l = 0; l < 4; l++) {
-      const f = 0.4 + l * 0.14;
-      for (const side of [-1, 1]) {
-        dummy.position.copy(tip).multiplyScalar(f);
-        dummy.position.x += side * 0.045;
-        dummy.rotation.set(
-          0.7 + random() * 0.4,
-          angle + side * 0.7,
-          side * 0.5,
-        );
-        dummy.scale.set(0.043, 0.062, 0.012);
-        dummy.updateMatrix();
-        leaves.push(dummy.matrix.clone());
-      }
-    }
-  }
-  // Airy ivory buds on fine branching stems.
-  for (let i = 0; i < 16; i++) {
-    const a = i * 2.399,
-      tip = new THREE.Vector3(
-        Math.cos(a) * (0.3 + random() * 0.12),
-        0.63 + random() * 0.4,
-        Math.sin(a) * 0.32,
-      );
-    segment(tip.clone().multiplyScalar(0.65), tip, 0.0028);
-    dummy.position.copy(tip);
-    dummy.rotation.set(0, 0, 0);
-    dummy.scale.setScalar(0.016 + random() * 0.008);
-    dummy.updateMatrix();
-    centers.push(dummy.matrix.clone());
-  }
-  function instances(
-    g: THREE.BufferGeometry,
-    material: THREE.Material,
-    matrices: THREE.Matrix4[],
-    cast = true,
-  ) {
-    const mesh = new THREE.InstancedMesh(g, material, matrices.length);
-    matrices.forEach((matrix, i) => mesh.setMatrixAt(i, matrix));
-    mesh.castShadow = cast;
-    mesh.receiveShadow = true;
+  const material = new THREE.MeshStandardMaterial({
+    color: "#fff5f0", vertexColors: true, roughness: .80, metalness: 0, side: THREE.DoubleSide,
+  });
+  batches.forEach((batch, variant) => {
+    const mesh = new THREE.InstancedMesh(rosePetalGeometry(variant), material, batch.matrices.length);
+    mesh.name = ["rose-coiled-inner-petals", "rose-cupped-middle-petals", "rose-rolled-outer-petals"][variant];
+    batch.matrices.forEach((matrix, i) => {mesh.setMatrixAt(i, matrix); mesh.setColorAt(i, batch.colors[i]);});
+    mesh.instanceMatrix.needsUpdate = true;
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    mesh.castShadow = mesh.receiveShadow = true; mesh.computeBoundingBox(); mesh.computeBoundingSphere();
     bouquet.add(mesh);
-    return mesh;
-  }
-  for (let variant = 0; variant < 4; variant++) {
-    const matrices = petals.filter((_, i) => i % 4 === variant);
-    const shades = colors.filter((_, i) => i % 4 === variant);
-    const blooms = instances(petalGeometry(variant), petalMaterial, matrices);
-    shades.forEach((color, i) => blooms.setColorAt(i, color));
-  }
-  const leafGeo = new THREE.SphereGeometry(1, 10, 6);
-  const leafMat = new THREE.MeshStandardMaterial({
-    color: "#8a9b83",
-    roughness: 0.95,
   });
-  instances(leafGeo, leafMat, leaves);
-  instances(
-    new THREE.CylinderGeometry(0.7, 1, 1, 6),
-    new THREE.MeshStandardMaterial({ color: "#6f8062", roughness: 1 }),
-    stems,
-  );
-  instances(
-    new THREE.SphereGeometry(1, 8, 6),
-    new THREE.MeshStandardMaterial({ color: "#fcf0db", roughness: 0.9 }),
-    centers,
-  );
-
-  // Muted silk binding, two looped folds and softly curling ribbon tails.
-  const ribbonMat = new THREE.MeshStandardMaterial({
-    color: "#c89b8d",
-    roughness: 0.88,
-    side: THREE.DoubleSide,
-  });
-  const binding = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.068, 0.063, 0.12, 20, 1, true),
-    ribbonMat,
-  );
-  binding.position.y = 0.17;
-  bouquet.add(binding);
-  function ribbon(points: THREE.Vector3[], width: number) {
-    const curve = new THREE.CatmullRomCurve3(points),
-      p: number[] = [],
-      ids: number[] = [];
-    for (let i = 0; i <= 28; i++) {
-      const t = i / 28,
-        center = curve.getPoint(t),
-        tangent = curve.getTangent(t);
-      const cross = new THREE.Vector3(0, 0, 1)
-        .cross(tangent)
-        .normalize()
-        .multiplyScalar(width / 2);
-      for (const side of [-1, 1]) {
-        const v = center.clone().addScaledVector(cross, side);
-        p.push(v.x, v.y, v.z);
-      }
-      if (i < 28) {
-        const a = i * 2;
-        ids.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
-      }
-    }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.Float32BufferAttribute(p, 3));
-    g.setIndex(ids);
-    g.computeVertexNormals();
-    const m = new THREE.Mesh(g, ribbonMat);
-    m.castShadow = true;
-    bouquet.add(m);
-  }
-  for (const side of [-1, 1]) {
-    ribbon(
-      [
-        new THREE.Vector3(0, 0.2, 0.065),
-        new THREE.Vector3(side * 0.15, 0.34, 0.08),
-        new THREE.Vector3(side * 0.21, 0.2, 0.08),
-        new THREE.Vector3(0, 0.18, 0.085),
-      ],
-      0.047,
-    );
-    ribbon(
-      [
-        new THREE.Vector3(side * 0.02, 0.18, 0.08),
-        new THREE.Vector3(side * 0.12, 0.04, 0.1),
-        new THREE.Vector3(side * 0.22, -0.08, 0.15),
-        new THREE.Vector3(side * 0.18, -0.17, 0.12),
-      ],
-      0.055,
-    );
-  }
-  // A generous invisible hit target makes the gaps between stems clickable.
-  const hitTarget = new THREE.Mesh(
-    new THREE.SphereGeometry(0.42, 8, 6),
-    new THREE.MeshBasicMaterial(),
-  );
-  hitTarget.position.set(0, 0.65, 0);
-  hitTarget.scale.set(1, 1.2, 1);
-  hitTarget.visible = false;
-  bouquet.add(hitTarget);
-  bouquet.userData.petalCount = petals.length;
+  // Compressed inner petals form an opaque dark receptacle below the open
+  // layers. This keeps stems and the green calyx from showing through a bloom.
+  const crown = new THREE.LatheGeometry([
+    [0,.004],[.012,.002],[.04,.009],[.085,.02],[.125,.034],
+    [.141,.042],[.13,.056],[.095,.071],[.045,.086],[0,.09],
+  ].map(([r,y])=>new THREE.Vector2(r,y)),24);
+  const shade = new Float32Array(crown.attributes.position.count * 3); shade.fill(.78);
+  crown.setAttribute("color",new THREE.BufferAttribute(shade,3));
+  const receptacles = new THREE.InstancedMesh(crown,material,crowns.length);
+  receptacles.name = "rose-shadowed-receptacles";
+  crowns.forEach((matrix,i)=>{receptacles.setMatrixAt(i,matrix);receptacles.setColorAt(i,crownColors[i]);});
+  receptacles.castShadow = receptacles.receiveShadow = true;
+  receptacles.computeBoundingBox(); receptacles.computeBoundingSphere(); bouquet.add(receptacles);
+  bouquet.add(createBouquetDetails(heads));
+  bouquet.userData = { petalCount: heads.length * 33, roseCount: heads.length, petalStyle: "rounded-overlapping-cupped-spiral" };
   return bouquet;
 }

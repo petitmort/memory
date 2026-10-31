@@ -395,7 +395,7 @@ export function createScene(
   const bouquet = createBouquet();
   bouquet.name = "bouquet";
   bouquet.scale.setScalar(D.bouquet.scale);
-  bouquet.position.set(0.07, 0.811, 0.04);
+  bouquet.position.set(0.07, 0.8458, 0.04);
   bouquet.rotation.set(-1.12, -0.25, 0.55);
   table.add(bouquet);
   // An ordinary ~300 ml mug with a 3 mm wall and a properly sized handle.
@@ -841,6 +841,7 @@ export function createScene(
     courtyardFog.dispose();
     environment.dispose();
     roomLight.dispose();
+    bouquet.traverse(object => { if (object instanceof THREE.InstancedMesh) object.dispose(); });
     resources.geometries.forEach(value => value.dispose());
     resources.materials.forEach(value => value.dispose());
     resources.textures.forEach(value => value.dispose());
@@ -918,7 +919,7 @@ export function createScene(
     return whileAvailable(new Promise<void>((done) => {
       bouquetMotion = {
         from: bouquet.position.clone(),
-        to: new THREE.Vector3(.51, .805, .13),
+        to: new THREE.Vector3(.51, .8001, .13),
         fromQ: bouquet.quaternion.clone(),
         toQ: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2)
           .multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-1.32, .15, .35))),
@@ -1066,8 +1067,8 @@ export function createScene(
         ),
         ease = a * a * (3 - 2 * a);
       bouquet.position.lerpVectors(bouquetMotion.from, bouquetMotion.to, ease);
-      bouquet.position.y += Math.sin(Math.PI * a) * 0.025;
-      bouquet.position.z += Math.sin(Math.PI * a) * .06;
+      bouquet.position.y += Math.sin(Math.PI * a) * 0.027;
+      bouquet.position.z += Math.sin(Math.PI * a) * .08;
       bouquet.quaternion.slerpQuaternions(
         bouquetMotion.fromQ,
         bouquetMotion.toQ,

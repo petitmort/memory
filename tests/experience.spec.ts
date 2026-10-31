@@ -433,8 +433,10 @@ test("physical scene: enter through doorway, approach and open the album, then r
   for (const sample of [...approach, ...retreat]) {
     expect(sample.scale).toEqual(final.scale);
     expect(sample.visible).toBe(true);
-    expect(sample.flower[1]).toBeGreaterThanOrEqual(0.764);
-    expect(sample.flower[1]).toBeLessThanOrEqual(0.837);
+    // The wrapped bouquet rests higher on the closed cover. Bound its lift
+    // against both resting poses instead of the old unwrapped stem height.
+    expect(sample.flower[1]).toBeGreaterThanOrEqual(Math.min(final.flower[1], parked.flower[1]) - .001);
+    expect(sample.flower[1]).toBeLessThanOrEqual(Math.max(final.flower[1], parked.flower[1]) + .028);
   }
   expect(parked.flower[0]).toBeGreaterThan(final.flower[0] + 0.3);
   expect(parked.flower[0]).toBeLessThan(0.58);
