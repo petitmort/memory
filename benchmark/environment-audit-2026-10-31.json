@@ -1,0 +1,567 @@
+{
+  "date": "2026-10-31",
+  "baselineCommit": "f0f8025",
+  "validation": {
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "productionJS": "index-Cuu6s0Sx.js",
+    "playwright": {
+      "wholeSuiteExcludingWeather": 146,
+      "finalFocusedIncludingWeather": 18,
+      "uniquePassed": 157,
+      "failed": 0
+    },
+    "productionCases": [
+      {
+        "name": "low-cloudy-phone",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "2026-04-01 12:00 · Europe/Athens\n模拟天气：多云\n太阳高度 53.1° · 月相 47.7%\n航行 3 艘 · 省电画质",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "sunny-noon",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-06-21 12:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 68.5° · 月相 23.2%\n航行 4 艘 · 普通画质",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "rainy-dusk",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-10-01 18:45 · Europe/Athens\n模拟天气：大雨\n太阳高度 2.5° · 月相 68.0%\n航行 4 艘 · 普通画质",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "snowy-noon",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-01-15 12:00 · Europe/Athens\n模拟天气：中雪\n太阳高度 32.2° · 月相 89.4%\n航行 5 艘 · 普通画质",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "full-moon",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-06-29 22:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 -13.8° · 月相 50.0%\n航行 4 艘 · 普通画质",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "small-phone",
+        "viewport": {
+          "width": 320,
+          "height": 568
+        },
+        "status": "2026-06-21 12:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 68.5° · 月相 23.2%\n航行 3 艘 · 省电画质",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "portrait-phone",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "2026-01-15 12:00 · Europe/Athens\n模拟天气：中雪\n太阳高度 32.2° · 月相 89.4%\n航行 5 艘 · 普通画质",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "landscape-phone",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "status": "2026-10-01 18:45 · Europe/Athens\n模拟天气：中雨\n太阳高度 2.6° · 月相 68.0%\n航行 5 艘 · 普通画质",
+        "errors": [],
+        "passed": true
+      }
+    ]
+  },
+  "performance": {
+    "conditions": {
+      "viewport": {
+        "width": 960,
+        "height": 640
+      },
+      "deviceScaleFactor": 1,
+      "cpuThrottle": 1,
+      "sampleMs": 5000,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browser": "156.0.8078.74",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "reducedMotion": true,
+      "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+      "device": {
+        "hardwareConcurrency": 10,
+        "deviceMemoryGiB": 16,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "vendor": "Google Inc. (Apple)",
+        "unmaskedRendererAvailable": true,
+        "softwareRendererDetected": false
+      }
+    },
+    "previousVersion": {
+      "room": {
+        "measuredFps": 60.00120002397366,
+        "frameIntervalP95Ms": 17.800000000745058,
+        "frameSubmitP95Ms": 1.300000000745058,
+        "calls": 123,
+        "triangles": 369416,
+        "geometries": 248,
+        "textures": 39,
+        "programs": 51
+      },
+      "loadingMs": 999.6108330000001,
+      "jsHeapUsedBytes": 21939488,
+      "runs": [
+        {
+          "loadingMs": 999.6108330000001,
+          "room": {
+            "calls": 123,
+            "triangles": 369416,
+            "geometries": 248,
+            "textures": 39,
+            "programs": 51,
+            "pixelRatio": 1,
+            "low": false,
+            "drawnFrames": 300,
+            "measuredFps": 59.99919733512579,
+            "frameIntervalMedianMs": 16.699999999254942,
+            "frameIntervalP95Ms": 17.699999999254942,
+            "frameSubmitP95Ms": 1.199999999254942
+          },
+          "memory": {
+            "jsHeapUsedBytes": 21939488,
+            "jsHeapTotalBytes": 47939584,
+            "documents": 2,
+            "nodes": 320,
+            "jsEventListeners": 97
+          },
+          "errors": []
+        },
+        {
+          "loadingMs": 1000.0977920000001,
+          "room": {
+            "calls": 123,
+            "triangles": 369416,
+            "geometries": 248,
+            "textures": 39,
+            "programs": 51,
+            "pixelRatio": 1,
+            "low": false,
+            "drawnFrames": 301,
+            "measuredFps": 60.00120002397366,
+            "frameIntervalMedianMs": 16.699999999254942,
+            "frameIntervalP95Ms": 17.800000000745058,
+            "frameSubmitP95Ms": 1.300000000745058
+          },
+          "memory": {
+            "jsHeapUsedBytes": 24558932,
+            "jsHeapTotalBytes": 49774592,
+            "documents": 6,
+            "nodes": 344,
+            "jsEventListeners": 104
+          },
+          "errors": []
+        },
+        {
+          "loadingMs": 990.047791,
+          "room": {
+            "calls": 123,
+            "triangles": 369416,
+            "geometries": 248,
+            "textures": 39,
+            "programs": 51,
+            "pixelRatio": 1,
+            "low": false,
+            "drawnFrames": 300,
+            "measuredFps": 60.006422091987496,
+            "frameIntervalMedianMs": 16.699999999254942,
+            "frameIntervalP95Ms": 17.800000000745058,
+            "frameSubmitP95Ms": 1.3999999985098839
+          },
+          "memory": {
+            "jsHeapUsedBytes": 18212056,
+            "jsHeapTotalBytes": 50036736,
+            "documents": 2,
+            "nodes": 320,
+            "jsEventListeners": 97
+          },
+          "errors": []
+        }
+      ]
+    },
+    "current": {
+      "room": {
+        "calls": 123,
+        "triangles": 369416,
+        "geometries": 248,
+        "textures": 39,
+        "programs": 51,
+        "pixelRatio": 1,
+        "drawnFrames": 300,
+        "measuredFps": 60.01244405197978,
+        "frameIntervalMedianMs": 16.69999999552965,
+        "frameIntervalP95Ms": 18.5,
+        "frameSubmitP95Ms": 1.2999999970197678
+      },
+      "loadingMs": 973.1290000000001,
+      "jsHeapUsedBytes": 25210748,
+      "runs": [
+        {
+          "loadingMs": 1004.127167,
+          "entryMs": 2513.3725839999997,
+          "room": {
+            "calls": 123,
+            "triangles": 369416,
+            "geometries": 248,
+            "textures": 39,
+            "programs": 51,
+            "pixelRatio": 1,
+            "low": false,
+            "drawnFrames": 300,
+            "measuredFps": 60.00883073092574,
+            "frameIntervalMedianMs": 16.69999999552965,
+            "frameIntervalP95Ms": 17.600000001490116,
+            "frameSubmitP95Ms": 1.2000000029802322
+          },
+          "memory": {
+            "jsHeapUsedBytes": 20063152,
+            "jsHeapTotalBytes": 49004544,
+            "documents": 6,
+            "nodes": 344,
+            "jsEventListeners": 104
+          },
+          "errors": [],
+          "warnings": []
+        },
+        {
+          "loadingMs": 962.402416,
+          "entryMs": 2515.846208,
+          "room": {
+            "calls": 123,
+            "triangles": 369416,
+            "geometries": 248,
+            "textures": 39,
+            "programs": 51,
+            "pixelRatio": 1,
+            "low": false,
+            "drawnFrames": 300,
+            "measuredFps": 60.01244405197978,
+            "frameIntervalMedianMs": 16.600000001490116,
+            "frameIntervalP95Ms": 18.5,
+            "frameSubmitP95Ms": 1.2999999970197678
+          },
+          "memory": {
+            "jsHeapUsedBytes": 25210748,
+            "jsHeapTotalBytes": 52133888,
+            "documents": 6,
+            "nodes": 344,
+            "jsEventListeners": 104
+          },
+          "errors": [],
+          "warnings": []
+        },
+        {
+          "loadingMs": 973.1290000000001,
+          "entryMs": 2515.997125,
+          "room": {
+            "calls": 123,
+            "triangles": 369416,
+            "geometries": 248,
+            "textures": 39,
+            "programs": 51,
+            "pixelRatio": 1,
+            "low": false,
+            "drawnFrames": 300,
+            "measuredFps": 60.02208170229851,
+            "frameIntervalMedianMs": 16.700000002980232,
+            "frameIntervalP95Ms": 18.599999994039536,
+            "frameSubmitP95Ms": 1.4000000059604645
+          },
+          "memory": {
+            "jsHeapUsedBytes": 28751784,
+            "jsHeapTotalBytes": 48742400,
+            "documents": 6,
+            "nodes": 344,
+            "jsEventListeners": 104
+          },
+          "errors": [],
+          "warnings": []
+        }
+      ]
+    },
+    "lowQualityCpu4": {
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "deviceScaleFactor": 2,
+        "cpuThrottle": 4,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.74",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 2581.545625,
+      "entryMs": 2552.812375,
+      "before": {
+        "calls": 78,
+        "triangles": 263391,
+        "geometries": 248,
+        "textures": 38,
+        "programs": 44,
+        "pixelRatio": 1,
+        "low": true
+      },
+      "room": {
+        "calls": 78,
+        "triangles": 263391,
+        "geometries": 248,
+        "textures": 38,
+        "programs": 44,
+        "pixelRatio": 1,
+        "low": true,
+        "drawnFrames": 150,
+        "measuredFps": 29.97927607093996,
+        "frameIntervalMedianMs": 33.29999999701977,
+        "frameIntervalP95Ms": 37,
+        "frameSubmitP95Ms": 3.7000000029802322
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 19.5,
+            "processingMs": 1.6000000014901161
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 21.100000001490116,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 25.100000001490116,
+            "processingMs": 1.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 56,
+            "inputDelayMs": 8.100000001490116,
+            "processingMs": 1
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 56,
+            "inputDelayMs": 9.100000001490116,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 56,
+            "inputDelayMs": 11.399999998509884,
+            "processingMs": 1.2000000029802322
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 19,
+            "processingMs": 0.20000000298023224
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 20,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 24.600000001490116,
+            "processingMs": 1.6000000014901161
+          }
+        ],
+        "pointerDispatchMs": [
+          21,
+          8.199999995529652,
+          19.100000001490116
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 28713480,
+        "jsHeapTotalBytes": 51560448,
+        "documents": 9,
+        "nodes": 738,
+        "jsEventListeners": 144
+      }
+    }
+  },
+  "endurance": {
+    "status": "passed",
+    "actualContinuousDurationMs": 180020,
+    "environment": {
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "url": "http://127.0.0.1:5173/",
+      "viewport": {
+        "width": 960,
+        "height": 640
+      },
+      "dpr": 1,
+      "reducedMotion": true,
+      "requestedDurationMs": 180000,
+      "sampleIntervalMs": 15000,
+      "cpuThrottleSecondHalf": 4,
+      "collectGarbage": true,
+      "browser": "156.0.8078.74",
+      "loadedURL": "http://127.0.0.1:5173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12%3A00&envWeather=clear&envQuality=normal&envDensity=1"
+    },
+    "limitations": [
+      "Desktop Chrome with CDP CPU throttling is a laboratory experiment, not a physical phone, Safari or thermal/battery measurement.",
+      "Background cycles dispatch the existing visibilitychange path with an overridden document.hidden; they do not suspend the operating-system process.",
+      "CDP JS heap excludes GPU and browser-process memory. Raw and optional post-GC heaps are observations without an invented pass/fail size limit.",
+      "Resource plateau checks cover this finite repeated-state run and cannot prove the absence of all long-term leaks.",
+      "Source interception adds constant counters only; no per-frame arrays, fake clock or fast-forwarded environment time are used."
+    ],
+    "resourcePlateau": {
+      "geometries": {
+        "references": [
+          248,
+          248,
+          248
+        ],
+        "previousMaximum": 248,
+        "final": 248,
+        "plateau": true
+      },
+      "textures": {
+        "references": [
+          39,
+          39,
+          39
+        ],
+        "previousMaximum": 39,
+        "final": 39,
+        "plateau": true
+      },
+      "programs": {
+        "references": [
+          75,
+          75,
+          75
+        ],
+        "previousMaximum": 75,
+        "final": 75,
+        "plateau": true
+      }
+    },
+    "heapObservations": {
+      "samples": 17,
+      "initialBytes": 16839640,
+      "finalBytes": 15671956,
+      "minimumBytes": 15242008,
+      "maximumBytes": 23244888,
+      "finalMinusInitialBytes": -1167684,
+      "postGCReferences": [
+        {
+          "label": "reference-1",
+          "elapsedMs": 58818,
+          "jsHeapUsedBytes": 15018588
+        },
+        {
+          "label": "reference-2",
+          "elapsedMs": 118826,
+          "jsHeapUsedBytes": 15206176
+        },
+        {
+          "label": "reference-3",
+          "elapsedMs": 178833,
+          "jsHeapUsedBytes": 15293932
+        }
+      ],
+      "judgment": "Recorded factual raw/optional post-GC ranges and repeated-state deltas; no arbitrary heap-size pass threshold."
+    },
+    "errors": [],
+    "consoleErrors": [],
+    "sourceBefore": {
+      "files": 79,
+      "sha256": "e9c89d7df67f853ed9c6f2d68fac23d4f16cba16181512eaf88cc4e78c2576a8"
+    },
+    "sourceAfter": {
+      "files": 79,
+      "sha256": "e9c89d7df67f853ed9c6f2d68fac23d4f16cba16181512eaf88cc4e78c2576a8"
+    }
+  },
+  "safari": {
+    "status": "blocked-by-locked-desktop",
+    "browser": "Safari 27.2",
+    "renderer": "Apple GPU",
+    "productionLoadPassed": true,
+    "attempts": 2,
+    "nativeClickReceived": false,
+    "documentHidden": true,
+    "focused": false,
+    "macOSReadOnlyState": {
+      "sessionLocked": true,
+      "displayAsleep": true,
+      "displayActive": false,
+      "displayOnline": true
+    },
+    "result": "Full native-input flow awaits an unlocked, awake desktop. No full Safari compatibility pass is claimed.",
+    "evidenceDirectories": [
+      "audit-safari",
+      "audit-safari-2"
+    ]
+  },
+  "evidenceRoot": "/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-environment",
+  "limits": [
+    "Three five-second native Chrome runs compare the existing previous-version baseline; small timing differences and GC are not an improvement claim.",
+    "The 180-second run and stable repeated renderer resources do not prove absence of long-term leaks; GC-normalized reference heap increased 275344 bytes.",
+    "Desktop CPU throttling and mobile viewports do not replace physical iPhone or Android thermal, battery or memory verification.",
+    "Safari production loaded, but native interaction was blocked by the locked sleeping desktop; user unlock is pending.",
+    "No deployment, docs build output, main branch or package/runtime change."
+  ]
+}

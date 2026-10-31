@@ -61,8 +61,10 @@ test('pooled six-model traffic restores current positions, survives debug change
     const { getVesselSchedule } = await import('/src/vessel-navigation.ts');
     const { sampleWaterHeight } = await import('/src/water-surface.ts');
     const options = { low: false, reduced: false, daylight: 1, windSpeed: 5, severity: 0, density: 2 };
-    const controller = createVesselController(), fresh = createVesselController();
-    const now = Date.UTC(2026, 6, 10, 12, 1);
+    const controller = createVesselController(), fresh = createVesselController(), steady = createVesselController();
+    // Three simultaneous voyages, all past their entry fade; a one-voyage
+    // timestamp would hide actors being overwritten during first-frame fill.
+    const now = Date.UTC(2026, 6, 10, 12, 3, 16);
     const resources = (root: any) => {
       const geometry = new Set<any>(), materials = new Set<any>();
       root.traverse((object: any) => {
@@ -74,6 +76,10 @@ test('pooled six-model traffic restores current positions, survives debug change
     const initial = resources(controller.group);
     controller.update(now, 17, options);
     const initialSnapshot = controller.snapshot();
+    const wantedIds = getVesselSchedule(now).map((journey: any) => journey.id).sort((a: number, b: number) => a - b);
+    steady.update(now - 2000, 15, options);
+    for (let i = 1; i <= 125; i++) steady.update(now - 2000 + i * 16, 15 + i * .016, options);
+    const steadySnapshot = steady.snapshot();
     for (let i = 1; i <= 60; i++) controller.update(now + i * 16, 17 + i * .016, options);
     const resumeTime = now + 10 * 60_000;
     controller.update(resumeTime, 31, options); fresh.update(resumeTime, 31, options);
@@ -101,14 +107,16 @@ test('pooled six-model traffic restores current positions, survives debug change
     for (const resource of [...initial.geometry, ...initial.materials]) {
       let disposed = 0; resource.addEventListener('dispose', () => { disposed++; maxDisposals = Math.max(maxDisposals, disposed); });
     }
-    controller.dispose(); controller.dispose(); fresh.dispose();
+    controller.dispose(); controller.dispose(); fresh.dispose(); steady.dispose();
     return {
-      initialSnapshot, resumed, refreshed, waterErrors, bounds, debugSnapshot, lowSnapshot, capacitiesStable, warmModels,
+      initialSnapshot, wantedIds, steadySnapshot, resumed, refreshed, waterErrors, bounds, debugSnapshot, lowSnapshot, capacitiesStable, warmModels,
       geometries: initial.geometry.size, maxDisposals, emptyAfterDispose: controller.group.children.length === 0,
       schedule: getVesselSchedule(now).length,
     };
   });
-  expect(result.initialSnapshot.length).toBeGreaterThan(0);
+  expect(result.wantedIds).toHaveLength(3);
+  expect(result.initialSnapshot.map((ship: any) => ship.id)).toEqual(result.wantedIds);
+  expect(result.initialSnapshot).toEqual(result.steadySnapshot);
   expect(result.resumed).toEqual(result.refreshed);
   for (const error of result.waterErrors) expect(error).toBeLessThan(1e-8);
   expect(Object.keys(result.bounds)).toHaveLength(6);
@@ -120,4 +128,61 @@ test('pooled six-model traffic restores current positions, survives debug change
   expect(result.lowSnapshot.length).toBeLessThanOrEqual(3);
   expect(result.capacitiesStable).toBe(true); expect(result.warmModels).toBe(30);
   expect(result.geometries).toBeLessThan(80); expect(result.maxDisposals).toBe(1); expect(result.emptyAfterDispose).toBe(true);
+});
+
+test('dawn keeps departure admission stable across slots, refresh and explicit preview revisions', async ({ page }) => {
+  await page.route('**/__vessel_departures', route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Departure admission tests</title>' }));
+  await page.goto('/__vessel_departures');
+  const result = await page.evaluate(async () => {
+    const { createVesselController } = await import('/src/vessel-controller.ts');
+    const { getVesselSchedule } = await import('/src/vessel-navigation.ts');
+    const { calculateCelestial } = await import('/src/celestial-controller.ts');
+    const { sampleWeather } = await import('/src/weather-controller.ts');
+    const now = Date.UTC(2026, 6, 14, 3, 50), targetId = 19822232;
+    const stateAt = (timestamp: number) => {
+      const weather = sampleWeather(timestamp);
+      return { daylight: calculateCelestial(timestamp).daylight, severity: Math.max(weather.precipitation, (1 - weather.visibility) * .7) };
+    };
+    const probability = (state: { daylight: number; severity: number }) => (.4 + .38 * state.daylight) * (1 - .8 * state.severity);
+    let departureCalls = 0;
+    const departureState = (timestamp: number) => { departureCalls++; return stateAt(timestamp); };
+    const controller = createVesselController(), fresh = createVesselController();
+    const optionsAt = (timestamp: number) => ({ low: false, reduced: false, windSpeed: 3, density: 1, ...stateAt(timestamp), departureState });
+    let appearedMidway = false, steadyIds: number[] = [];
+    for (let elapsed = -90_000; elapsed <= 90_000; elapsed += 100) {
+      controller.update(now + elapsed, 0, optionsAt(now + elapsed));
+      const snapshot = controller.snapshot();
+      appearedMidway ||= snapshot.some((ship: any) => ship.id === targetId);
+      if (elapsed === 0) steadyIds = snapshot.map((ship: any) => ship.id);
+    }
+    const steadyCalls = departureCalls;
+    fresh.update(now, 0, optionsAt(now));
+    const freshIds = fresh.snapshot().map((ship: any) => ship.id);
+    const expectedIds = getVesselSchedule(now)
+      .filter((journey: any) => journey.admission < probability(stateAt(journey.startMs)))
+      .map((journey: any) => journey.id).sort((a: number, b: number) => a - b);
+    const target = getVesselSchedule(now).find((journey: any) => journey.id === targetId)!;
+    const callsBeforeSameSlot = departureCalls;
+    fresh.update(now + 16, 0, optionsAt(now + 16));
+    const callsAfterSameSlot = departureCalls;
+    fresh.update(now + 32, 0, { ...optionsAt(now + 32), departureRevision: 1,
+      departureState: () => { departureCalls++; return { daylight: 1, severity: 0 }; } });
+    const revisionAdmitsPreview = fresh.snapshot().some((ship: any) => ship.id === targetId);
+    const callsAfterRevision = departureCalls;
+    controller.dispose(); fresh.dispose();
+    return { appearedMidway, steadyIds, freshIds, expectedIds, steadyCalls,
+      admission: target.admission, departureProbability: probability(stateAt(target.startMs)), currentProbability: probability(stateAt(now)),
+      callsBeforeSameSlot, callsAfterSameSlot, callsAfterRevision, revisionAdmitsPreview };
+  });
+  // This real dawn crosses the old per-frame threshold while the fishing boat
+  // would already be 40% along the route in the centre of the visible sea.
+  expect(result.admission).toBeGreaterThan(result.departureProbability);
+  expect(result.admission).toBeLessThan(result.currentProbability);
+  expect(result.appearedMidway).toBe(false);
+  expect(result.steadyIds).toEqual(result.expectedIds);
+  expect(result.freshIds).toEqual(result.expectedIds);
+  expect(result.steadyCalls).toBeLessThan(40);
+  expect(result.callsAfterSameSlot).toBe(result.callsBeforeSameSlot);
+  expect(result.callsAfterRevision).toBeGreaterThan(result.callsAfterSameSlot);
+  expect(result.revisionAdmitsPreview).toBe(true);
 });

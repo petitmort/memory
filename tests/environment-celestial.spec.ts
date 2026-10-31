@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { calendarAt, createSeededRandom, DEFAULT_LOCATION, seedFromString, timestampForLocalClock, timestampFromZonedInput } from '../src/calendar-seed';
 import { calculateCelestial } from '../src/celestial-controller';
 
@@ -23,7 +26,7 @@ test('scene calendar dates and reproducible seeds do not depend on formatting lo
   expect(seedFromString('2024-03-01')).not.toBe(morning.seed);
 });
 
-test('local-clock mode preserves the user date and clock while observing scene DST rules', () => {
+test('ordinary local-clock dates match the user clock and explicit inputs retain exact IANA DST rules', () => {
   for (const instant of ['2026-01-15T16:20:30.123Z', '2026-07-15T16:20:30.123Z']) {
     const actual = Date.parse(instant);
     const mapped = timestampForLocalClock(actual, 'Europe/Athens', 'Asia/Shanghai');
@@ -40,6 +43,54 @@ test('local-clock mode preserves the user date and clock while observing scene D
   expect(new Date(sceneTime('2026-10-25T03:30')).toISOString()).toBe('2026-10-25T00:30:00.000Z');
   expect(() => sceneTime('2026-02-30T12:00')).toThrow(RangeError);
   expect(() => sceneTime('2026-01-01T25:00')).toThrow(RangeError);
+});
+
+test('local-clock time is continuous and monotonic through either zone DST changes and UTC-noon anchors', () => {
+  const cases: [string, string, string[]][] = [
+    ['Europe/Athens', 'Asia/Shanghai', ['2026-03-28T20:00:00Z', '2026-10-24T20:00:00Z']],
+    ['Asia/Shanghai', 'Europe/Athens', ['2026-03-29T01:00:00Z', '2026-10-25T01:00:00Z']],
+    ['Europe/Athens', 'America/New_York', ['2026-03-08T07:00:00Z', '2026-03-29T08:00:00Z', '2026-10-25T08:00:00Z', '2026-11-01T06:00:00Z']],
+  ];
+  const day = 86400000;
+  for (const [sceneZone, userZone, dates] of cases) for (const date of dates) {
+    const centre = Date.parse(date);
+    const noon = Math.floor((centre - day / 2) / day) * day + day / 2;
+    for (const boundary of [centre, noon, noon + day]) {
+      const before = timestampForLocalClock(boundary - 1, sceneZone, userZone);
+      const after = timestampForLocalClock(boundary + 1, sceneZone, userZone);
+      expect(after - before).toBeGreaterThan(1.8);
+      expect(after - before).toBeLessThan(2.2);
+    }
+    let previous = timestampForLocalClock(centre - day, sceneZone, userZone);
+    for (let at = centre - day + 300000; at <= centre + day; at += 300000) {
+      const current = timestampForLocalClock(at, sceneZone, userZone);
+      expect(current - previous).toBeGreaterThan(285000);
+      expect(current - previous).toBeLessThan(315000);
+      previous = current;
+      // Smoothing trades at most one ordinary DST hour of clock agreement for continuity.
+      const user = calendarAt(at, userZone), h = Math.floor(user.secondsOfDay / 3600);
+      const minute = Math.floor(user.secondsOfDay / 60) % 60, second = Math.floor(user.secondsOfDay) % 60;
+      const raw = timestampFromZonedInput(`${user.dayKey}T${String(h).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`, sceneZone);
+      expect(Math.abs(current - raw)).toBeLessThanOrEqual(3600001);
+    }
+    expect(timestampForLocalClock(centre, sceneZone, sceneZone)).toBe(centre);
+  }
+});
+
+test('local-clock offsets remain reproducible after cache eviction and a fresh module starts', () => {
+  const probes = [
+    { at: Date.parse('2026-03-28T19:59:59.999Z'), scene: 'Europe/Athens', user: 'Asia/Shanghai' },
+    { at: Date.parse('2026-10-24T20:00:00.001Z'), scene: 'Europe/Athens', user: 'Asia/Shanghai' },
+    { at: Date.parse('2026-03-29T01:00:00.001Z'), scene: 'Asia/Shanghai', user: 'Europe/Athens' },
+    { at: Date.parse('2026-11-01T06:00:00.001Z'), scene: 'Europe/Athens', user: 'America/New_York' },
+  ];
+  const expected = probes.map(p => timestampForLocalClock(p.at, p.scene, p.user));
+  for (let day = 0; day < 90; day++) timestampForLocalClock(Date.UTC(2027, 0, day + 1), 'Europe/Athens', 'Asia/Shanghai');
+  expect(probes.map(p => timestampForLocalClock(p.at, p.scene, p.user))).toEqual(expected);
+  const moduleURL = pathToFileURL(resolve('src/calendar-seed.ts')).href;
+  const script = `import { timestampForLocalClock } from ${JSON.stringify(moduleURL)};const probes=${JSON.stringify(probes)};process.stdout.write(JSON.stringify(probes.map(p=>timestampForLocalClock(p.at,p.scene,p.user))));`;
+  const fresh = JSON.parse(execFileSync(process.execPath, ['--input-type=module', '--eval', script], { encoding: 'utf8' }));
+  expect(fresh).toEqual(expected);
 });
 
 test('Santorini solar rise and set follow seasonal astronomy rather than fixed six-to-eighteen hours', () => {

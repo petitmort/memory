@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
+import * as THREE from 'three';
 import { timestampFromZonedInput } from '../src/calendar-seed';
 import { blendWeather, createWeatherController, PRECIPITATION_BOUNDS, samplePrecipitation, sampleWeather, WEATHER_KINDS, WEATHER_LABELS } from '../src/weather-controller';
-import { sampleCloudPosition } from '../src/cloud-controller';
+import { CLOUD_LIFETIME, CLOUD_FADE_DURATION, createCloudController, sampleCloudPosition } from '../src/cloud-controller';
+import { cloudWindVector, createCloudWindIntegrator, CLOUD_WIND_CACHE_HOURS, CLOUD_WIND_HOUR } from '../src/cloud-wind';
 
 test('simulated coastal weather is deterministic and all nine forced conditions remain explicit', () => {
   const timestamp = Date.parse('2026-10-31T12:34:56Z');
@@ -66,17 +68,186 @@ test('rain and snow stay outdoors under wind, clock wraps and reduced motion', (
   }
 });
 
-test('cloud positions follow absolute time across refresh and midnight without visible resets', () => {
-  const midnight = Date.parse('2026-11-01T00:00:00Z');
+test('cloud wind integrates hourly vectors continuously with ten samples across backward queries and calendar edges', () => {
+  const integrator = createCloudWindIntegrator(timestamp => ({ x: timestamp / CLOUD_WIND_HOUR, z: -2 }));
+  const from = 20.25 * CLOUD_WIND_HOUR, to = 25.75 * CLOUD_WIND_HOUR;
+  const expectedX = ((to / CLOUD_WIND_HOUR) ** 2 - (from / CLOUD_WIND_HOUR) ** 2) * 1800;
+  const result = integrator.integral(from, to);
+  expect(result.x).toBeCloseTo(expectedX, 8); expect(result.z).toBeCloseTo(-2 * (to - from) / 1000, 8);
+  expect(integrator.stats().cachedHours).toBe(CLOUD_WIND_CACHE_HOURS);
+  const initial = integrator.stats().samples;
+  for (let i = 0; i < 100; i++) integrator.integral(from, to + i);
+  expect(integrator.stats().samples).toBe(initial);
+  integrator.integral(from + CLOUD_WIND_HOUR, to + CLOUD_WIND_HOUR);
+  expect(integrator.stats().samples).toBe(initial + 1);
+  expect(integrator.integral(from, to)).toEqual(result);
+  expect(integrator.stats().samples).toBe(initial + 11);
+  expect(() => integrator.integral(from, from + CLOUD_LIFETIME + 1)).toThrow(RangeError);
+
+  for (const centre of ['2026-01-01T00:00:00Z', '2024-02-29T00:00:00Z', '2024-03-01T00:00:00Z',
+    '2026-03-29T01:00:00Z', '2026-10-25T01:00:00Z', '2026-11-01T00:00:00Z']) {
+    const timestamp = Date.parse(centre);
+    for (const timeZone of ['Europe/Athens', 'Asia/Shanghai', 'America/New_York']) {
+      const wind = createCloudWindIntegrator(), fresh = createCloudWindIntegrator();
+      const a = wind.integral(timestamp - 7 * CLOUD_WIND_HOUR, timestamp - 1, timeZone);
+      const b = wind.integral(timestamp - 7 * CLOUD_WIND_HOUR, timestamp + 1, timeZone);
+      expect(Math.abs(a.x - b.x)).toBeLessThan(.03); expect(Math.abs(a.z - b.z)).toBeLessThan(.03);
+      expect(b).toEqual(fresh.integral(timestamp - 7 * CLOUD_WIND_HOUR, timestamp + 1, timeZone));
+      wind.integral(timestamp + 36 * CLOUD_WIND_HOUR, timestamp + 40 * CLOUD_WIND_HOUR, timeZone);
+      expect(wind.integral(timestamp - 7 * CLOUD_WIND_HOUR, timestamp + 1, timeZone)).toEqual(b);
+      expect(wind.stats().cachedHours).toBeLessThanOrEqual(10);
+    }
+  }
+});
+
+test('cloud lifetimes fade invisibly, calendar positions repeat and signed wind controls both axes', () => {
+  const timestamp = Date.parse('2026-10-31T12:00:00Z');
+  const phases: number[] = [];
   for (const reduced of [false, true]) for (let index = 0; index < 36; index++) {
-    const a = sampleCloudPosition(index, midnight - 1, 4, .7, reduced);
-    const b = sampleCloudPosition(index, midnight + 1, 4, .7, reduced);
-    expect(a).toEqual(sampleCloudPosition(index, midnight - 1, 4, .7, reduced));
-    expect(Math.abs(a.x - b.x)).toBeLessThan(.001);
-    expect(Math.abs(a.z - b.z)).toBeLessThan(.001);
-    expect(a.z).toBeLessThan(-45); expect(a.y).toBeGreaterThan(0);
-    const gust = sampleCloudPosition(index, midnight, 20, 2.5, reduced);
-    expect(Math.abs(gust.x - b.x)).toBeLessThan(30);
+    const a = sampleCloudPosition(index, timestamp, undefined, .7, reduced);
+    expect(sampleCloudPosition(index, timestamp, undefined, .7, reduced)).toEqual(a);
+    expect(a.z).toBeLessThanOrEqual(-55); expect(a.y).toBeGreaterThan(0);
+    if (!reduced) phases.push(a.birth);
+    const zero = sampleCloudPosition(index, timestamp, 0, .7, reduced);
+    const still = sampleCloudPosition(index, timestamp + 1000, 0, .7, reduced);
+    expect([still.x, still.y, still.z]).toEqual([zero.x, zero.y, zero.z]);
+    const positive = sampleCloudPosition(index, timestamp, 4, .7, reduced);
+    const positiveNext = sampleCloudPosition(index, timestamp + 1000, 4, .7, reduced);
+    const negative = sampleCloudPosition(index, timestamp, 4, .7 + Math.PI, reduced);
+    const negativeNext = sampleCloudPosition(index, timestamp + 1000, 4, .7 + Math.PI, reduced);
+    expect(positiveNext.rawX - positive.rawX).toBeGreaterThan(0);
+    expect(positiveNext.rawZ - positive.rawZ).toBeGreaterThan(0);
+    expect(negativeNext.rawX - negative.rawX).toBeLessThan(0);
+    expect(negativeNext.rawZ - negative.rawZ).toBeLessThan(0);
+    expect(positiveNext.rawX - positive.rawX).toBeCloseTo(-(negativeNext.rawX - negative.rawX), 8);
+    const before = sampleCloudPosition(index, a.birth + CLOUD_LIFETIME - 1);
+    const after = sampleCloudPosition(index, a.birth + CLOUD_LIFETIME + 1);
+    expect(before.alpha).toBeLessThan(.000001); expect(after.alpha).toBeLessThan(.000001);
+    expect(sampleCloudPosition(index, a.birth + CLOUD_FADE_DURATION).age).toBeCloseTo(CLOUD_FADE_DURATION, 3);
+  }
+  expect(new Set(phases).size).toBe(36);
+  const normal = sampleCloudPosition(4, timestamp + 1000, 4).rawX - sampleCloudPosition(4, timestamp, 4).rawX;
+  const reduced = sampleCloudPosition(4, timestamp + 1000, 4, .7, true).rawX - sampleCloudPosition(4, timestamp, 4, .7, true).rawX;
+  expect(reduced / normal).toBeCloseTo(.2, 8);
+  expect(cloudWindVector(0, Math.PI)).toEqual({ x: -0, z: 0 });
+});
+
+function unitCloudController() {
+  const original = Object.getOwnPropertyDescriptor(globalThis, 'document');
+  const context = { save() {}, beginPath() {}, rect() {}, clip() {}, restore() {}, fillRect() {},
+    createRadialGradient() { return { addColorStop() {} }; } };
+  Object.defineProperty(globalThis, 'document', { configurable: true, value: {
+    createElement() { return { width: 0, height: 0, getContext() { return context; } }; },
+  } });
+  try { return createCloudController(); }
+  finally { if (original) Object.defineProperty(globalThis, 'document', original); else delete (globalThis as any).document; }
+}
+
+test('debug wind changes preserve cloud positions, zero wind remains still and pooled low-quality actors recover', () => {
+  const clouds = unitCloudController(), fresh = unitCloudController();
+  const mesh = clouds.group.children[0] as any, style = mesh.geometry.getAttribute('cloudStyle');
+  const positions = () => Array.from(mesh.instanceMatrix.array);
+  const now = Date.parse('2026-10-31T12:00:00Z'), state = sampleWeather(now, { kind: 'cloudy', windSpeed: 0 });
+  const options = { windSpeed: 0, revision: 1 };
+  let disposals = 0;
+  for (const resource of [mesh.geometry, mesh.material, mesh.material.uniforms.cloudMap.value]) resource.addEventListener('dispose', () => disposals++);
+  clouds.update(now, state, false, false, 1, undefined, options);
+  fresh.update(now, state, false, false, 1, undefined, options);
+  expect(Array.from((fresh.group.children[0] as any).instanceMatrix.array)).toEqual(positions());
+  const stationary = positions(), matrixBuffer = mesh.instanceMatrix.array, styleBuffer = style.array;
+  clouds.update(now + 60000, state, false, false, 1, undefined, options);
+  expect(positions()).toEqual(stationary);
+  clouds.update(now + 60000, state, false, false, 1, undefined, { windSpeed: 10, revision: 2 });
+  expect(positions()).toEqual(stationary);
+  clouds.update(now + 66000, state, false, false, 1, undefined, { windSpeed: 10, revision: 2 });
+  expect(positions()).not.toEqual(stationary);
+  const moving = positions();
+  clouds.update(now + 66000, state, false, false, 1, undefined, { windSpeed: 0, revision: 3 });
+  expect(positions()).toEqual(moving);
+  clouds.update(now + 72000, state, false, false, 1, undefined, { windSpeed: 0, revision: 3 });
+  const stopped = positions();
+  clouds.update(now + 132000, state, false, false, 1, undefined, { windSpeed: 0, revision: 3 });
+  expect(positions()).toEqual(stopped);
+  clouds.update(now + 9 * CLOUD_WIND_HOUR, state, false, false, 1, undefined, { windSpeed: 0, revision: 3 });
+  expect(positions()).toEqual(stopped);
+  clouds.update(now + 9 * CLOUD_WIND_HOUR, state, false, false, 1, undefined, { revision: 4 });
+  expect(positions()).toEqual(stopped);
+  clouds.update(now + 9 * CLOUD_WIND_HOUR + 1000, state, true, false, 1, undefined, { revision: 4 });
+  expect(mesh.count).toBe(16);
+  clouds.update(now + 9 * CLOUD_WIND_HOUR + 2000, state, false, false, 1, undefined, { revision: 4 });
+  expect(mesh.count).toBe(36);
+  expect(mesh.instanceMatrix.array).toBe(matrixBuffer); expect(style.array).toBe(styleBuffer);
+  expect(clouds.group.userData.windCache.cachedHours).toBeLessThanOrEqual(10);
+  clouds.dispose(); clouds.dispose(); fresh.dispose(); expect(disposals).toBe(3);
+});
+
+function roomCamera(mobile: boolean) {
+  const camera = new THREE.PerspectiveCamera(50, mobile ? 390 / 844 : 1000 / 740, .1, 500);
+  camera.position.set(mobile ? .55 : 1.1, 1.65, mobile ? 1.15 : .75);
+  camera.lookAt(mobile ? .15 : -.2, mobile ? 1.05 : .95, mobile ? -1.4 : -1.5);
+  camera.updateMatrixWorld(true);
+  return camera;
+}
+
+test('low quality draws selected pooled seeds with their matching styles and restores all normal positions', () => {
+  const clouds = unitCloudController(), mesh = clouds.group.children[0] as any;
+  const timestamp = Date.parse('2026-10-31T12:00Z'), state = sampleWeather(timestamp, { kind: 'cloudy' }), camera = roomCamera(true);
+  clouds.update(timestamp, state, false, false, 1, undefined, { camera });
+  const all = Array.from(mesh.instanceMatrix.array) as number[];
+  const allStyles = Array.from(mesh.geometry.getAttribute('cloudStyle').array) as number[];
+  const keys = Array.from({ length: 36 }, (_, index) => all.slice(index * 16, index * 16 + 16).join(','));
+  clouds.update(timestamp, state, true, false, 1, undefined, { camera });
+  const chosen: number[] = [], styles = mesh.geometry.getAttribute('cloudStyle').array;
+  for (let slot = 0; slot < 16; slot++) {
+    const key = Array.from(mesh.instanceMatrix.array.slice(slot * 16, slot * 16 + 16)).join(',');
+    const seed = keys.indexOf(key); expect(seed).toBeGreaterThanOrEqual(0); chosen.push(seed);
+    for (let field = 0; field < 4; field++) expect(styles[slot * 4 + field]).toBe(allStyles[seed * 4 + field]);
+  }
+  expect(new Set(chosen).size).toBe(16); expect(chosen.some(index => index >= 16)).toBe(true);
+  clouds.update(timestamp, state, false, false, 1, undefined, { camera });
+  expect(Array.from(mesh.instanceMatrix.array)).toEqual(all);
+  clouds.dispose();
+});
+
+test('cloudy and snowy windows retain comparable visible clouds in low quality over complete days', () => {
+  const smooth = (value: number) => { const t = Math.max(0, Math.min(1, value)); return t * t * (3 - 2 * t); };
+  const visible = (p: { x: number; y: number; z: number; width: number; height: number; alpha: number }, threshold: number, cover: number, camera: THREE.PerspectiveCamera) => {
+    if (p.alpha * smooth((cover - threshold + .16) / .32) < .1) return false;
+    const halfWidth = p.width * .48, halfHeight = p.height * .38, eye = camera.position;
+    const ratio = (-2.7 - eye.z) / (p.z - eye.z);
+    if (eye.x + (p.x + halfWidth - eye.x) * ratio < -1.5 || eye.x + (p.x - halfWidth - eye.x) * ratio > 1.5
+      || eye.y + (p.y + halfHeight - eye.y) * ratio < .85 || eye.y + (p.y - halfHeight - eye.y) * ratio > 2.45) return false;
+    const corners = [[-halfWidth, -halfHeight], [halfWidth, -halfHeight], [halfWidth, halfHeight], [-halfWidth, halfHeight]]
+      .map(([x, y]) => new THREE.Vector3(p.x + x, p.y + y, p.z).project(camera));
+    return !(Math.max(...corners.map(point => point.x)) < -1 || Math.min(...corners.map(point => point.x)) > 1
+      || Math.max(...corners.map(point => point.y)) < -1 || Math.min(...corners.map(point => point.y)) > 1);
+  };
+  const cases = [{ date: '2026-01-15T00:00Z', cover: .98 }, { date: '2026-04-23T00:00Z', cover: 1 },
+    { date: '2026-06-21T00:00Z', cover: .58 }, { date: '2026-10-31T00:00Z', cover: .58 }];
+  for (const sample of cases) for (const mobile of [false, true]) for (const reduced of [false, true]) {
+    const clouds = unitCloudController(), mesh = clouds.group.children[0] as any, camera = roomCamera(mobile);
+    let fullEmpty = 0, lowEmpty = 0, maxFullEmpty = 0, maxLowEmpty = 0, fullTotal = 0, lowTotal = 0;
+    try {
+      for (let tick = 0; tick <= 24 * 12; tick++) {
+        const timestamp = Date.parse(sample.date) + tick * 300000, state = { ...sampleWeather(timestamp), cloudCover: sample.cover };
+        clouds.update(timestamp, state, true, reduced, 1, undefined, { camera });
+        let fullCount = 0, lowCount = 0;
+        for (let index = 0; index < 36; index++) {
+          if (visible(sampleCloudPosition(index, timestamp, undefined, .7, reduced), .05 + index % 12 / 12 * .84, sample.cover, camera)) fullCount++;
+        }
+        const matrices = mesh.instanceMatrix.array, styles = mesh.geometry.getAttribute('cloudStyle').array;
+        for (let slot = 0; slot < 16; slot++) {
+          if (visible({ x: matrices[slot * 16 + 12], y: matrices[slot * 16 + 13], z: matrices[slot * 16 + 14],
+            width: matrices[slot * 16], height: matrices[slot * 16 + 5], alpha: styles[slot * 4 + 3] }, styles[slot * 4 + 2], sample.cover, camera)) lowCount++;
+        }
+        fullTotal += fullCount; lowTotal += lowCount;
+        maxFullEmpty = Math.max(maxFullEmpty, fullCount ? (fullEmpty = 0) : ++fullEmpty);
+        maxLowEmpty = Math.max(maxLowEmpty, lowCount ? (lowEmpty = 0) : ++lowEmpty);
+      }
+      const label = `${sample.date}:mobile=${mobile}:reduced=${reduced}`;
+      expect(maxLowEmpty, label).toBeLessThanOrEqual(maxFullEmpty + 1);
+      expect(lowTotal / fullTotal, label).toBeGreaterThan(.9);
+    } finally { clouds.dispose(); }
   }
 });
 

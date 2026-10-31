@@ -46,7 +46,8 @@ export function createEnvironmentController(bindings: Bindings) {
   scene.add(sky.group, clouds.group, particles.group);
   clouds.group.visible = particles.group.visible = false;
   let disposed = false, paused = false, updates = 0, low = false;
-  let anchorWall = Date.now(), offset = 0, offsetSample = -Infinity;
+  let anchorWall = Date.now(), departureRevision = 0, cloudRevision = 0;
+  let userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   let celestialKey = -Infinity, weatherKey = -Infinity, debugAt = -Infinity, shadowAt = -Infinity;
   let celestialPair: [CelestialState, CelestialState];
   let weatherPair: [ReturnType<typeof sampleWeather>, ReturnType<typeof sampleWeather>];
@@ -66,20 +67,31 @@ export function createEnvironmentController(bindings: Bindings) {
   function selectedTime(wall: number) {
     if (options.timestamp !== undefined) return options.timestamp + wall - anchorWall;
     if (options.timeMode === "scene") return wall;
-    // Intl/DST conversion is deliberately outside the per-frame hot path.
-    if (Math.abs(wall - offsetSample) >= 30000) {
-      offset = timestampForLocalClock(wall, options.location.timeZone) - wall; offsetSample = wall;
-    }
-    return wall + offset;
+    // Daily timezone anchors are cached by the calendar; interpolate on every
+    // frame so DST smoothing cannot become a 30-second staircase.
+    return timestampForLocalClock(wall, options.location.timeZone, userTimeZone);
+  }
+  function departureState(at: number) {
+    const skyAtDeparture = calculateCelestial(at, options.location);
+    const weatherAtDeparture = sampleWeather(at, {
+      kind: options.weather, cloudCover: options.cloudCover,
+      windSpeed: options.windSpeed, timeZone: options.location.timeZone,
+    });
+    return {
+      daylight: skyAtDeparture.daylight,
+      severity: Math.max(weatherAtDeparture.precipitation, (1 - weatherAtDeparture.visibility) * .7),
+    };
   }
   const debug = createEnvironmentDebug(options, patch => {
     if (disposed) return;
-    if ("weather" in patch || "cloudCover" in patch || "windSpeed" in patch)
+    if ("weather" in patch || "cloudCover" in patch || "windSpeed" in patch || "timestamp" in patch || "timeMode" in patch)
       transition = { from: { ...weather }, started: performance.now() };
+    if ("weather" in patch || "cloudCover" in patch || "windSpeed" in patch) departureRevision++;
+    if ("weather" in patch || "windSpeed" in patch || "timestamp" in patch || "timeMode" in patch) cloudRevision++;
     Object.assign(options, patch);
     if ("timestamp" in patch) anchorWall = Date.now();
     if ("quality" in patch) bindings.quality(options.quality);
-    celestialKey = weatherKey = -Infinity; debugAt = -Infinity; offsetSample = -Infinity;
+    celestialKey = weatherKey = -Infinity; debugAt = -Infinity;
     bindings.invalidate();
   });
 
@@ -138,13 +150,17 @@ export function createEnvironmentController(bindings: Bindings) {
     clouds.group.visible = particles.group.visible = outdoors;
     if (outdoors) {
       const direction = sunlight > .005 ? celestial.sun.direction : celestial.moon.direction;
-      clouds.update(timestamp, weather, low, reduced, d, direction);
+      clouds.update(timestamp, weather, low, reduced, d, direction, {
+        timeZone: options.location.timeZone, weather: options.weather,
+        windSpeed: options.windSpeed, revision: cloudRevision, camera,
+      });
       particles.update(timestamp, weather, low, reduced, d);
       vessels.setDebugPaths(options.paths);
       vessels.update(timestamp, waterTime, {
         low, reduced, daylight: d, windSpeed: weather.windSpeed,
         severity: Math.max(weather.precipitation, (1 - weather.visibility) * .7),
         density: options.vesselDensity, forcedRoute: options.vesselRoute, forcedKind: options.vesselKind, waveScale: weather.waveScale,
+        departureState, departureRevision,
       });
     }
     if (timestamp - debugAt >= 1000 || timestamp < debugAt) {
@@ -155,7 +171,7 @@ export function createEnvironmentController(bindings: Bindings) {
   return {
     update, warmObjects, ownedGroups, initialQuality: options.quality,
     pause() { paused = true; },
-    resume() { paused = false; offsetSample = -Infinity; },
+    resume() { paused = false; userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; },
     snapshot() { return { timestamp, celestial, weather, vessels: vessels.snapshot(), low, updates, paused }; },
     dispose() {
       if (disposed) return;

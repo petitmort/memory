@@ -47,6 +47,29 @@ test("preview links reject invalid dates, enums and nonfinite values and clamp b
   await expect(page.locator("script")).toHaveCount(0);
 });
 
+test("preview dates accept 1900–2100 boundaries and reject unsupported URL or entered years without changing state", async ({ page }) => {
+  await isolatedPage(page, "?debugEnv=1&envDate=9999-12-31T12:00");
+  expect(await page.evaluate(() => (window as any).__environmentOptions.timestamp)).toBeUndefined();
+  const parsed = await page.evaluate(() => {
+    const read = (window as any).__readEnvironmentOptions;
+    return ['0001-01-01T12:00', '1899-12-31T23:59', '1900-01-01T00:00', '2100-12-31T23:59', '2101-01-01T00:00', '9999-12-31T12:00']
+      .map(date => ({ date, timestamp: read(`?debugEnv=1&envDate=${date}`).timestamp }));
+  });
+  expect(parsed.map(row => Number.isFinite(row.timestamp))).toEqual([false, false, true, true, false, false]);
+  await page.getByText("环境调试", { exact: true }).click();
+  const input = page.locator('#env-date');
+  await expect(input).toHaveAttribute('min', '1900-01-01T00:00');
+  await expect(input).toHaveAttribute('max', '2100-12-31T23:59');
+  for (const date of ['1899-12-31T23:59', '2101-01-01T00:00', '9999-12-31T12:00']) {
+    await input.fill(date); await input.dispatchEvent('change');
+    await expect(page.locator('.environment-debug-error')).toHaveText('请选择 1900–2100 年之间的有效日期和时间。');
+    expect(await page.evaluate(() => (window as any).__environmentChanges.length)).toBe(0);
+  }
+  await input.fill('2026-03-29T03:30'); await input.dispatchEvent('change');
+  await expect(page.locator('.environment-debug-error')).toBeEmpty();
+  expect(await page.evaluate(() => (window as any).__environmentChanges.at(-1).timestamp)).toBe(Date.parse('2026-03-29T01:30:00Z'));
+});
+
 test("debug controls update only this preview, expose all modes and restore automatic state", async ({ page }) => {
   await isolatedPage(page);
   await page.getByText("环境调试", { exact: true }).click();

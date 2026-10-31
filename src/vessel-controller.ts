@@ -6,6 +6,10 @@ import { getVesselSchedule, sampleVesselJourney, sampleVesselRoute, vesselDepart
 export type VesselOptions = {
   low: boolean; reduced: boolean; daylight: number; windSpeed: number; severity: number;
   density?: number; forcedRoute?: VesselRoute; forcedKind?: VesselKind; waveScale?: number;
+  /** Stable simulation at departure; a changing dawn must not spawn a boat midway. */
+  departureState?: (timestampMs: number) => { daylight: number; severity: number };
+  /** Invalidate cached departure conditions after an explicit debug override. */
+  departureRevision?: number;
 };
 const smooth = (x: number) => { const a = THREE.MathUtils.clamp(x, 0, 1); return a * a * (3 - 2 * a); };
 
@@ -63,19 +67,28 @@ export function createVesselController({ legacyShip }: { legacyShip?: THREE.Grou
   const paths = new THREE.LineSegments(pathGeometry, new THREE.LineBasicMaterial({ color: "#d7af64", transparent: true, opacity: .55 }));
   paths.name = "vessel-debug-routes"; paths.visible = false; group.add(paths); warmObjects.push(paths);
   let disposed = false, previousTime: number | undefined, scheduleKey = "", schedule: VesselJourney[] = [];
+  let departureStates = new Map<number, { daylight: number; severity: number }>();
 
   function update(timestampMs: number, waterTime: number, options: VesselOptions) {
     if (disposed || !Number.isFinite(timestampMs + waterTime)) return;
     const restoring = previousTime === undefined || timestampMs - previousTime > 1000 || timestampMs < previousTime;
     const dt = previousTime === undefined ? 0 : THREE.MathUtils.clamp((timestampMs - previousTime) / 1000, 0, .1);
     previousTime = timestampMs;
-    const key = `${Math.floor(timestampMs / vesselDepartureInterval)}:${options.forcedRoute ?? ""}:${options.forcedKind ?? ""}`;
-    if (scheduleKey !== key) { schedule = getVesselSchedule(timestampMs, options); scheduleKey = key; }
+    const key = `${Math.floor(timestampMs / vesselDepartureInterval)}:${options.forcedRoute ?? ""}:${options.forcedKind ?? ""}:${options.departureRevision ?? 0}`;
+    if (scheduleKey !== key) {
+      schedule = getVesselSchedule(timestampMs, options); scheduleKey = key;
+      departureStates = new Map(schedule.map(journey => [journey.id,
+        options.departureState?.(journey.startMs) ?? { daylight: options.daylight, severity: options.severity },
+      ]));
+    }
     const available = schedule.filter(journey => timestampMs < journey.startMs + journey.durationMs);
     const limit = options.low ? 3 : 5;
     const density = THREE.MathUtils.clamp(options.density ?? 1, 0, 2);
-    const probability = THREE.MathUtils.clamp((.4 + .38 * options.daylight) * (1 - .8 * options.severity) * density * (options.low ? .7 : 1), 0, 1);
-    const wanted = available.filter(journey => options.forcedRoute || options.forcedKind || journey.admission < probability).slice(-limit);
+    const wanted = available.filter(journey => {
+      const state = options.departureState ? departureStates.get(journey.id)! : options;
+      const probability = THREE.MathUtils.clamp((.4 + .38 * state.daylight) * (1 - .8 * state.severity) * density * (options.low ? .7 : 1), 0, 1);
+      return options.forcedRoute || options.forcedKind || journey.admission < probability;
+    }).slice(-limit);
     const identity = (journey: VesselJourney) => `${journey.id}:${journey.kind}:${journey.route}`;
     const ids = new Set(wanted.map(identity));
     // Sleeping scenes must release obsolete assignments before filling the
@@ -84,7 +97,9 @@ export function createVesselController({ legacyShip }: { legacyShip?: THREE.Grou
       actor.journey = null; actor.opacity = 0; actor.root.visible = false;
     }
     for (const journey of wanted) if (!actors.some(actor => actor.journey?.id === journey.id && actor.journey.route === journey.route && actor.journey.kind === journey.kind)) {
-      const actor = actors.find(actor => !actor.journey || actor.opacity < .004);
+      // Assignments made earlier in this pass still have zero opacity. They
+      // already reserve an actor for a wanted voyage and must not be replaced.
+      const actor = actors.find(actor => !actor.journey || (actor.opacity < .004 && !ids.has(identity(actor.journey))));
       if (!actor) continue;
       for (const model of Object.values(actor.models)) model.visible = false;
       actor.journey = journey; actor.models[journey.kind].visible = true; actor.opacity = 0;
@@ -139,7 +154,7 @@ export function createVesselController({ legacyShip }: { legacyShip?: THREE.Grou
     });
     for (const actor of actors) for (const material of actor.materials.keys()) materials.add(material);
     geometries.forEach(value => value.dispose()); materials.forEach(value => value.dispose()); textures.forEach(value => value.dispose());
-    group.clear(); schedule = []; previousTime = undefined;
+    group.clear(); schedule = []; departureStates.clear(); previousTime = undefined;
   }
   return {
     group, warmObjects, update,

@@ -56,6 +56,35 @@ CHROMIUM_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \
 
 必须先运行现有5173开发服务器；每次测完再运行下一次，勿与其他浏览器GPU测试并发。脚本现在记录实际系统 / 架构 / Node / 浏览器路径 / WebGL renderer。
 
+## 2026-10-31 · 连续性专项复测
+
+本批基线`f0f8025`；[专项JSON](benchmark/environment-audit-2026-10-31.json)保留三次原始摘要、CPU降速采样、持续运行数据与Safari未完成原因。使用上节相同Mac / Chrome / 960×640 / DPR1 / 减少动态 / 5秒条件，所有GPU任务串行，复用现有服务器和运行时。
+
+| 指标 | 上一版中位数 | 专项修复后中位数 |
+| --- | ---: | ---: |
+| FPS | 60.001 | 60.012 |
+| 帧间隔P95 | 17.8ms | 18.5ms |
+| CPU提交P95 | 1.3ms | 1.3ms |
+| 加载 | 999.6ms | 973.1ms |
+| 原始JS堆 | 21,939,488B | 25,210,748B |
+| 几何 / 纹理 / 程序 | 248 / 39 / 51 | 248 / 39 / 51 |
+
+本轮三次FPS60.009 / 60.012 / 60.022，P95 17.6 / 18.5 / 18.6ms，无错误、无降档。短时采样 / GC差异不解释为性能改善或泄漏；原始堆增加也需结合下述GC观察，不能将JS堆等同全部内存。
+
+另一次390×844 / 请求DPR2 / 大雨 / 省电 / CPU4×采样：29.979FPS，帧间隔P95 37ms，CPU提交P95 3.7ms，加载2581.5ms；实际渲染像素比被省电策略限制为1，248几何 / 38纹理 / 44程序，无错误。这是桌面Chrome实验，不是实体手机结果。
+
+新增`verify-environment-endurance.mjs`默认真实连续180秒，不使用快进时钟，每15秒采样，三轮切换天气 / 日期 / 六船型、阅读切章返回、后台路径、横竖屏与画质；后半90秒启用CPU4×，用源码指纹确保不受HMR污染。本次实际180.020秒通过，17次采样，三轮参考资源248 / 39 / 75完全相同。程序首次手动关闭阴影后由51增至75，后续不再增长；正常初始化仍51。
+
+原始堆范围15.242–23.245MB，三个参考点GC后15.019 / 15.206 / 15.294MB（+275,344B）。本实验报告范围、章节缓存与GC可能影响，不设任意堆阈值，也不声称三分钟足以证明长期无泄漏；未测显存、浏览器进程内存、温度、电池。
+
+```sh
+~/.local/bin/project-node scripts/verify-environment-endurance.mjs --check
+~/.local/bin/project-node scripts/verify-environment-endurance.mjs --duration=180 --gc --output=/tmp/memory-endurance
+~/.local/bin/project-node scripts/verify-environment-safari.mjs --output=/tmp/memory-safari
+```
+
+Safari脚本使用本机`safaridriver`与可信W3C点击，支持显式`--click=element|actions`，保存窗口 / 命中 / 事件诊断，只关闭自有会话，不改偏好。必须有解锁、唤醒的交互桌面。本次Safari27.2确认生产加载 / Apple GPU，但完整交互因系统锁屏、显示器休眠、页面hidden而未完成；已经请求作者解锁，不能把它写作Safari兼容通过。
+
 ## 测量边界
 
 - SwiftShader 是云端软件渲染器，所得帧率不能代表 iPhone 或 Android 实机。CPU 降速也是实验条件，不能替代物理中低端设备。

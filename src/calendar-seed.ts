@@ -125,7 +125,26 @@ export function timestampFromZonedInput(value: string, timeZone = DEFAULT_LOCATI
   throw new RangeError("This local time could not be resolved in the chosen time zone.");
 }
 
-/** Preserve the user's wall-clock date/time while observing the configured scene. */
+const LOCAL_CLOCK_DAY = 86400000, LOCAL_CLOCK_NOON = LOCAL_CLOCK_DAY / 2;
+const localClockOffsets = new Map<string, number>();
+function localClockOffset(anchor: number, sceneTimeZone: string, userTimeZone: string) {
+  const key = `${anchor}/${sceneTimeZone}/${userTimeZone}`;
+  const cached = localClockOffsets.get(key);
+  if (cached !== undefined) return cached;
+  const p = wallParts(anchor, userTimeZone);
+  const mapped = timestampFromZonedInput(`${pad(p.year, 4)}-${pad(p.month)}-${pad(p.day)}T${pad(p.hour)}:${pad(p.minute)}:${pad(p.second)}`, sceneTimeZone);
+  const offset = mapped - anchor;
+  if (localClockOffsets.size >= 64) localClockOffsets.delete(localClockOffsets.keys().next().value!);
+  localClockOffsets.set(key, offset);
+  return offset;
+}
+
+/**
+ * Match the user's wall clock on ordinary dates. Between fixed daily UTC-noon
+ * anchors, blend zone offsets so either zone's DST cannot jump the landscape.
+ * A transition day can differ from the wall clock by up to about one hour;
+ * absolute scene time and explicit date input retain exact IANA/DST semantics.
+ */
 export function timestampForLocalClock(
   timestamp: number,
   sceneTimeZone = DEFAULT_LOCATION.timeZone,
@@ -133,7 +152,8 @@ export function timestampForLocalClock(
 ): number {
   if (!Number.isFinite(timestamp)) throw new RangeError("The calendar timestamp must be finite.");
   if (sceneTimeZone === userTimeZone) return timestamp;
-  const p = wallParts(timestamp, userTimeZone);
-  return timestampFromZonedInput(`${pad(p.year, 4)}-${pad(p.month)}-${pad(p.day)}T${pad(p.hour)}:${pad(p.minute)}:${pad(p.second)}`, sceneTimeZone)
-    + positiveModulo(timestamp, 1000);
+  const anchor = Math.floor((timestamp - LOCAL_CLOCK_NOON) / LOCAL_CLOCK_DAY) * LOCAL_CLOCK_DAY + LOCAL_CLOCK_NOON;
+  const before = localClockOffset(anchor, sceneTimeZone, userTimeZone);
+  const after = localClockOffset(anchor + LOCAL_CLOCK_DAY, sceneTimeZone, userTimeZone);
+  return timestamp + before + (after - before) * ((timestamp - anchor) / LOCAL_CLOCK_DAY);
 }

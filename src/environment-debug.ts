@@ -28,6 +28,13 @@ function numeric(value: string | null, min: number, max: number): number | undef
   const number = Number(value);
   return Number.isFinite(number) ? Math.max(min, Math.min(max, number)) : undefined;
 }
+const PREVIEW_DATE_ERROR = "请选择 1900–2100 年之间的有效日期和时间。";
+function previewTimestamp(value: string, timeZone: string) {
+  const timestamp = timestampFromZonedInput(value, timeZone);
+  const year = calendarAt(timestamp, timeZone).year;
+  if (year < 1900 || year > 2100) throw new RangeError(PREVIEW_DATE_ERROR);
+  return timestamp;
+}
 
 /** Debug query parameters are inert unless the visitor explicitly requests debugEnv=1. */
 export function readEnvironmentOptions(search = typeof window === "undefined" ? "" : window.location.search): EnvironmentOverrides {
@@ -39,7 +46,7 @@ export function readEnvironmentOptions(search = typeof window === "undefined" ? 
   options.timeMode = option(params.get("envTimeMode"), ["scene", "local-clock"]) ?? "local-clock";
   const date = params.get("envDate");
   if (date) {
-    try { options.timestamp = timestampFromZonedInput(date, options.location.timeZone); }
+    try { options.timestamp = previewTimestamp(date, options.location.timeZone); }
     catch { /* A malformed preview link must not stop the room from loading. */ }
   }
   options.weather = option(params.get("envWeather"), WEATHER_KINDS);
@@ -95,8 +102,8 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
   const change = (input: HTMLElement, callback: () => void) => input.addEventListener("change", callback, { signal: events.signal });
   const apply = (patch: Partial<EnvironmentOverrides>) => { Object.assign(state, patch); onChange(patch); };
   const date = document.createElement("input"); date.type = "datetime-local"; date.id = "env-date";
-  date.min = "0001-01-01T00:00"; date.max = "9999-12-31T23:59";
-  field("模拟日期与时间（场景时区）", date);
+  date.min = "1900-01-01T00:00"; date.max = "2100-12-31T23:59";
+  field("模拟日期与时间（场景时区，1900–2100 年）", date);
   const dateError = document.createElement("span"); dateError.className = "environment-debug-error";
   dateError.setAttribute("role", "alert"); content.append(dateError);
   const mode = select("时间模式", "env-time-mode", [["local-clock", "与设备本地时钟一致"], ["scene", "场景所在地时间"]]);
@@ -136,8 +143,8 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
   change(date, () => {
     dateError.textContent = "";
     if (!date.value) { apply({ timestamp: undefined }); return; }
-    try { apply({ timestamp: timestampFromZonedInput(date.value, state.location.timeZone) }); }
-    catch { dateError.textContent = "请选择有效的日期和时间。"; }
+    try { apply({ timestamp: previewTimestamp(date.value, state.location.timeZone) }); }
+    catch { dateError.textContent = PREVIEW_DATE_ERROR; }
   });
   change(mode, () => apply({ timeMode: mode.value as EnvironmentOverrides["timeMode"] }));
   change(weather, () => apply({ weather: option(weather.value, WEATHER_KINDS) }));
