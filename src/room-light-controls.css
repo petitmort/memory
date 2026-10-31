@@ -1,0 +1,128 @@
+.room-light-panel {
+  --room-light-top: max(96px, calc(env(safe-area-inset-top) + 76px));
+  position: fixed;
+  z-index: 24;
+  top: var(--room-light-top);
+  right: max(4.5%, env(safe-area-inset-right));
+  width: min(290px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+  max-height: calc(100dvh - var(--room-light-top) - max(20px, env(safe-area-inset-bottom)));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 16px 14px;
+  border: 1px solid var(--room-paper-border);
+  border-radius: var(--room-radius);
+  background: var(--room-paper);
+  color: var(--room-ink);
+  box-shadow: var(--room-shadow);
+  font: 14px/1.5 "PingFang SC", "Microsoft YaHei", sans-serif;
+  text-align: left;
+  text-shadow: none;
+  pointer-events: auto;
+  scrollbar-width: thin;
+}
+.room-light-panel[hidden] { display: none; }
+.room-light-heading,
+.room-light-power,
+.room-light-color-row,
+.room-light-brightness-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+.room-light-heading h2 { margin: 0; font: inherit; font-weight: 600; }
+.room-light-heading {
+  position: sticky;
+  top: -12px;
+  z-index: 1;
+  margin: -12px -16px 0;
+  padding: 12px 16px 0;
+  background: var(--room-paper);
+}
+.room-light-panel button,
+.room-light-panel input { min-height: 44px; font: inherit; }
+.room-light-panel button {
+  min-width: 44px;
+  border-radius: 10px;
+  color: var(--room-ink);
+}
+.room-light-panel button:focus-visible,
+.room-light-panel input:focus-visible {
+  outline: 2px solid var(--room-ink);
+  outline-offset: 2px;
+}
+.room-light-close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  margin-right: -6px;
+  border: 0;
+  background: transparent;
+  font-size: 26px !important;
+  line-height: 1;
+}
+.room-light-close:hover { background: #294b5010; }
+.room-light-toggle {
+  padding: 8px 14px;
+  border: 1px solid var(--room-paper-border);
+  background: transparent;
+}
+.room-light-toggle[aria-checked="true"] {
+  border-color: var(--room-surface);
+  background: var(--room-surface);
+  color: var(--room-paper);
+}
+.room-light-color-row input {
+  flex: 0 0 60px;
+  width: 60px;
+  height: 44px;
+  padding: 4px;
+  border: 1px solid var(--room-paper-border);
+  border-radius: 9px;
+  background: transparent;
+  cursor: pointer;
+}
+.room-light-presets { display: flex; gap: 6px; }
+.room-light-preset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex: 1;
+  padding: 5px;
+  border: 1px solid var(--room-paper-border);
+  background: transparent;
+}
+.room-light-preset::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  border: 1px solid #294b5030;
+  border-radius: 50%;
+  background: var(--light-swatch);
+}
+.room-light-preset[aria-pressed="true"] { border-color: var(--room-ink); background: #294b500c; }
+.room-light-brightness-row { margin-top: 2px; }
+#room-light-percentage { font-variant-numeric: tabular-nums; }
+#room-light-brightness { width: 100%; margin: -8px 0 -5px; accent-color: var(--room-ink); cursor: pointer; }
+@media (max-width: 759px) {
+  .room-light-panel {
+    --room-light-top: max(84px, calc(env(safe-area-inset-top) + 64px));
+    right: max(12px, env(safe-area-inset-right));
+    max-height: calc(100dvh - var(--room-light-top) - 190px - env(safe-area-inset-bottom));
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .room-light-panel {
+    --room-light-top: max(64px, calc(env(safe-area-inset-top) + 48px));
+    right: max(4.5%, env(safe-area-inset-right));
+    max-height: calc(100dvh - var(--room-light-top) - max(60px, env(safe-area-inset-bottom)));
+  }
+}

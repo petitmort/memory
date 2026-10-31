@@ -28,6 +28,7 @@ import { createEntryPath } from "./entry-motion";
 import { createEnvironmentController } from "./environment-controller";
 import type { CatReactionProfile } from "./cat-reactions";
 import type { EnvironmentSoundFrame } from "./weather-audio";
+import { createRoomLight, type RoomLightSettings } from "./room-light";
 
 export type PageProjection = { corners: { x: number; y: number }[] };
 export type BookProjection = PageProjection & { pages: [PageProjection, PageProjection] };
@@ -106,6 +107,8 @@ export function createScene(
   const fill = new THREE.DirectionalLight("#fff4e4", .9);
   fill.position.set(3, 5, 8);
   scene.add(fill);
+  const roomLight = createRoomLight();
+  scene.add(roomLight.light);
   const mat = (color: string, roughness = 0.8, metalness = 0) =>
     new THREE.MeshStandardMaterial({ color, roughness, metalness });
   const palette = createPalette();
@@ -828,6 +831,7 @@ export function createScene(
     lounge.dispose();
     courtyardFog.dispose();
     environment.dispose();
+    roomLight.dispose();
     resources.geometries.forEach(value => value.dispose());
     resources.materials.forEach(value => value.dispose());
     resources.textures.forEach(value => value.dispose());
@@ -1436,6 +1440,7 @@ export function createScene(
       qualityPolicy.resetSamples();
       if (!roomRevealed) {
         roomRevealed = true;
+        roomLight.setActive(true);
         shelteredDetails.forEach(object => { object.visible = true; });
         sun.shadow.needsUpdate = true;
       }
@@ -1495,6 +1500,12 @@ export function createScene(
     clearInteractionFeedback,
     markInteractionUsed(kind: InteractionKind) { feedback.markUsed(kind); },
     getQuality() { return { low, manual: qualityPolicy.manual !== undefined }; },
+    getRoomLight() { return roomLight.getSettings(); },
+    setRoomLight(settings: RoomLightSettings) {
+      if (disposed || unavailableError) return;
+      roomLight.setSettings(settings);
+      requestRender();
+    },
     setRecordPlaying(playing: boolean) {
       if (disposed || unavailableError) return;
       recordPlayer.setPlaying(playing);
