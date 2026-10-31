@@ -47,6 +47,31 @@ test("preview links reject invalid dates, enums and nonfinite values and clamp b
   await expect(page.locator("script")).toHaveCount(0);
 });
 
+test('thunderstorm and granular environment levels are bounded, usable and reset without persistence',async({page})=>{
+  await isolatedPage(page,'?debugEnv=1&envWeather=thunderstorm&envWindDirection=135&envPrecipitation=.65&envWaves=1.4&envThunder=.8&envBirdDensity=.25&envDensity=2.5');
+  expect(await page.evaluate(()=>(window as any).__environmentOptions)).toMatchObject({
+    weather:'thunderstorm',windDirection:Math.PI*.75,precipitation:.65,waveScale:1.4,thunder:.8,birdDensity:.25,vesselDensity:2.5,
+  });
+  await page.locator('summary').click();
+  const weather=await page.locator('#env-weather option').allTextContents();
+  expect(weather.indexOf('雷雨')).toBe(weather.indexOf('大雨')+1);
+  for(const id of ['env-cloud','env-wind','env-wind-direction','env-precipitation','env-waves','env-thunder','env-bird-density','env-density']){
+    expect(await page.locator('#'+id+'-level option').count()).toBeGreaterThanOrEqual(9);
+  }
+  await page.locator('#env-wind-level').selectOption('19.5');
+  await page.locator('#env-wind-direction-level').selectOption('270');
+  await page.locator('#env-density-level').selectOption('3');
+  await page.locator('#env-precipitation-level').selectOption('0.3');
+  expect(await page.evaluate(()=>Object.assign({},...(window as any).__environmentChanges))).toMatchObject({windSpeed:19.5,windDirection:Math.PI*1.5,vesselDensity:3,precipitation:.3});
+  await page.locator('#env-cloud').fill('.37');await page.locator('#env-cloud').dispatchEvent('change');
+  await expect(page.locator('#env-cloud-level')).toHaveValue('custom');
+  await page.locator('.environment-debug-reset').click();
+  for(const id of ['env-wind-direction','env-precipitation','env-waves','env-thunder','env-bird-density']){
+    await expect(page.locator('#'+id)).toHaveValue('');await expect(page.locator('#'+id+'-level')).toHaveValue('');
+  }
+  expect(await page.evaluate(()=>({local:localStorage.length,session:sessionStorage.length}))).toEqual({local:0,session:0});
+});
+
 test("preview dates accept 1900–2100 boundaries and reject unsupported URL or entered years without changing state", async ({ page }) => {
   await isolatedPage(page, "?debugEnv=1&envDate=9999-12-31T12:00");
   expect(await page.evaluate(() => (window as any).__environmentOptions.timestamp)).toBeUndefined();

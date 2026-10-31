@@ -10,6 +10,7 @@ export function createVesselModels(legacyShip?: THREE.Group) {
   const cream = new THREE.MeshStandardMaterial({ color: "#e4dec9", roughness: .86 });
   const blue = new THREE.MeshStandardMaterial({ color: "#667e81", roughness: .82 });
   const canvas = new THREE.MeshStandardMaterial({ color: "#e6e0cb", roughness: .98, side: THREE.DoubleSide });
+  canvas.userData.windSail = "lateen";
   const glass = new THREE.MeshStandardMaterial({ color: "#485c61", roughness: .34 });
   const steel = new THREE.MeshStandardMaterial({ color: "#8b948d", roughness: .58, metalness: .28 });
   const templates = {} as Record<VesselKind, THREE.Group>;
@@ -31,10 +32,23 @@ export function createVesselModels(legacyShip?: THREE.Group) {
     const pole = (height: number, x: number, z = 0) => add(new THREE.CylinderGeometry(.045, .065, height, 7), timber, x, height * .5 + .45, z);
     const sail = (mastX: number, height: number, length: number, z = 0) => {
       const geometry = new THREE.BufferGeometry();
-      geometry.setAttribute("position", new THREE.Float32BufferAttribute([
-        mastX, .8, z, mastX, height + .45, z, mastX - length * .5, height * .43 + .8, z + .28,
-        mastX, .8, z, mastX - length * .5, height * .43 + .8, z + .28, mastX - length, .85, z + .14,
-      ], 3));
+      const positions: number[] = [], frames: number[] = [];
+      // A small triangular cloth grid can bow with pressure without allocating
+      // geometry or submitting extra meshes when the wind changes.
+      const divisions = 8, point = (u: number, v: number) => [
+        mastX - length * u, .8 + (height - .35) * v,
+        z + Math.sin(Math.PI * u) * Math.sin(Math.PI * v) * .28,
+      ];
+      const triangle = (...vertices: number[][]) => {
+        for (const vertex of vertices) { positions.push(...vertex); frames.push(mastX, .8, height - .35, length); }
+      };
+      for (let row = 0; row < divisions; row++) for (let column = 0; column < divisions - row; column++) {
+        const u = column / divisions, v = row / divisions, step = 1 / divisions;
+        triangle(point(u, v), point(u + step, v), point(u, v + step));
+        if (column + row < divisions - 1) triangle(point(u + step, v), point(u + step, v + step), point(u, v + step));
+      }
+      geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      geometry.setAttribute("sailFrame", new THREE.Float32BufferAttribute(frames, 4));
       geometry.computeVertexNormals(); add(geometry, canvas);
     };
     const hull = (length: number, width: number, z = 0, material: THREE.Material = timber) => {

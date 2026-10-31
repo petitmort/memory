@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import * as THREE from 'three';
 import { sampleWeather, WEATHER_KINDS } from '../src/weather-controller';
-import { createStormController, sampleStorm, stormStrength, stormEventForSlot, STORM_SLOT_MS, STORM_FLASH_MS, SPEED_OF_SOUND } from '../src/storm-controller';
+import { createStormController, sampleStorm, stormStrength, stormEventForSlot, STORM_SLOT_MS, THUNDERSTORM_SLOT_MS, STORM_FLASH_MS, SPEED_OF_SOUND } from '../src/storm-controller';
 
 const wet = sampleWeather(Date.UTC(2026, 9, 31, 12), { kind: 'heavy-rain' });
 
@@ -9,13 +9,37 @@ test('only convective heavy rain can produce lightning; clear wind, ordinary rai
   for (const kind of WEATHER_KINDS) {
     const weather = sampleWeather(0, { kind });
     const event = stormEventForSlot(100), frame = sampleStorm(event.strikeTime + 60, weather);
-    if (kind === 'heavy-rain') { expect(frame.flash).toBeGreaterThan(0); expect(frame.energy).toBeGreaterThan(0); }
+    if (kind === 'heavy-rain' || kind === 'thunderstorm') { expect(frame.flash).toBeGreaterThan(0); expect(frame.energy).toBeGreaterThan(0); }
     else { expect(frame.flash).toBe(0); expect(frame.eventId).toBeNull(); }
   }
   expect(stormStrength(sampleWeather(0, { kind: 'clear', windSpeed: 20 }))).toBe(0);
   expect(stormStrength({ ...wet, snow: 1 })).toBe(0);
   expect(stormStrength({ ...wet, cloudCover: .7 })).toBe(0);
   expect(stormStrength({ ...wet, windSpeed: 0 })).toBe(0);
+});
+
+test('the explicit thunderstorm adds more irregular strikes and delayed thunder while retaining smooth weather and reduced motion',()=>{
+  const active=sampleWeather(0,{kind:'thunderstorm'}),heavy=sampleWeather(0,{kind:'heavy-rain'});
+  expect(active.thunder).toBe(1);expect(heavy.thunder).toBe(0);
+  const ids=new Set<string>(),ordinary=new Set<string>();
+  let flashing=0;
+  for(let at=10000000;at<10600000;at+=50){
+    const a=sampleStorm(at,active),b=sampleStorm(at,heavy);
+    if(a.flash>.01){ids.add(a.eventId!);flashing++;}
+    if(b.flash>.01)ordinary.add(b.eventId!);
+    const quiet=sampleStorm(at,active,true);expect(quiet.flash).toBe(0);expect(quiet.bolt).toBe(false);
+  }
+  expect(ids.size).toBeGreaterThan(ordinary.size*2);expect(flashing).toBeGreaterThan(100);
+  for(let slot=0;slot<100;slot++){
+    const a=stormEventForSlot(slot,true),b=stormEventForSlot(slot+1,true);
+    expect(b.strikeTime-a.strikeTime).toBeGreaterThan(THUNDERSTORM_SLOT_MS-12000);
+    expect(b.strikeTime-a.strikeTime).toBeLessThan(THUNDERSTORM_SLOT_MS+12000);
+    expect(a.thunderTime-a.strikeTime).toBeCloseTo(a.distance/SPEED_OF_SOUND*1000,6);
+  }
+  const event=stormEventForSlot(100);
+  const before=sampleStorm(event.strikeTime+60,{...heavy,thunder:0});
+  const after=sampleStorm(event.strikeTime+60,{...heavy,thunder:1e-8});
+  expect(Math.abs(before.flash-after.flash)).toBeLessThan(1e-7);
 });
 
 test('storm schedules are deterministic, irregular, offshore and use actual source distance for thunder delay', () => {

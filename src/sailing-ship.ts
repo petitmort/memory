@@ -146,6 +146,7 @@ export function createSailingShip(): THREE.Group {
   context.strokeStyle = "rgba(117,107,84,.35)"; context.lineWidth = 5; context.strokeRect(5, 5, 1014, 1014);
   const sailMap = new THREE.CanvasTexture(canvas); sailMap.colorSpace = THREE.SRGBColorSpace; sailMap.anisotropy = 4;
   const sailMaterial = new THREE.MeshStandardMaterial({ map: sailMap, side: THREE.DoubleSide, roughness: .98, bumpMap: sailMap, bumpScale: .008, color: "#fff8e7" });
+  sailMaterial.userData.windSail = "square";
   const sailPoint = (u: number, v: number) => {
     const cross = Math.sin(u * Math.PI), height = Math.sin(v * Math.PI);
     return vec(

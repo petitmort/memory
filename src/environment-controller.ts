@@ -81,19 +81,21 @@ export function createEnvironmentController(bindings: Bindings) {
     const skyAtDeparture = calculateCelestial(at, options.location);
     const weatherAtDeparture = sampleWeather(at, {
       kind: options.weather, cloudCover: options.cloudCover,
-      windSpeed: options.windSpeed, timeZone: options.location.timeZone,
+      windSpeed: options.windSpeed, windDirection: options.windDirection, precipitation: options.precipitation,
+      waveScale:options.waveScale, thunder:options.thunder, timeZone: options.location.timeZone,
     });
     return {
       daylight: skyAtDeparture.daylight,
+      windSpeed:weatherAtDeparture.windSpeed, windDirection:weatherAtDeparture.windDirection,
       severity: Math.max(weatherAtDeparture.precipitation, (1 - weatherAtDeparture.visibility) * .7, THREE.MathUtils.smoothstep(weatherAtDeparture.windSpeed, 8, 16)),
     };
   }
   const debug = createEnvironmentDebug(options, patch => {
     if (disposed) return;
-    if ("weather" in patch || "cloudCover" in patch || "windSpeed" in patch || "timestamp" in patch || "timeMode" in patch)
+    if (["weather","cloudCover","windSpeed","windDirection","precipitation","waveScale","thunder","timestamp","timeMode"].some(key=>key in patch))
       transition = { from: { ...weather }, started: performance.now() };
-    if ("weather" in patch || "cloudCover" in patch || "windSpeed" in patch) departureRevision++;
-    if ("weather" in patch || "windSpeed" in patch || "timestamp" in patch || "timeMode" in patch) cloudRevision++;
+    if (["weather","cloudCover","windSpeed","windDirection","precipitation"].some(key=>key in patch)) departureRevision++;
+    if (["weather","windSpeed","windDirection","timestamp","timeMode"].some(key=>key in patch)) cloudRevision++;
     Object.assign(options, patch);
     if ("timestamp" in patch) anchorWall = Date.now();
     if ("quality" in patch) bindings.quality(options.quality);
@@ -112,7 +114,8 @@ export function createEnvironmentController(bindings: Bindings) {
     }
     celestial = interpolateCelestial(...celestialPair, timestamp / 1000 - second);
     if (tenSeconds !== weatherKey) {
-      const config = { kind: options.weather, cloudCover: options.cloudCover, windSpeed: options.windSpeed, timeZone: options.location.timeZone };
+      const config = { kind: options.weather, cloudCover: options.cloudCover, windSpeed: options.windSpeed,
+        windDirection:options.windDirection, precipitation:options.precipitation, waveScale:options.waveScale, thunder:options.thunder, timeZone: options.location.timeZone };
       weatherPair = [sampleWeather(tenSeconds * 10000, config), sampleWeather((tenSeconds + 1) * 10000, config)];
       weatherKey = tenSeconds;
     }
@@ -148,6 +151,8 @@ export function createEnvironmentController(bindings: Bindings) {
     uniforms.lightColor.value.copy(lightColor); uniforms.lightStrength.value = sunlight;
     uniforms.moonStrength.value = moonlight * .12;
     uniforms.waveScale.value = weather.waveScale;
+    uniforms.windDirection.value = weather.windDirection; uniforms.windSpeed.value = weather.windSpeed;
+    uniforms.windInfluence.value = 1;
     uniforms.rainAmount.value = weather.precipitation * (1 - weather.snow);
     uniforms.rainDetail.value = (low ? .35 : 1) * (reduced ? .25 : 1);
     uniforms.fogDensity.value = .003 + (1 - weather.visibility) * .007;
@@ -161,13 +166,13 @@ export function createEnvironmentController(bindings: Bindings) {
       const direction = sunlight > .005 ? celestial.sun.direction : celestial.moon.direction;
       clouds.update(timestamp, weather, low, reduced, d, direction, {
         timeZone: options.location.timeZone, weather: options.weather,
-        windSpeed: options.windSpeed, revision: cloudRevision, camera,
+        windSpeed: options.windSpeed, windDirection:options.windDirection, revision: cloudRevision, camera,
       });
       particles.update(timestamp, weather, low, reduced, d);
-      birds.update(timestamp, weather, low, reduced, d);
+      birds.update(timestamp, weather, low, reduced, d, options.birdDensity);
       vessels.setDebugPaths(options.paths);
       vessels.update(timestamp, waterTime, {
-        low, reduced, daylight: d, windSpeed: weather.windSpeed,
+        low, reduced, daylight: d, windSpeed: weather.windSpeed, windDirection:weather.windDirection,
         severity: Math.max(weather.precipitation, (1 - weather.visibility) * .7, THREE.MathUtils.smoothstep(weather.windSpeed, 8, 16)),
         density: options.vesselDensity, forcedRoute: options.vesselRoute, forcedKind: options.vesselKind, waveScale: weather.waveScale,
         departureState, departureRevision,
@@ -177,6 +182,7 @@ export function createEnvironmentController(bindings: Bindings) {
     if (timestamp - debugAt >= 1000 || timestamp < debugAt) {
       debugAt = timestamp;
       debug.update({ timestamp, timeZone: options.location.timeZone, weather: weather.kind, sunAltitude: celestial.sun.altitude, moonPhase: celestial.moonPhase, vessels: vessels.snapshot().length, low,
+        windSpeed:weather.windSpeed,windDirection:weather.windDirection,waveScale:weather.waveScale,precipitation:weather.precipitation,
         birds: birds.snapshot().length, front: options.weather ? "强制预览 · 分阶段过渡" : sampleWeatherFront(timestamp, { timeZone: options.location.timeZone }).phase });
     }
   }

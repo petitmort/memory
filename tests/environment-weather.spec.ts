@@ -5,10 +5,10 @@ import { blendWeather, createWeatherController, PRECIPITATION_BOUNDS, samplePrec
 import { CLOUD_LIFETIME, CLOUD_FADE_DURATION, createCloudController, sampleCloudPosition } from '../src/cloud-controller';
 import { cloudWindVector, createCloudWindIntegrator, CLOUD_WIND_CACHE_HOURS, CLOUD_WIND_HOUR } from '../src/cloud-wind';
 
-test('simulated coastal weather is deterministic and all nine forced conditions remain explicit', () => {
+test('simulated coastal weather is deterministic and all ten forced conditions remain explicit', () => {
   const timestamp = Date.parse('2026-10-31T12:34:56Z');
   expect(sampleWeather(timestamp)).toEqual(sampleWeather(timestamp));
-  expect(Object.keys(WEATHER_LABELS)).toHaveLength(9);
+  expect(Object.keys(WEATHER_LABELS)).toHaveLength(10);
   for (const kind of WEATHER_KINDS) {
     const state = sampleWeather(timestamp, { kind });
     expect(state.kind).toBe(kind); expect(state.simulated).toBe(true);
@@ -182,6 +182,56 @@ test('debug wind changes preserve cloud positions, zero wind remains still and p
   expect(mesh.instanceMatrix.array).toBe(matrixBuffer); expect(style.array).toBe(styleBuffer);
   expect(clouds.group.userData.windCache.cachedHours).toBeLessThanOrEqual(10);
   clouds.dispose(); clouds.dispose(); fresh.dispose(); expect(disposals).toBe(4);
+});
+
+test('a fixed cloud wind direction keeps automatic speed across fronts and reanchors continuously every ten seconds', () => {
+  const clouds = unitCloudController(), constant = unitCloudController();
+  const mesh = clouds.group.children[0] as THREE.InstancedMesh;
+  const matrices = () => Array.from(mesh.instanceMatrix.array);
+  const now = Date.parse('2026-10-31T12:00:00Z'), options = { windDirection: 0 };
+  const initial = sampleWeather(now, options), fixed = { windDirection: 0, windSpeed: initial.windSpeed };
+  const update = (controller: typeof clouds, at: number, configuration: typeof options & { windSpeed?: number }) =>
+    controller.update(at, sampleWeather(at, configuration), false, false, 1, undefined, configuration);
+  try {
+    update(clouds, now, options); update(constant, now, fixed);
+    update(clouds, now + 9999, options);
+    update(constant, now + 10000, fixed); update(clouds, now + 10000, options);
+    // The 10-second sample changes future velocity, never the integrated position.
+    expect(matrices()).toEqual(Array.from((constant.group.children[0] as THREE.InstancedMesh).instanceMatrix.array));
+    const later = Array.from({ length: 48 }, (_, index) => now + (index + 1) * CLOUD_WIND_HOUR)
+      .find(at => Math.abs(sampleWeather(at, options).windSpeed - initial.windSpeed) > 1);
+    expect(later).toBeDefined(); if (later === undefined) throw new Error('Expected a natural speed-changing front');
+    const target = sampleWeather(later, options);
+    update(clouds, later, options); update(clouds, later + 6000, options);
+    const before = matrices(); update(clouds, later + 7000, options); const after = matrices();
+    expect(after[12] - before[12]).toBeCloseTo(target.windSpeed * .038, 4);
+    expect(after[14] - before[14]).toBe(0);
+  } finally { clouds.dispose(); constant.dispose(); }
+});
+
+test('a fixed cloud wind speed keeps automatic direction across fronts while a fully fixed zero wind stays still', () => {
+  const clouds = unitCloudController(), calm = unitCloudController();
+  const mesh = clouds.group.children[0] as THREE.InstancedMesh;
+  const calmMesh = calm.group.children[0] as THREE.InstancedMesh;
+  const now = Date.parse('2026-10-31T12:00:00Z'), options = { windSpeed: 5 }, stationary = { windSpeed: 0, windDirection: 1.1 };
+  const initial = sampleWeather(now, options);
+  const later = Array.from({ length: 48 }, (_, index) => now + (index + 1) * CLOUD_WIND_HOUR)
+    .find(at => Math.abs(Math.atan2(Math.sin(sampleWeather(at, options).windDirection - initial.windDirection),
+      Math.cos(sampleWeather(at, options).windDirection - initial.windDirection))) > .25);
+  expect(later).toBeDefined(); if (later === undefined) throw new Error('Expected a natural turning front');
+  const update = (controller: typeof clouds, at: number, configuration: { windSpeed: number; windDirection?: number }) =>
+    controller.update(at, sampleWeather(at, configuration), false, false, 1, undefined, configuration);
+  try {
+    update(clouds, now, options); update(calm, now, stationary);
+    const still = Array.from(calmMesh.instanceMatrix.array);
+    update(clouds, later, options); update(clouds, later + 6000, options);
+    const before = Array.from(mesh.instanceMatrix.array); update(clouds, later + 7000, options);
+    const after = Array.from(mesh.instanceMatrix.array), target = sampleWeather(later, options);
+    expect(after[12] - before[12]).toBeCloseTo(Math.cos(target.windDirection) * 5 * .038, 4);
+    expect(after[14] - before[14]).toBeCloseTo(Math.sin(target.windDirection) * 5 * .038 * .16, 4);
+    update(calm, now + 10000, stationary); expect(Array.from(calmMesh.instanceMatrix.array)).toEqual(still);
+    update(calm, later + 7000, stationary); expect(Array.from(calmMesh.instanceMatrix.array)).toEqual(still);
+  } finally { clouds.dispose(); calm.dispose(); }
 });
 
 function roomCamera(mobile: boolean) {

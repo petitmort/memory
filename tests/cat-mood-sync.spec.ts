@@ -7,7 +7,7 @@ test('every mood reaches its matching native voice and keeps one clock without q
   await page.addInitScript(() => {
     const host = window as any;
     const NativeContext = window.AudioContext;
-    host.__moodStats = { contexts: 0, starts: 0, durations: [] as number[] };
+    host.__moodStats = { contexts: 0, starts: 0, durations: [] as number[], sampleRates: [] as number[] };
     window.AudioContext = class extends NativeContext {
       constructor(options?: AudioContextOptions) {
         super(options); host.__moodContext = this; host.__moodStats.contexts++;
@@ -18,6 +18,7 @@ test('every mood reaches its matching native voice and keeps one clock without q
       if (this.buffer && this.buffer.duration < 6) {
         host.__moodStats.starts++;
         host.__moodStats.durations.push(this.buffer.duration);
+        host.__moodStats.sampleRates.push(this.buffer.sampleRate);
       }
       return (start as any).apply(this, args);
     };
@@ -68,11 +69,15 @@ test('every mood reaches its matching native voice and keeps one clock without q
     const started = await page.evaluate(() => {
       const host = window as any;
       return { id: host.__moodVoice.getActiveProfile(), time: host.__moodClock?.(), starts: host.__moodStats.starts,
-        duration: host.__moodStats.durations.at(-1), expectedEnd: host.__moodProfiles[host.__moodIndex].cues.at(-1).end };
+        duration: host.__moodStats.durations.at(-1), sampleRate: host.__moodStats.sampleRates.at(-1),
+        expectedEnd: host.__moodProfiles[host.__moodIndex].cues.at(-1).end };
     });
     expect(started.id).toBe(ids[index]);
     expect(started.starts).toBe(index + 1);
-    expect(Math.abs(started.duration - started.expectedEnd)).toBeLessThanOrEqual(1 / 44100 + 1e-7);
+    // MP3 endpoints are on 44.1kHz frames; native decoding may resample to the
+    // device rate. Allow one source and one output frame, still below 0.05ms.
+    expect(started.sampleRate).toBeGreaterThan(0);
+    expect(Math.abs(started.duration - started.expectedEnd)).toBeLessThanOrEqual(1 / 44100 + 1 / started.sampleRate + 1e-7);
     expect(started.time).toBeGreaterThanOrEqual(0);
     expect(started.time).toBeLessThan(.5);
     await page.waitForFunction(time => (window as any).__moodClock() > time + .025, started.time);

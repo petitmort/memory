@@ -24,7 +24,11 @@ const snapshot = (page: Page) => page.evaluate(() => (window as any).__livingEnv
 function localDate(timestamp: number) {
   const date = calendarAt(timestamp, 'Europe/Athens'), seconds = date.secondsOfDay;
   const pad = (value: number, width = 2) => String(Math.floor(value)).padStart(width, '0');
-  return `${date.dayKey}T${pad(seconds / 3600)}:${pad(seconds / 60 % 60)}:${pad(seconds % 60)}.${pad(timestamp % 1000, 3)}`;
+  // datetime-local normalizes trailing fractional zeros (e.g. .190 -> .19).
+  // Supply that canonical value so native fill accepts every scheduled visit.
+  const fraction = pad(timestamp % 1000, 3).replace(/0+$/, '');
+  const tail = Math.floor(seconds % 60) || fraction ? `:${pad(seconds % 60)}${fraction ? '.' + fraction : ''}` : '';
+  return `${date.dayKey}T${pad(seconds / 3600)}:${pad(seconds / 60 % 60)}${tail}`;
 }
 
 /** Pick visible absolute visits, without adding a force-birds production path. */

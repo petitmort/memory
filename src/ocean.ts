@@ -12,6 +12,7 @@ export function createOcean() {
   const material = new THREE.ShaderMaterial({
     uniforms: {
       time: { value: 0 },
+      windDirection: { value: 0 }, windSpeed: { value: 0 }, windInfluence: { value: 0 },
       sunPosition: { value: seaComposition.sun.clone() },
       moonPosition: { value: new THREE.Vector3(0, 80, -150) },
       skyHorizon: { value: new THREE.Color(.41, .59, .67) },
@@ -85,7 +86,8 @@ export function createOcean() {
         vec3 grain=windGrain(vWorld.xz*.37+vec2(time*.018,-time*.011));
         vec3 impacts=rainRipples(vWorld.xz,footprint);
         float grainFilter=1.-smoothstep(.35,1.25,footprint*.37);
-        vec2 slope=wave.yz+grain.yz*((.07+.045*rainAmount)*grainFilter)+impacts.yz;
+        float windEnergy=smoothstep(0.,20.,windSpeed)*windInfluence;
+        vec2 slope=wave.yz+grain.yz*((mix(.07,.025+.07*windEnergy,windInfluence)+.045*rainAmount)*grainFilter)+impacts.yz;
         vec3 normal=normalize(vec3(-slope.x,1.,-slope.y));
         vec3 viewDir=normalize(cameraPosition-vWorld);
         vec3 lightDir=normalize(sunPosition-vWorld);
@@ -111,7 +113,7 @@ export function createOcean() {
         vec3 halfway=normalize(lightDir+viewDir);
         float nh=max(dot(normal,halfway),0.);
         float vh=max(dot(viewDir,halfway),0.);
-        float roughness=mix(.275,.39,smoothstep(.05,.7,footprint))+(grain.x-.5)*.045*grainFilter;
+        float roughness=mix(.275,.39,smoothstep(.05,.7,footprint))+(grain.x-.5)*.045*grainFilter+windEnergy*.035;
         float alpha=roughness*roughness,alpha2=alpha*alpha;
         float denominator=nh*nh*(alpha2-1.)+1.;
         float distribution=alpha2/(3.141593*denominator*denominator);

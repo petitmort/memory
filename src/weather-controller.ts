@@ -1,11 +1,11 @@
 import * as THREE from "three";
 import { calendarAt, createSeededRandom, positiveModulo, seedFromString } from "./calendar-seed";
 
-export const WEATHER_KINDS = ["clear", "few-clouds", "cloudy", "overcast", "light-rain", "rain", "heavy-rain", "light-snow", "snow"] as const;
+export const WEATHER_KINDS = ["clear", "few-clouds", "cloudy", "overcast", "light-rain", "rain", "heavy-rain", "thunderstorm", "light-snow", "snow"] as const;
 export type WeatherKind = typeof WEATHER_KINDS[number];
 export const WEATHER_LABELS: Record<WeatherKind, string> = {
   clear: "晴天", "few-clouds": "少云", cloudy: "多云", overcast: "阴天",
-  "light-rain": "小雨", rain: "中雨", "heavy-rain": "大雨", "light-snow": "小雪", snow: "中雪",
+  "light-rain": "小雨", rain: "中雨", "heavy-rain": "大雨", thunderstorm: "雷雨", "light-snow": "小雪", snow: "中雪",
 };
 export type WeatherState = {
   kind: WeatherKind;
@@ -17,9 +17,11 @@ export type WeatherState = {
   windDirection: number;
   visibility: number;
   waveScale: number;
+  /** Extra convective activity beyond occasional heavy-rain lightning. */
+  thunder?: number;
   simulated: true;
 };
-export type WeatherOptions = { kind?: WeatherKind; cloudCover?: number; windSpeed?: number; seed?: number; timeZone?: string };
+export type WeatherOptions = { kind?: WeatherKind; cloudCover?: number; windSpeed?: number; windDirection?: number; precipitation?: number; waveScale?: number; thunder?: number; seed?: number; timeZone?: string };
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 const smooth = (value: number) => { const t = clamp(value); return t * t * (3 - 2 * t); };
 // cover, precipitation, snow fraction, wind m/s, visibility, wave multiplier
@@ -27,18 +29,19 @@ const profiles: Record<WeatherKind, readonly number[]> = {
   clear: [.035, 0, 0, 2.1, 1, .88], "few-clouds": [.23, 0, 0, 2.8, .96, .96],
   cloudy: [.58, 0, 0, 3.6, .86, 1.04], overcast: [.94, 0, 0, 4.1, .69, 1.09],
   "light-rain": [.77, .23, 0, 4.2, .72, 1.12], rain: [.94, .53, 0, 5.7, .56, 1.22],
-  "heavy-rain": [1, 1, 0, 8.1, .36, 1.42], "light-snow": [.86, .26, 1, 2.2, .62, 1.02], snow: [.98, .57, 1, 3.1, .43, 1.09],
+  "heavy-rain": [1, 1, 0, 8.1, .36, 1.42], thunderstorm: [1, 1, 0, 11.2, .29, 1.52],
+  "light-snow": [.86, .26, 1, 2.2, .62, 1.02], snow: [.98, .57, 1, 3.1, .43, 1.09],
 };
 const seasonalWeights = {
-  spring: [.22, .26, .23, .12, .11, .045, .014, .0009, .0001],
-  summer: [.63, .22, .08, .025, .025, .015, .005, 0, 0],
-  autumn: [.36, .29, .15, .08, .075, .035, .01, 0, 0],
-  winter: [.12, .17, .19, .29, .15, .06, .015, .004, .001],
+  spring: [.22, .26, .23, .12, .11, .045, .010, .004, .0009, .0001],
+  summer: [.63, .22, .08, .025, .025, .015, .003, .002, 0, 0],
+  autumn: [.36, .29, .15, .08, .075, .035, .007, .003, 0, 0],
+  winter: [.12, .17, .19, .29, .15, .06, .011, .004, .004, .001],
 } as const;
 
 function profile(kind: WeatherKind, windDirection: number): WeatherState {
   const p = profiles[kind];
-  return { kind, cloudCover: p[0], precipitation: p[1], snow: p[2], windSpeed: p[3], windDirection, visibility: p[4], waveScale: p[5], simulated: true };
+  return { kind, cloudCover: p[0], precipitation: p[1], snow: p[2], windSpeed: p[3], windDirection, visibility: p[4], waveScale: p[5], thunder: kind === "thunderstorm" ? 1 : 0, simulated: true };
 }
 
 function daily(timestamp: number, timeZone: string, seed: number) {
@@ -63,7 +66,8 @@ const variants: Record<WeatherKind, readonly (readonly [WeatherKind, number])[]>
   overcast: [["cloudy", .16], ["overcast", .54], ["light-rain", .19], ["rain", .09], ["heavy-rain", .02]],
   "light-rain": [["cloudy", .1], ["overcast", .2], ["light-rain", .46], ["rain", .2], ["heavy-rain", .04]],
   rain: [["overcast", .06], ["light-rain", .18], ["rain", .59], ["heavy-rain", .17]],
-  "heavy-rain": [["light-rain", .08], ["rain", .28], ["heavy-rain", .64]],
+  "heavy-rain": [["light-rain", .08], ["rain", .28], ["heavy-rain", .48], ["thunderstorm", .16]],
+  thunderstorm: [["rain", .13], ["heavy-rain", .32], ["thunderstorm", .55]],
   "light-snow": [["overcast", .2], ["light-snow", .65], ["snow", .15]],
   snow: [["overcast", .08], ["light-snow", .28], ["snow", .64]],
 };
@@ -109,7 +113,7 @@ export function blendWeather(from: WeatherState, to: WeatherState, amount: numbe
     cloudCover: mix(from.cloudCover, to.cloudCover), precipitation: mix(from.precipitation, to.precipitation),
     snow: mix(from.snow, to.snow), windSpeed: mix(from.windSpeed, to.windSpeed),
     windDirection: from.windDirection + angle * a,
-    visibility: mix(from.visibility, to.visibility), waveScale: mix(from.waveScale, to.waveScale), simulated: true,
+    visibility: mix(from.visibility, to.visibility), waveScale: mix(from.waveScale, to.waveScale), thunder: mix(from.thunder ?? 0, to.thunder ?? 0), simulated: true,
   };
 }
 
@@ -140,7 +144,7 @@ export function transitionWeather(from: WeatherState, to: WeatherState, progress
     ? snow / state.precipitation : from.snow + (to.snow - from.snow) * smooth(p);
   if (state.precipitation > .04) state.kind = state.snow > .5
     ? (state.precipitation > .4 ? "snow" : "light-snow")
-    : (state.precipitation > .75 ? "heavy-rain" : state.precipitation > .36 ? "rain" : "light-rain");
+    : ((state.thunder ?? 0) > .35 && state.precipitation > .65 ? "thunderstorm" : state.precipitation > .75 ? "heavy-rain" : state.precipitation > .36 ? "rain" : "light-rain");
   else state.kind = state.cloudCover > .76 ? "overcast" : state.cloudCover > .4 ? "cloudy" : state.cloudCover > .12 ? "few-clouds" : "clear";
   return state;
 }
@@ -193,10 +197,14 @@ export function sampleWeather(timestampMs: number, options: WeatherOptions = {})
   if (options.cloudCover !== undefined && Number.isFinite(options.cloudCover)) state.cloudCover = clamp(options.cloudCover);
   if (options.windSpeed !== undefined && Number.isFinite(options.windSpeed)) {
     state.windSpeed = clamp(options.windSpeed, 0, 20);
-    // A dry gale changes the same wave field used by boats. Its 1.084 m
+    // A dry gale changes the same wave field used by boats. Its 1.011 m
     // amplitude bound × 1.6 stays inside the ocean's existing ±1.8 m bounds.
     state.waveScale = Math.max(state.waveScale, Math.min(1.6, .83 + state.windSpeed * .055));
   }
+  if (options.windDirection !== undefined && Number.isFinite(options.windDirection)) state.windDirection = positiveModulo(options.windDirection, Math.PI * 2);
+  if (options.precipitation !== undefined && Number.isFinite(options.precipitation)) state.precipitation = clamp(options.precipitation);
+  if (options.waveScale !== undefined && Number.isFinite(options.waveScale)) state.waveScale = clamp(options.waveScale, .2, 1.6);
+  if (options.thunder !== undefined && Number.isFinite(options.thunder)) state.thunder = clamp(options.thunder);
   return state;
 }
 

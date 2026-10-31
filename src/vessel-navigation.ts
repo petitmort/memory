@@ -1,6 +1,8 @@
 /** Metres in the same X/Z sea used by water-surface.ts. The bow points along +X. */
 export const vesselKinds = ["wood-sail", "twin-mast", "fishing", "catamaran", "motor-yacht", "ferry"] as const;
 export type VesselKind = typeof vesselKinds[number];
+export type VesselWind = { windSpeed: number; windDirection: number };
+export const isSailingVessel = (kind: VesselKind) => kind === "wood-sail" || kind === "twin-mast" || kind === "catamaran";
 export const vesselRoutes = ["left-to-right", "right-to-left", "approach", "depart", "diagonal", "arc"] as const;
 export type VesselRoute = typeof vesselRoutes[number];
 type Point = readonly [number, number];
@@ -21,6 +23,9 @@ export const vesselExclusionZones = [
   { x: -44, z: -85, rx: 6, rz: 6 },
   { x: -55, z: -160, rx: 28, rz: 16 },
   { x: -7, z: -185, rx: 22, rz: 14 },
+  { x: -96, z: -223, rx: 35, rz: 8 },
+  { x: -12, z: -233, rx: 49, rz: 7 },
+  { x: 55, z: -237, rx: 20, rz: 6 },
 ] as const;
 
 export function vesselRandom(seed: number) {
@@ -55,26 +60,101 @@ export const vesselDepartureInterval = 90_000;
 export type VesselJourney = {
   id: number; kind: VesselKind; route: VesselRoute; startMs: number; durationMs: number;
   admission: number; speed: number;
+  /** Wind is sampled at departure, so changing weather never teleports a voyage. */
+  wind?: VesselWind; reverse?: boolean; sailEligible?: boolean; motorAssisted?: boolean;
 };
-export type VesselScheduleOptions = { forcedRoute?: VesselRoute; forcedKind?: VesselKind };
+export type VesselScheduleOptions = {
+  forcedRoute?: VesselRoute; forcedKind?: VesselKind;
+  windSpeed?: number; windDirection?: number;
+  departureWind?: (timestampMs: number) => VesselWind;
+};
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const smooth = (value: number) => { const t = clamp(value, 0, 1); return t * t * (3 - 2 * t); };
+const WIND_LOOKBACK = 16;
+
+/** A quiet landscape polar: no direct upwind sailing or unlimited gale speed. */
+export function sailingPolar(kind: VesselKind, windCosine: number) {
+  const tail = clamp(windCosine, -1, 1);
+  if (!isSailingVessel(kind)) return 1;
+  const noGo = kind === "wood-sail" ? -.3 : -.66;
+  if (tail < noGo) return 0;
+  return kind === "wood-sail"
+    ? (.66 + .34 * smooth((tail + .3) / 1.3))
+    : (.68 + .4 * Math.exp(-(((tail - .2) / .7) ** 2)));
+}
+
+function windCourse(kind: VesselKind, route: VesselRoute, reverse: boolean, wind: VesselWind) {
+  let minimum = 1, total = 0;
+  for (let i = 0; i <= 24; i++) {
+    const point = sampleVesselRoute(route, i / 24), sign = reverse ? -1 : 1;
+    const cosine = sign * (point.dx * Math.cos(wind.windDirection) + point.dz * Math.sin(wind.windDirection)) / Math.hypot(point.dx, point.dz);
+    const polar = sailingPolar(kind, cosine);
+    minimum = Math.min(minimum, polar); total += polar;
+  }
+  return { eligible: minimum > 0 && wind.windSpeed >= 1, efficiency: total / 25 };
+}
+
+/** Current wind trims cloth; the departure polar above controls the voyage. */
+export function sampleSailTrim(kind: VesselKind, yaw: number, wind: VesselWind, motorAssisted = false) {
+  // A slight preferred tack keeps a directly following wind from collapsing
+  // both sides into the centre plane; a gybe still crosses continuously.
+  const relative = wind.windDirection + yaw, side = Math.tanh(Math.sin(relative) * 4 + .6);
+  const offBow = Math.acos(clamp(-Math.cos(relative), -1, 1));
+  return {
+    brace: clamp(-Math.atan2(Math.sin(relative), Math.max(.25, Math.cos(relative))), -1.15, 1.15),
+    trim: side * (.14 + .95 * smooth((offBow - .6) / 2.2)),
+    fullness: clamp(wind.windSpeed / 7, .04, 1) * (motorAssisted ? .2 : 1),
+    reef: motorAssisted ? .18 : 1 - .65 * smooth((wind.windSpeed - 8) / 12),
+    side,
+    square: kind === "wood-sail",
+  };
+}
 
 /** No elapsed counter: the same absolute timestamp always yields the same voyage. */
 export function createVesselJourney(id: number, options: VesselScheduleOptions = {}): VesselJourney {
   const kind = options.forcedKind ?? vesselKinds[((id % 6) + 6) % 6];
   let route = options.forcedRoute ?? vesselRoutes[Math.floor(vesselRandom(id + 173) * vesselRoutes.length)];
   if (!options.forcedRoute && kind === "ferry") route = vesselRandom(id + 29) < .5 ? "right-to-left" : "arc";
-  const speed = speeds[kind] * (.92 + vesselRandom(id + 91) * .16);
+  const baseSpeed = speeds[kind] * (.92 + vesselRandom(id + 91) * .16);
+  const supplied = options.departureWind?.(id * vesselDepartureInterval)
+    ?? (options.windDirection !== undefined ? { windSpeed: options.windSpeed ?? 3, windDirection: options.windDirection } : undefined);
+  const wind = supplied && Number.isFinite(supplied.windSpeed + supplied.windDirection)
+    ? { windSpeed: clamp(supplied.windSpeed, 0, 30), windDirection: supplied.windDirection } : undefined;
+  let speed = baseSpeed, reverse = false, sailEligible = true, motorAssisted = false;
+  if (wind) {
+    if (isSailingVessel(kind)) {
+      if (!options.forcedRoute) {
+        const courses = vesselRoutes.flatMap(candidate => [false, true].map(backwards => ({
+          route: candidate, reverse: backwards, ...windCourse(kind, candidate, backwards, wind),
+          variation: vesselRandom(id + vesselRoutes.indexOf(candidate) * 173 + (backwards ? 9001 : 0)) * .14,
+        }))).filter(candidate => candidate.eligible).sort((a, b) => (b.efficiency + b.variation) - (a.efficiency + a.variation));
+        if (courses.length) { route = courses[0].route; reverse = courses[0].reverse; }
+        else sailEligible = false;
+      }
+      const course = windCourse(kind, route, reverse, wind);
+      sailEligible &&= course.eligible;
+      // Explicit route previews retain their requested direction using auxiliary
+      // propulsion and a furled sail; automatic traffic never uses this escape.
+      motorAssisted = !!options.forcedRoute && !sailEligible;
+      if (motorAssisted) sailEligible = true;
+      const windPower = Math.min(1.55, .35 + wind.windSpeed * .115);
+      speed = Math.max(.26, baseSpeed * (motorAssisted ? .7 : windPower * course.efficiency));
+    } else speed *= 1 - .26 * smooth((wind.windSpeed - 5) / 17);
+  }
   return {
     id, kind, route, startMs: id * vesselDepartureInterval,
     durationMs: lengths[route] / speed * 1000,
     admission: vesselRandom(id + 537), speed,
+    ...(wind ? { wind, reverse, sailEligible, motorAssisted } : {}),
   };
 }
 
 /** Fixed global slot, not a midnight restart, so crossing dates is continuous. */
 export function sampleVesselJourney(journey: VesselJourney, timestampMs: number) {
   const progress = (timestampMs - journey.startMs) / journey.durationMs;
-  return { ...sampleVesselRoute(journey.route, progress), progress };
+  const point = sampleVesselRoute(journey.route, journey.reverse ? 1 - progress : progress);
+  if (journey.reverse) { point.dx *= -1; point.dz *= -1; point.yaw = Math.atan2(-point.dz, point.dx); }
+  return { ...point, progress };
 }
 
 function conflict(a: VesselJourney, b: VesselJourney) {
@@ -97,14 +177,24 @@ function conflict(a: VesselJourney, b: VesselJourney) {
 /** Conservative slot reservations avoid crossings without random steering. */
 export function getVesselSchedule(timestampMs: number, options: VesselScheduleOptions = {}): VesselJourney[] {
   const slot = Math.floor(timestampMs / vesselDepartureInterval), journeys: VesselJourney[] = [];
-  for (let id = slot - 7; id <= slot; id++) {
-    const journey = createVesselJourney(id, options);
+  const lookback = options.departureWind || options.windDirection !== undefined ? WIND_LOOKBACK : 7;
+  const cache = new Map<number, VesselJourney>();
+  const candidate = (id: number) => {
+    let journey = cache.get(id);
+    if (!journey) { journey = createVesselJourney(id, options); cache.set(id, journey); }
+    return journey;
+  };
+  for (let id = slot - lookback; id <= slot; id++) {
+    const journey = candidate(id);
+    if (journey.sailEligible === false) continue;
     if (timestampMs < journey.startMs || timestampMs >= journey.startMs + journey.durationMs) continue;
     // Against potential prior reservations as well as admitted traffic: the
     // decision stays reproducible after refresh, regardless of pool history.
     let safe = true;
-    for (let previous = id - 7; previous < id; previous++)
-      if (conflict(journey, createVesselJourney(previous, options))) { safe = false; break; }
+    for (let previous = id - lookback; previous < id; previous++) {
+      const other = candidate(previous);
+      if (other.sailEligible !== false && conflict(journey, other)) { safe = false; break; }
+    }
     if (safe || options.forcedRoute) journeys.push(journey);
   }
   return journeys;

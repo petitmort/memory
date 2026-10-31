@@ -4,6 +4,8 @@ import type { WeatherState } from "./weather-controller";
 
 /** A slot is a candidate, not a repeating playback loop; its strike is jittered. */
 export const STORM_SLOT_MS = 110000;
+/** Thunderstorms add irregular offshore discharges every 16–40 seconds. */
+export const THUNDERSTORM_SLOT_MS = 28000;
 export const STORM_FLASH_MS = 550;
 export const SPEED_OF_SOUND = 343;
 export type StormEvent = {
@@ -32,7 +34,7 @@ export type StormFrame = {
 };
 const clamp = (v: number) => Math.max(0, Math.min(1, v));
 const smooth = (v: number) => { const t = clamp(v); return t * t * (3 - 2 * t); };
-const eventCache = new Map<number, StormEvent>();
+const eventCache = new Map<string, StormEvent>();
 
 /** Continuous convective gate: ordinary rain and windy clear weather never flash. */
 export function stormStrength(weather: WeatherState): number {
@@ -42,32 +44,52 @@ export function stormStrength(weather: WeatherState): number {
 }
 
 /** Fixed arithmetic makes a refreshed, resumed or backgrounded world agree. */
-export function stormEventForSlot(slot: number): StormEvent {
+export function stormEventForSlot(slot: number, enhanced = false): StormEvent {
   if (!Number.isSafeInteger(slot)) throw new RangeError("A storm slot must be a safe integer.");
-  const cached = eventCache.get(slot);
+  const key = `${enhanced ? 'active' : 'distant'}:${slot}`;
+  const cached = eventCache.get(key);
   if (cached) return cached;
   const random = createSeededRandom(seedFromString(`aegean-convection:${slot}`));
-  const strikeTime = slot * STORM_SLOT_MS + 17000 + random() * 46000;
+  const strikeTime = enhanced ? slot * THUNDERSTORM_SLOT_MS + 4000 + random() * 12000 : slot * STORM_SLOT_MS + 17000 + random() * 46000;
   const x = (random() - .5) * 180, z = -300 - random() * 110;
   const height = 56 + random() * 30;
   // The middle of the channel is the acoustic source, not a distant image plane.
   const distance = Math.hypot(x, height / 2 - 1.65, z);
   const event: StormEvent = {
-    eventId: `sea-storm:${slot}`, strikeTime, thunderTime: strikeTime + distance / SPEED_OF_SOUND * 1000,
+    eventId: `sea-storm:${enhanced ? 'active:' : ''}${slot}`, strikeTime, thunderTime: strikeTime + distance / SPEED_OF_SOUND * 1000,
     distance, direction: Math.atan2(x, -z), x, z, height,
     energy: .56 + random() * .44,
     // Some lightning remains inside or behind the distant cloud, with no bolt.
-    bolt: random() > .28,
+    bolt: random() > (enhanced ? .12 : .28),
   };
-  if (eventCache.size >= 8) eventCache.delete(eventCache.keys().next().value!);
-  eventCache.set(slot, event);
+  if (eventCache.size >= 12) eventCache.delete(eventCache.keys().next().value!);
+  eventCache.set(key, event);
   return event;
 }
 
-function latestEvent(timestampMs: number): StormEvent {
-  const slot = Math.floor(timestampMs / STORM_SLOT_MS);
-  const current = stormEventForSlot(slot);
-  return current.strikeTime <= timestampMs ? current : stormEventForSlot(slot - 1);
+function latestEvent(timestampMs: number, enhanced = false): StormEvent {
+  const slot = Math.floor(timestampMs / (enhanced ? THUNDERSTORM_SLOT_MS : STORM_SLOT_MS));
+  const current = stormEventForSlot(slot, enhanced);
+  return current.strikeTime <= timestampMs ? current : stormEventForSlot(slot - 1, enhanced);
+}
+
+function displayedEvent(timestampMs: number, weather: WeatherState) {
+  const distant = latestEvent(timestampMs), active = latestEvent(timestampMs, true);
+  const extra = clamp(weather.thunder ?? 0);
+  return extra > 0 && active.strikeTime > distant.strikeTime
+    ? { event: active, weight: extra } : { event: distant, weight: 1 };
+}
+
+function pulse(age: number) {
+  return age >= 0 && age < STORM_FLASH_MS
+    ? smooth(age / 45) * Math.exp(-age / 155) * smooth((STORM_FLASH_MS - age) / 170) : 0;
+}
+
+function visibleEvent(timestampMs: number, weather: WeatherState) {
+  const distant=latestEvent(timestampMs), active=latestEvent(timestampMs,true);
+  const base=pulse(timestampMs-distant.strikeTime)*distant.energy;
+  const extra=pulse(timestampMs-active.strikeTime)*active.energy*clamp(weather.thunder??0);
+  return {event:extra>base?active:distant, flash:clamp(base+extra)};
 }
 
 /**
@@ -78,15 +100,14 @@ export function sampleStorm(timestampMs: number, weather: WeatherState, reduced 
   if (!Number.isFinite(timestampMs)) throw new RangeError("The storm timestamp must be finite.");
   const strength = stormStrength(weather);
   if (strength <= 0) return { flash: 0, eventId: null, strikeTime: 0, thunderTime: 0, distance: 0, direction: 0, energy: 0, bolt: false };
-  const event = latestEvent(timestampMs), age = timestampMs - event.strikeTime;
+  const { event, weight } = displayedEvent(timestampMs, weather);
+  const visual=visibleEvent(timestampMs,weather);
   // One smoothly attacked and decayed pulse, with no repeated strobing sub-bursts.
-  const pulse = age >= 0 && age < STORM_FLASH_MS
-    ? smooth(age / 45) * Math.exp(-age / 155) * smooth((STORM_FLASH_MS - age) / 170) : 0;
   return {
-    flash: reduced ? 0 : pulse * strength * event.energy,
+    flash: reduced ? 0 : visual.flash * strength,
     eventId: event.eventId, strikeTime: event.strikeTime, thunderTime: event.thunderTime,
-    distance: event.distance, direction: event.direction, energy: strength * event.energy,
-    bolt: !reduced && event.bolt && pulse > .001,
+    distance: event.distance, direction: event.direction, energy: strength * event.energy * weight,
+    bolt: !reduced && visual.event.bolt && visual.flash > .001,
   };
 }
 
@@ -151,10 +172,12 @@ export function createStormController() {
     update(timestampMs: number, weather: WeatherState, low: boolean, reduced: boolean, daylight: number): StormFrame {
       if (disposed) return { ...lastFrame, flash: 0, bolt: false };
       lastFrame = sampleStorm(timestampMs, weather, reduced);
-      if (lastFrame.flash > 0 && lastFrame.eventId !== lastGeometryId) writeBolt(latestEvent(timestampMs));
+      const visual = visibleEvent(timestampMs,weather);
+      if (lastFrame.flash > 0 && visual.event.eventId !== lastGeometryId) writeBolt(visual.event);
       // Daylight already limits the eye's adaptation; nighttime stays gentle too.
-      material.opacity = lastFrame.bolt ? lastFrame.flash * (.25 - clamp(daylight) * .1) : 0;
-      cloudMaterial.uniforms.glow.value = lastFrame.flash * (.075 - clamp(daylight) * .035);
+      const activity = clamp(weather.thunder ?? 0);
+      material.opacity = lastFrame.bolt ? lastFrame.flash * (.25 + activity * .5 - clamp(daylight) * (.1 + activity * .08)) : 0;
+      cloudMaterial.uniforms.glow.value = lastFrame.flash * (.075 + activity * .13 - clamp(daylight) * (.035 + activity * .025));
       geometry.setDrawRange(0, (low ? mainSegments : maximumSegments) * 2);
       bolt.visible = material.opacity > .0001;
       cloud.visible = cloudMaterial.uniforms.glow.value > .0001;

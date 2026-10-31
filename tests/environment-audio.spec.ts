@@ -26,6 +26,26 @@ test('thunder follows an observed strike by the physical delay and fires exactly
   expect(gate.update(frame(next.thunderTime + 30), true)).toBe(true);
 });
 
+test('the enhanced thunderstorm reaches the existing sound gate more often without replaying or removing the physical delay', () => {
+  const start = Date.UTC(2026, 9, 1, 12), counts: number[] = [];
+  for (const kind of ['heavy-rain', 'thunderstorm'] as const) {
+    const weather = sampleWeather(start, { kind }), gate = createThunderGate();
+    let count = 0;
+    for (let timestamp = start; timestamp < start + 600000; timestamp += 50) {
+      const storm = sampleStorm(timestamp, weather);
+      const input = { timestamp, weather, storm, active: true };
+      if (!gate.update(input, true)) continue;
+      count++;
+      expect(timestamp - storm.strikeTime).toBeGreaterThan(800);
+      expect(Math.abs(timestamp - storm.thunderTime)).toBeLessThan(51);
+      expect(gate.update(input, true)).toBe(false);
+    }
+    counts.push(count);
+  }
+  expect(counts[0]).toBeGreaterThan(0);
+  expect(counts[1]).toBeGreaterThan(counts[0] * 2);
+});
+
 test('first frame and large time jumps do not catch up a visible or already audible storm', () => {
   for (const initial of [event.strikeTime + 50, event.thunderTime - 1, event.thunderTime + 10]) {
     const gate = createThunderGate();

@@ -7,7 +7,7 @@ import { dimensions as D } from "./dimensions";
 const CAPACITY = 36, LOW_CAPACITY = 16;
 const LAYER_SPEEDS = [.038, .03, .023] as const;
 export const CLOUD_LIFETIME = 8 * 3600000, CLOUD_FADE_DURATION = 180000;
-export type CloudOptions = { timeZone?: string; weather?: WeatherKind; windSpeed?: number; revision?: number; camera?: THREE.Camera };
+export type CloudOptions = { timeZone?: string; weather?: WeatherKind; windSpeed?: number; windDirection?: number; revision?: number; camera?: THREE.Camera };
 type CloudSeed = { phase: number; offset: number; z: number; y: number; width: number; height: number; shade: number; layer: number };
 function cloudSeed(index: number): CloudSeed {
   const random = createSeededRandom(893181 + index * 77917), layer = index % 3;
@@ -141,7 +141,7 @@ export function createCloudController() {
   const scores = new Float64Array(CAPACITY), retained = new Uint8Array(CAPACITY);
   const order = Uint8Array.from({ length: CAPACITY }, (_, index) => index);
   const rank = (a: number, b: number) => scores[b] - scores[a] || a - b;
-  type ManualFlow = { key: string; start: number; from: CloudWindVector; to: CloudWindVector; anchors: CloudWindVector[] };
+  type ManualFlow = { key: string; sampleBucket: number; start: number; from: CloudWindVector; to: CloudWindVector; anchors: CloudWindVector[] };
   let manual: ManualFlow | undefined, disposed = false;
 
   function manualVelocity(flow: ManualFlow, timestamp: number) {
@@ -160,23 +160,38 @@ export function createCloudController() {
       if (disposed) return;
       const zone = options.timeZone ?? "Europe/Athens";
       wind.prepare(timestampMs, zone);
-      const forced = options.weather !== undefined || options.windSpeed !== undefined;
-      const key = `${zone}:${options.weather ?? ""}:${options.windSpeed ?? ""}:${options.revision ?? 0}`;
+      const forced = options.weather !== undefined || options.windSpeed !== undefined || options.windDirection !== undefined;
+      const key = `${zone}:${options.weather ?? ""}:${options.windSpeed ?? ""}:${options.windDirection ?? ""}:${options.revision ?? 0}`;
       const automatic = (index: number) => {
         const life = cloudLife(seeds[index], timestampMs), offset = carry[index];
         if (offset && offset.birth !== life.birth) carry[index] = undefined;
         return cloudSample(seeds[index], timestampMs, wind.integral(life.birth, timestampMs, zone, flowScratch), reduced, carry[index]);
       };
-      if (forced && manual?.key !== key) {
-        const state = sampleWeather(timestampMs, { kind: options.weather, windSpeed: options.windSpeed, timeZone: zone });
+      // An override owns only its explicit channels; the other wind channel
+      // keeps following natural fronts without discarding the preview history.
+      const sampleBucket = Math.floor(timestampMs / 10000);
+      const tracksAutomatic = options.windSpeed === undefined || options.windDirection === undefined;
+      if (forced && (manual?.key !== key || (tracksAutomatic && manual.sampleBucket !== sampleBucket))) {
+        const state = sampleWeather(timestampMs, { kind: options.weather, windSpeed: options.windSpeed, windDirection:options.windDirection, timeZone: zone });
         const target = cloudWindVector(state.windSpeed, state.windDirection);
         const initial = !last.some(Boolean);
         const from = initial ? target : manual ? manualVelocity(manual, timestampMs) : wind.velocity(timestampMs, zone);
-        const anchors = seeds.map((_, index) => {
+        const previous = manual;
+        // A date/override edit keeps the last displayed cloud position. Only
+        // continuing the same flow integrates to the exact resample instant.
+        const displacement = previous?.key === key && timestampMs >= previous.start
+          ? manualDisplacement(previous, timestampMs) : undefined;
+        const anchors = seeds.map((seed, index) => {
+          if (previous && displacement) {
+            // Reanchor at this exact timestamp, not the preceding drawn frame.
+            const speed = LAYER_SPEEDS[seed.layer] * (reduced ? .2 : 1);
+            return { x: previous.anchors[index].x + displacement.x * speed,
+              z: previous.anchors[index].z + displacement.z * speed * .16 };
+          }
           const p = last[index] ?? automatic(index);
           return { x: p.rawX, z: p.rawZ };
         });
-        manual = { key, start: timestampMs, from, to: target, anchors };
+        manual = { key, sampleBucket, start: timestampMs, from, to: target, anchors };
       } else if (!forced && manual) {
         // Developer overrides keep their current position on reset. Only this
         // preview history persists until each cloud's next invisible rebirth.

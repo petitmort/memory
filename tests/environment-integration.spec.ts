@@ -2,14 +2,14 @@ import { test, expect, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { timestampFromZonedInput } from '../src/calendar-seed';
-import { createVesselJourney, sampleVesselJourney, vesselKinds, vesselRoutes } from '../src/vessel-navigation';
+import { sampleVesselJourney, vesselKinds, vesselRoutes, type VesselJourney } from '../src/vessel-navigation';
 import { sampleWaterHeight } from '../src/water-surface';
 
 type Snapshot = {
   timestamp: number;
   celestial: { sun: { altitude: number }; moonPhase: number; moonIllumination: number; daylight: number; night: number };
-  weather: { kind: string; simulated: boolean; precipitation: number; snow: number; waveScale: number };
-  vessels: { id: number; kind: typeof vesselKinds[number]; route: typeof vesselRoutes[number]; position: number[]; yaw: number; opacity: number }[];
+  weather: { kind: string; simulated: boolean; precipitation: number; snow: number; waveScale: number; windSpeed:number; windDirection:number };
+  vessels: { id: number; kind: typeof vesselKinds[number]; route: typeof vesselRoutes[number]; position: number[]; yaw: number; opacity: number;journey:VesselJourney }[];
   low: boolean; updates: number; paused: boolean; waterTime: number;
 };
 
@@ -125,10 +125,10 @@ test('the real room renders four calendar environments, six navigation direction
       expect(state.vessels.length).toBeLessThanOrEqual(5);
       for (const boat of state.vessels) {
         expect(boat.position.every(Number.isFinite)).toBe(true);
-        const waterline = -8 + sampleWaterHeight(boat.position[0], boat.position[2], state.waterTime) * state.weather.waveScale - .09;
+        const waterline = -8 + sampleWaterHeight(boat.position[0], boat.position[2], state.waterTime, state.weather) * state.weather.waveScale - .09;
         expect(boat.position[1]).toBeCloseTo(waterline, 5);
         expect(boat.position[2]).toBeLessThan(-20);
-        const expected = sampleVesselJourney(createVesselJourney(boat.id, { forcedKind: kind, forcedRoute: route }), state.timestamp);
+        const expected = sampleVesselJourney(boat.journey, state.timestamp);
         expect(boat.position[0]).toBeCloseTo(expected.x, 2); expect(boat.position[2]).toBeCloseTo(expected.z, 2);
         expect(boat.yaw).toBeCloseTo(expected.yaw, 5);
       }

@@ -132,3 +132,24 @@ test('jittered departures become visible after an earlier frame in the same cach
   expect(controller.snapshot().some(bird => bird.id === journey.id)).toBe(true);
   controller.dispose();
 });
+
+test('bird density alters admission with quiet fading while both quality levels keep a single visitor', () => {
+  const journey = example('gull'), now = journey.startMs + journey.durationMs * .4;
+  const weather = sampleWeather(now, { kind: 'clear' });
+  const controller = createBirdController();
+  controller.update(now, weather, false, false, 1, 2);
+  expect(controller.snapshot()).toHaveLength(1);
+  controller.update(now + 16, weather, false, false, 1, 0);
+  expect(controller.snapshot()).toHaveLength(1);
+  expect(controller.snapshot()[0].opacity).toBeLessThan(1);
+  for (let frame = 2; frame < 400; frame++) controller.update(now + frame * 16, weather, false, false, 1, 0);
+  expect(controller.snapshot()).toHaveLength(0);
+  for (const low of [false, true]) for (let index = 0; index < 400; index++) {
+    const at = now + index * 10_000;
+    expect(getBirdSchedule(at, 0)).toEqual([]);
+    expect(getBirdSchedule(at, 2).length).toBeLessThanOrEqual(1);
+    controller.update(at, weather, low, false, 1, 2);
+    expect(controller.snapshot().length).toBeLessThanOrEqual(1);
+  }
+  controller.dispose();
+});

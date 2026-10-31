@@ -20,7 +20,7 @@ export function createBirdJourney(id: number): BirdJourney {
   return {
     id, kind, count: 1,
     startMs: id * BIRD_DEPARTURE_INTERVAL + random() * 35_000,
-    durationMs: (kind === "small-bird" ? 28 + random() * 10 : kind === "gull" ? 66 + random() * 25 : 100 + random() * 28) * 1000,
+    durationMs: (kind === "small-bird" ? 28 + random() * 10 : kind === "gull" ? 52 + random() * 20 : 76 + random() * 20) * 1000,
     direction: random() < .5 ? -1 : 1, phase: random() * Math.PI * 2,
     turns: 1.7 + random() * .7, rise: kind === "eagle" ? 25 + random() * 7 : 14 + random() * 5,
     retreat: kind === "eagle" ? 205 : 145, admission: random(),
@@ -45,16 +45,22 @@ export function sampleBirdFlight(journey: BirdJourney, timestampMs: number, memb
     dx = -180 * journey.direction; dy = Math.cos(u * Math.PI) * Math.PI * 1.4; dz = -39;
     ddx = ddz = 0;
   } else {
-    const radius = journey.kind === "eagle" ? 25 : 20, depth = radius * .55;
-    x = journey.direction * (92 * (1 - u) ** 3 - 58 * u ** 4) + radius * envelope * Math.sin(angle) + lateral;
+    // A retreat directly along the eye's ray reads as a hanging bird even
+    // though its world position changes. The migrating arc crosses angular
+    // space too: depth × bearing preserves lateral movement during a glide.
+    const distance = 54 + journey.retreat * u * u, distanceD = 2 * journey.retreat * u;
+    const sway = .055, depth = journey.kind === "eagle" ? 5 : 4;
+    const bearing = 1.75 - 3.1 * u + sway * envelope * Math.sin(angle);
+    const bearingD = -3.1 + sway * (envelopeD * Math.sin(angle) + envelope * Math.cos(angle) * rate);
+    const bearingDD = sway * (-(Math.PI ** 2) * envelope * Math.sin(angle)
+      + 2 * envelopeD * Math.cos(angle) * rate - envelope * Math.sin(angle) * rate * rate);
+    x = journey.direction * distance * bearing + lateral;
     y = 2.8 + journey.rise * u + .25 * envelope * Math.sin(angle * 2) + member * .35;
-    z = -54 - journey.retreat * u * u + depth * envelope * Math.cos(angle) - member * 1.5;
-    dx = journey.direction * (-276 * (1 - u) ** 2 - 232 * u ** 3)
-      + radius * (envelopeD * Math.sin(angle) + envelope * Math.cos(angle) * rate);
+    z = -distance + depth * envelope * Math.cos(angle) - member * 1.5;
+    dx = journey.direction * (distanceD * bearing + distance * bearingD);
     dy = journey.rise + .25 * (envelopeD * Math.sin(angle * 2) + envelope * Math.cos(angle * 2) * rate * 2);
     dz = -2 * journey.retreat * u + depth * (envelopeD * Math.cos(angle) - envelope * Math.sin(angle) * rate);
-    ddx = journey.direction * (552 * (1 - u) - 696 * u * u)
-      + radius * (-(Math.PI ** 2) * envelope * Math.sin(angle) + 2 * envelopeD * Math.cos(angle) * rate - envelope * Math.sin(angle) * rate * rate);
+    ddx = journey.direction * (2 * journey.retreat * bearing + 2 * distanceD * bearingD + distance * bearingDD);
     ddz = -2 * journey.retreat + depth * (-(Math.PI ** 2) * envelope * Math.cos(angle) - 2 * envelopeD * Math.sin(angle) * rate - envelope * Math.cos(angle) * rate * rate);
   }
   const seconds = Math.max(0, timestampMs - journey.startMs) / 1000;
@@ -69,12 +75,13 @@ export function sampleBirdFlight(journey: BirdJourney, timestampMs: number, memb
   };
 }
 
-export function getBirdSchedule(timestampMs: number): BirdJourney[] {
+export function getBirdSchedule(timestampMs: number, density = 1): BirdJourney[] {
   if (!Number.isFinite(timestampMs)) return [];
   const slot = Math.floor(timestampMs / BIRD_DEPARTURE_INTERVAL), journeys: BirdJourney[] = [];
+  const admissionRate = Math.min(1, ADMISSION_RATE * THREE.MathUtils.clamp(Number.isFinite(density) ? density : 1, 0, 2));
   for (let id = slot - 1; id <= slot; id++) {
     const journey = createBirdJourney(id);
-    if (journey.admission < ADMISSION_RATE && timestampMs >= journey.startMs
+    if (journey.admission < admissionRate && timestampMs >= journey.startMs
       && timestampMs < journey.startMs + journey.durationMs + (journey.count - 1) * 1150) journeys.push(journey);
   }
   return journeys;
@@ -148,7 +155,7 @@ export function createBirdController() {
   const position = new THREE.Vector3(), scale = new THREE.Vector3();
   const actors = Array.from({ length: CAPACITY }, () => ({ journey: null as BirdJourney | null, member: 0, opacity: 0, point: null as ReturnType<typeof sampleBirdFlight> | null }));
   let disposed = false, previousTime: number | undefined, scheduleSlot = NaN, schedule: BirdJourney[] = [], updates = 0;
-  function update(timestampMs: number, weather: WeatherState, _low: boolean, reduced: boolean, daylight: number) {
+  function update(timestampMs: number, weather: WeatherState, _low: boolean, reduced: boolean, daylight: number, density = 1) {
     if (disposed || !Number.isFinite(timestampMs)) return;
     const restoring = previousTime === undefined || timestampMs < previousTime || timestampMs - previousTime > 1000;
     const dt = previousTime === undefined ? 0 : THREE.MathUtils.clamp((timestampMs - previousTime) / 1000, 0, .1);
@@ -164,7 +171,8 @@ export function createBirdController() {
     // A single occasional visitor stays quiet at both normal and low quality.
     const limit = CAPACITY;
     const wanted: { journey: BirdJourney; member: number }[] = [];
-    for (const journey of schedule) if (journey.admission < ADMISSION_RATE && timestampMs >= journey.startMs
+    const admissionRate = Math.min(1, ADMISSION_RATE * THREE.MathUtils.clamp(Number.isFinite(density) ? density : 1, 0, 2));
+    for (const journey of schedule) if (journey.admission < admissionRate && timestampMs >= journey.startMs
       && timestampMs < journey.startMs + journey.durationMs + (journey.count - 1) * 1150) {
       for (let member = 0; member < journey.count && wanted.length < limit; member++) wanted.push({ journey, member });
     }

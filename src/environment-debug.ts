@@ -12,6 +12,11 @@ export type EnvironmentOverrides = {
   moonPhase?: number;
   cloudCover?: number;
   windSpeed?: number;
+  windDirection?: number;
+  precipitation?: number;
+  waveScale?: number;
+  thunder?: number;
+  birdDensity?: number;
   vesselDensity?: number;
   vesselRoute?: VesselRoute;
   vesselKind?: VesselKind;
@@ -53,7 +58,13 @@ export function readEnvironmentOptions(search = typeof window === "undefined" ? 
   options.moonPhase = numeric(params.get("envPhase"), 0, 1);
   options.cloudCover = numeric(params.get("envCloud"), 0, 1);
   options.windSpeed = numeric(params.get("envWind"), 0, 20);
-  options.vesselDensity = numeric(params.get("envDensity"), 0, 2);
+  const windDegrees = numeric(params.get("envWindDirection"), 0, 360);
+  options.windDirection = windDegrees === undefined ? undefined : windDegrees * Math.PI / 180;
+  options.precipitation = numeric(params.get("envPrecipitation"), 0, 1);
+  options.waveScale = numeric(params.get("envWaves"), .2, 1.6);
+  options.thunder = numeric(params.get("envThunder"), 0, 1);
+  options.birdDensity = numeric(params.get("envBirdDensity"), 0, 2);
+  options.vesselDensity = numeric(params.get("envDensity"), 0, 3);
   options.vesselRoute = option(params.get("envRoute"), vesselRoutes);
   options.vesselKind = option(params.get("envVessel"), vesselKinds);
   options.paths = params.get("envPaths") === "1";
@@ -66,6 +77,7 @@ type DebugInfo = {
   timestamp: number; timeZone: string; weather: string; sunAltitude: number;
   moonPhase: number; vessels: number; low: boolean;
   birds?: number; front?: string;
+  windSpeed?: number; windDirection?: number; waveScale?: number; precipitation?: number;
 };
 const vesselNames: Record<VesselKind, string> = {
   "wood-sail": "木质帆船", "twin-mast": "双桅帆船", fishing: "渔船",
@@ -122,11 +134,38 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
     input.min = String(min); input.max = String(max); input.step = step; input.placeholder = "自动";
     return field(name, input);
   };
-  const cloud = number("云量（0–1，留空自动）", "env-cloud", 0, 1, ".05");
-  const wind = number("风速（m/s，留空自动）", "env-wind", 0, 20, ".5");
+  const cloud = number("云量（0–1，留空自动）", "env-cloud", 0, 1, ".01");
+  const wind = number("风速（m/s，留空自动）", "env-wind", 0, 20, ".1");
+  const windDirection = number("风吹向（世界角度：0° +X / 90° +Z）", "env-wind-direction", 0, 360, "1");
+  const precipitation = number("雨 / 雪量（0–1，随当前天气类型）", "env-precipitation", 0, 1, ".01");
+  const waves = number("波浪强度（0.2–1.6，留空随天气）", "env-waves", .2, 1.6, ".05");
+  const thunder = number("雷雨活跃度（0–1，仅湿厚云中有效）", "env-thunder", 0, 1, ".05");
+  const birdDensity = number("单鸟经过频度（0–2，始终最多1只）", "env-bird-density", 0, 2, ".05");
   const kind = select("船只类型", "env-vessel", [["", "自动调度"], ...vesselKinds.map(value => [value, vesselNames[value]] as const)]);
   const route = select("航行方向", "env-route", [["", "自动航线"], ...vesselRoutes.map(value => [value, routeNames[value]] as const)]);
-  const density = number("船只密度（0–2，留空自动）", "env-density", 0, 2, ".1");
+  const density = number("船只密度（0–3，留空自动）", "env-density", 0, 3, ".05");
+  const levels: { input: HTMLInputElement; menu: HTMLSelectElement; key: keyof EnvironmentOverrides; factor: number }[] = [];
+  const addLevels = (input: HTMLInputElement, key: keyof EnvironmentOverrides, values: readonly number[], factor = 1, labels?: readonly string[]) => {
+    const menu = document.createElement('select'); menu.id = input.id+'-level'; menu.setAttribute('aria-label', input.parentElement!.textContent+'等级');
+    for (const [value, label] of [['', '自动'], ...values.map((n,i)=>[String(n),labels?.[i]??`${i+1}档 · ${n}`]), ['custom', '自定义精确值']]) {
+      const item=document.createElement('option'); item.value=value; item.textContent=label; menu.append(item);
+    }
+    input.before(menu); levels.push({input,menu,key,factor});
+    change(menu,()=>{
+      if(menu.value==='custom'){input.focus();return;}
+      input.value=menu.value; input.dispatchEvent(new Event('change'));
+    });
+  };
+  const fractions=Array.from({length:11},(_,i)=>i/10);
+  addLevels(cloud,'cloudCover',fractions);
+  addLevels(wind,'windSpeed',[0,.8,2.5,4.5,6.5,9,12,15.5,19.5],1,
+    ['0级 · 无风','1级 · 软风','2级 · 轻风','3级 · 微风','4级 · 和风','5级 · 清劲风','6级 · 强风','7级 · 疾风','8级 · 大风']);
+  addLevels(windDirection,'windDirection',[0,45,90,135,180,225,270,315],180/Math.PI);
+  addLevels(precipitation,'precipitation',fractions);
+  addLevels(waves,'waveScale',[.2,.35,.5,.65,.8,1,1.2,1.4,1.6]);
+  addLevels(thunder,'thunder',[0,.1,.25,.4,.6,.8,1]);
+  addLevels(birdDensity,'birdDensity',[0,.1,.25,.5,.75,1,1.25,1.5,2]);
+  addLevels(density,'vesselDensity',[0,.1,.25,.5,.75,1,1.5,2,3]);
   const paths = document.createElement("input"); paths.type = "checkbox"; paths.id = "env-paths";
   field("显示航线与方向", paths).parentElement!.classList.add("environment-debug-toggle");
   const quality = select("画质", "env-quality", [["auto", "自动调整"], ["normal", "普通画质"], ["low", "省电画质"]]);
@@ -140,9 +179,15 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
     if (state.moonPhase !== undefined) moon.value = value;
     cloud.value = state.cloudCover === undefined ? "" : String(state.cloudCover);
     wind.value = state.windSpeed === undefined ? "" : String(state.windSpeed);
+    windDirection.value = state.windDirection === undefined ? "" : String(Math.round(state.windDirection*180/Math.PI));
+    precipitation.value = state.precipitation === undefined ? "" : String(state.precipitation);
+    waves.value = state.waveScale === undefined ? "" : String(state.waveScale);
+    thunder.value = state.thunder === undefined ? "" : String(state.thunder);
+    birdDensity.value = state.birdDensity === undefined ? "" : String(state.birdDensity);
     density.value = state.vesselDensity === undefined ? "" : String(state.vesselDensity);
     kind.value = state.vesselKind ?? ""; route.value = state.vesselRoute ?? ""; paths.checked = state.paths;
     quality.value = state.quality === undefined ? "auto" : state.quality ? "low" : "normal";
+    for(const {input,menu} of levels) menu.value=Array.from(menu.options).some(option=>option.value===input.value)?input.value:'custom';
   }
   fill();
   change(date, () => {
@@ -161,14 +206,21 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
   change(moon, () => { phase.value = "custom"; apply({ moonPhase: Number(moon.value) }); });
   change(cloud, () => { apply({ cloudCover: numeric(cloud.value, 0, 1) }); cloud.value = state.cloudCover === undefined ? "" : String(state.cloudCover); });
   change(wind, () => { apply({ windSpeed: numeric(wind.value, 0, 20) }); wind.value = state.windSpeed === undefined ? "" : String(state.windSpeed); });
-  change(density, () => { apply({ vesselDensity: numeric(density.value, 0, 2) }); density.value = state.vesselDensity === undefined ? "" : String(state.vesselDensity); });
+  change(windDirection,()=>{const degrees=numeric(windDirection.value,0,360);apply({windDirection:degrees===undefined?undefined:degrees*Math.PI/180});});
+  change(precipitation,()=>apply({precipitation:numeric(precipitation.value,0,1)}));
+  change(waves,()=>apply({waveScale:numeric(waves.value,.2,1.6)}));
+  change(thunder,()=>apply({thunder:numeric(thunder.value,0,1)}));
+  change(birdDensity,()=>apply({birdDensity:numeric(birdDensity.value,0,2)}));
+  change(density, () => { apply({ vesselDensity: numeric(density.value, 0, 3) }); density.value = state.vesselDensity === undefined ? "" : String(state.vesselDensity); });
+  for(const {input,menu}of levels) change(input,()=>{menu.value=Array.from(menu.options).some(option=>option.value===input.value)?input.value:'custom';});
   change(kind, () => apply({ vesselKind: option(kind.value, vesselKinds) }));
   change(route, () => apply({ vesselRoute: option(route.value, vesselRoutes) }));
   change(paths, () => apply({ paths: paths.checked }));
   change(quality, () => apply({ quality: quality.value === "auto" ? undefined : quality.value === "low" }));
   reset.addEventListener("click", () => {
     apply({ timestamp: undefined, timeMode: "local-clock", weather: undefined, moonPhase: undefined, cloudCover: undefined,
-      windSpeed: undefined, vesselDensity: undefined, vesselRoute: undefined, vesselKind: undefined, paths: false, quality: undefined });
+      windSpeed: undefined, windDirection:undefined, precipitation:undefined, waveScale:undefined, thunder:undefined, birdDensity:undefined,
+      vesselDensity: undefined, vesselRoute: undefined, vesselKind: undefined, paths: false, quality: undefined });
     dateError.textContent = ""; date.value = ""; fill();
   }, { signal: events.signal });
   // Keep controls out of the scene's bubbling raycast and pointer handlers.
@@ -186,7 +238,8 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
       if (document.activeElement !== date) date.value = wallTime;
       if (state.moonPhase === undefined && document.activeElement !== moon) moon.value = String(info.moonPhase);
       const label = WEATHER_LABELS[info.weather as WeatherKind] ?? info.weather;
-      const text = `${snapshot.dayKey} ${hours}:${minutes} · ${info.timeZone}\n模拟天气：${label}\n太阳高度 ${(info.sunAltitude * 180 / Math.PI).toFixed(1)}° · 月相 ${(info.moonPhase * 100).toFixed(1)}%\n航行 ${info.vessels} 艘 · ${info.low ? "省电" : "普通"}画质\n飞鸟 ${info.birds ?? 0} 只 · ${frontNames[info.front ?? ""] ?? info.front ?? "自然演变"}`;
+      const windText=info.windSpeed===undefined?'':`\n风 ${info.windSpeed.toFixed(1)}m/s → ${Math.round((info.windDirection??0)*180/Math.PI)}° · 波浪 ${(info.waveScale??1).toFixed(2)}`;
+      const text = `${snapshot.dayKey} ${hours}:${minutes} · ${info.timeZone}\n模拟天气：${label}${windText}\n太阳高度 ${(info.sunAltitude * 180 / Math.PI).toFixed(1)}° · 月相 ${(info.moonPhase * 100).toFixed(1)}%\n航行 ${info.vessels} 艘 · ${info.low ? "省电" : "普通"}画质\n飞鸟 ${info.birds ?? 0} 只 · ${frontNames[info.front ?? ""] ?? info.front ?? "自然演变"}`;
       if (text !== lastStatus) { status.textContent = text; lastStatus = text; }
     },
     dispose() {

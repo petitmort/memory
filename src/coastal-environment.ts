@@ -17,8 +17,8 @@ function grain(x: number, y: number, z: number) {
     + Math.sin(x * 11.8 + z * 7.13 - y * 4.3) * .09;
 }
 
-function islandGeometry(width: number, depth: number, height: number, phase: number) {
-  const segments = 100, rings = 28;
+function islandGeometry(width: number, depth: number, height: number, phase: number, haze = .1, far = false) {
+  const segments = far ? 48 : 100, rings = far ? 10 : 28;
   const positions: number[] = [], colors: number[] = [], indices: number[] = [];
   const stone = new THREE.Color("#8f9285");
   const scrub = new THREE.Color("#6c7868");
@@ -55,7 +55,7 @@ function islandGeometry(width: number, depth: number, height: number, phase: num
       rock.lerp(shore, (1 - smoothstep(.2, 1.6, y)) * .52);
       rock.multiplyScalar(1 + relief * .055);
       // These fixed distant islands have less local contrast than nearby reefs.
-      rock.lerp(distantHaze, .1);
+      rock.lerp(distantHaze, haze);
       colors.push(rock.r, rock.g, rock.b);
       if (ring < rings && j < segments) {
         const a = ring * (segments + 1) + j, b = a + segments + 1;
@@ -72,26 +72,25 @@ function islandGeometry(width: number, depth: number, height: number, phase: num
 }
 
 function weatheredRock(width: number, depth: number, height: number, seed: number) {
-  const segments = 28, levels = 14;
+  const segments = 25, levels = 12;
   const positions: number[] = [], colors: number[] = [], indices: number[] = [];
-  const wet = new THREE.Color("#4d5954"), dry = new THREE.Color("#a4987e");
+  const wet = new THREE.Color("#3d4b48"), dry = new THREE.Color("#85877a");
   const surface = new THREE.Color();
   for (let level = 0; level <= levels; level++) {
     const t = level / levels;
-    // Fractured limestone retains broad shoulders all the way to its sloping top.
-    // Small ledges offset the strata; the rock never tapers to a cone or spike.
-    const profile = 1.03 - .18 * t + .035 * Math.sin(t * 19 + seed)
-      - .085 * smoothstep(.76, 1, t);
+    // An eroded outcrop has an uneven oval footprint, undercut tide ledges and
+    // different shoulders; avoid the old softened rectangular pillow outline.
+    const profile = 1.08 - .34 * t + .06 * Math.sin(t * 16 + seed)
+      - .13 * smoothstep(.68, 1, t);
     for (let j = 0; j <= segments; j++) {
       const a = j / segments * TAU;
-      const edge = 1 + .075 * Math.sin(a * 3 + seed) + .045 * Math.sin(a * 7 - seed * 1.3);
-      const disturbance = .017 * Math.sin(t * 17 + a * 4 + seed);
-      // A softened broken rectangular cross-section gives real cleavage faces.
-      const nx = Math.sign(Math.cos(a)) * Math.pow(Math.abs(Math.cos(a)), .58);
-      const nz = Math.sign(Math.sin(a)) * Math.pow(Math.abs(Math.sin(a)), .62);
+      const edge = 1 + .14 * Math.sin(a * 3 + seed) + .085 * Math.sin(a * 7 - seed * 1.3);
+      const disturbance = .035 * Math.sin(t * 17 + a * 4 + seed);
+      const nx = Math.cos(a), nz = Math.sin(a);
       const x = nx * width * .5 * (profile * edge + disturbance) + t * width * .09;
       const z = nz * depth * .5 * (profile * edge + disturbance) - t * depth * .06;
-      const slant = (-nx * .28 + nz * .13 + Math.sin(a * 5 + seed) * .045) * Math.pow(t, 1.5);
+      const slant = (-nx * .3 + nz * .16 + Math.sin(a * 3 + seed) * .18
+        + Math.sin(a * 7 - seed) * .065) * Math.pow(t, 1.5);
       const y = -1.8 + t * (height + 1.8) + slant;
       positions.push(x, y, z);
       const weather = grain(x + seed * 3, y, z);
@@ -107,7 +106,7 @@ function weatheredRock(width: number, depth: number, height: number, seed: numbe
       }
     }
   }
-  // A shallow, irregular cap closes the broad top, with no centre peak.
+  // A sloped, fractured crown closes each shoulder, with no flat box top.
   const topRing = levels * (segments + 1);
   const capRings = 4;
   for (let ring = 1; ring <= capRings; ring++) {
@@ -118,7 +117,7 @@ function weatheredRock(width: number, depth: number, height: number, seed: numbe
       const x = width * .09 + (positions[edge] - width * .09) * amount;
       const z = -depth * .06 + (positions[edge + 2] + depth * .06) * amount;
       const y = height + (positions[edge + 1] - height) * amount
-        + grain(x + seed, height, z) * .035 * Math.sin(amount * Math.PI);
+        + grain(x + seed, height, z) * .17 * Math.sin(amount * Math.PI);
       positions.push(x, y, z);
       surface.copy(dry).multiplyScalar(.98 + grain(x, y, z + seed) * .11);
       colors.push(surface.r, surface.g, surface.b);
@@ -133,27 +132,6 @@ function weatheredRock(width: number, depth: number, height: number, seed: numbe
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
   geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   geometry.setIndex(indices);
-  geometry.computeVertexNormals();
-  return geometry;
-}
-
-function gullGeometry() {
-  // A slender swept wing outline, pale upper wings and darker tips.
-  const vertices = [
-    0, 0, .16, -.24, .025, .05, -.83, .06, .17,
-    -.24, .025, .05, -.83, .06, .17, -.65, .03, -.045,
-    0, 0, .16, .24, .025, .05, .83, .06, .17,
-    .24, .025, .05, .83, .06, .17, .65, .03, -.045,
-    -.04, -.005, .2, .04, -.005, .2, 0, -.015, -.32,
-  ];
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-  const colors = [];
-  for (let i = 0; i < vertices.length; i += 3) {
-    const tip = Math.abs(vertices[i]) > .7;
-    colors.push(...(tip ? [.29, .34, .34] : [.83, .84, .79]));
-  }
-  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   geometry.computeVertexNormals();
   return geometry;
 }
@@ -175,6 +153,23 @@ export function createCoastalEnvironment() {
     group.add(mesh);
   }
 
+  // One batched low skyline lies behind the existing islands, while all feet
+  // remain within the ocean's distant edge. Fog supplies the remaining depth.
+  const farParts = [
+    { x: -96, z: -223, width: 64, depth: 13, height: 8.8, phase: 3.7 },
+    { x: -12, z: -233, width: 90, depth: 11, height: 7.6, phase: 5.2 },
+    { x: 55, z: -237, width: 36, depth: 8, height: 5.7, phase: 1.4 },
+  ].map(island => {
+    const geometry = islandGeometry(island.width, island.depth, island.height, island.phase, .38, true);
+    geometry.translate(island.x, -8, island.z);
+    return geometry;
+  });
+  const farGeometry = mergeGeometries(farParts)!;
+  for (const part of farParts) part.dispose();
+  const horizon = new THREE.Mesh(farGeometry, landMaterial);
+  horizon.name = "far-horizon-archipelago"; horizon.userData.kind = "far-islands"; horizon.userData.islandCount = 3;
+  group.add(horizon);
+
   const reefMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .94 });
   for (let i = 0; i < coastalReefs.length; i++) {
     const reef = coastalReefs[i];
@@ -183,8 +178,8 @@ export function createCoastalEnvironment() {
     cluster.position.set(reef.x, -8, reef.z);
     group.add(cluster);
     const shapes = i === 0
-      ? [[0, 0, 3.9, 2.9, 2.3, .2], [-2.1, .4, 2.5, 2.2, 1.2, -.4], [1.9, -.9, 2.7, 2.3, .65, .8], [.8, 1.5, 1.8, 1.5, .22, -.3]]
-      : [[0, 0, 4.3, 2.8, 1.8, .3], [2.2, .35, 2.4, 1.8, .65, -.6], [-2.3, -.55, 2.2, 1.7, .35, .4]];
+      ? [[0, 0, 3.9, 2.9, 1.9, .2], [-2.1, .4, 2.5, 2.2, .95, -.4], [1.9, -.9, 2.7, 2.3, .58, .8], [.8, 1.5, 1.8, 1.5, .18, -.3]]
+      : [[0, 0, 4.3, 2.8, 1.45, .3], [2.2, .35, 2.4, 1.8, .6, -.6], [-2.3, -.55, 2.2, 1.7, .3, .4]];
     const parts = shapes.map(([x, z, width, depth, height, rotation], index) => {
       const geometry = weatheredRock(width, depth, height, i * 7 + index + 1);
       geometry.rotateY(rotation);
@@ -199,36 +194,7 @@ export function createCoastalEnvironment() {
     cluster.add(mesh);
   }
 
-  const gullMaterial = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide });
-  const gulls = [
-    { base: new THREE.Vector3(-16, 4.3, -87), phase: 0, size: .9 },
-    { base: new THREE.Vector3(-11, 5.6, -96), phase: 1.9, size: .76 },
-    { base: new THREE.Vector3(-19.5, 5.2, -93), phase: 3.7, size: .68 },
-  ].map(({ base, phase, size }, i) => {
-    const mesh = new THREE.Mesh(gullGeometry(), gullMaterial);
-    mesh.name = `distant-gliding-gull-${i + 1}`;
-    mesh.position.copy(base);
-    mesh.rotation.set(.13, .55, 0);
-    mesh.scale.setScalar(size);
-    group.add(mesh);
-    return { mesh, base, phase };
-  });
-
-  return { group, update(t: number, reducedMotion: boolean) {
-    const time = t * (reducedMotion ? .12 : 1);
-    for (const { mesh, base, phase } of gulls) {
-      const turn = time * .045 + phase;
-      mesh.position.set(base.x + Math.sin(turn) * 3.8, base.y + Math.sin(time * .19 + phase) * .28, base.z + Math.cos(turn) * 1.1);
-      mesh.rotation.z = Math.sin(time * .25 + phase) * .09;
-      mesh.rotation.y = .55 + Math.sin(turn) * .11;
-      // Long glides, with a small occasional correction rather than constant flapping.
-      const flap = Math.sin(time * 1.9 + phase) * Math.pow(Math.max(0, Math.sin(time * .22 + phase)), 6) * .15;
-      const positions = mesh.geometry.getAttribute("position");
-      for (let i = 0; i < positions.count; i++) {
-        const x = positions.getX(i);
-        if (Math.abs(x) > .2) positions.setY(i, .025 + Math.abs(x) * (.045 + flap));
-      }
-      positions.needsUpdate = true;
-    }
-  } };
+  // Birds have one owner: the calendar bird controller. The former three
+  // permanently hovering gulls bypassed its single-visitor/weather rules.
+  return { group, update(_t: number, _reducedMotion: boolean) {} };
 }

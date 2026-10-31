@@ -1,0 +1,836 @@
+{
+  "schema": 1,
+  "dateBeijing": "2026-10-31",
+  "baseline": "cc10a4d",
+  "source": "local Codex",
+  "featureBranch": "codex/calendar-environment-requirements",
+  "deployed": false,
+  "historicalReference": {
+    "commit": "cc10a4d",
+    "freshPairedBaseline": false,
+    "note": "Previous task single 5-second sample. Weather, voyages, cache and GC were not frozen to the new runs.",
+    "raw": {
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 960,
+          "height": 640
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.74",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1110.0743749999997,
+      "entryMs": 2508.322459,
+      "before": {
+        "calls": 131,
+        "triangles": 369692,
+        "geometries": 251,
+        "textures": 39,
+        "programs": 54,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 131,
+        "triangles": 369692,
+        "geometries": 251,
+        "textures": 39,
+        "programs": 54,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 301,
+        "measuredFps": 60,
+        "frameIntervalMedianMs": 16.69999999552965,
+        "frameIntervalP95Ms": 17.399999998509884,
+        "frameSubmitP95Ms": 1.1000000014901161
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 22.30000000447035,
+            "processingMs": 0.3999999985098839
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 22.900000005960464,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 23.900000005960464,
+            "processingMs": 0.3999999985098839
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 14.700000002980232,
+            "processingMs": 0.20000000298023224
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 14.900000005960464,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 15.5,
+            "processingMs": 0.20000000298023224
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 15.5,
+            "processingMs": 0.20000000298023224
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.700000002980232,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 16.700000002980232,
+            "processingMs": 0.3999999985098839
+          }
+        ],
+        "pointerDispatchMs": [
+          22.700000002980232,
+          14.900000005960464,
+          15.700000002980232
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 25919512,
+        "jsHeapTotalBytes": 52297728,
+        "documents": 6,
+        "nodes": 345,
+        "jsEventListeners": 124
+      }
+    }
+  },
+  "current": {
+    "samples": [
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1009.2253750000001,
+        "entryMs": 2504.7272080000002,
+        "before": {
+          "calls": 122,
+          "triangles": 370849,
+          "geometries": 249,
+          "textures": 39,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 122,
+          "triangles": 370849,
+          "geometries": 249,
+          "textures": 39,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 60.00120002392895,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 18.899999998509884,
+          "frameSubmitP95Ms": 3.8000000044703484
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 16.799999997019768,
+              "processingMs": 0.4000000059604645
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 17.200000002980232,
+              "processingMs": 0.09999999403953552
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 18.299999997019768,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 12.899999998509884,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 13.099999994039536,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 13.600000001490116,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 15.299999997019768,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15.600000001490116,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 16.600000001490116,
+              "processingMs": 0.29999999701976776
+            }
+          ],
+          "pointerDispatchMs": [
+            17.200000002980232,
+            13.099999994039536,
+            15.5
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 24745572,
+          "jsHeapTotalBytes": 52297728,
+          "documents": 6,
+          "nodes": 344,
+          "jsEventListeners": 104
+        }
+      },
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1072.038542,
+        "entryMs": 2516.8747080000003,
+        "before": {
+          "calls": 122,
+          "triangles": 370849,
+          "geometries": 249,
+          "textures": 39,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 122,
+          "triangles": 370849,
+          "geometries": 249,
+          "textures": 39,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 300,
+          "measuredFps": 60.00883073101547,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 19.299999997019768,
+          "frameSubmitP95Ms": 3.7999999970197678
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 17.400000005960464,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 17.80000000447035,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 18.80000000447035,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 48,
+              "inputDelayMs": 14.100000001490116,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 48,
+              "inputDelayMs": 14.299999997019768,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 48,
+              "inputDelayMs": 14.799999997019768,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 15.300000004470348,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15.700000002980232,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 16.700000002980232,
+              "processingMs": 0.29999999701976776
+            }
+          ],
+          "pointerDispatchMs": [
+            17.700000002980232,
+            14.299999997019768,
+            15.5
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 24465212,
+          "jsHeapTotalBytes": 52297728,
+          "documents": 6,
+          "nodes": 344,
+          "jsEventListeners": 104
+        }
+      },
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1067.054542,
+        "entryMs": 2500.2790830000004,
+        "before": {
+          "calls": 122,
+          "triangles": 370849,
+          "geometries": 249,
+          "textures": 39,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 122,
+          "triangles": 370849,
+          "geometries": 249,
+          "textures": 39,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 60.00120002392895,
+          "frameIntervalMedianMs": 16.600000001490116,
+          "frameIntervalP95Ms": 18.899999998509884,
+          "frameSubmitP95Ms": 3.7000000029802322
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 17.5,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 17.899999998509884,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 18.899999998509884,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 14.100000001490116,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 14.300000004470348,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 14.900000005960464,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 15,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15.399999998509884,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 16.400000005960464,
+              "processingMs": 0.5
+            }
+          ],
+          "pointerDispatchMs": [
+            17.799999997019768,
+            14.200000002980232,
+            15.199999995529652
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 21958408,
+          "jsHeapTotalBytes": 51003392,
+          "documents": 6,
+          "nodes": 344,
+          "jsEventListeners": 104
+        }
+      }
+    ],
+    "medianRoom": {
+      "measuredFps": 60.00120002392895,
+      "frameIntervalP95Ms": 18.899999998509884,
+      "frameSubmitP95Ms": 3.7999999970197678,
+      "geometries": 249,
+      "textures": 39,
+      "programs": 55,
+      "calls": 122,
+      "triangles": 370849
+    }
+  },
+  "phoneThunderstormCpu4x": {
+    "schema": 1,
+    "environment": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "cpuThrottle": 4,
+      "sampleMs": 5000,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browser": "156.0.8078.74",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "reducedMotion": true,
+      "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+      "device": {
+        "hardwareConcurrency": 10,
+        "deviceMemoryGiB": 16,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "vendor": "Google Inc. (Apple)",
+        "unmaskedRendererAvailable": true,
+        "softwareRendererDetected": false
+      }
+    },
+    "errors": [],
+    "loadingMs": 2688.613041,
+    "entryMs": 2568.200583,
+    "before": {
+      "calls": 77,
+      "triangles": 265448,
+      "geometries": 249,
+      "textures": 38,
+      "programs": 48,
+      "pixelRatio": 1,
+      "low": true
+    },
+    "room": {
+      "calls": 77,
+      "triangles": 265448,
+      "geometries": 249,
+      "textures": 38,
+      "programs": 48,
+      "pixelRatio": 1,
+      "low": true,
+      "drawnFrames": 150,
+      "measuredFps": 29.9883266916144,
+      "frameIntervalMedianMs": 33.399999998509884,
+      "frameIntervalP95Ms": 36.20000000298023,
+      "frameSubmitP95Ms": 3.9000000059604645
+    },
+    "warnings": [],
+    "input": {
+      "events": [
+        {
+          "name": "pointerdown",
+          "durationMs": 32,
+          "inputDelayMs": 8.299999997019768,
+          "processingMs": 1.2999999970197678
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 32,
+          "inputDelayMs": 9.899999998509884,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 32,
+          "inputDelayMs": 14.5,
+          "processingMs": 2.0999999940395355
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 56,
+          "inputDelayMs": 7.300000004470348,
+          "processingMs": 0.5
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 56,
+          "inputDelayMs": 7.800000004470348,
+          "processingMs": 0.10000000149011612
+        },
+        {
+          "name": "click",
+          "durationMs": 56,
+          "inputDelayMs": 10.100000001490116,
+          "processingMs": 0.7999999970197678
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 40,
+          "inputDelayMs": 7.9000000059604645,
+          "processingMs": 1.5999999940395355
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 40,
+          "inputDelayMs": 9.5,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 40,
+          "inputDelayMs": 14,
+          "processingMs": 1.6000000014901161
+        }
+      ],
+      "pointerDispatchMs": [
+        9.5,
+        7.800000004470348,
+        9
+      ]
+    },
+    "memory": {
+      "jsHeapUsedBytes": 26473592,
+      "jsHeapTotalBytes": 53035008,
+      "documents": 9,
+      "nodes": 1417,
+      "jsEventListeners": 165
+    }
+  },
+  "production": [
+    {
+      "name": "wood-sail-wind",
+      "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12:04:02&envWeather=clear&envDensity=3&envRoute=left-to-right&envWind=7&envWindDirection=30&envVessel=wood-sail",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "2026-06-21 12:04 · Europe/Athens\n模拟天气：晴天\n风 7.0m/s → 30° · 波浪 1.21\n太阳高度 69.1° · 月相 23.2%\n航行 3 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "twin-mast-gale",
+      "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12:03:19&envWeather=cloudy&envDensity=3&envRoute=left-to-right&envWind=16&envWindDirection=45&envVessel=twin-mast",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "2026-06-21 12:03 · Europe/Athens\n模拟天气：多云\n风 16.0m/s → 45° · 波浪 1.60\n太阳高度 69.0° · 月相 23.2%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "catamaran-phone",
+      "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12:03:30&envWeather=clear&envDensity=3&envRoute=left-to-right&envWind=9&envWindDirection=0&envVessel=catamaran",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "2026-06-21 12:03 · Europe/Athens\n模拟天气：晴天\n风 9.0m/s → 0° · 波浪 1.32\n太阳高度 69.0° · 月相 23.2%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "fishing-reef",
+      "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T16:31:56&envWeather=few-clouds&envDensity=3&envRoute=left-to-right&envWind=5&envWindDirection=180&envVessel=fishing",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "2026-10-31 16:31 · Europe/Athens\n模拟天气：少云\n风 5.0m/s → 180° · 波浪 1.10\n太阳高度 8.8° · 月相 70.5%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "yacht-sunset",
+      "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T17:10:20&envWeather=clear&envDensity=3&envRoute=left-to-right&envWind=3&envWindDirection=315&envVessel=motor-yacht",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "2026-10-31 17:10 · Europe/Athens\n模拟天气：晴天\n风 3.0m/s → 315° · 波浪 0.99\n太阳高度 1.6° · 月相 70.6%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "ferry-windy",
+      "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12:03:19&envWeather=overcast&envDensity=3&envRoute=left-to-right&envWind=12&envWindDirection=270&envVessel=ferry",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "2026-06-21 12:03 · Europe/Athens\n模拟天气：阴天\n风 12.0m/s → 270° · 波浪 1.49\n太阳高度 69.0° · 月相 23.2%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "thunderstorm-landscape",
+      "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-01T18:45&envWeather=thunderstorm&envDensity=3&envRoute=left-to-right&envQuality=low&envWind=16&envThunder=1",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "2026-10-01 18:45 · Europe/Athens\n模拟天气：雷雨\n风 16.0m/s → 45° · 波浪 1.60\n太阳高度 2.6° · 月相 68.0%\n航行 0 艘 · 省电画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "snow-phone",
+      "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-01-21T12:00&envWeather=snow&envDensity=3&envRoute=left-to-right&envQuality=low&envWind=4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "2026-01-21 12:00 · Europe/Athens\n模拟天气：中雪\n风 4.0m/s → 47° · 波浪 1.09\n太阳高度 33.3° · 月相 8.4%\n航行 0 艘 · 省电画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "full-moon-room",
+      "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-29T23:00&envWeather=clear&envDensity=3&envRoute=left-to-right&envPhase=.5&envWind=2",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "2026-06-29 23:00 · Europe/Athens\n模拟天气：晴天\n风 2.0m/s → 32° · 波浪 0.94\n太阳高度 -21.7° · 月相 50.0%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "validation": {
+    "wholeSuiteFirstRun": {
+      "command": "project-node node_modules/@playwright/test/cli.js test --workers=1 --output=/tmp/memory-wind-world-all-tests",
+      "total": 206,
+      "passed": 204,
+      "failed": 2,
+      "durationMinutes": 7.6,
+      "failures": [
+        "cat-mood-sync: native 44.1kHz to 48kHz MP3 resampling exceeded a one-source-frame-only assertion by 15 microseconds",
+        "environment-living-world: datetime-local normalized .190 to .19; native fill expected its canonical string"
+      ]
+    },
+    "repairs": {
+      "cloudPartialWind": "Unspecified wind component refreshes every 10 seconds, integrating exact displacement before reanchoring; explicit date edits preserve the displayed position.",
+      "audioTest": "Permit one source frame plus one native decoded output frame; no changes to voices or cues.",
+      "dateTest": "Use canonical datetime-local values; no bypass of native input or production date parsing."
+    },
+    "relatedFinalRun": {
+      "command": "project-node node_modules/@playwright/test/cli.js test tests/environment-weather.spec.ts tests/environment-controller.spec.ts tests/environment-audio.spec.ts tests/environment-living-world.spec.ts tests/cat-mood-sync.spec.ts --workers=1 --output=/tmp/memory-wind-world-fix-tests",
+      "passed": 29,
+      "failed": 0,
+      "newTests": 3,
+      "durationSeconds": 46.2
+    },
+    "finalPixels": {
+      "command": "project-node node_modules/@playwright/test/cli.js test tests/environment-wind-world.spec.ts --workers=1 --output=/tmp/memory-wind-world-final-pixels",
+      "passed": 2,
+      "failed": 0,
+      "durationSeconds": 13
+    },
+    "uniqueTestsCoveredAcrossRuns": 209,
+    "wholeSuiteRerunAfterRepairs": false,
+    "typecheck": {
+      "command": "project-node node_modules/typescript/bin/tsc --noEmit",
+      "passed": true
+    },
+    "build": {
+      "command": "project-node node_modules/vite/bin/vite.js build",
+      "passed": true,
+      "modules": 85,
+      "appBytes": 307862,
+      "appGzipBytes": 113830,
+      "warning": "Existing Three.js chunk exceeds 500kB"
+    },
+    "notRun": [
+      "Safari this batch",
+      "180-second endurance this batch",
+      "physical phone or low-end hardware",
+      "speaker/headphone listening",
+      "temperature, battery, process/GPU memory"
+    ]
+  },
+  "resourceStrategy": {
+    "geometryBefore": 251,
+    "geometryAfter": 249,
+    "texturesNormal": 39,
+    "programsBefore": 54,
+    "programsAfter": 55,
+    "oceanNewGeometry": 0,
+    "newTextures": 0,
+    "farIslands": {
+      "count": 3,
+      "meshes": 1,
+      "triangles": 2880
+    },
+    "maxBirds": 1,
+    "maxVesselsNormal": 5,
+    "maxVesselsLow": 3
+  },
+  "limitations": [
+    "Wind sea is a directional spectrum approximation, not fluid simulation.",
+    "Sailing route and mean speed freeze at departure; current wind trims sails. Forced unsailable debug routes use auxiliary propulsion with furled sails.",
+    "The historical performance reference is not a fresh paired measurement. FPS alone does not remove the observed increase in frame submission cost.",
+    "CPU throttle is a lab stress condition, not a physical phone."
+  ],
+  "runtime": {
+    "node": "~/.nvm/versions/node/v24.14.0",
+    "entry": "~/.local/bin/project-node",
+    "store": "~/Library/pnpm/store/v11",
+    "dependenciesInstalled": false,
+    "newIsolatedEnvironment": false
+  },
+  "evidenceDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-wind-world"
+}

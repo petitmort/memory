@@ -39,7 +39,7 @@ test('square sail is crosswise and attached; coastal land and basket are physica
     coast.group.updateMatrixWorld(true);
     const land: { name: string; min: number; max: number }[] = [];
     coast.group.traverse(object => {
-      if (!['natural-island', 'submerged-reef'].includes(object.userData.kind)) return;
+      if (!['natural-island', 'submerged-reef', 'far-islands'].includes(object.userData.kind)) return;
       const bounds = new THREE.Box3().setFromObject(object, true);
       land.push({ name: object.name, min: bounds.min.y, max: bounds.max.y });
     });
@@ -70,6 +70,8 @@ test('square sail is crosswise and attached; coastal land and basket are physica
       !shipBounds.intersectsBox(new THREE.Box3().setFromObject(seascape.group.getObjectByName(name), true)));
     return {
       crosswise: Math.abs(span.x), attachmentGaps, land, clearance, clearOfReefs,
+      farIslandCount: coast.group.getObjectByName('far-horizon-archipelago').userData.islandCount,
+      permanentBirdsRemoved: !coast.group.children.some(object => /gull|bird/i.test(object.name)),
       basket: { min: basketBounds.min.toArray(), max: basketBounds.max.toArray() },
       meanWater: heights.reduce((sum, h) => sum + h, 0) / heights.length,
       waterRange: Math.max(...heights) - Math.min(...heights),
@@ -80,6 +82,8 @@ test('square sail is crosswise and attached; coastal land and basket are physica
   for (const gap of result.attachmentGaps) expect(gap).toBeLessThan(.15);
   expect(result.land.filter(o => o.name.startsWith('distant-island'))).toHaveLength(2);
   expect(result.land.filter(o => o.name.startsWith('sea-reef'))).toHaveLength(2);
+  expect(result.land.filter(o => o.name === 'far-horizon-archipelago')).toHaveLength(1);
+  expect(result.farIslandCount).toBe(3); expect(result.permanentBirdsRemoved).toBe(true);
   for (const land of result.land) {
     expect(land.min).toBeLessThan(-9);
     expect(land.max).toBeGreaterThan(-7.5);
