@@ -9,6 +9,8 @@
   animation: object-feedback-in 180ms ease-out both;
 }
 .scene-object-feedback[hidden] { display: none; }
+.scene-object-feedback-label[hidden],
+.scene-object-feedback-point[hidden] { display: none; }
 .scene-object-feedback-label {
   display: block;
   padding: 9px 13px;
@@ -28,6 +30,15 @@
   border-color: var(--room-paper-border);
 }
 .scene-object-feedback[data-phase="hint"] { animation-duration: 650ms; }
+.scene-object-feedback-point {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--room-paper-border);
+  border-radius: 50%;
+  background: var(--room-paper);
+  box-shadow: 0 0 0 4px #24484030, var(--room-shadow);
+}
 @keyframes object-feedback-in {
   from { opacity: 0; transform: translate(-50%, calc(-100% + 4px)); }
   to { opacity: 1; transform: translate(-50%, -100%); }

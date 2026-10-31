@@ -30,7 +30,7 @@ async function setHidden(page: Page, hidden: boolean) {
   }, hidden);
 }
 
-test('settled room has two quiet seconds before the first invitation and primary controls', async ({ page }) => {
+test('settled room has two quiet seconds, controls at two, and one invitation at six', async ({ page }) => {
   await arrive(page);
   for (const selector of ['#room-ui', '#scene-hint', '#explore-guide'])
     await expect(page.locator(selector)).toBeHidden();
@@ -42,22 +42,30 @@ test('settled room has two quiet seconds before the first invitation and primary
   for (const selector of ['#room-ui', '#scene-hint', '#explore-guide'])
     await expect(page.locator(selector)).toBeHidden();
   await page.clock.runFor(1);
-  for (const selector of ['#room-ui', '#scene-hint', '#explore-guide']) {
-    await expect(page.locator(selector)).toBeVisible();
-    expect(await page.locator(selector).evaluate(element => getComputedStyle(element).animationName)).toBe('none');
-  }
-  await page.clock.runFor(5000);
+  await expect(page.locator('#room-ui')).toBeVisible();
+  expect(await page.locator('#room-ui').evaluate(element => getComputedStyle(element).animationName)).toBe('none');
+  for (const selector of ['#scene-hint', '#explore-guide']) await expect(page.locator(selector)).toBeHidden();
+  await page.clock.runFor(3999);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+  await page.clock.runFor(1);
+  await expect(page.locator('#explore-guide')).toBeVisible();
+  await expect(page.locator('#scene-hint')).toBeHidden();
+  expect(await page.locator('#explore-guide').evaluate(element => getComputedStyle(element).pointerEvents)).toBe('none');
+  await page.clock.runFor(3999);
+  await expect(page.locator('#explore-guide')).toBeVisible();
+  await page.clock.runFor(1);
   await expect(page.locator('#explore-guide')).toBeHidden();
   await expect(page.locator('#room-ui')).toBeVisible();
+  await page.clock.runFor(12000);
+  await expect(page.locator('#explore-guide')).toBeHidden();
 });
 
-test('normal motion fades the settled-room invitation instead of snapping it in', async ({ page }) => {
+test('normal motion fades the settled-room controls without replaying on return', async ({ page }) => {
   await arrive(page, false);
   await page.clock.runFor(2000);
-  for (const selector of ['#room-ui', '#scene-hint', '#explore-guide']) {
-    await expect(page.locator(selector)).toBeVisible();
-    expect(await page.locator(selector).evaluate(element => getComputedStyle(element).animationName)).toBe('room-arriving');
-  }
+  await expect(page.locator('#room-ui')).toBeVisible();
+  expect(await page.locator('#room-ui').evaluate(element => getComputedStyle(element).animationName)).toBe('room-arriving');
+  for (const selector of ['#scene-hint', '#explore-guide']) await expect(page.locator(selector)).toBeHidden();
   // A finished arrival is removed, so later view changes cannot replay it.
   await page.locator('#room-ui').evaluate(element => element.dispatchEvent(new AnimationEvent('animationend', { animationName: 'room-arriving' })));
   await expect(page.locator('#room-ui')).not.toHaveClass(/room-arriving/);
@@ -127,7 +135,7 @@ test('keyboard use cancels the invitation and preserves the focused sound contro
   await expect(page.locator('#sound')).toHaveAttribute('aria-label', '开启声音');
   await expect(page.locator('#sound')).toBeFocused();
   await expect(page.locator('#room-ui')).toBeVisible();
-  await expect(page.locator('#scene-hint')).toBeVisible();
+  await expect(page.locator('#scene-hint')).toBeHidden();
   await expect(page.locator('#explore-guide')).toBeHidden();
   await page.clock.runFor(7000);
   await expect(page.locator('#explore-guide')).toBeHidden();
@@ -144,7 +152,116 @@ test('background time does not consume the remaining quiet observation', async (
   await expect(page.locator('#room-ui')).toBeHidden();
   await page.clock.runFor(1);
   await expect(page.locator('#room-ui')).toBeVisible();
+  await expect(page.locator('#explore-guide')).toBeHidden();
+  await page.clock.runFor(3999);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+  await page.clock.runFor(1);
   await expect(page.locator('#explore-guide')).toBeVisible();
+});
+
+test('background time after controls appear pauses the remaining invitation wait', async ({ page }) => {
+  await arrive(page);
+  await page.clock.runFor(3000);
+  await expect(page.locator('#room-ui')).toBeVisible();
+  await setHidden(page, true);
+  await page.clock.runFor(10000);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+  await setHidden(page, false);
+  await page.clock.runFor(2999);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+  await page.clock.runFor(1);
+  await expect(page.locator('#explore-guide')).toBeVisible();
+});
+
+for (const action of ['blank pointer', 'sound click', 'keyboard'] as const) {
+  test(`${action} after controls appear cancels the pending invitation`, async ({ page }) => {
+    await arrive(page);
+    await page.clock.runFor(3000);
+    if (action === 'blank pointer') {
+      await page.locator('#world').dispatchEvent('pointerdown', { pointerId: 12 });
+      await page.locator('#world').dispatchEvent('pointerup', { pointerId: 12 });
+    } else if (action === 'sound click') {
+      await page.locator('#sound').evaluate((element: HTMLButtonElement) => element.click());
+    } else await page.keyboard.press('Shift');
+    await page.clock.runFor(12000);
+    await expect(page.locator('#explore-guide')).toBeHidden();
+    await expect(page.locator('#scene-hint')).toBeHidden();
+    await expect(page.locator('#room-ui')).toBeVisible();
+  });
+}
+
+test('the first operation immediately dismisses a displayed invitation permanently', async ({ page }) => {
+  await arrive(page);
+  await page.clock.runFor(6000);
+  await expect(page.locator('#explore-guide')).toBeVisible();
+  await page.locator('#world').evaluate((element: HTMLElement) => element.click());
+  await expect(page.locator('#explore-guide')).toBeHidden();
+  await page.clock.runFor(12000);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+});
+
+test('hover feedback defers the invitation past six seconds without restarting its wait', async ({ page }) => {
+  await arrive(page);
+  await page.clock.runFor(5000);
+  await page.mouse.move(30, 30);
+  await page.evaluate(() => (window as any).__experience.feedback(true));
+  await page.clock.runFor(3000);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+  await page.evaluate(() => (window as any).__experience.feedback(false));
+  await expect(page.locator('#explore-guide')).toBeVisible();
+  await page.clock.runFor(4000);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+});
+
+test('local feedback hides an already displayed invitation without replaying it', async ({ page }) => {
+  await arrive(page);
+  await page.clock.runFor(6000);
+  await expect(page.locator('#explore-guide')).toBeVisible();
+  await page.evaluate(() => (window as any).__experience.feedback(true));
+  await expect(page.locator('#explore-guide')).toBeHidden();
+  await page.evaluate(() => (window as any).__experience.feedback(false));
+  await page.clock.runFor(12000);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+});
+
+test('a displayed invitation does not return after backgrounding', async ({ page }) => {
+  await arrive(page);
+  await page.clock.runFor(6000);
+  await expect(page.locator('#explore-guide')).toBeVisible();
+  await setHidden(page, true);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+  await page.clock.runFor(10000);
+  await setHidden(page, false);
+  await page.clock.runFor(10000);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+});
+
+test('a previously seen invitation stays suppressed on a later visit', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('tideline-exploration-seen', '1'));
+  await arrive(page);
+  await page.clock.runFor(12000);
+  await expect(page.locator('#room-ui')).toBeVisible();
+  await expect(page.locator('#explore-guide')).toBeHidden();
+});
+
+test('unavailable storage still allows only one invitation in the current visit', async ({ page }) => {
+  await page.addInitScript(() => {
+    Storage.prototype.getItem = () => { throw new Error('Storage unavailable'); };
+    Storage.prototype.setItem = () => { throw new Error('Storage unavailable'); };
+  });
+  await arrive(page);
+  await page.clock.runFor(6000);
+  await expect(page.locator('#explore-guide')).toBeVisible();
+  await page.clock.runFor(4000);
+  await expect(page.locator('#explore-guide')).toBeHidden();
+  await page.evaluate(() => {
+    (window as any).__experience.feedback(true);
+    (window as any).__experience.feedback(false);
+  });
+  await setHidden(page, true);
+  await setHidden(page, false);
+  await page.clock.runFor(12000);
+  await expect(page.locator('#explore-guide')).toBeHidden();
 });
 
 test('a cancelled pointer reveals usable controls and does not resurrect the invitation', async ({ page }) => {
@@ -157,8 +274,9 @@ test('a cancelled pointer reveals usable controls and does not resurrect the inv
   await expect(page.locator('#explore-guide')).toBeHidden();
 });
 
-test('cat interaction during observation approaches immediately and cancels pending hints', async ({ page }) => {
+for (const elapsed of [0, 3000]) test(`cat interaction at ${elapsed}ms approaches immediately and cancels pending hints`, async ({ page }) => {
   await arrive(page);
+  await page.clock.runFor(elapsed);
   expect(await page.evaluate(() => (window as any).__experience.catInteract())).toBe(true);
   expect(await page.evaluate(() => (window as any).__experience.views)).toBe(1);
   await expect(page.locator('#room-ui')).toBeVisible();
@@ -171,15 +289,17 @@ test('cat interaction during observation approaches immediately and cancels pend
 });
 
 for (const interruption of ['scene loss', 'page disposal'] as const) {
-  test(`${interruption} cancels observation without revealing stale controls`, async ({ page }) => {
+  for (const elapsed of [750, 3000]) test(`${interruption} at ${elapsed}ms cancels all pending room guidance`, async ({ page }) => {
     await arrive(page);
-    await page.clock.runFor(750);
+    await page.clock.runFor(elapsed);
     await page.evaluate(interruption => {
       if (interruption === 'scene loss') (window as any).__experience.fail();
       else window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: false }));
     }, interruption);
     await page.clock.runFor(10000);
-    await expect(page.locator('#room-ui')).toBeHidden();
+    // A disposed document can retain controls already drawn before pagehide;
+    // it must never reveal pending controls or guidance after disposal.
+    if (elapsed < 2000 || interruption === 'scene loss') await expect(page.locator('#room-ui')).toBeHidden();
     await expect(page.locator('#scene-hint')).toBeHidden();
     await expect(page.locator('#explore-guide')).toBeHidden();
     if (interruption === 'scene loss') await expect(page.locator('#fallback')).toBeVisible();
@@ -194,12 +314,13 @@ test('closing a book opened during observation returns immediately without anoth
   await expect.poll(() => page.evaluate(() => (window as any).__experience.pending)).toBe('opening');
   await page.evaluate(() => (window as any).__experience.complete());
   await expect(page.locator('#reader')).toHaveAttribute('data-phase', 'ready');
+  expect(await page.evaluate(() => (window as any).__experience.used)).toEqual(['book', 'bouquet']);
   await page.locator('#close-book').evaluate((element: HTMLButtonElement) => element.click());
   await expect.poll(() => page.evaluate(() => (window as any).__experience.pending)).toBe('closing');
   await page.evaluate(() => (window as any).__experience.complete());
   await expect(page.locator('body')).toHaveAttribute('data-stage', 'room');
   await expect(page.locator('#room-ui')).toBeVisible();
-  await expect(page.locator('#scene-hint')).toBeVisible();
+  await expect(page.locator('#scene-hint')).toBeHidden();
   await expect(page.locator('#explore-guide')).toBeHidden();
   await page.clock.runFor(7000);
   await expect(page.locator('#explore-guide')).toBeHidden();

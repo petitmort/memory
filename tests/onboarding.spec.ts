@@ -60,9 +60,8 @@ test('entry has an explicit door state and repeated gestures cannot overlap jour
   expect(await page.evaluate(() => (window as any).__experience.enters)).toBe(1);
   await finishSceneStep(page, 'entering');
   await expect(page.locator('#room-ui')).toBeVisible();
-  await expect(page.locator('#explore-guide')).toBeVisible();
-  await expect(page.locator('#explore-guide')).toContainText('可以探索');
-  expect(await page.locator('#explore-guide').evaluate(element => getComputedStyle(element).pointerEvents)).toBe('none');
+  await expect(page.locator('#scene-hint')).toBeHidden();
+  await expect(page.locator('#explore-guide')).toBeHidden();
 
   // View changes disable their room commands until the camera settles.
   await page.locator('#cozy-view').click();

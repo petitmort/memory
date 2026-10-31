@@ -44,6 +44,7 @@ export function createSoundController(options: SoundOptions) {
   let recordObjectUrl: string | undefined, recordSelectionVersion = 0;
   let restoreAllowed = true, customRecord = false;
   let petHintTimer: number | undefined;
+  let petExplained = false;
   const storage = createRecordStorage();
 
   // Filename and state share one row, leaving small-screen object hotspots clear.
@@ -254,12 +255,13 @@ export function createSoundController(options: SoundOptions) {
   }
   function onCatPet(profile: CatReactionProfile = CAT_REACTIONS[0]): (() => number) | undefined {
     if (disposed) return;
-    el("pet-hint").textContent = profile.hint;
+    el("pet-hint").textContent = petExplained ? "小猫正在回应" : profile.hint;
+    petExplained = true;
     el<HTMLButtonElement>("pet-cat").disabled = true;
     el("pet-cat").dataset.busy = "true";
     window.clearTimeout(petHintTimer);
     petHintTimer = window.setTimeout(() => {
-      el("pet-hint").textContent = "轻触或轻划小猫";
+      el("pet-hint").textContent = "可以再次抚摸";
       delete el("pet-cat").dataset.busy;
       if (!disposed && options.getState() === "room" && options.getSceneAvailable())
         el<HTMLButtonElement>("pet-cat").disabled = false;

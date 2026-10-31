@@ -53,10 +53,8 @@ function finishRoomObservation(active = false) {
   cancelRoomObservation();
   if (flow.disposed || !sceneAvailable || flow.getState() !== "room") return;
   el("room-ui").classList.toggle("room-arriving", !active && !reduceMotion);
-  el("scene-hint").classList.toggle("room-arriving", !active && !reduceMotion);
   el("room-ui").classList.remove("hidden");
   syncControls();
-  if (!active) exploration.enterRoom();
 }
 function resumeRoomObservation() {
   if (!roomObservation || document.hidden || flow.disposed || roomObservation.timer !== undefined) return;
@@ -128,7 +126,10 @@ function step(n: number) {
 const sound = createSoundController({
   getState: () => flow.getState(),
   getSceneAvailable: () => sceneAvailable,
-  onRecordPlaying: playing => scene?.setRecordPlaying?.(playing),
+  onRecordPlaying: playing => {
+    scene?.setRecordPlaying?.(playing);
+    if (playing) scene?.markInteractionUsed?.("record");
+  },
   toast,
 });
 let retryChapter = 0;
@@ -152,7 +153,9 @@ function syncControls() {
   for (const id of ["open-book", "cozy-view", "pet-cat", "choose-record", "record-toggle"])
     el<HTMLButtonElement>(id).disabled = !inRoom || (id === "open-book" && catContext) || (id === "pet-cat" && el(id).dataset.busy === "true");
   el("open-book").classList.toggle("hidden", catContext);
-  el("scene-hint").classList.toggle("hidden", catContext || flow.getState() !== "room" || !!roomObservation);
+  // The single delayed invitation owns exploration text. Keep the legacy row
+  // hidden so it cannot repeat the same instructions above the room buttons.
+  el("scene-hint").classList.add("hidden");
   const interactive = !changingView && ["fog", "door", "room"].includes(flow.getState());
   scene?.setInteractionEnabled?.(interactive);
   if (!interactive) scene?.clearInteractionFeedback?.();
@@ -267,6 +270,7 @@ async function enter() {
   if (!sceneAvailable || generation !== flow.sceneVersion) return;
   roomObservation = { remaining: 2000, startedAt: performance.now(), interacted: false };
   flow.transition("room");
+  exploration.enterRoom();
   step(1);
   el("record-toggle").classList.remove("hidden");
   el("intro").classList.add("hidden");
@@ -276,7 +280,10 @@ async function enter() {
 el("enter").onclick = enter;
 async function openBook() {
   if (flow.disposed || changingView || (sceneAvailable && viewingCat()) || (flow.getState() !== "room" && flow.getState() !== "fallback")) return;
+  exploration.dismiss();
   finishRoomObservation(true);
+  scene?.markInteractionUsed?.("book");
+  scene?.markInteractionUsed?.("bouquet");
   el("room-ui").classList.remove("room-arriving");
   el("scene-hint").classList.remove("room-arriving");
   lastFocus = document.activeElement as HTMLElement;
@@ -385,8 +392,6 @@ async function closeBook() {
   const cozyFocused = scene?.isCozyFocused?.() ?? false;
   updateCozyControls(cozyFocused);
   el("open-book").innerHTML = '继续翻阅纪念册 <span class="button-arrow">↗</span>';
-  el("scene-hint").innerHTML = '<span aria-hidden="true">·</span> 点击桌上的画册，继续我们的故事';
-  el("scene-hint").classList.remove("hidden");
   el("room-ui").querySelector("p")!.textContent = "花留在桌边，故事还在画册里。";
   step(1);
   syncControls();
@@ -395,6 +400,7 @@ async function closeBook() {
 el("open-book").onclick = openBook;
 async function changeCozyView(focus: boolean, petAfter = false) {
   if (flow.disposed || document.hidden || flow.getState() !== "room" || !sceneAvailable || changingView) return;
+  exploration.dismiss();
   finishRoomObservation(true);
   const activeScene = scene!;
   const generation = flow.sceneVersion;
@@ -468,6 +474,7 @@ try {
     sound.onRecord,
     low => updateQualityLabel(low),
     requestCatPet,
+    visible => exploration.setFeedbackActive(visible),
   );
   // Prepare alongside GPU loading, before continuous scene drawing starts.
   // Browsers requiring gesture-time construction retain the lazy fallback.

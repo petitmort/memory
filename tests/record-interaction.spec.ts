@@ -123,7 +123,9 @@ test('the desk record accepts and remembers music, resumes in place and stays in
     // until playback so entering the room cannot download the whole track.
     expect((await media()).source).toBe('');
     const initial = await room();
-    await expect(page.locator('.scene-object-feedback[data-phase="hint"]')).toBeVisible({ timeout: 12000 });
+    // Automatic discovery belongs to the single room guide. The scene must
+    // leave object feedback quiet until an actual hover or touch.
+    await expect(page.locator('.scene-object-feedback')).toBeHidden();
     await page.mouse.move(initial.point.x, initial.point.y);
     const feedback = page.locator('.scene-object-feedback');
     await expect(feedback).toHaveAttribute('data-object', 'record');

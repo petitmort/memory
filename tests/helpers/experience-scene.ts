@@ -5,6 +5,7 @@ function sceneFixture(
   _container: HTMLElement, interact: () => void, _reduced: boolean, onUnavailable: () => void,
   onPet?: () => unknown, _onRecord?: () => void, _onQuality?: (low: boolean) => void,
   onCatInteract?: () => boolean,
+  onFeedbackVisibility?: (visible: boolean) => void,
 ) {
   let lost = false, focused = false, disposed = false, interactive = false;
   let rejectLoss!: (error: Error) => void;
@@ -16,6 +17,8 @@ function sceneFixture(
     pets: 0, petAttempts: 0, disposed: false,
     complete: () => complete?.(), interact,
     catInteract: () => onCatInteract?.() ?? false,
+    feedback: (visible: boolean) => onFeedbackVisibility?.(visible),
+    used: [] as string[],
     fail() {
       if (lost) return;
       lost = true; onUnavailable(); rejectLoss(new Error('Renderer unavailable'));
@@ -52,7 +55,8 @@ function sceneFixture(
     isCozyFocused: () => focused,
     getBookProjection: projection,
     setBookChapter() {}, setBookPageCanvases() {}, setBookVisibility() {},
-    setRecordPlaying() {}, setInteractionEnabled(value: boolean) { interactive = value; }, clearInteractionFeedback() {}, hintInteractionsOnce() {},
+    setRecordPlaying() {}, setInteractionEnabled(value: boolean) { interactive = value; }, clearInteractionFeedback() {},
+    markInteractionUsed(kind: string) { probe.used.push(kind); },
     getQuality: () => ({ low: probe.quality, manual: false }),
     setQuality(value: boolean) { probe.quality = value; },
     petCat() {

@@ -47,6 +47,7 @@ export function createScene(
   onRecord?: () => void,
   onQualityChange?: (low: boolean) => void,
   onCatInteract?: () => boolean,
+  onFeedbackVisibility?: (visible: boolean) => void,
 ) {
   const listeners = new AbortController();
   const listenerOptions = { signal: listeners.signal };
@@ -65,7 +66,7 @@ export function createScene(
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.04;
   container.appendChild(renderer.domElement);
-  const feedback = createInteractionFeedback(container);
+  const feedback = createInteractionFeedback(container, onFeedbackVisibility);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color("#c6dce5");
   const fogColor = new THREE.Color("#c5d0d1"), clearColor = new THREE.Color("#d2e4e8");
@@ -806,7 +807,7 @@ export function createScene(
   function makeUnavailable(notify: boolean) {
     if (unavailableError) return;
     unavailableError = new SceneUnavailableError();
-    stopIdleHint();
+    clearInteractionFeedback();
     feedback.dispose();
     listeners.abort();
     // Asset factories own their loading cancellation and private resources.
@@ -943,7 +944,6 @@ export function createScene(
       pauseFrames();
     }
     else {
-      scheduleIdleHint();
       if (!readerBackdropFrozen || singleRenderRequested) scheduleFrame();
     }
   }
@@ -1023,7 +1023,6 @@ export function createScene(
         finishWalkingFrame = () => {
           animating = false;
           current = "room";
-          scheduleIdleHint();
           motion.done();
         };
       }
@@ -1088,7 +1087,6 @@ export function createScene(
           animating = false;
           current = motion.kind === "opening" ? "book" : "room";
           readerBackdropFrozen = motion.kind === "opening";
-          scheduleIdleHint();
           motion.done();
         };
       }
@@ -1137,159 +1135,146 @@ export function createScene(
   const ray = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const canvas = renderer.domElement;
-  let interactionEnabled = true, idleGuidanceShown = false, explored = false;
-  let idleHintTimer: ReturnType<typeof setTimeout> | undefined;
+  let interactionEnabled = true;
   let petStroke: { id: number; x: number; y: number; length: number; stroked: boolean } | null = null;
-  let recordPress: { id: number; x: number; y: number; moved: boolean } | null = null;
   let objectPress: { id: number; x: number; y: number; moved: boolean; kind: InteractionKind } | null = null;
   const activePointers = new Set<number>(), cancelledPointers = new Set<number>();
   const feedbackText: Record<InteractionKind, string> = {
     bouquet: "轻触花束，打开纪念册", book: "轻触画册，继续阅读", cat: "轻轻摸摸睡着的小猫", record: "轻触唱片机，听一首喜欢的歌", door: "探索门后的房间",
   };
-  function stopIdleHint() { clearTimeout(idleHintTimer); idleHintTimer = undefined; }
-  function clearInteractionFeedback() { stopIdleHint(); feedback.hide(); canvas.style.cursor = "default"; }
+  function releasePointer(id: number) {
+    if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
+  }
+  function clearInteractionFeedback() {
+    const ids = new Set(activePointers);
+    if (petStroke) ids.add(petStroke.id);
+    if (objectPress) ids.add(objectPress.id);
+    // Clear the gesture before releasing capture: lostpointercapture may run
+    // synchronously, and a later release must never revive this old press.
+    petStroke = objectPress = null;
+    activePointers.clear();
+    for (const id of ids) { cancelledPointers.add(id); releasePointer(id); }
+    feedback.hide();
+    canvas.style.cursor = "default";
+  }
   function showFeedback(kind: InteractionKind, e: Pick<PointerEvent, "clientX" | "clientY">, phase: "hover" | "press" | "activate", text = feedbackText[kind]) {
     feedback.show(kind, text, e.clientX, e.clientY, phase, phase === "hover" ? undefined : phase === "press" ? 1600 : 1700);
   }
-  function markExplored() { explored = true; stopIdleHint(); }
-  function hintInteractionsOnce() {
-    if (idleGuidanceShown || explored || nookFocused || !canPet()) return;
-    const object = bouquetParked ? book : bouquet;
-    object.updateWorldMatrix(true, true);
-    camera.updateMatrixWorld(true);
-    const anchor = new THREE.Box3().setFromObject(object).getCenter(new THREE.Vector3()).project(camera);
-    const x = (anchor.x + 1) * innerWidth / 2, y = (1 - anchor.y) * innerHeight / 2;
-    if (anchor.z < -1 || anchor.z > 1 || x < 16 || x > innerWidth - 16 || y < 90 || y > innerHeight - 80) return;
-    // A visual hint can never intercept an object or a nearby UI control.
-    if (document.elementFromPoint(x, y) !== canvas) return;
-    idleGuidanceShown = true;
-    const kind = bouquetParked ? "book" : "bouquet";
-    feedback.show(kind, feedbackText[kind], x, y, "hint", 4200);
-  }
-  function scheduleIdleHint() {
-    stopIdleHint();
-    if (!idleGuidanceShown && !explored && canPet()) idleHintTimer = setTimeout(hintInteractionsOnce, 6000);
-  }
-  function interactionActivity() {
-    if (current === "room") { feedback.hide(); scheduleIdleHint(); }
-  }
+  function interactionActivity() { if (current === "room") feedback.hide(); }
   window.addEventListener("pointerdown", interactionActivity, { ...listenerOptions, capture: true });
   window.addEventListener("keydown", interactionActivity, listenerOptions);
-  function canPet() {
-    return interactionEnabled && !disposed && !unavailableError && !animating && current === "room" && !document.hidden;
+  function canInteract() {
+    return interactionEnabled && !disposed && !unavailableError && !animating && current !== "book" && !document.hidden;
   }
+  function canPet() { return canInteract() && current === "room"; }
+  let requestingPet = false, petAcceptedDuringRequest = false;
   function performPet() {
     if (!canPet() || !cat.pet(simulationTime, reducedMotion)) return false;
-    markExplored();
+    if (requestingPet) petAcceptedDuringRequest = true;
+    else feedback.markUsed("cat");
     cat.setReactionClock(onPet?.(cat.getReaction()!));
     requestRender();
     return true;
   }
   function requestPet(e: PointerEvent) {
     const nearby = nookFocused;
-    if (!(onCatInteract ? onCatInteract() : performPet())) return;
+    let accepted = false;
+    requestingPet = true;
+    petAcceptedDuringRequest = false;
+    try { accepted = onCatInteract ? onCatInteract() : performPet(); }
+    finally { requestingPet = false; }
+    if (!accepted) { feedback.hide(); return; }
     showFeedback("cat", e, "activate", nearby ? "小猫舒服地蹭了蹭" : "走近看看小猫…");
+    if (petAcceptedDuringRequest) feedback.markUsed("cat");
   }
-  function pointRay(e: PointerEvent) {
+  function pointRay(e: Pick<PointerEvent, "clientX" | "clientY">) {
     pointer.set((e.clientX / innerWidth) * 2 - 1, (-e.clientY / innerHeight) * 2 + 1);
     ray.far = Infinity;
     ray.setFromCamera(pointer, camera);
   }
-  function visibleHit(root: THREE.Object3D, e: PointerEvent) {
-    pointRay(e);
-    const candidate = ray.intersectObject(root, true)[0];
-    if (!candidate) return false;
-    // Only do the wider occlusion check after hitting the small cat bounds.
-    // A hand cannot reach through furniture to a hidden part of the model.
-    ray.far = Math.max(0, candidate.distance - .001);
-    const blocked = ray.intersectObjects(scene.children, true).some(hit => {
-      if (!(hit.object instanceof THREE.Mesh)) return false;
-      for (let object: THREE.Object3D | null = hit.object; object; object = object.parent) {
-        if (!object.visible || object === root) return false;
-      }
-      return true;
-    });
-    ray.far = Infinity;
-    return !blocked;
+  function visibleMesh(object: THREE.Object3D) {
+    if (!(object instanceof THREE.Mesh)) return false;
+    for (let ancestor: THREE.Object3D | null = object; ancestor; ancestor = ancestor.parent)
+      if (!ancestor.visible) return false;
+    return true;
   }
-  function catHit(e: PointerEvent) { return canPet() && visibleHit(cat.group, e); }
-  function recordHit(e: PointerEvent) { return canPet() && visibleHit(recordPlayer.group, e); }
-  function hit(e: PointerEvent) {
-    if (!interactionEnabled || disposed || unavailableError || animating || current === "book" || (current === "room" && nookFocused) || document.hidden) return false;
+  function within(object: THREE.Object3D, root: THREE.Object3D) {
+    for (let ancestor: THREE.Object3D | null = object; ancestor; ancestor = ancestor.parent)
+      if (ancestor === root) return true;
+    return false;
+  }
+  function resolveInteraction(e: Pick<PointerEvent, "clientX" | "clientY">): InteractionKind | undefined {
+    if (!canInteract()) return;
+    const roots: [InteractionKind, THREE.Object3D][] = current === "entry"
+      ? [["door", door]]
+      : [["cat", cat.group], ["record", recordPlayer.group]];
+    if (current === "room" && !nookFocused) roots.push(bouquetParked ? ["book", book] : ["bouquet", bouquet]);
     pointRay(e);
-    return current === "entry" ? ray.intersectObject(door, true).length > 0 : visibleHit(bouquetParked ? book : bouquet, e);
+    // Hover, press, release and cat strokes share the same nearest visible
+    // mesh rule. A candidate hidden behind furniture remains unreachable.
+    const candidates = roots.flatMap(([kind, root]) => {
+      const hit = ray.intersectObject(root, true).find(hit => visibleMesh(hit.object));
+      return hit ? [{ kind, root, distance: hit.distance }] : [];
+    }).sort((a, b) => a.distance - b.distance);
+    const candidate = candidates[0];
+    if (!candidate) return;
+    // The entry door keeps its existing two-click route through the visual
+    // courtyard fog. Furniture occlusion applies once the room is entered.
+    if (current === "entry") return candidate.kind;
+    ray.far = Math.max(0, candidate.distance - .001);
+    const blocked = ray.intersectObjects(scene.children, true).some(hit => visibleMesh(hit.object) && !within(hit.object, candidate.root));
+    ray.far = Infinity;
+    return blocked ? undefined : candidate.kind;
   }
   canvas.addEventListener("pointerdown", e => {
+    cancelledPointers.delete(e.pointerId);
     activePointers.add(e.pointerId);
-    if (!e.isPrimary || activePointers.size > 1) {
-      for (const id of activePointers) cancelledPointers.add(id);
-      petStroke = null;
-      recordPress = null;
-      objectPress = null;
-      feedback.hide();
-      return;
-    }
+    if (!e.isPrimary || activePointers.size > 1) { clearInteractionFeedback(); return; }
     if (e.button !== 0) return;
-    if (recordHit(e)) {
-      recordPress = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
-      showFeedback("record", e, "press");
-      canvas.setPointerCapture(e.pointerId);
-      return;
-    }
-    if (catHit(e)) {
-      petStroke = { id: e.pointerId, x: e.clientX, y: e.clientY, length: 0, stroked: false };
-      showFeedback("cat", e, "press");
-      canvas.setPointerCapture(e.pointerId);
-    } else if (hit(e)) {
-      const kind = current === "entry" ? "door" : bouquetParked ? "book" : "bouquet";
-      objectPress = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, kind };
-      showFeedback(kind, e, "press");
-      canvas.setPointerCapture(e.pointerId);
-    }
+    const kind = resolveInteraction(e);
+    if (!kind) return;
+    if (kind === "cat") petStroke = { id: e.pointerId, x: e.clientX, y: e.clientY, length: 0, stroked: false };
+    else objectPress = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, kind };
+    showFeedback(kind, e, "press");
+    canvas.setPointerCapture(e.pointerId);
   }, listenerOptions);
   canvas.addEventListener("pointerup", e => {
     activePointers.delete(e.pointerId);
     if (cancelledPointers.delete(e.pointerId) || !e.isPrimary || e.button !== 0) return;
-    if (recordPress?.id === e.pointerId) {
-      const press = recordPress;
-      recordPress = null;
-      if (!press.moved && recordHit(e)) {
-        markExplored();
-        showFeedback("record", e, "activate", "已轻触唱片机");
-        onRecord?.();
-      } else feedback.hide();
-      if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
-      return;
-    }
     if (petStroke?.id === e.pointerId) {
       const stroke = petStroke;
       petStroke = null;
-      if (!stroke.stroked && stroke.length < 10 && catHit(e)) requestPet(e);
-      if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+      if (!stroke.stroked && stroke.length < 10 && resolveInteraction(e) === "cat") requestPet(e);
+      else if (!stroke.stroked) feedback.hide();
+      releasePointer(e.pointerId);
       return; // A stroke ending over the desk must never open the album.
     }
     if (objectPress?.id === e.pointerId) {
       const press = objectPress;
       objectPress = null;
-      if (!press.moved && hit(e)) {
-        if (current === "room") markExplored();
-        showFeedback(press.kind, e, "activate", press.kind === "bouquet" ? "把花轻轻放到一旁…" : press.kind === "book" ? "继续翻阅纪念册…" : fogClearance < 1 ? "风正在经过…" : "轻轻推开这扇门…");
-        onInteract();
+      if (!press.moved && resolveInteraction(e) === press.kind) {
+        const text = press.kind === "record" ? "已轻触唱片机" : press.kind === "bouquet" ? "把花轻轻放到一旁…" : press.kind === "book" ? "继续翻阅纪念册…" : fogClearance < 1 ? "风正在经过…" : "轻轻推开这扇门…";
+        showFeedback(press.kind, e, "activate", text);
+        feedback.markUsed(press.kind);
+        if (press.kind === "record") onRecord?.();
+        else onInteract();
       } else feedback.hide();
-      if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+      releasePointer(e.pointerId);
     }
   }, listenerOptions);
+  let lastPointerHint = -Infinity;
   canvas.addEventListener("pointermove", e => {
-    if (recordPress?.id === e.pointerId) {
-      recordPress.moved ||= Math.hypot(e.clientX - recordPress.x, e.clientY - recordPress.y) >= 10;
-      if (recordPress.moved) feedback.hide();
-      canvas.style.cursor = "pointer";
-    } else if (petStroke?.id === e.pointerId) {
-      petStroke.length += Math.hypot(e.clientX - petStroke.x, e.clientY - petStroke.y);
-      petStroke.x = e.clientX; petStroke.y = e.clientY;
-      if (!petStroke.stroked && petStroke.length >= 10 && catHit(e)) {
-        petStroke.stroked = true;
+    if (cancelledPointers.has(e.pointerId)) return;
+    if (petStroke?.id === e.pointerId) {
+      const stroke = petStroke;
+      stroke.length += Math.hypot(e.clientX - stroke.x, e.clientY - stroke.y);
+      stroke.x = e.clientX; stroke.y = e.clientY;
+      if (!stroke.stroked && stroke.length >= 10 && resolveInteraction(e) === "cat") {
+        stroke.stroked = true;
         requestPet(e);
+        // Approaching the cat can synchronously disable input and clear the
+        // captured stroke. Do not restore a dragging cursor after that cancel.
+        if (petStroke !== stroke) return;
       }
       canvas.style.cursor = "grabbing";
     } else if (objectPress?.id === e.pointerId) {
@@ -1297,42 +1282,30 @@ export function createScene(
       if (objectPress.moved) feedback.hide();
     } else if (e.pointerType !== "touch" && e.timeStamp - lastPointerHint > 65) {
       lastPointerHint = e.timeStamp;
-      const kind = catHit(e) ? "cat" : recordHit(e) ? "record" : hit(e) ? current === "entry" ? "door" : bouquetParked ? "book" : "bouquet" : undefined;
+      const kind = resolveInteraction(e);
       canvas.style.cursor = kind === "cat" ? "grab" : kind ? "pointer" : "default";
-      if (kind) { scheduleIdleHint(); showFeedback(kind, e, "hover"); }
+      if (kind) showFeedback(kind, e, "hover");
       else feedback.hide();
     }
   }, listenerOptions);
-  canvas.addEventListener("pointerleave", () => { if (!petStroke && !recordPress && !objectPress) feedback.hide(); }, listenerOptions);
-  canvas.addEventListener("pointercancel", e => {
-    activePointers.delete(e.pointerId);
-    cancelledPointers.delete(e.pointerId);
-    if (petStroke?.id === e.pointerId) petStroke = null;
-    if (recordPress?.id === e.pointerId) recordPress = null;
-    if (objectPress?.id === e.pointerId) objectPress = null;
-    feedback.hide();
-  }, listenerOptions);
-  canvas.addEventListener("lostpointercapture", e => {
-    if (petStroke?.id === e.pointerId) {
-      cancelledPointers.add(e.pointerId);
-      petStroke = null;
-    }
-    if (recordPress?.id === e.pointerId) {
-      cancelledPointers.add(e.pointerId);
-      recordPress = null;
-    }
-    if (objectPress?.id === e.pointerId) {
-      cancelledPointers.add(e.pointerId);
-      objectPress = null;
-    }
-  }, listenerOptions);
-  let lastPointerHint = -Infinity;
+  canvas.addEventListener("pointerleave", () => { if (!petStroke && !objectPress) { feedback.hide(); canvas.style.cursor = "default"; } }, listenerOptions);
   function finishPointer(e: PointerEvent) {
     activePointers.delete(e.pointerId); cancelledPointers.delete(e.pointerId);
+    const pending = petStroke?.id === e.pointerId || objectPress?.id === e.pointerId;
     if (petStroke?.id === e.pointerId) petStroke = null;
-    if (recordPress?.id === e.pointerId) recordPress = null;
     if (objectPress?.id === e.pointerId) objectPress = null;
+    releasePointer(e.pointerId);
+    if (pending) { feedback.hide(); canvas.style.cursor = "default"; }
   }
+  canvas.addEventListener("lostpointercapture", e => {
+    if (petStroke?.id === e.pointerId || objectPress?.id === e.pointerId) {
+      cancelledPointers.add(e.pointerId);
+      if (petStroke?.id === e.pointerId) petStroke = null;
+      if (objectPress?.id === e.pointerId) objectPress = null;
+      feedback.hide();
+      canvas.style.cursor = "default";
+    }
+  }, listenerOptions);
   window.addEventListener("pointerup", finishPointer, listenerOptions);
   window.addEventListener("pointercancel", finishPointer, listenerOptions);
   window.addEventListener("resize", () => {
@@ -1497,7 +1470,6 @@ export function createScene(
         requestRender();
       }));
       nookFocused = focus;
-      scheduleIdleHint();
       return nookFocused;
     },
     isCozyFocused() { return nookFocused; },
@@ -1505,10 +1477,9 @@ export function createScene(
     setInteractionEnabled(enabled: boolean) {
       interactionEnabled = enabled;
       if (!enabled) clearInteractionFeedback();
-      else scheduleIdleHint();
     },
     clearInteractionFeedback,
-    hintInteractionsOnce,
+    markInteractionUsed(kind: InteractionKind) { feedback.markUsed(kind); },
     getQuality() { return { low, manual: qualityPolicy.manual !== undefined }; },
     setRecordPlaying(playing: boolean) {
       if (disposed || unavailableError) return;
