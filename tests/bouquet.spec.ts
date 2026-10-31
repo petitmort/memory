@@ -37,6 +37,63 @@ test('refined bouquet has finite shared curved surfaces with a smaller triangle 
   release(a);release(b);
 });
 
+test('each rose has cup depth and substantial middle and outer petal side walls',()=>{
+  const bouquet=createBouquet();
+  try {
+    bouquet.updateMatrixWorld(true);
+    const receptacles=bouquet.getObjectByName('rose-shadowed-receptacles');
+    if(!(receptacles instanceof THREE.InstancedMesh))throw new Error('Missing rose head coordinate frames');
+    expect(receptacles.count).toBe(9);
+    const petals=['rose-coiled-inner-petals','rose-cupped-middle-petals','rose-rolled-outer-petals'].map(name=>{
+      const mesh=bouquet.getObjectByName(name);
+      if(!(mesh instanceof THREE.InstancedMesh))throw new Error(`Missing petal batch ${name}`);
+      expect(mesh.count%receptacles.count).toBe(0);
+      return mesh;
+    });
+    const head=new THREE.Matrix4(),instance=new THREE.Matrix4(),transform=new THREE.Matrix4();
+    const edgeA=new THREE.Vector3(),edgeB=new THREE.Vector3(),cross=new THREE.Vector3();
+    for(let flower=0;flower<receptacles.count;flower++){
+      receptacles.getMatrixAt(flower,head);
+      head.premultiply(receptacles.matrixWorld).invert();
+      const bounds=new THREE.Box3();
+      let exteriorArea=0,sideWallArea=0;
+      for(const [layer,mesh]of petals.entries()){
+        const position=mesh.geometry.attributes.position,index=mesh.geometry.index;
+        const perFlower=mesh.count/receptacles.count;
+        for(let petal=0;petal<perFlower;petal++){
+          mesh.getMatrixAt(flower*perFlower+petal,instance);
+          transform.multiplyMatrices(head,mesh.matrixWorld).multiply(instance);
+          const points=Array.from({length:position.count},(_,i)=>{
+            const point=new THREE.Vector3().fromBufferAttribute(position,i).applyMatrix4(transform);
+            bounds.expandByPoint(point);
+            return point;
+          });
+          // Exclude the tiny flower center, hidden receptacle, leaves and wrap:
+          // visible middle/outer petals must create the cup's actual side walls.
+          if(layer===0)continue;
+          for(let triangle=0;triangle<(index?.count??position.count);triangle+=3){
+            const a=points[index?index.getX(triangle):triangle];
+            const b=points[index?index.getX(triangle+1):triangle+1];
+            const c=points[index?index.getX(triangle+2):triangle+2];
+            cross.crossVectors(edgeA.subVectors(b,a),edgeB.subVectors(c,a));
+            const twiceArea=cross.length();
+            if(twiceArea<=1e-12)continue;
+            const area=twiceArea/2;
+            exteriorArea+=area;
+            if(Math.abs(cross.y)/twiceArea<.5)sideWallArea+=area;
+          }
+        }
+      }
+      // Flower-local +Y is its axis; bouquet tilt cannot manufacture depth.
+      const size=bounds.getSize(new THREE.Vector3()),diameter=Math.max(size.x,size.z);
+      expect(diameter,`rose ${flower+1} petal diameter`).toBeGreaterThan(0);
+      expect(size.y/diameter,`rose ${flower+1} petal axial depth / diameter`).toBeGreaterThanOrEqual(.55);
+      expect(exteriorArea,`rose ${flower+1} middle/outer petal area`).toBeGreaterThan(0);
+      expect(sideWallArea/exteriorArea,`rose ${flower+1} middle/outer side-wall area fraction`).toBeGreaterThanOrEqual(.15);
+    }
+  } finally {release(bouquet);}
+});
+
 test('whole wrapped bouquet stays above the desktop, clear of the record player and inside its front edge throughout the move',()=>{
   const bouquet=createBouquet(),local=vertices(bouquet),from=new THREE.Vector3(.07,.8458,.04),to=new THREE.Vector3(.51,.8001,.13);
   const start=new THREE.Quaternion().setFromEuler(new THREE.Euler(-1.12,-.25,.55));

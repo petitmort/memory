@@ -3,7 +3,7 @@ import * as THREE from "three";
 type Head = readonly [number, number, number];
 
 /** Static, shared batches: thin foliage, small wax flowers, folded paper and linen. */
-export function createBouquetDetails(heads: readonly Head[]) {
+export function createBouquetDetails(heads: readonly Head[], flowerAxes: readonly THREE.Vector3[]) {
   const group = new THREE.Group(); group.name = "bouquet-botanical-details";
   let seed = 947;
   const random = () => { seed = seed * 16807 % 2147483647; return seed / 2147483647; };
@@ -57,7 +57,14 @@ export function createBouquetDetails(heads: readonly Head[]) {
   function ball(target: ReturnType<typeof batch>, center: THREE.Vector3, radius: number, color: THREE.Color) {
     matrix.compose(center, new THREE.Quaternion(), new THREE.Vector3(radius, radius, radius)); target.add(sphere, matrix, color);
   }
-  function leaf(root: THREE.Vector3, direction: THREE.Vector3, length: number, width: number, phase: number) {
+  function insideBloom(point: THREE.Vector3) {
+    return heads.some(([x, y, z], i) => {
+      const dx = point.x - x, dy = point.y - y, dz = point.z - z, axis = flowerAxes[i];
+      const axial = dx * axis.x + dy * axis.y + dz * axis.z;
+      return axial > -.035 && axial < .20 && dx * dx + dy * dy + dz * dz - axial * axial < .155 * .155;
+    });
+  }
+  function leaf(root: THREE.Vector3, direction: THREE.Vector3, length: number, width: number, phase: number, avoidBlooms = true) {
     const q = new THREE.Quaternion().setFromUnitVectors(up, direction.clone().normalize());
     const p: number[] = [], ids: number[] = [], shades: number[] = [];
     const point = (t: number, u: number) => new THREE.Vector3(
@@ -67,6 +74,9 @@ export function createBouquetDetails(heads: readonly Head[]) {
     ).applyQuaternion(q).add(root);
     for (let row = 0; row <= 12; row++) for (let col = 0; col <= 4; col++) {
       const t = row / 12, u = col / 2 - 1, v = point(t, u); p.push(v.x, v.y, v.z);
+      // Foliage sits between blooms. A long leaf must not pass through a cup
+      // and appear to grow from its centre when viewed from another angle.
+      if (avoidBlooms && insideBloom(v)) return;
       shades.push(.75 + .2 * (1 - Math.abs(u)) + .1 * t + .025 * Math.sin(t * 20 + phase));
       if (row < 12 && col < 4) { const a = row * 5 + col; ids.push(a, a + 5, a + 1, a + 1, a + 5, a + 6); }
     }
@@ -79,18 +89,20 @@ export function createBouquetDetails(heads: readonly Head[]) {
   }
   heads.forEach(([x, y, z], index) => {
     const root = new THREE.Vector3((random() - .5) * .06, -.18, (random() - .5) * .06), tip = new THREE.Vector3(x, y, z);
-    const elbow = root.clone().lerp(tip, .58); elbow.x += .013 * Math.sin(index * 2.1);
-    stem(root, elbow, .0063); stem(elbow, tip, .005);
+    const axis = flowerAxes[index], attachment = tip.clone().addScaledVector(axis, -.045);
+    const calyxRotation = new THREE.Quaternion().setFromUnitVectors(up, axis);
+    const elbow = root.clone().lerp(attachment, .58); elbow.x += .013 * Math.sin(index * 2.1);
+    stem(root, elbow, .0063); stem(elbow, attachment, .005);
     for (let l = 0; l < 3; l++) {
       const f = .57 + l * .10, anchor = root.clone().lerp(tip, f), angle = index * 2.4 + l * 2.15;
       const direction = new THREE.Vector3(Math.cos(angle), .22 + random() * .32, Math.sin(angle));
       const end = anchor.clone().addScaledVector(direction, .025); stem(anchor, end, .0018);
       leaf(end, direction, .15 + random() * .04, .031 + random() * .008, index + l);
     }
-    ball(greenery, tip.clone().add(new THREE.Vector3(0, -.025, 0)), .026, colors.stem);
+    ball(greenery, attachment, .026, colors.stem);
     for (let l = 0; l < 5; l++) {
       const angle = l * Math.PI * 2 / 5 + index;
-      leaf(tip.clone().add(new THREE.Vector3(0, -.018, 0)), new THREE.Vector3(Math.cos(angle), -.32, Math.sin(angle)), .065, .008, angle);
+      leaf(attachment, new THREE.Vector3(Math.cos(angle), -.32, Math.sin(angle)).applyQuaternion(calyxRotation), .065, .008, angle, false);
     }
   });
   // Slender leafy tips rise between the roses without creating a dense green collar.
