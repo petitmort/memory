@@ -2,8 +2,9 @@ import * as THREE from 'three';
 import {dimensions as D} from './dimensions';
 
 export type RoomLightSettings = {enabled: boolean; color: string; brightness: number};
-export const ROOM_LIGHT_STORAGE_KEY = 'tideline-room-light-v1';
-export const DEFAULT_ROOM_LIGHT: Readonly<RoomLightSettings> = Object.freeze({enabled: false, color: '#ffd6a3', brightness: 50});
+// Version the new initial mood once; subsequent explicit choices remain persistent.
+export const ROOM_LIGHT_STORAGE_KEY = 'tideline-room-light-v2';
+export const DEFAULT_ROOM_LIGHT: Readonly<RoomLightSettings> = Object.freeze({enabled: true, color: '#ffd6a3', brightness: 50});
 
 export function normalizeRoomLightSettings(value: unknown): RoomLightSettings {
   const input = value && typeof value === 'object' ? value as Partial<RoomLightSettings> : {};

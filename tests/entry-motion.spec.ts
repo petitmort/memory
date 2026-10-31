@@ -188,8 +188,8 @@ test('door draws before the eye moves, hidden tabs pause entry, and rotation pre
     const crossingX=before.p[0]+a*(after.p[0]-before.p[0]); expect(crossingX).toBeGreaterThan(.28); expect(crossingX).toBeLessThan(.82);
     const end=entry.find(sample=>sample.walkCompleted)!;
     for (let axis=0;axis<3;axis++) {
-      expect(end.p[axis]).toBeCloseTo([.55,1.65,1.15][axis],10);
-      expect(end.t[axis]).toBeCloseTo([.15,1.05,-1.4][axis],10);
+      expect(end.p[axis]).toBeCloseTo([.55,1.65,1.7][axis],10);
+      expect(end.t[axis]).toBeCloseTo([0,1.05,-1.4][axis],10);
     }
     await page.screenshot({path:test.info().outputPath('entry-mobile-room.png')});
     await test.info().attach('rendered-entry',{body:JSON.stringify(entry,null,2),contentType:'application/json'});

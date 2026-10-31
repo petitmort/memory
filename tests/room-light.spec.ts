@@ -1,10 +1,30 @@
 import {test,expect,type Page} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import * as THREE from 'three';
-import {createRoomLight,normalizeRoomLightSettings,DEFAULT_ROOM_LIGHT,ROOM_LIGHT_STORAGE_KEY} from '../src/room-light';
+import {createRoomLight,loadRoomLightSettings,normalizeRoomLightSettings,DEFAULT_ROOM_LIGHT,ROOM_LIGHT_STORAGE_KEY} from '../src/room-light';
 import {mockExperienceScene,enterFixtureRoom} from './helpers/experience-scene';
 
 const evidence=process.env.ROOM_LIGHT_EVIDENCE??'/tmp/memory-room-light';
+
+test('new warm-on default ignores the legacy default once, then preserves explicit v2 choices and tolerates blocked storage',()=>{
+  const original=Object.getOwnPropertyDescriptor(globalThis,'localStorage');
+  const old=JSON.stringify({enabled:false,color:'#557dff',brightness:10});
+  const saved=new Map([['tideline-room-light-v1',old]]);
+  try {
+    Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:(key:string)=>saved.get(key)??null}});
+    expect(loadRoomLightSettings()).toEqual({enabled:true,color:'#ffd6a3',brightness:50});
+    expect(saved.get('tideline-room-light-v1')).toBe(old);
+    saved.set(ROOM_LIGHT_STORAGE_KEY,JSON.stringify({enabled:false,color:'#557dff',brightness:0}));
+    expect(loadRoomLightSettings()).toEqual({enabled:false,color:'#557dff',brightness:0});
+    saved.set(ROOM_LIGHT_STORAGE_KEY,'broken json');
+    expect(loadRoomLightSettings()).toEqual(DEFAULT_ROOM_LIGHT);
+    Object.defineProperty(globalThis,'localStorage',{configurable:true,get(){throw new Error('blocked');}});
+    expect(loadRoomLightSettings()).toEqual(DEFAULT_ROOM_LIGHT);
+  } finally {
+    if(original)Object.defineProperty(globalThis,'localStorage',original);
+    else delete (globalThis as any).localStorage;
+  }
+});
 
 test('stored light settings cannot poison the renderer and a zero-intensity switch preserves its light and lifecycle',()=>{
   expect(normalizeRoomLightSettings({enabled:'yes',color:'url(secret)',brightness:NaN})).toEqual(DEFAULT_ROOM_LIGHT);
@@ -66,9 +86,8 @@ test('real overhead light changes room pixels and colour, remembers settings and
   const errors=await instrument(page);
   try{
     await enter(page);const initial=await page.evaluate(()=>(window as any).__lamp.snapshot());
-    expect(initial.intensity).toBe(0);expect(initial.lights).toBe(1);
-    await page.locator('#room-light').click();await expect(page.locator('#room-light-toggle')).toHaveAttribute('aria-checked','false');
-    await page.locator('#room-light-toggle').click();
+    expect(initial.intensity).toBe(15);expect(initial.lights).toBe(1);
+    await page.locator('#room-light').click();await expect(page.locator('#room-light-toggle')).toHaveAttribute('aria-checked','true');
     const warm=await page.evaluate(()=>(window as any).__lamp.difference());expect(warm.changed).toBeGreaterThan(5000);
     expect(warm.rgb[0]).toBeGreaterThan(warm.rgb[2]);
     await page.screenshot({path:evidence+'/night-warm-panel.png'});

@@ -29,6 +29,8 @@ import { createEnvironmentController } from "./environment-controller";
 import type { CatReactionProfile } from "./cat-reactions";
 import type { EnvironmentSoundFrame } from "./weather-audio";
 import { createRoomLight, type RoomLightSettings } from "./room-light";
+import { createDeskClock } from "./desk-clock";
+import { clockReading } from "./desk-clock-time";
 
 export type PageProjection = { corners: { x: number; y: number }[] };
 export type BookProjection = PageProjection & { pages: [PageProjection, PageProjection] };
@@ -383,6 +385,12 @@ export function createScene(
   const recordPlayer = createRecordPlayer();
   recordPlayer.group.position.set(.34, D.desk.height, -.16);
   table.add(recordPlayer.group);
+  const deskClock = createDeskClock();
+  deskClock.group.position.set(-.48, D.desk.height, -.29);
+  deskClock.group.rotation.y = .18;
+  table.add(deskClock.group);
+  const clockStatus = document.getElementById("desk-clock-status");
+  let clockMinute: number | undefined;
   const bookHinge = album.hinge;
   const bouquet = createBouquet();
   bouquet.name = "bouquet";
@@ -459,9 +467,9 @@ export function createScene(
     0.0005,
     0.105,
     paper,
-    -0.48,
+    -0.25,
     D.desk.height + 0.0003,
-    -0.28,
+    0.26,
     table,
   );
   letter.rotation.y = 0.12;
@@ -679,8 +687,8 @@ export function createScene(
   const roomPose = (): Pose =>
     mobile()
       ? {
-          p: new THREE.Vector3(0.55, D.eye, 1.15),
-          t: new THREE.Vector3(0.15, 1.05, -1.4),
+          p: new THREE.Vector3(0.55, D.eye, 1.7),
+          t: new THREE.Vector3(0, 1.05, -1.4),
         }
       : {
           p: new THREE.Vector3(1.1, D.eye, 0.75),
@@ -699,7 +707,7 @@ export function createScene(
   let fogMotion: { elapsed: number; duration: number; lastDrawAt: number | null; done: () => void } | null = null;
   // These objects sit behind the closed entrance. Reveal them before the door
   // starts moving, rather than drawing their hidden triangles in the courtyard.
-  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group, recordPlayer.group];
+  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group, recordPlayer.group, deskClock.group];
   shelteredDetails.forEach(object => { object.visible = false; });
   let roomRevealed = false;
   let simulationTime = 0;
@@ -817,7 +825,7 @@ export function createScene(
     // Asset factories own their loading cancellation and private resources.
     // Release the remaining room resources once, including Points and uniforms.
     const resources = collectResources(scene);
-    for (const owned of [cat.group, recordPlayer.group, courtyardFog.group, ...environment.ownedGroups]) {
+    for (const owned of [cat.group, recordPlayer.group, deskClock.group, courtyardFog.group, ...environment.ownedGroups]) {
       const asset = collectResources(owned);
       asset.geometries.forEach(value => resources.geometries.delete(value));
       asset.materials.forEach(value => resources.materials.delete(value));
@@ -828,6 +836,7 @@ export function createScene(
     fabric.textures.forEach(value => resources.textures.delete(value));
     cat.dispose();
     recordPlayer.dispose();
+    deskClock.dispose();
     lounge.dispose();
     courtyardFog.dispose();
     environment.dispose();
@@ -951,7 +960,7 @@ export function createScene(
       pauseFrames();
     }
     else {
-      if (!readerBackdropFrozen) environment.resume();
+      if (!readerBackdropFrozen) { environment.resume(); deskClock.resume(); }
       if (!readerBackdropFrozen || singleRenderRequested) scheduleFrame();
     }
   }
@@ -1000,6 +1009,16 @@ export function createScene(
       mythology.update(t, reducedMotion);
       if (cat.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
       if (recordPlayer.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
+      if (!readerBackdropFrozen) {
+        const clockNow = Date.now();
+        // Keep the nearby album cover's opening space clear of moving flaps.
+        deskClock.update(clockNow, t * 1000, reducedMotion || current === "book");
+        const minute = Math.floor(clockNow / 60000);
+        if (minute !== clockMinute) {
+          clockMinute = minute;
+          if (clockStatus) clockStatus.textContent = clockReading(clockNow).accessible;
+        }
+      }
     }
     if (!readerBackdropFrozen) environment.update(t * (reducedMotion ? .15 : 1), low, reducedMotion, roomRevealed);
     let finishLookFrame: (() => void) | undefined;
@@ -1391,7 +1410,7 @@ export function createScene(
   const ready = whileAvailable(Promise.all([cat.ready, lounge.ready])).then(() => {
     requireAvailable();
     return whileAvailable(renderer.compileAsync(scene, camera));
-  }).then(() => whileAvailable(warmSceneResources(renderer, scene, camera, [...shelteredDetails, ...environment.warmObjects], requireAvailable))).then(() => {
+  }).then(() => whileAvailable(warmSceneResources(renderer, scene, camera, [...shelteredDetails, ...deskClock.warmObjects, ...environment.warmObjects], requireAvailable))).then(() => {
     requireAvailable();
     album.leaf.visible = false;
     renderer.render(scene, camera);
@@ -1463,6 +1482,7 @@ export function createScene(
       animating = true;
       readerBackdropFrozen = false;
       environment.resume();
+      deskClock.resume();
       current = "book";
       setAlbumVisibility(1);
       await whileAvailable(Promise.all([parkBouquet(), paperReady]));
@@ -1529,6 +1549,7 @@ export function createScene(
       animating = true;
       readerBackdropFrozen = false;
       environment.resume();
+      deskClock.resume();
       lastDraw = null;
       singleRenderRequested = true;
       scheduleFrame();

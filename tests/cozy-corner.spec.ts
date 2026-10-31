@@ -138,8 +138,8 @@ test('the cat can be approached smoothly, framed closely and left without losing
     await page.screenshot({path:'test-results/cozy-cat-mobile.png'});
     await expect(page.locator('#open-book')).toBeHidden();
     await page.locator('#cozy-view').click();await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','false',{timeout:15000});
-    const desk=await snapshot();expect(distance(desk.position,[.55,1.65,1.15])).toBeLessThan(.000001);
-    expect(distance(desk.target,[.15,1.05,-1.4])).toBeLessThan(.000001);expect(desk.fov).toBe(50);
+    const desk=await snapshot();expect(distance(desk.position,[.55,1.65,1.7])).toBeLessThan(.000001);
+    expect(distance(desk.target,[0,1.05,-1.4])).toBeLessThan(.000001);expect(desk.fov).toBe(50);
     await expect(page.locator('#cozy-credit')).toBeHidden();
     await expect(page.locator('#open-book')).toBeVisible();
     await expect(page.locator('#open-book')).toBeEnabled();
