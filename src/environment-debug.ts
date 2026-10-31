@@ -78,6 +78,7 @@ type DebugInfo = {
   moonPhase: number; vessels: number; low: boolean;
   birds?: number; front?: string;
   windSpeed?: number; windDirection?: number; waveScale?: number; precipitation?: number;
+  reduced?: boolean;
 };
 const vesselNames: Record<VesselKind, string> = {
   "wood-sail": "木质帆船", "twin-mast": "双桅帆船", fishing: "渔船",
@@ -93,7 +94,7 @@ const frontNames: Record<string, string> = {
 };
 
 /** Small DOM-only tools; the scene owns its update clock and all rendering. */
-export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: (patch: Partial<EnvironmentOverrides>) => void) {
+export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: (patch: Partial<EnvironmentOverrides>) => void, onLightningPreview?: () => void) {
   if (!options.enabled) return { update(_info: DebugInfo) {}, dispose() {} };
   const state = { ...options }, events = new AbortController();
   const panel = document.createElement("details");
@@ -104,6 +105,15 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
   note.textContent = "开发预览 · 独立模拟天气 · 设置仅在本页有效"; content.append(note);
   const status = document.createElement("output"); status.className = "environment-debug-status";
   status.setAttribute("aria-label", "当前环境状态"); status.setAttribute("aria-live", "off"); content.append(status);
+  const lightning = document.createElement('button');lightning.type='button';lightning.id='env-preview-lightning';
+  lightning.className='environment-debug-preview';lightning.textContent='转为雷雨 · 预览一次闪电';
+  lightning.disabled=!onLightningPreview;content.append(lightning);
+  const lightningNote=document.createElement('p');lightningNote.className='environment-debug-preview-note';
+  lightningNote.textContent='约7秒后在窗外闪一次，再按距离传来雷声。';content.append(lightningNote);
+  lightning.addEventListener('click',()=>{
+    apply({weather:'thunderstorm',cloudCover:1,precipitation:1,windSpeed:11.2,thunder:1});
+    fill();onLightningPreview?.();panel.open=false;
+  },{signal:events.signal});
   const field = <T extends HTMLElement>(name: string, input: T) => {
     const label = document.createElement("label"); label.className = "environment-debug-field";
     const text = document.createElement("span"); text.textContent = name; label.append(text, input); content.append(label);
@@ -231,6 +241,8 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
   return {
     update(info: DebugInfo) {
       if (disposed || !Number.isFinite(info.timestamp)) return;
+      lightning.disabled=!onLightningPreview || !!info.reduced;
+      lightningNote.textContent=info.reduced ? '已启用减少动态效果：雷闪视觉关闭，雷声仍可播放。' : '约7秒后在窗外闪一次，再按距离传来雷声。';
       const snapshot = calendarAt(info.timestamp, info.timeZone);
       const hours = String(Math.floor(snapshot.secondsOfDay / 3600)).padStart(2, "0");
       const minutes = String(Math.floor(snapshot.secondsOfDay / 60) % 60).padStart(2, "0");

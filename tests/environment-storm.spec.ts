@@ -115,7 +115,7 @@ test('storm renderer shares prewarmed resources, stays outdoors, reduces branche
   const controller = createStormController(), parent = new THREE.Group(); parent.add(controller.group);
   expect(controller.group.children).toHaveLength(2);
   expect(controller.warmObjects).toHaveLength(3);
-  const bolt = controller.group.children[0] as THREE.LineSegments<THREE.BufferGeometry, THREE.LineBasicMaterial>;
+  const bolt = controller.group.children[0] as THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>;
   const glow = controller.group.children[1] as THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>;
   const attribute = bolt.geometry.getAttribute('position'), buffer = attribute.array;
   const geometry = bolt.geometry, material = bolt.material;
@@ -125,16 +125,32 @@ test('storm renderer shares prewarmed resources, stays outdoors, reduces branche
   const event = stormEventForSlot(firstSlot);
   const first = controller.update(event.strikeTime + 75, wet, false, false, .4);
   expect(first.flash).toBeGreaterThan(0); expect(bolt.visible).toBe(true); expect(glow.visible).toBe(true);
-  expect(bolt.geometry.drawRange.count).toBe(72);
+  expect(bolt.geometry.drawRange.count).toBe(216);
   for (let i = 0; i < attribute.count; i++) {
     expect(attribute.getZ(i)).toBeLessThan(-295); expect(attribute.getY(i)).toBeGreaterThan(-20);
   }
   controller.update(event.strikeTime + 80, wet, true, false, .4);
-  expect(bolt.geometry.drawRange.count).toBe(36);
+  expect(bolt.geometry.drawRange.count).toBe(108);
   expect(bolt.geometry).toBe(geometry); expect(bolt.material).toBe(material); expect(attribute.array).toBe(buffer);
   controller.update(event.strikeTime + 90, wet, false, true, .4);
   expect(bolt.visible).toBe(false); expect(glow.visible).toBe(false);
   controller.dispose(); controller.dispose(); expect(disposal).toBe(4);
   expect(parent.children).toHaveLength(0); expect(controller.group.children).toHaveLength(0);
   expect(controller.update(event.strikeTime + 75, wet, false, false, .4).flash).toBe(0);
+});
+
+test('one-off lightning previews retain physical thunder delay, weather gating and cancellation',()=>{
+  const controller=createStormController(),weather=sampleWeather(0,{kind:'thunderstorm'}),now=1000000;
+  controller.previewOnce(now,7000);
+  const frame=controller.update(now+7075,weather,false,false,1);
+  expect(frame.eventId).toBe(`preview:${now}`);expect(frame.flash).toBeGreaterThan(.4);
+  expect(frame.thunderTime-frame.strikeTime).toBeCloseTo(frame.distance/SPEED_OF_SOUND*1000,6);
+  const low=controller.update(now+7080,weather,true,false,1);expect(low.bolt).toBe(true);
+  expect(controller.group.children[0].type).toBe('Mesh');
+  const reduced=controller.update(now+7090,weather,false,true,1);expect(reduced.flash).toBe(0);expect(reduced.bolt).toBe(false);
+  controller.cancelPreview();expect(controller.update(now+7100,weather,false,false,1).eventId).not.toContain('preview:');
+  controller.previewOnce(now);
+  const dry=controller.update(now+75,sampleWeather(0,{kind:'few-clouds'}),false,false,1);
+  expect(dry.flash).toBe(0);expect(dry.eventId).toBeNull();expect(dry.energy).toBe(0);
+  controller.dispose();
 });

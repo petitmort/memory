@@ -22,6 +22,7 @@ export function createOcean() {
       lightStrength: { value: 1 }, moonStrength: { value: 0 },
       waveScale: { value: 1 }, rainAmount: { value: 0 }, fogDensity: { value: .005 },
       rainDetail: { value: 1 },
+      stormFlash: { value: 0 }, stormSource: { value: new THREE.Vector3(0, 45, -350) },
     },
     vertexShader: `${waves}
       varying vec3 vWorld;
@@ -38,6 +39,7 @@ export function createOcean() {
       uniform vec3 sunPosition;
       uniform vec3 moonPosition, skyHorizon, skyZenith, waterTint, lightColor;
       uniform float lightStrength, moonStrength, waveScale, rainAmount, fogDensity, rainDetail;
+      uniform float stormFlash; uniform vec3 stormSource;
       float fifth(float x) { float x2=x*x;return x2*x2*x; }
       float windHash(vec2 p) {
         vec3 h=fract(vec3(p.xyx)*.1031);
@@ -133,6 +135,15 @@ export function createOcean() {
         float distanceToEye=length(cameraPosition-vWorld);
         float haze=max(smoothstep(55.,235.,distanceToEye)*.8,1.-exp(-distanceToEye*distanceToEye*fogDensity*fogDensity));
         color=mix(color,skyHorizon,haze);
+        // A broad, broken silver reflection follows the same offshore source.
+        // This is a short radiance pulse, not a new lamp, mesh or shadow pass.
+        if(stormFlash>.0001){
+          vec2 sourceBearing=normalize(stormSource.xz-cameraPosition.xz);
+          float alignment=max(0.,dot(normalize(vWorld.xz-cameraPosition.xz),sourceBearing));
+          float band=pow(alignment,80.);
+          float broken=.45+.55*max(0.,dot(normal,normalize(stormSource-vWorld)));
+          color+=vec3(.48,.61,.78)*stormFlash*(.035+band*.23)*broken;
+        }
         gl_FragColor=vec4(color,1.);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>

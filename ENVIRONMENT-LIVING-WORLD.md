@@ -145,3 +145,28 @@
 - 固定几何251→249、普通纹理39不变、程序54→55；移除旧鸟几何并合批远岛，不加纹理或灯光。普通最多5船 / 1鸟、省电最多3船 / 1鸟。390×844 / 请求DPR2 / 雷雨 / 风16m/s / 省电 / CPU4×单次29.988FPS、帧间隔P95 36.2ms、CPU提交P95 3.9ms，实际DPR1，无错误；省电档主动约30fps，不是实体手机结果。
 - 原始样本、生产场景与命令摘要在[本批JSON](benchmark/wind-world-2026-10-31.json)，复用Node24.14.0、`project-node`、现有依赖与共享store，没有安装 / 环境迁移 / 手工清理 / 新隔离环境。原始需求、旧47项 / 15完成、部署 / 依赖与链接校验保持不变。最终磁盘相对本批初始项目165,972KiB / store1,445,180KiB的差值、普通提交 / 推送和远端状态写到外部`memory-wind-world/delivery.json`；不把构建 / Git增长解释为环境占用改善。
 - 本批未重跑Safari、180秒持续实验、实体手机或低端设备，也未做扬声器 / 耳机试听、温度 / 电池 / 进程 / GPU内存验证；保留待验。风浪和帆船是景观近似，固定出发风保证航程可恢复，显式强制不可航调试路线使用辅助动力和收帆。代码仅交付`codex/calendar-environment-requirements`，不合入main、不更新docs或线上配置、不发布。
+
+## 闪电可见性修订（2026-10-31）
+
+基线`f7be21f`，本地Codex。作者反馈“闪电看不出效果”；当前预览链接为少云，按规则不触发雷电，真实雷雨的1像素低透明通道 / 云光亦偏弱。本批修正可见性并提供开发预览，保留模拟天气、强对流门控、减少动态、后台 / 阅读和发布边界。
+
+| 步骤 | 内容 | 状态 | 当前步骤 / 下一步 |
+| --- | --- | --- | --- |
+| C00 | 核查天气与真实闪电呈现 | 完成（源码核查） | 少云门控为0；旧通道固定1物理像素，云光和天空亮度弱、海面只有间接天色变化；本批真实像素检查验证修改后的辨识度，不冒称成对旧版画面测量 |
+| C01 | 清晰雷电、云光与海面响应 | 完成（专项验收） | 有宽度和柔边的分叉通道、局部云光及短暂海面反光；桌面 / 手机白天、黄昏和夜晚，普通 / 省电共12组实际像素通过，减少动态关闭且资源稳定 |
+| C02 | 一次预览、回归与本地交付 | 完成（本机范围） | 专项10项与相关46项通过，类型 / 构建通过，最终4173桌面 / 手机预览可见；单次性能和文档完成，普通开发分支交付，不发布 |
+
+### C01完成记录
+
+- 将固定1物理像素的半透明线改为预分配的窄带几何，单一材质绘制白色核心与冷色柔光边缘；同一闪电源同步驱动局部云光、云层受光、天空、现有填光及方向一致的海面银色反射。保留原16–40秒不规则增强调度、约550ms单次平滑脉冲、真实窗墙遮挡，不添加灯光、纹理或后处理。
+- 隐藏环境调试新增“转为雷雨 · 预览一次闪电”，先进行正常约6秒天气渐变，约7秒后在可见窗景闪一次，雷声仍按距离 / 343m/s延迟。预览不改日历或保存设置；天气 / 时间变更、阅读或后台暂停取消，减少动态关闭按钮并明确说明。
+- 最终专项命令：`LIGHTNING_EVIDENCE=<外部证据目录> project-node node_modules/@playwright/test/cli.js test tests/environment-lightning.spec.ts tests/environment-storm.spec.ts --output=/tmp/memory-lightning-third-tests`，10/10通过（1.0分钟）。12组图像分别隐藏闪电 / 云光 / 海面闪光进行差异测量，均有明确可见像素；完整图片与`contrast.json`保存在外部`memory-lightning-visibility`，不把测试探针写入生产包。
+- 前两轮18项15通过 / 3失败、8项7通过 / 1失败，问题分别为调试新增按钮复用旧选择器、测试固定日期的时钟偏移、页面初始化读取减少动态而测试只中途改媒体条件，以及测试采样被真实RAF重新更新。已使用独立按钮 / 说明样式、正确测试日期 / 重新加载、同帧恢复采样参数修正；不更改生产的减少动态或天气门控来迁就断言。10项是修正后的专项结果，不累计重跑次数。
+
+### C02验证记录
+
+- `project-node node_modules/@playwright/test/cli.js test tests/environment-audio.spec.ts tests/environment-debug.spec.ts tests/environment-controller.spec.ts tests/environment-weather.spec.ts tests/environment-wind-world.spec.ts tests/environment-living-world.spec.ts tests/environment-window-sky.spec.ts tests/environment-integration.spec.ts tests/performance.spec.ts tests/experience.spec.ts --output=/tmp/memory-lightning-regression-tests`，46/46通过（3.0分钟）。与专项10项无重叠，共56个本轮通过的唯一用例；未重跑上一批整套209项。
+- `project-node node_modules/typescript/bin/tsc --noEmit`与`project-node node_modules/vite/bin/vite.js build`通过，85模块，应用包311.35KB / gzip115.08KB（基线307.86KB / gzip113.83KB），原Three.js大分包提示保留。
+- 最终4173生产包无测试探针，分别从少云进入，点击真实按钮，约7081 / 7079ms捕获桌面 / 手机雷电；另保存放电前后画面，共六张已复核。无页面 / 控制台错误、横向溢出或兜底误触发；调试天气正确变为雷雨。命令`project-node /tmp/memory-lightning-production.mjs`，外部`memory-lightning-visibility/production`保存原始图片与结果。
+- 串行运行现有`measure-performance.mjs`，相同Chrome / 960×640 / DPR1 / 减少动态 / 5秒，当前单次300帧、60.004FPS、帧间隔P95 17.7ms、CPU提交P95 1.1ms，249几何 / 39纹理 / 55程序不变。历史三次中位60.001 / 18.9ms / 3.8ms仅作参考，未新测成对旧版，不作提速结论；此采样关闭雷闪，不代表放电峰值。证据与边界见[本批JSON](benchmark/lightning-visibility-2026-10-31.json)和[性能说明](PERFORMANCE.md)。
+- 原始需求、47行 / 15完成、本地文档链接及部署 / 依赖保护检查通过，`git diff --check`通过。复用共享Node / 已有依赖 / pnpm store，未安装或新建环境；仅开发分支及4173本地预览。未重跑Safari、实体手机、主观试听或长期设备实验。

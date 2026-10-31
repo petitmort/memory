@@ -92,14 +92,21 @@ export function createEnvironmentController(bindings: Bindings) {
   }
   const debug = createEnvironmentDebug(options, patch => {
     if (disposed) return;
-    if (["weather","cloudCover","windSpeed","windDirection","precipitation","waveScale","thunder","timestamp","timeMode"].some(key=>key in patch))
+    if (["weather","cloudCover","windSpeed","windDirection","precipitation","waveScale","thunder","timestamp","timeMode"].some(key=>key in patch)) {
       transition = { from: { ...weather }, started: performance.now() };
+      storm.cancelPreview();
+    }
     if (["weather","cloudCover","windSpeed","windDirection","precipitation"].some(key=>key in patch)) departureRevision++;
     if (["weather","windSpeed","windDirection","timestamp","timeMode"].some(key=>key in patch)) cloudRevision++;
     Object.assign(options, patch);
     if ("timestamp" in patch) anchorWall = Date.now();
     if ("quality" in patch) bindings.quality(options.quality);
     celestialKey = weatherKey = -Infinity; debugAt = -Infinity;
+    bindings.invalidate();
+  }, () => {
+    // This one-off developer action leaves calendar time and saved state alone.
+    // First complete the ordinary cloud/rain transition, then show a discharge.
+    storm.previewOnce(selectedTime(Date.now()),7000);
     bindings.invalidate();
   });
 
@@ -133,7 +140,7 @@ export function createEnvironmentController(bindings: Bindings) {
     ambient.color.copy(nightAmbient).lerp(dayAmbient, d);
     ambient.intensity = 1.02 + d * .52 * (1 - cover * .18);
     ambient.groundColor.setRGB(.28 + .16 * d, .25 + .12 * d, .24 + .08 * d);
-    fill.intensity = .46 + .44 * d * (1 - cover * .22) + stormFrame.flash * .12;
+    fill.intensity = .46 + .44 * d * (1 - cover * .22) + stormFrame.flash * (.12+.18*d);
     fill.color.copy(moonColor).lerp(daylightColor, d);
     const warmAmount = 1 - THREE.MathUtils.smoothstep(celestial.sun.altitude, .03, .6);
     lightColor.copy(daylightColor).lerp(warm, warmAmount);
@@ -155,6 +162,7 @@ export function createEnvironmentController(bindings: Bindings) {
     uniforms.windInfluence.value = 1;
     uniforms.rainAmount.value = weather.precipitation * (1 - weather.snow);
     uniforms.rainDetail.value = (low ? .35 : 1) * (reduced ? .25 : 1);
+    uniforms.stormFlash.value=stormFrame.flash;uniforms.stormSource.value.copy(storm.source);
     uniforms.fogDensity.value = .003 + (1 - weather.visibility) * .007;
     // Courtyard's five fog layers retain their own reveal sequencing.
     if (outdoors && scene.fog instanceof THREE.FogExp2) {
@@ -166,7 +174,7 @@ export function createEnvironmentController(bindings: Bindings) {
       const direction = sunlight > .005 ? celestial.sun.direction : celestial.moon.direction;
       clouds.update(timestamp, weather, low, reduced, d, direction, {
         timeZone: options.location.timeZone, weather: options.weather,
-        windSpeed: options.windSpeed, windDirection:options.windDirection, revision: cloudRevision, camera,
+        windSpeed: options.windSpeed, windDirection:options.windDirection, revision: cloudRevision, camera, flash:stormFrame.flash,
       });
       particles.update(timestamp, weather, low, reduced, d);
       birds.update(timestamp, weather, low, reduced, d, options.birdDensity);
@@ -183,12 +191,12 @@ export function createEnvironmentController(bindings: Bindings) {
       debugAt = timestamp;
       debug.update({ timestamp, timeZone: options.location.timeZone, weather: weather.kind, sunAltitude: celestial.sun.altitude, moonPhase: celestial.moonPhase, vessels: vessels.snapshot().length, low,
         windSpeed:weather.windSpeed,windDirection:weather.windDirection,waveScale:weather.waveScale,precipitation:weather.precipitation,
-        birds: birds.snapshot().length, front: options.weather ? "强制预览 · 分阶段过渡" : sampleWeatherFront(timestamp, { timeZone: options.location.timeZone }).phase });
+        birds: birds.snapshot().length, reduced, front: options.weather ? "强制预览 · 分阶段过渡" : sampleWeatherFront(timestamp, { timeZone: options.location.timeZone }).phase });
     }
   }
   return {
     update, warmObjects, ownedGroups, initialQuality: options.quality,
-    pause() { paused = true; },
+    pause() { paused = true; storm.cancelPreview(); },
     resume() { paused = false; userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; },
     snapshot() { return { timestamp, celestial, weather, vessels: vessels.snapshot(), birds: birds.snapshot(), storm: storm.snapshot(), low, updates, paused }; },
     dispose() {

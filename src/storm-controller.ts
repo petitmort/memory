@@ -92,6 +92,14 @@ function visibleEvent(timestampMs: number, weather: WeatherState) {
   return {event:extra>base?active:distant, flash:clamp(base+extra)};
 }
 
+function previewFrame(timestamp: number, event: StormEvent, weather: WeatherState, reduced: boolean): StormFrame {
+  const strength = stormStrength(weather), flash = pulse(timestamp - event.strikeTime) * event.energy * strength;
+  if(strength<=0)return {flash:0,eventId:null,strikeTime:0,thunderTime:0,distance:0,direction:0,energy:0,bolt:false};
+  return { flash: reduced ? 0 : flash, eventId: event.eventId, strikeTime: event.strikeTime,
+    thunderTime: event.thunderTime, distance: event.distance, direction: event.direction,
+    energy: strength * event.energy, bolt: !reduced && event.bolt && flash > .001 };
+}
+
 /**
  * Keep the latest strike's ID through thunder onset. The audio adapter consumes
  * crossings, never all missed events, and resets its baseline after pause/jumps.
@@ -111,34 +119,48 @@ export function sampleStorm(timestampMs: number, weather: WeatherState, reduced 
   };
 }
 
-/** Two prewarmed, shared primitives; no lights, textures, timers or per-drop work. */
+/** Two prewarmed primitives; one ribbon holds its white core and soft halo. */
 export function createStormController() {
   const group = new THREE.Group(); group.name = "offshore-convective-storm";
   const mainSegments = 18, maximumSegments = 36;
-  const positions = new Float32Array(maximumSegments * 6);
+  const positions = new Float32Array(maximumSegments * 18);
   const attribute = new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage);
   const geometry = new THREE.BufferGeometry(); geometry.setAttribute("position", attribute);
+  const edges = new Float32Array(maximumSegments * 6);
+  for (let i = 0; i < maximumSegments; i++) edges.set([-1, 1, -1, 1, 1, -1], i * 6);
+  geometry.setAttribute('channelEdge', new THREE.BufferAttribute(edges, 1));
   geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 30, -355), 155);
-  const material = new THREE.LineBasicMaterial({
-    color: "#dce8ef", transparent: true, opacity: 0, depthWrite: false,
-    toneMapped: false, fog: false,
+  const material = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    toneMapped: false, fog: false, forceSinglePass:true, uniforms: { opacity: { value: 0 } },
+    vertexShader: `attribute float channelEdge;varying float vEdge;
+      void main(){vEdge=channelEdge;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader: `varying float vEdge;uniform float opacity;
+      void main(){float d=abs(vEdge);
+        float core=1.-smoothstep(.14,.36,d);
+        float halo=exp(-d*d*4.)*(1.-smoothstep(.72,1.,d));
+        gl_FragColor=vec4(mix(vec3(.61,.77,1.),vec3(1.),core),opacity*(core+halo*.3));
+        #include <colorspace_fragment>
+      }`,
   });
-  const bolt = new THREE.LineSegments(geometry, material); bolt.name = "distant-lightning-channel";
+  const bolt = new THREE.Mesh(geometry, material); bolt.name = "distant-lightning-channel";
   // Room/window depth still occludes both primitives; the glow never draws over HTML.
   const cloudMaterial = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, toneMapped: false,
     uniforms: { glow: { value: 0 } },
     vertexShader: "varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
     fragmentShader: `varying vec2 vUv;uniform float glow;
-      void main(){vec2 q=(vUv-.5)*2.;float fade=1.-smoothstep(.15,1.,length(q));
-      gl_FragColor=vec4(vec3(.73,.82,.9),fade*fade*glow);
+      void main(){vec2 q=(vUv-.5)*2.;float fade=1.-smoothstep(.08,1.,length(q));
+      gl_FragColor=vec4(vec3(.85,.91,1.),fade*glow);
       #include <colorspace_fragment>
       }`,
   });
-  const cloud = new THREE.Mesh(new THREE.PlaneGeometry(100, 56), cloudMaterial);
+  const cloud = new THREE.Mesh(new THREE.PlaneGeometry(155, 84), cloudMaterial);
   cloud.name = "subtle-intracloud-light";
   group.add(bolt, cloud);
   let disposed = false, lastGeometryId: string | null = null;
+  let preview: StormEvent | undefined;
+  const source = new THREE.Vector3(0, 45, -350);
   let lastFrame: StormFrame = { flash: 0, eventId: null, strikeTime: 0, thunderTime: 0, distance: 0, direction: 0, energy: 0, bolt: false };
 
   function writeBolt(event: StormEvent) {
@@ -150,36 +172,53 @@ export function createStormController() {
       nodes.push([event.x + (random() - .5) * 3.8 + Math.sin(f * 8) * 1.4,
         event.height * (1 - f) - 7.5 * f, event.z + (random() - .5) * 2]);
     }
-    const segment = (a: readonly number[], b: readonly number[]) => {
-      positions.set(a, count * 6); positions.set(b, count * 6 + 3); count++;
+    const segment = (a: readonly number[], b: readonly number[], width: number) => {
+      const dx=b[0]-a[0], dy=b[1]-a[1], length=Math.hypot(dx,dy);
+      const nx=-dy/length*width, ny=dx/length*width;
+      const vertex=(point:readonly number[], side:number, index:number)=>positions.set(
+        [point[0]+nx*side,point[1]+ny*side,point[2]], count*18+index*3);
+      vertex(a,-1,0);vertex(a,1,1);vertex(b,-1,2);
+      vertex(a,1,3);vertex(b,1,4);vertex(b,-1,5);count++;
     };
-    for (let i = 0; i < mainSegments; i++) segment(nodes[i], nodes[i + 1]);
+    for (let i = 0; i < mainSegments; i++) segment(nodes[i], nodes[i + 1], .95);
     for (const node of [4, 7, 10, 12, 14, 16]) {
       let previous = nodes[node]; const sign = random() < .5 ? -1 : 1;
       for (let branch = 0; branch < 3; branch++) {
         const next: [number, number, number] = [previous[0] + sign * (1 + random() * 2.7),
           previous[1] - 1.5 - random() * 2.8, previous[2] + (random() - .5) * 2];
-        segment(previous, next); previous = next;
+        segment(previous, next, .48); previous = next;
       }
     }
     attribute.needsUpdate = true;
-    cloud.position.set(event.x, event.height * .78, event.z - 1);
+    cloud.position.set(event.x, event.height * .6, event.z - 1);
+    source.set(event.x, event.height * .55, event.z);
     lastGeometryId = event.eventId;
   }
-  writeBolt(stormEventForSlot(0)); geometry.setDrawRange(0, 2);
+  writeBolt(stormEventForSlot(0)); geometry.setDrawRange(0, 6);
   return {
-    group, warmObjects: [group, bolt, cloud],
+    group, source, warmObjects: [group, bolt, cloud],
+    previewOnce(timestampMs: number, delayMs = 0) {
+      if (disposed || !Number.isFinite(timestampMs + delayMs)) return;
+      const event=stormEventForSlot(Math.floor(timestampMs/THUNDERSTORM_SLOT_MS),true);
+      const x=-30+(event.x+90)/180*35, z=-330, height=64;
+      const distance=Math.hypot(x,height/2-1.65,z),strikeTime=timestampMs+Math.max(0,Math.min(7000,delayMs));
+      preview={...event,eventId:`preview:${timestampMs}`,x,z,height,distance,bolt:true,energy:1,
+        direction:Math.atan2(x,-z),strikeTime,thunderTime:strikeTime+distance/SPEED_OF_SOUND*1000};
+    },
+    cancelPreview() { preview=undefined; },
     update(timestampMs: number, weather: WeatherState, low: boolean, reduced: boolean, daylight: number): StormFrame {
       if (disposed) return { ...lastFrame, flash: 0, bolt: false };
-      lastFrame = sampleStorm(timestampMs, weather, reduced);
-      const visual = visibleEvent(timestampMs,weather);
+      if(preview && (timestampMs>preview.thunderTime+1500 || timestampMs<preview.strikeTime-7100)) preview=undefined;
+      const showingPreview=preview && timestampMs>=preview.strikeTime ? preview : undefined;
+      lastFrame = showingPreview ? previewFrame(timestampMs,showingPreview,weather,reduced) : sampleStorm(timestampMs, weather, reduced);
+      const visual = showingPreview ? {event:showingPreview} : visibleEvent(timestampMs,weather);
       if (lastFrame.flash > 0 && visual.event.eventId !== lastGeometryId) writeBolt(visual.event);
-      // Daylight already limits the eye's adaptation; nighttime stays gentle too.
+      // Give daylight a legible white core, without an extra light or strobe.
       const activity = clamp(weather.thunder ?? 0);
-      material.opacity = lastFrame.bolt ? lastFrame.flash * (.25 + activity * .5 - clamp(daylight) * (.1 + activity * .08)) : 0;
-      cloudMaterial.uniforms.glow.value = lastFrame.flash * (.075 + activity * .13 - clamp(daylight) * (.035 + activity * .025));
-      geometry.setDrawRange(0, (low ? mainSegments : maximumSegments) * 2);
-      bolt.visible = material.opacity > .0001;
+      material.uniforms.opacity.value = lastFrame.bolt ? Math.min(.95,lastFrame.flash * (1.2+activity*.5)) : 0;
+      cloudMaterial.uniforms.glow.value = lastFrame.flash * (.24+activity*.28) * (.8+.2*clamp(daylight));
+      geometry.setDrawRange(0, (low ? mainSegments : maximumSegments) * 6);
+      bolt.visible = material.uniforms.opacity.value > .0001;
       cloud.visible = cloudMaterial.uniforms.glow.value > .0001;
       group.userData.frame = lastFrame;
       return lastFrame;
@@ -187,7 +226,7 @@ export function createStormController() {
     snapshot() { return { ...lastFrame }; },
     dispose() {
       if (disposed) return;
-      disposed = true; material.opacity = 0; cloudMaterial.uniforms.glow.value = 0;
+      disposed = true; preview=undefined; material.uniforms.opacity.value = 0; cloudMaterial.uniforms.glow.value = 0;
       group.removeFromParent(); geometry.dispose(); material.dispose(); cloud.geometry.dispose(); cloudMaterial.dispose(); group.clear();
     },
   };

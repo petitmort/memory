@@ -7,7 +7,7 @@ import { dimensions as D } from "./dimensions";
 const CAPACITY = 36, LOW_CAPACITY = 16;
 const LAYER_SPEEDS = [.038, .03, .023] as const;
 export const CLOUD_LIFETIME = 8 * 3600000, CLOUD_FADE_DURATION = 180000;
-export type CloudOptions = { timeZone?: string; weather?: WeatherKind; windSpeed?: number; windDirection?: number; revision?: number; camera?: THREE.Camera };
+export type CloudOptions = { timeZone?: string; weather?: WeatherKind; windSpeed?: number; windDirection?: number; revision?: number; camera?: THREE.Camera; flash?: number };
 type CloudSeed = { phase: number; offset: number; z: number; y: number; width: number; height: number; shade: number; layer: number };
 function cloudSeed(index: number): CloudSeed {
   const random = createSeededRandom(893181 + index * 77917), layer = index % 3;
@@ -82,7 +82,7 @@ export function createCloudController() {
   geometry.setAttribute("cloudStyle", styleAttribute);
   const material = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, fog: true, toneMapped: false,
-    uniforms: { ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog), cloudMap: { value: atlas }, cloudCover: { value: 0 }, daylight: { value: 1 }, lightDirection: { value: new THREE.Vector3(0, 1, -1) }, cold: { value: 0 },
+    uniforms: { ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog), cloudMap: { value: atlas }, cloudCover: { value: 0 }, daylight: { value: 1 }, lightDirection: { value: new THREE.Vector3(0, 1, -1) }, cold: { value: 0 }, flash: { value: 0 },
       cloudLight: { value: new THREE.Color("#f4f3ed") }, cloudShade: { value: new THREE.Color("#859caa") }, cloudNight: { value: new THREE.Color("#192a3a") } },
     vertexShader: `
       attribute vec4 cloudStyle;
@@ -101,6 +101,7 @@ export function createCloudController() {
       uniform float cloudCover;
       uniform float daylight;
       uniform float cold;
+      uniform float flash;
       uniform vec3 lightDirection;
       uniform vec3 cloudLight, cloudShade, cloudNight;
       varying vec2 vCloudUv;
@@ -121,6 +122,7 @@ export function createCloudController() {
         vec3 night=cloudNight*(.75+lit*.25);
         vec3 color=mix(night,day,daylight)*vCloudStyle.y;
         color=mix(color,color*vec3(.91,.97,1.06),cold*.35);
+        color=mix(color,vec3(.75,.85,1.),flash*.6);
         gl_FragColor=vec4(color,alpha);
         #include <colorspace_fragment>
         #include <fog_fragment>
@@ -254,6 +256,7 @@ export function createCloudController() {
       material.uniforms.cloudCover.value = weather.cloudCover;
       material.uniforms.daylight.value = Math.max(0, Math.min(1, daylight));
       material.uniforms.cold.value = weather.snow;
+      material.uniforms.flash.value = THREE.MathUtils.clamp(options.flash ?? 0, 0, 1);
       if (lightDirection) material.uniforms.lightDirection.value.fromArray(lightDirection);
       group.userData.count = mesh.count;
       group.userData.windCache = wind.stats();
