@@ -536,32 +536,239 @@
     }
   },
   "safari": {
-    "status": "blocked-by-locked-desktop",
+    "status": "passed-desktop-native-flow",
+    "baselineCommit": "6b4e856",
     "browser": "Safari 27.2",
     "renderer": "Apple GPU",
+    "productionJS": "index-Cuu6s0Sx.js",
     "productionLoadPassed": true,
-    "attempts": 2,
-    "nativeClickReceived": false,
-    "documentHidden": true,
-    "focused": false,
-    "macOSReadOnlyState": {
-      "sessionLocked": true,
-      "displayAsleep": true,
-      "displayActive": false,
-      "displayOnline": true
+    "attempts": 3,
+    "startedAt": "2026-10-31T08:12:50.506Z",
+    "completedAt": "2026-10-31T08:13:29.879Z",
+    "durationMs": 39373,
+    "environment": {
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "url": "http://127.0.0.1:4173/",
+      "windowSize": {
+        "width": 1280,
+        "height": 900
+      },
+      "clickMode": "element",
+      "capabilities": {
+        "safari:platformVersion": "27.2",
+        "safari:automaticInspection": false,
+        "webkit:WebRTC": {
+          "DisableICECandidateFiltering": false,
+          "DisableInsecureMediaCapture": false
+        },
+        "webkit:alwaysAllowAutoplay": false,
+        "browserVersion": "27.2",
+        "strictFileInteractability": false,
+        "browserName": "Safari",
+        "safari:useSimulator": false,
+        "safari:platformBuildVersion": "26B123",
+        "setWindowRect": true,
+        "acceptInsecureCerts": false,
+        "safari:automaticProfiling": false,
+        "pageLoadStrategy": "eager",
+        "safari:experimentalWebSocketUrl": false,
+        "platformName": "macOS",
+        "safari:diagnose": false
+      }
     },
-    "result": "Full native-input flow awaits an unlocked, awake desktop. No full Safari compatibility pass is claimed.",
-    "evidenceDirectories": [
-      "audit-safari",
-      "audit-safari-2"
-    ]
+    "viewport": {
+      "width": 1280,
+      "dpr": 2,
+      "height": 848
+    },
+    "nativeClickMode": "element",
+    "nativeClickReceived": true,
+    "trustedClickCount": 15,
+    "documentHidden": false,
+    "focused": true,
+    "steps": [
+      {
+        "name": "Load sunny production room and retain browser error observations",
+        "status": "passed",
+        "durationMs": 1487
+      },
+      {
+        "name": "Disperse fog and enter through two native clicks",
+        "status": "passed",
+        "durationMs": 9145
+      },
+      {
+        "name": "Read the live calendar and simulated weather panel",
+        "status": "passed",
+        "durationMs": 158
+      },
+      {
+        "name": "Approach the cat, pet it and return to the desk",
+        "status": "passed",
+        "durationMs": 8982
+      },
+      {
+        "name": "Open the album, turn a chapter and close it continuously",
+        "status": "passed",
+        "durationMs": 6928
+      },
+      {
+        "name": "Switch the live calendar to simulated rain at dusk",
+        "status": "passed",
+        "durationMs": 7137
+      },
+      {
+        "name": "Mute and restore audio using native gestures, then select low quality",
+        "status": "passed",
+        "durationMs": 3952
+      },
+      {
+        "name": "Verify the room remains available without captured errors and clicks were trusted",
+        "status": "passed",
+        "durationMs": 4
+      }
+    ],
+    "clicks": [
+      {
+        "selector": "#enter",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": "#enter",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": ".environment-debug summary",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": ".environment-debug summary",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": "#cozy-view",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": "#pet-cat",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": "#cozy-view",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": "#open-book",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": "#next",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": "#close-book",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": ".environment-debug summary",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": ".environment-debug summary",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": "#sound",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": "#sound",
+        "mode": "element",
+        "status": "delivered"
+      },
+      {
+        "selector": "#quality",
+        "mode": "element",
+        "status": "delivered"
+      }
+    ],
+    "chapterTransition": {
+      "before": "风经过的地方",
+      "after": "把日子过成夏天"
+    },
+    "errors": [],
+    "cleanupErrors": [],
+    "errorObservation": "Window errors and unhandled rejections collected after navigation returned; no claim of complete browser-console capture.",
+    "audioObservation": "Only the mute/restore control state was verified. No actual AudioContext playback or subjective listening was verified.",
+    "screenshots": [
+      {
+        "name": "sunny-noon-room",
+        "file": "sunny-noon-room.png"
+      },
+      {
+        "name": "cat-camera",
+        "file": "cat-camera.png"
+      },
+      {
+        "name": "album-next-chapter",
+        "file": "album-next-chapter.png"
+      },
+      {
+        "name": "rainy-dusk-room",
+        "file": "rainy-dusk-room.png"
+      },
+      {
+        "name": "rainy-dusk-low-quality",
+        "file": "rainy-dusk-low-quality.png"
+      }
+    ],
+    "visualReview": "Five production screenshots and the contact sheet reviewed.",
+    "result": "Eight desktop Safari steps passed after the user unlocked and woke the Mac. No DOM click or document.hidden override was used. This does not verify all weather, Safari performance, or mobile Safari.",
+    "evidenceDirectory": "audit-safari-3",
+    "previousAttempts": {
+      "status": "blocked-by-locked-desktop",
+      "browser": "Safari 27.2",
+      "renderer": "Apple GPU",
+      "productionLoadPassed": true,
+      "attempts": 2,
+      "nativeClickReceived": false,
+      "documentHidden": true,
+      "focused": false,
+      "macOSReadOnlyState": {
+        "sessionLocked": true,
+        "displayAsleep": true,
+        "displayActive": false,
+        "displayOnline": true
+      },
+      "result": "Full native-input flow awaits an unlocked, awake desktop. No full Safari compatibility pass is claimed.",
+      "evidenceDirectories": [
+        "audit-safari",
+        "audit-safari-2"
+      ]
+    }
   },
   "evidenceRoot": "/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-environment",
   "limits": [
     "Three five-second native Chrome runs compare the existing previous-version baseline; small timing differences and GC are not an improvement claim.",
     "The 180-second run and stable repeated renderer resources do not prove absence of long-term leaks; GC-normalized reference heap increased 275344 bytes.",
     "Desktop CPU throttling and mobile viewports do not replace physical iPhone or Android thermal, battery or memory verification.",
-    "Safari production loaded, but native interaction was blocked by the locked sleeping desktop; user unlock is pending.",
-    "No deployment, docs build output, main branch or package/runtime change."
+    "Desktop Safari 27.2 native flow passed in a separate follow-up at baseline 6b4e856. Audio control state only; actual playback/listening, all-weather coverage, Safari performance and iPhone Safari remain unverified. Errors were observed after navigation returned, not a complete startup console capture.",
+    "No deployment, docs build output, main branch or package/runtime change.",
+    "The Safari follow-up changed documentation and audit data only; the existing 157-test, typecheck/build, Chrome benchmark and endurance results were not rerun."
   ]
 }

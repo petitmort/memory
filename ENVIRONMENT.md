@@ -71,4 +71,4 @@
 
 本轮157个唯一测试、八个生产场景、180秒持续实验与三次基准的结果见 [实施记录](ENVIRONMENT-IMPLEMENTATION.md)、[性能记录](PERFORMANCE.md)和[专项数据](benchmark/environment-audit-2026-10-31.json)。复验脚本为`verify-environment-endurance.mjs`与`verify-environment-safari.mjs`，输出到指定目录；Safari需要解锁、唤醒的桌面和现有自动化访问，不修改浏览器偏好。
 
-Safari本次确认生产加载，但原生交互因本机锁屏、页面hidden待补验；真实手机、长期温度 / 电池 / 内存及实际低端设备也仍需单独验证。桌面移动尺寸、CPU降速和三分钟资源观察不能替代这些实机结论。
+Safari27.2 / Apple GPU在作者解锁后补验通过：生产预览8步 / 15次可信原生点击，覆盖清雾推门、看猫抚摸、翻册返回、雨暮、声音开关状态与省电画质，五张截图已复核。前两次锁屏失败保留为历史。未验证实际音频播放 / 试听、Safari性能或全部天气；真实手机、长期温度 / 电池 / 内存及实际低端设备仍需单独验证。桌面Safari、移动尺寸、CPU降速和三分钟资源观察不能替代这些实机结论。

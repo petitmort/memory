@@ -58,7 +58,7 @@ CHROMIUM_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \
 
 ## 2026-10-31 · 连续性专项复测
 
-本批基线`f0f8025`；[专项JSON](benchmark/environment-audit-2026-10-31.json)保留三次原始摘要、CPU降速采样、持续运行数据与Safari未完成原因。使用上节相同Mac / Chrome / 960×640 / DPR1 / 减少动态 / 5秒条件，所有GPU任务串行，复用现有服务器和运行时。
+本批基线`f0f8025`；[专项JSON](benchmark/environment-audit-2026-10-31.json)保留三次原始摘要、CPU降速采样、持续运行数据，以及Safari前两次锁屏失败与解锁后补验结果。使用上节相同Mac / Chrome / 960×640 / DPR1 / 减少动态 / 5秒条件，所有GPU任务串行，复用现有服务器和运行时。
 
 | 指标 | 上一版中位数 | 专项修复后中位数 |
 | --- | ---: | ---: |
@@ -83,7 +83,7 @@ CHROMIUM_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \
 ~/.local/bin/project-node scripts/verify-environment-safari.mjs --output=/tmp/memory-safari
 ```
 
-Safari脚本使用本机`safaridriver`与可信W3C点击，支持显式`--click=element|actions`，保存窗口 / 命中 / 事件诊断，只关闭自有会话，不改偏好。必须有解锁、唤醒的交互桌面。本次Safari27.2确认生产加载 / Apple GPU，但完整交互因系统锁屏、显示器休眠、页面hidden而未完成；已经请求作者解锁，不能把它写作Safari兼容通过。
+Safari脚本使用本机`safaridriver`与可信W3C点击，支持显式`--click=element|actions`，保存窗口 / 命中 / 事件诊断，只关闭自有会话，不改偏好。必须有解锁、唤醒的交互桌面。前两次因锁屏 / 显示器休眠 / 页面hidden受阻；作者解锁后，以`6b4e856`补验Safari27.2 / Apple GPU生产预览，8步 / 15次可信点击通过，五张截图已复核，导航返回后采集错误与清理错误均0。此次只补桌面Safari流程与文档，不重跑上面的Chrome基准、类型 / 构建或157项测试；未测Safari帧率 / 内存，也未验证实际声音播放或iPhone Safari。
 
 ## 测量边界
 
