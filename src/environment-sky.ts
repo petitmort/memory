@@ -48,7 +48,7 @@ export function createEnvironmentSky(sunGroup: THREE.Group) {
   const sunset = new THREE.Color("#e1a17b"), gray = new THREE.Color("#82939f"), cold = new THREE.Color("#96aebb");
   return {
     group, horizon, zenith, moon, warmObjects: [group, moon, stars, sunGroup],
-    update(celestial: CelestialState, weather: WeatherState, camera: THREE.Camera) {
+    update(celestial: CelestialState, weather: WeatherState, camera: THREE.Camera, flash = 0) {
       const d = celestial.daylight, overcast = weather.cloudCover * .68;
       horizon.copy(nightHorizon).lerp(dayHorizon, d);
       zenith.copy(nightZenith).lerp(dayZenith, d);
@@ -56,6 +56,8 @@ export function createEnvironmentSky(sunGroup: THREE.Group) {
       horizon.lerp(sunset, dusk);
       horizon.lerp(gray, overcast * d * .65).lerp(cold, weather.snow * .16 * d);
       zenith.lerp(gray, overcast * d * .85).lerp(cold, weather.snow * .15 * d);
+      // A single restrained cloud-light pulse; no new light or post-processing.
+      horizon.lerp(dayHorizon, flash * .22); zenith.lerp(dayHorizon, flash * .2);
       sunGroup.position.fromArray(celestial.sun.direction).multiplyScalar(235);
       sunGroup.position.y -= 8;
       sunGroup.lookAt(camera.position);

@@ -475,6 +475,7 @@ try {
     low => updateQualityLabel(low),
     requestCatPet,
     visible => exploration.setFeedbackActive(visible),
+    sound.updateEnvironment,
   );
   // Prepare alongside GPU loading, before continuous scene drawing starts.
   // Browsers requiring gesture-time construction retain the lazy fallback.

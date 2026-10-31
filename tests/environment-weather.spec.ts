@@ -37,15 +37,17 @@ test('summer favours clear skies, winter is cloudier, and default coastal snow s
   expect(snow / count).toBeLessThan(.025);
 });
 
-test('local midnight weather is continuous and daily variation remains small', () => {
+test('local midnight and ordinary clock samples remain continuous across time zones', () => {
   for (const zone of ['Europe/Athens', 'Asia/Shanghai', 'America/New_York']) {
     const midnight = timestampFromZonedInput('2026-11-01T00:00', zone);
     const a = sampleWeather(midnight - 5, { timeZone: zone }), b = sampleWeather(midnight + 5, { timeZone: zone });
     for (const key of ['cloudCover', 'precipitation', 'snow', 'windSpeed', 'visibility', 'waveScale'] as const)
       expect(Math.abs(a[key] - b[key]), `${zone}:${key}`).toBeLessThan(.001);
-    const noon = midnight + 12 * 3600000, one = sampleWeather(noon, { timeZone: zone }), two = sampleWeather(noon + 600000, { timeZone: zone });
-    expect(one.kind).toBe(two.kind);
-    expect(Math.abs(one.cloudCover - two.cloudCover)).toBeLessThan(.02);
+    // Random fronts may now change weather within ten minutes. Millisecond
+    // neighbours must remain continuous irrespective of where a front starts.
+    const noon = midnight + 12 * 3600000, one = sampleWeather(noon - 5, { timeZone: zone }), two = sampleWeather(noon + 5, { timeZone: zone });
+    for (const key of ['cloudCover', 'precipitation', 'snow', 'windSpeed', 'visibility', 'waveScale'] as const)
+      expect(Math.abs(one[key] - two[key]), `${zone}:noon:${key}`).toBeLessThan(.001);
   }
   const a = { ...sampleWeather(0, { kind: 'clear' }), windDirection: Math.PI * 2 - .1 };
   const b = { ...sampleWeather(0, { kind: 'rain' }), windDirection: .1 };

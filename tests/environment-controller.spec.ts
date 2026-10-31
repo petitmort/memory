@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { sampleWeather } from '../src/weather-controller';
 
 /** Actual production adapter, deterministic clocks, no renderer or production test global. */
 async function controllerPage(page: Page, query: string, wall: number) {
@@ -41,33 +42,53 @@ async function controllerPage(page: Page, query: string, wall: number) {
   }, wall);
 }
 
-test('the adapter blends automatic weather for six seconds after a date jump and starts a new blend from the current display', async ({ page }) => {
+test('the adapter stages clouds before rain over six seconds after date jumps and resumes interruptions from the displayed weather', async ({ page }) => {
   await controllerPage(page, '?debugEnv=1&envTimeMode=scene&envDate=2026-01-06T12:00', Date.UTC(2026, 0, 6, 10));
   const result = await page.evaluate(() => {
     const adapter = (window as any).__adapter;
     const before = adapter.step();
     adapter.patch('env-date', '2026-04-23T12:00');
     const first = adapter.step();
-    const middle = adapter.step(3000);
+    const gathering = adapter.step(1800);
+    const middle = adapter.step(1200);
     // Change the target while a blend is still running: preserve its visible start.
     adapter.patch('env-date', '2026-01-06T12:00');
     const interrupted = adapter.step();
-    const back = adapter.step(6000);
+    const clearing = adapter.step(4200);
+    const back = adapter.step(1800);
     adapter.patch('env-date', '2026-04-23T12:00');
     const second = adapter.step();
     const after = adapter.step(6000);
     adapter.dispose();
-    return { before, first, middle, interrupted, back, second, after };
+    return { before, first, gathering, middle, interrupted, clearing, back, second, after };
   });
-  expect(result.before.weather.kind).toBe('clear');
-  expect(result.after.weather.kind).toBe('heavy-rain');
+  const expected = (snapshot: typeof result.before) => sampleWeather(snapshot.timestamp, { timeZone: 'Europe/Athens' });
+  for (const endpoint of [result.before, result.back, result.after]) {
+    const target = expected(endpoint);
+    expect(endpoint.weather.kind).toBe(target.kind);
+    // The adapter interpolates ten-second samples; allow only their small
+    // numerical difference from sampling the continuous curve directly.
+    for (const field of ['cloudCover', 'precipitation', 'snow', 'windSpeed', 'visibility', 'waveScale'] as const)
+      expect(endpoint.weather[field], `settled:${field}`).toBeCloseTo(target[field], 3);
+  }
+  expect(result.before.weather.precipitation).toBe(0);
+  expect(result.after.weather.precipitation).toBeGreaterThan(.35);
   expect(result.first.weather).toEqual(result.before.weather);
   expect(result.interrupted.weather).toEqual(result.middle.weather);
   expect(result.second.weather.precipitation).toBe(0);
   expect(result.first.timestamp - result.before.timestamp).toBeGreaterThan(90 * 86400000);
-  expect(result.middle.weather.precipitation).toBeCloseTo(result.after.weather.precipitation / 2, 3);
+  const cloudDifference = result.after.weather.cloudCover - result.before.weather.cloudCover;
+  expect(cloudDifference).toBeGreaterThan(.5);
+  expect(result.gathering.weather.cloudCover).toBeGreaterThan(result.before.weather.cloudCover + cloudDifference * .5);
+  expect(result.gathering.weather.windSpeed).toBeGreaterThan(result.before.weather.windSpeed);
+  expect(result.gathering.weather.precipitation).toBe(0);
+  expect(result.middle.weather.cloudCover).toBeGreaterThan(result.before.weather.cloudCover + cloudDifference * .85);
+  expect(result.middle.weather.precipitation).toBeGreaterThan(0);
+  expect(result.middle.weather.precipitation).toBeLessThan(result.after.weather.precipitation * .25);
+  expect(result.clearing.weather.precipitation).toBe(0);
+  expect(result.clearing.weather.cloudCover).toBeGreaterThan(result.back.weather.cloudCover
+    + (result.interrupted.weather.cloudCover - result.back.weather.cloudCover) * .25);
   expect(result.back.weather.precipitation).toBe(0);
-  expect(result.after.weather.precipitation).toBe(1);
 });
 
 test('the real adapter stays continuous across the old DST cache boundary and restores the same time after pause or refresh', async ({ browser }) => {

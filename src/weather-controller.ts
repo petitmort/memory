@@ -52,6 +52,54 @@ function daily(timestamp: number, timeZone: string, seed: number) {
   return { date, state };
 }
 
+/** Weather is a simulated world clock, independent of the visitor's location. */
+export const WEATHER_FRONT_HOUR = 3600000;
+const FRONT_JITTER = 14 * 60000;
+const frontTargets = new Map<string, WeatherState>();
+const variants: Record<WeatherKind, readonly (readonly [WeatherKind, number])[]> = {
+  clear: [["clear", .88], ["few-clouds", .105], ["cloudy", .015]],
+  "few-clouds": [["clear", .12], ["few-clouds", .7], ["cloudy", .16], ["light-rain", .02]],
+  cloudy: [["few-clouds", .18], ["cloudy", .56], ["overcast", .18], ["light-rain", .07], ["rain", .01]],
+  overcast: [["cloudy", .16], ["overcast", .54], ["light-rain", .19], ["rain", .09], ["heavy-rain", .02]],
+  "light-rain": [["cloudy", .1], ["overcast", .2], ["light-rain", .46], ["rain", .2], ["heavy-rain", .04]],
+  rain: [["overcast", .06], ["light-rain", .18], ["rain", .59], ["heavy-rain", .17]],
+  "heavy-rain": [["light-rain", .08], ["rain", .28], ["heavy-rain", .64]],
+  "light-snow": [["overcast", .2], ["light-snow", .65], ["snow", .15]],
+  snow: [["overcast", .08], ["light-snow", .28], ["snow", .64]],
+};
+
+function frontBoundary(index: number, seed: number): number {
+  const random = createSeededRandom(seedFromString(`aegean-front-boundary:${seed}:${index}`));
+  // Bounded jitter guarantees increasing anchors 32–88 minutes apart, without
+  // walking an unbounded Markov chain when a page resumes or refreshes.
+  return index * WEATHER_FRONT_HOUR + Math.round((random() * 2 - 1) * FRONT_JITTER);
+}
+
+function frontTarget(index: number, timeZone: string, seed: number): WeatherState {
+  const key = `${timeZone}/${seed}/${index}`;
+  const cached = frontTargets.get(key);
+  if (cached) return cached;
+  const start = frontBoundary(index, seed);
+  const base = daily(start + 20 * 60000, timeZone, seed);
+  const random = createSeededRandom(seedFromString(`aegean-front-target:${seed}:${index}`));
+  let roll = random(), kind = base.state.kind;
+  for (const [candidate, weight] of variants[base.state.kind]) {
+    kind = candidate;
+    if (roll < weight) break;
+    roll -= weight;
+  }
+  const state = profile(kind, base.state.windDirection + (random() - .5) * .2);
+  state.windSpeed *= .85 + random() * .3;
+  // The Aegean can be windy under a clear sky (summer Meltemi). A dry gust
+  // must not manufacture rain or snow just to produce wind and rougher water.
+  if (base.date.season === "summer" && !state.precipitation && random() < .12)
+    state.windSpeed = 6.5 + random() * 4;
+  state.waveScale = Math.max(state.waveScale, .83 + state.windSpeed * .055);
+  if (frontTargets.size >= 96) frontTargets.delete(frontTargets.keys().next().value!);
+  frontTargets.set(key, state);
+  return state;
+}
+
 /** Blend the same state for clouds, water, light, precipitation and navigation. */
 export function blendWeather(from: WeatherState, to: WeatherState, amount: number): WeatherState {
   const a = clamp(amount), mix = (x: number, y: number) => x + (y - x) * a;
@@ -65,21 +113,90 @@ export function blendWeather(from: WeatherState, to: WeatherState, amount: numbe
   };
 }
 
-/** Date-seeded simulation, never a forecast or a request to a weather service. */
+/**
+ * A front has causal stages: cloud/wind gather before rain arrives; rain stops
+ * before clouds clear. Each channel has zero derivative at its stage edges.
+ * Wet/wet rain and snow amounts mix by mass. At a dry endpoint the snow
+ * fraction also fades continuously, keeping the cold lighting tint smooth.
+ */
+export function transitionWeather(from: WeatherState, to: WeatherState, progress: number): WeatherState {
+  const p = clamp(progress);
+  if (p === 0) return { ...from };
+  if (p === 1) return { ...to };
+  const wetting = to.precipitation > from.precipitation;
+  const drying = to.precipitation < from.precipitation;
+  const precipitation = smooth(wetting ? (p - .38) / .62 : drying ? p / .6 : p);
+  const cover = smooth(wetting ? p / .55 : drying ? (p - .35) / .65 : p);
+  const wind = smooth(wetting ? (p - .05) / .7 : drying ? (p - .15) / .85 : p);
+  const visibility = smooth(wetting ? (p - .1) / .9 : drying ? (p - .22) / .78 : p);
+  const state = blendWeather(from, to, smooth(p));
+  state.cloudCover = from.cloudCover + (to.cloudCover - from.cloudCover) * cover;
+  state.windSpeed = from.windSpeed + (to.windSpeed - from.windSpeed) * wind;
+  state.visibility = from.visibility + (to.visibility - from.visibility) * visibility;
+  const rain = from.precipitation * (1 - from.snow) * (1 - precipitation) + to.precipitation * (1 - to.snow) * precipitation;
+  const snow = from.precipitation * from.snow * (1 - precipitation) + to.precipitation * to.snow * precipitation;
+  state.precipitation = rain + snow;
+  state.snow = from.precipitation > 0 && to.precipitation > 0
+    ? snow / state.precipitation : from.snow + (to.snow - from.snow) * smooth(p);
+  if (state.precipitation > .04) state.kind = state.snow > .5
+    ? (state.precipitation > .4 ? "snow" : "light-snow")
+    : (state.precipitation > .75 ? "heavy-rain" : state.precipitation > .36 ? "rain" : "light-rain");
+  else state.kind = state.cloudCover > .76 ? "overcast" : state.cloudCover > .4 ? "cloudy" : state.cloudCover > .12 ? "few-clouds" : "clear";
+  return state;
+}
+
+export type WeatherFront = {
+  startedAt: number;
+  settledAt: number;
+  nextAt: number;
+  progress: number;
+  fromKind: WeatherKind;
+  toKind: WeatherKind;
+  phase: "settled" | "gathering" | "rain-arriving" | "rain-clearing" | "clearing" | "cloud-transition";
+};
+
+function frontAt(timestampMs: number, timeZone: string, seed: number) {
+  if (!Number.isFinite(timestampMs)) throw new RangeError("The weather timestamp must be finite.");
+  let index = Math.floor(timestampMs / WEATHER_FRONT_HOUR);
+  if (timestampMs < frontBoundary(index, seed)) index--;
+  else if (timestampMs >= frontBoundary(index + 1, seed)) index++;
+  const startedAt = frontBoundary(index, seed), nextAt = frontBoundary(index + 1, seed);
+  const random = createSeededRandom(seedFromString(`aegean-front-duration:${seed}:${index}`));
+  const settledAt = startedAt + (6 + random() * 4) * 60000;
+  const progress = clamp((timestampMs - startedAt) / (settledAt - startedAt));
+  const from = frontTarget(index - 1, timeZone, seed), to = frontTarget(index, timeZone, seed);
+  return { from, to, startedAt, settledAt, nextAt, progress };
+}
+
+/** Metadata is only for optional developer diagnostics, never a real forecast. */
+export function sampleWeatherFront(timestampMs: number, options: WeatherOptions = {}): WeatherFront {
+  const front = frontAt(timestampMs, options.timeZone ?? "Europe/Athens", options.seed ?? 761031);
+  const { startedAt, settledAt, nextAt, progress, from, to } = front;
+  const phase: WeatherFront["phase"] = options.kind || progress === 1 ? "settled"
+    : to.precipitation > from.precipitation ? (progress < .38 ? "gathering" : "rain-arriving")
+      : to.precipitation < from.precipitation ? (progress < .6 ? "rain-clearing" : "clearing") : "cloud-transition";
+  return { startedAt, settledAt, nextAt, progress: options.kind ? 1 : progress,
+    fromKind: options.kind ?? from.kind, toKind: options.kind ?? to.kind, phase };
+}
+
+/** Date/season-seeded simulated fronts; never a local weather service request. */
 export function sampleWeather(timestampMs: number, options: WeatherOptions = {}): WeatherState {
   const zone = options.timeZone ?? "Europe/Athens", seed = options.seed ?? 761031;
-  const current = daily(timestampMs, zone, seed);
-  const previous = daily(timestampMs - (current.date.secondsOfDay + 43200) * 1000, zone, seed);
-  // Midnight is a smooth handover, including a browser opened halfway through it.
-  let state = blendWeather(previous.state, current.state, smooth(current.date.secondsOfDay / 3600));
-  const fraction = current.date.secondsOfDay / 86400;
-  const envelope = Math.sin(Math.PI * fraction) ** 2;
-  const variation = Math.sin(timestampMs / 1000 / 5200 + current.date.seed * .00001) * envelope;
-  state.cloudCover = clamp(state.cloudCover + variation * .035);
-  state.windSpeed = Math.max(.4, state.windSpeed + variation * .35);
+  const front = frontAt(timestampMs, zone, seed);
+  let state = transitionWeather(front.from, front.to, front.progress);
+  // Small aperiodic-looking gusts continue inside a settled front. Absolute
+  // time preserves their phase through refresh, midnight, DST and sleep.
+  const time = timestampMs / 1000;
+  state.cloudCover = clamp(state.cloudCover + Math.sin(time / 1373 + seed) * .008);
+  state.windSpeed = Math.max(.4, state.windSpeed + Math.sin(time / 137 + seed) * .2 + Math.sin(time / 379) * .17);
   if (options.kind) state = profile(options.kind, state.windDirection);
   if (options.cloudCover !== undefined && Number.isFinite(options.cloudCover)) state.cloudCover = clamp(options.cloudCover);
-  if (options.windSpeed !== undefined && Number.isFinite(options.windSpeed)) state.windSpeed = clamp(options.windSpeed, 0, 20);
+  if (options.windSpeed !== undefined && Number.isFinite(options.windSpeed)) {
+    state.windSpeed = clamp(options.windSpeed, 0, 20);
+    // A dry gale changes the same wave field used by boats. Its 1.084 m
+    // amplitude bound × 1.6 stays inside the ocean's existing ±1.8 m bounds.
+    state.waveScale = Math.max(state.waveScale, Math.min(1.6, .83 + state.windSpeed * .055));
+  }
   return state;
 }
 

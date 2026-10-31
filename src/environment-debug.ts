@@ -65,6 +65,7 @@ export function readEnvironmentOptions(search = typeof window === "undefined" ? 
 type DebugInfo = {
   timestamp: number; timeZone: string; weather: string; sunAltitude: number;
   moonPhase: number; vessels: number; low: boolean;
+  birds?: number; front?: string;
 };
 const vesselNames: Record<VesselKind, string> = {
   "wood-sail": "木质帆船", "twin-mast": "双桅帆船", fishing: "渔船",
@@ -73,6 +74,10 @@ const vesselNames: Record<VesselKind, string> = {
 const routeNames: Record<VesselRoute, string> = {
   "left-to-right": "从左往右", "right-to-left": "从右往左", approach: "远处驶近",
   depart: "近处驶远", diagonal: "斜向横穿", arc: "弧线驶离",
+};
+const frontNames: Record<string, string> = {
+  settled: "天气平稳", gathering: "积云起风", "rain-arriving": "降水渐入",
+  "rain-clearing": "雨势渐弱", clearing: "雨后散云", "cloud-transition": "云层渐变",
 };
 
 /** Small DOM-only tools; the scene owns its update clock and all rendering. */
@@ -84,7 +89,7 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
   const summary = document.createElement("summary"); summary.textContent = "环境调试"; panel.append(summary);
   const content = document.createElement("div"); content.className = "environment-debug-content"; panel.append(content);
   const note = document.createElement("p"); note.className = "environment-debug-note";
-  note.textContent = "开发预览 · 模拟天气 · 设置仅在本页有效"; content.append(note);
+  note.textContent = "开发预览 · 独立模拟天气 · 设置仅在本页有效"; content.append(note);
   const status = document.createElement("output"); status.className = "environment-debug-status";
   status.setAttribute("aria-label", "当前环境状态"); status.setAttribute("aria-live", "off"); content.append(status);
   const field = <T extends HTMLElement>(name: string, input: T) => {
@@ -107,7 +112,7 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
   const dateError = document.createElement("span"); dateError.className = "environment-debug-error";
   dateError.setAttribute("role", "alert"); content.append(dateError);
   const mode = select("时间模式", "env-time-mode", [["local-clock", "与设备本地时钟一致"], ["scene", "场景所在地时间"]]);
-  const weather = select("模拟天气", "env-weather", [["", "按日期自动模拟"], ...WEATHER_KINDS.map(kind => [kind, WEATHER_LABELS[kind]] as const)]);
+  const weather = select("模拟天气", "env-weather", [["", "季节随机演变（含渐变）"], ...WEATHER_KINDS.map(kind => [kind, WEATHER_LABELS[kind]] as const)]);
   const phase = select("月相", "env-phase", [["", "按真实日期计算"], ["0", "新月"], ["0.25", "上弦月"], ["0.5", "满月"], ["0.75", "下弦月"], ["custom", "连续月相"]]);
   const moon = document.createElement("input"); moon.type = "range"; moon.id = "env-phase-range";
   moon.min = "0"; moon.max = "1"; moon.step = ".005"; moon.value = String(state.moonPhase ?? .5);
@@ -181,7 +186,7 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
       if (document.activeElement !== date) date.value = wallTime;
       if (state.moonPhase === undefined && document.activeElement !== moon) moon.value = String(info.moonPhase);
       const label = WEATHER_LABELS[info.weather as WeatherKind] ?? info.weather;
-      const text = `${snapshot.dayKey} ${hours}:${minutes} · ${info.timeZone}\n模拟天气：${label}\n太阳高度 ${(info.sunAltitude * 180 / Math.PI).toFixed(1)}° · 月相 ${(info.moonPhase * 100).toFixed(1)}%\n航行 ${info.vessels} 艘 · ${info.low ? "省电" : "普通"}画质`;
+      const text = `${snapshot.dayKey} ${hours}:${minutes} · ${info.timeZone}\n模拟天气：${label}\n太阳高度 ${(info.sunAltitude * 180 / Math.PI).toFixed(1)}° · 月相 ${(info.moonPhase * 100).toFixed(1)}%\n航行 ${info.vessels} 艘 · ${info.low ? "省电" : "普通"}画质\n飞鸟 ${info.birds ?? 0} 只 · ${frontNames[info.front ?? ""] ?? info.front ?? "自然演变"}`;
       if (text !== lastStatus) { status.textContent = text; lastStatus = text; }
     },
     dispose() {

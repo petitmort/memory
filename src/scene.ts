@@ -27,6 +27,7 @@ import { createQualityPolicy } from "./quality-policy";
 import { createEntryPath } from "./entry-motion";
 import { createEnvironmentController } from "./environment-controller";
 import type { CatReactionProfile } from "./cat-reactions";
+import type { EnvironmentSoundFrame } from "./weather-audio";
 
 export type PageProjection = { corners: { x: number; y: number }[] };
 export type BookProjection = PageProjection & { pages: [PageProjection, PageProjection] };
@@ -49,6 +50,7 @@ export function createScene(
   onQualityChange?: (low: boolean) => void,
   onCatInteract?: () => boolean,
   onFeedbackVisibility?: (visible: boolean) => void,
+  onEnvironmentSound?: (frame: EnvironmentSoundFrame) => void,
 ) {
   const listeners = new AbortController();
   const listenerOptions = { signal: listeners.signal };
@@ -305,6 +307,7 @@ export function createScene(
     scene, camera, ambient, sun, fill, ocean: seaMat,
     sunGroup: mythology.seascape.sunGroup, vessels: mythology.seascape.vessels!,
     invalidate: requestRender,
+    onSound: onEnvironmentSound,
     quality(value) { qualityPolicy.setManual(value); applyQuality(qualityPolicy.low); },
   });
   const rug = box(

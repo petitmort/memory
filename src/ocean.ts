@@ -20,6 +20,7 @@ export function createOcean() {
       lightColor: { value: new THREE.Color(1, .94, .82) },
       lightStrength: { value: 1 }, moonStrength: { value: 0 },
       waveScale: { value: 1 }, rainAmount: { value: 0 }, fogDensity: { value: .005 },
+      rainDetail: { value: 1 },
     },
     vertexShader: `${waves}
       varying vec3 vWorld;
@@ -35,7 +36,7 @@ export function createOcean() {
       varying vec3 vWorld;
       uniform vec3 sunPosition;
       uniform vec3 moonPosition, skyHorizon, skyZenith, waterTint, lightColor;
-      uniform float lightStrength, moonStrength, waveScale, rainAmount, fogDensity;
+      uniform float lightStrength, moonStrength, waveScale, rainAmount, fogDensity, rainDetail;
       float fifth(float x) { float x2=x*x;return x2*x2*x; }
       float windHash(vec2 p) {
         vec3 h=fract(vec3(p.xyx)*.1031);
@@ -48,6 +49,24 @@ export function createOcean() {
         float c=windHash(cell+vec2(0.,1.)),d=windHash(cell+1.);
         return vec3(mix(mix(a,b,u.x),mix(c,d,u.x),u.y),
           mix(b-a,d-c,u.y)*du.x,mix(c-a,d-b,u.x)*du.y);
+      }
+      // Four nearby rain impacts form tiny expanding rings on the actual wave
+      // surface. Distance filtering prevents sparkling or costly far ripples.
+      vec3 rainRipples(vec2 world, float footprint) {
+        if(rainAmount<.001 || rainDetail<.001 || footprint>.55) return vec3(0.);
+        vec2 p=world*1.4,base=floor(p-.5);vec3 result=vec3(0.);
+        for(int y=0;y<2;y++) for(int x=0;x<2;x++) {
+          vec2 cell=base+vec2(float(x),float(y));float key=windHash(cell);
+          vec2 centre=cell+vec2(.25+.5*key,.25+.5*windHash(cell+17.));
+          float age=fract(time*(1.2+key*.5)+key*31.);
+          vec2 q=p-centre;float distance=length(q),ring=distance-age*.48;
+          float envelope=sin(age*3.141593)*pow(1.-age,2.);
+          float crest=exp(-ring*ring/ .00085)*envelope;
+          float dropWeight=1.-smoothstep(rainAmount*.85,rainAmount*.85+.15,windHash(cell+83.));
+          result.x+=crest*dropWeight;
+          result.yz+=q/max(distance,.001)*(-ring/.00085)*crest*dropWeight*.014;
+        }
+        return result*(1.-smoothstep(.12,.55,footprint))*rainAmount*rainDetail;
       }
       float shoreBreak(vec2 p, vec2 centre, float radius, float height) {
         vec2 q=(p-centre)/radius;
@@ -64,8 +83,9 @@ export function createOcean() {
         float footprint=max(length(dFdx(vWorld.xz)),length(dFdy(vWorld.xz)));
         vec3 wave=surface(vWorld.xz,footprint)*waveScale;
         vec3 grain=windGrain(vWorld.xz*.37+vec2(time*.018,-time*.011));
+        vec3 impacts=rainRipples(vWorld.xz,footprint);
         float grainFilter=1.-smoothstep(.35,1.25,footprint*.37);
-        vec2 slope=wave.yz+grain.yz*((.07+.045*rainAmount)*grainFilter);
+        vec2 slope=wave.yz+grain.yz*((.07+.045*rainAmount)*grainFilter)+impacts.yz;
         vec3 normal=normalize(vec3(-slope.x,1.,-slope.y));
         vec3 viewDir=normalize(cameraPosition-vWorld);
         vec3 lightDir=normalize(sunPosition-vWorld);
@@ -83,6 +103,7 @@ export function createOcean() {
         vec3 sky=mix(skyHorizon,skyZenith,smoothstep(0.,.65,reflected.y));
         vec3 reflection=mix(vec3(.055,.15,.20)*waterTint,sky,smoothstep(-.12,.13,reflected.y));
         vec3 color=mix(water,reflection,fresnel);
+        color+=skyHorizon*impacts.x*.035;
 
         // A rough-water GGX lobe forms a broken trail below the visible sun.
         // Pixel footprint broadens distant highlights, suppressing moire and

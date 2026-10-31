@@ -87,7 +87,7 @@ test('the real room renders four calendar environments, six navigation direction
       await setSceneDate(page, condition.date);
       await page.locator('#env-weather').selectOption(condition.kind);
       if (condition.sun === 'night') await page.locator('#env-phase').selectOption('0.5');
-      await expect.poll(async () => (await snapshot(page)).weather.kind).toBe(condition.kind);
+      await expect.poll(async () => (await snapshot(page)).weather.kind, { timeout: 10000 }).toBe(condition.kind);
       const state = await snapshot(page);
       expect(state.weather.simulated).toBe(true);
       if (condition.sun === 'day') expect(state.celestial.sun.altitude).toBeGreaterThan(.2);
@@ -101,8 +101,8 @@ test('the real room renders four calendar environments, six navigation direction
       if (process.env.ENVIRONMENT_SCREENSHOT_DIR) {
         await mkdir(process.env.ENVIRONMENT_SCREENSHOT_DIR, { recursive: true });
         await page.locator('.environment-debug summary').click();
-        // Weather labels switch halfway through the six-second blend. Give
-        // the optional visual review the finished environment, not its midpoint.
+        // Causal weather phases can change labels late in the six-second blend.
+        // Give the optional visual review the settled environment.
         await page.waitForTimeout(3200);
         await page.screenshot({ path: join(process.env.ENVIRONMENT_SCREENSHOT_DIR, `${condition.image}.png`) });
         await page.locator('.environment-debug summary').click();

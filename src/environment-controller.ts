@@ -4,8 +4,11 @@ import { calculateCelestial, type CelestialState, type Direction3 } from "./cele
 import { createCloudController } from "./cloud-controller";
 import { createEnvironmentDebug, readEnvironmentOptions } from "./environment-debug";
 import { createEnvironmentSky } from "./environment-sky";
-import { blendWeather, createWeatherController, sampleWeather } from "./weather-controller";
+import { blendWeather, createWeatherController, sampleWeather, sampleWeatherFront, transitionWeather } from "./weather-controller";
 import type { createVesselController } from "./vessel-controller";
+import { createBirdController } from "./bird-controller";
+import { createStormController } from "./storm-controller";
+import type { EnvironmentSoundFrame } from "./weather-audio";
 
 type Bindings = {
   scene: THREE.Scene;
@@ -18,6 +21,7 @@ type Bindings = {
   vessels: ReturnType<typeof createVesselController>;
   invalidate: () => void;
   quality: (value?: boolean) => void;
+  onSound?: (frame: EnvironmentSoundFrame) => void;
 };
 const lerp = THREE.MathUtils.lerp;
 function interpolateCelestial(a: CelestialState, b: CelestialState, f: number): CelestialState {
@@ -43,8 +47,10 @@ export function createEnvironmentController(bindings: Bindings) {
   const options = readEnvironmentOptions();
   const sky = createEnvironmentSky(bindings.sunGroup);
   const clouds = createCloudController(), particles = createWeatherController();
-  scene.add(sky.group, clouds.group, particles.group);
+  const birds = createBirdController(), storm = createStormController();
+  scene.add(sky.group, clouds.group, particles.group, birds.group, storm.group);
   clouds.group.visible = particles.group.visible = false;
+  birds.group.visible = storm.group.visible = false;
   let disposed = false, paused = false, updates = 0, low = false;
   let anchorWall = Date.now(), departureRevision = 0, cloudRevision = 0;
   let userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -56,9 +62,9 @@ export function createEnvironmentController(bindings: Bindings) {
   let transition: { from: typeof weather; started: number } | undefined;
   const warmObjects: THREE.Object3D[] = [
     ...sky.warmObjects, clouds.group, ...clouds.group.children,
-    particles.group, ...particles.group.children, ...vessels.warmObjects,
+    particles.group, ...particles.group.children, ...vessels.warmObjects, ...birds.warmObjects, ...storm.warmObjects,
   ];
-  const ownedGroups = [sky.group, clouds.group, particles.group, vessels.group];
+  const ownedGroups = [sky.group, clouds.group, particles.group, vessels.group, birds.group, storm.group];
   const warm = new THREE.Color("#ffd3a2"), daylightColor = new THREE.Color("#fff1db"), moonColor = new THREE.Color("#a8bedc");
   const dayAmbient = new THREE.Color("#e4edf0"), nightAmbient = new THREE.Color("#adb9ca");
   const waterDay = new THREE.Color(1, 1, 1), waterNight = new THREE.Color(.19, .28, .4), waterGray = new THREE.Color(.67, .75, .8);
@@ -79,7 +85,7 @@ export function createEnvironmentController(bindings: Bindings) {
     });
     return {
       daylight: skyAtDeparture.daylight,
-      severity: Math.max(weatherAtDeparture.precipitation, (1 - weatherAtDeparture.visibility) * .7),
+      severity: Math.max(weatherAtDeparture.precipitation, (1 - weatherAtDeparture.visibility) * .7, THREE.MathUtils.smoothstep(weatherAtDeparture.windSpeed, 8, 16)),
     };
   }
   const debug = createEnvironmentDebug(options, patch => {
@@ -113,17 +119,18 @@ export function createEnvironmentController(bindings: Bindings) {
     const target = blendWeather(...weatherPair, timestamp / 10000 - tenSeconds);
     if (transition) {
       const progress = THREE.MathUtils.clamp((performance.now() - transition.started) / 6000, 0, 1);
-      weather = blendWeather(transition.from, target, progress * progress * (3 - 2 * progress));
+      weather = transitionWeather(transition.from, target, progress);
       if (progress === 1) transition = undefined;
     } else weather = target;
-    sky.update(celestial, weather, camera);
+    const stormFrame = storm.update(timestamp, weather, low, reduced || !outdoors, celestial.daylight);
+    sky.update(celestial, weather, camera, stormFrame.flash);
     const d = celestial.daylight, cover = weather.cloudCover;
     const sunlight = THREE.MathUtils.smoothstep(celestial.sun.altitude, -.02, .23) * (1 - cover * .84);
     const moonlight = celestial.night * celestial.moonIllumination * THREE.MathUtils.smoothstep(celestial.moon.altitude, -.02, .15) * (1 - cover * .86);
     ambient.color.copy(nightAmbient).lerp(dayAmbient, d);
     ambient.intensity = 1.02 + d * .52 * (1 - cover * .18);
     ambient.groundColor.setRGB(.28 + .16 * d, .25 + .12 * d, .24 + .08 * d);
-    fill.intensity = .46 + .44 * d * (1 - cover * .22);
+    fill.intensity = .46 + .44 * d * (1 - cover * .22) + stormFrame.flash * .12;
     fill.color.copy(moonColor).lerp(daylightColor, d);
     const warmAmount = 1 - THREE.MathUtils.smoothstep(celestial.sun.altitude, .03, .6);
     lightColor.copy(daylightColor).lerp(warm, warmAmount);
@@ -142,12 +149,14 @@ export function createEnvironmentController(bindings: Bindings) {
     uniforms.moonStrength.value = moonlight * .12;
     uniforms.waveScale.value = weather.waveScale;
     uniforms.rainAmount.value = weather.precipitation * (1 - weather.snow);
+    uniforms.rainDetail.value = (low ? .35 : 1) * (reduced ? .25 : 1);
     uniforms.fogDensity.value = .003 + (1 - weather.visibility) * .007;
     // Courtyard's five fog layers retain their own reveal sequencing.
     if (outdoors && scene.fog instanceof THREE.FogExp2) {
       scene.fog.color.copy(sky.horizon); scene.fog.density = uniforms.fogDensity.value;
     }
     clouds.group.visible = particles.group.visible = outdoors;
+    birds.group.visible = storm.group.visible = outdoors;
     if (outdoors) {
       const direction = sunlight > .005 ? celestial.sun.direction : celestial.moon.direction;
       clouds.update(timestamp, weather, low, reduced, d, direction, {
@@ -155,27 +164,30 @@ export function createEnvironmentController(bindings: Bindings) {
         windSpeed: options.windSpeed, revision: cloudRevision, camera,
       });
       particles.update(timestamp, weather, low, reduced, d);
+      birds.update(timestamp, weather, low, reduced, d);
       vessels.setDebugPaths(options.paths);
       vessels.update(timestamp, waterTime, {
         low, reduced, daylight: d, windSpeed: weather.windSpeed,
-        severity: Math.max(weather.precipitation, (1 - weather.visibility) * .7),
+        severity: Math.max(weather.precipitation, (1 - weather.visibility) * .7, THREE.MathUtils.smoothstep(weather.windSpeed, 8, 16)),
         density: options.vesselDensity, forcedRoute: options.vesselRoute, forcedKind: options.vesselKind, waveScale: weather.waveScale,
         departureState, departureRevision,
       });
     }
+    bindings.onSound?.({ timestamp, weather, storm: stormFrame, active: outdoors });
     if (timestamp - debugAt >= 1000 || timestamp < debugAt) {
       debugAt = timestamp;
-      debug.update({ timestamp, timeZone: options.location.timeZone, weather: weather.kind, sunAltitude: celestial.sun.altitude, moonPhase: celestial.moonPhase, vessels: vessels.snapshot().length, low });
+      debug.update({ timestamp, timeZone: options.location.timeZone, weather: weather.kind, sunAltitude: celestial.sun.altitude, moonPhase: celestial.moonPhase, vessels: vessels.snapshot().length, low,
+        birds: birds.snapshot().length, front: options.weather ? "强制预览 · 分阶段过渡" : sampleWeatherFront(timestamp, { timeZone: options.location.timeZone }).phase });
     }
   }
   return {
     update, warmObjects, ownedGroups, initialQuality: options.quality,
     pause() { paused = true; },
     resume() { paused = false; userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; },
-    snapshot() { return { timestamp, celestial, weather, vessels: vessels.snapshot(), low, updates, paused }; },
+    snapshot() { return { timestamp, celestial, weather, vessels: vessels.snapshot(), birds: birds.snapshot(), storm: storm.snapshot(), low, updates, paused }; },
     dispose() {
       if (disposed) return;
-      disposed = true; paused = true; debug.dispose(); sky.dispose(); clouds.dispose(); particles.dispose(); vessels.dispose();
+      disposed = true; paused = true; debug.dispose(); sky.dispose(); clouds.dispose(); particles.dispose(); vessels.dispose(); birds.dispose(); storm.dispose();
     },
   };
 }
