@@ -760,6 +760,16 @@
       "sharedStoreBefore": 1445180,
       "sharedStoreAfter": 1445180,
       "sharedStoreDelta": 0
+    },
+    "diskAtImplementationDeliveryKiB": {
+      "implementationCommit": "ab1b6be",
+      "projectBefore": 165924,
+      "projectAfter": 166176,
+      "projectDelta": 252,
+      "sharedStoreBefore": 1445180,
+      "sharedStoreAfter": 1445180,
+      "sharedStoreDelta": 0,
+      "note": "Measured after implementation push, before this documentation receipt; includes build outputs and Git objects, excludes screenshot evidence outside the repository. Receipt text and Git objects may add a small further amount."
     }
   }
 }
