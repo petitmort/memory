@@ -1,5 +1,30 @@
 # 星空、银河与灯塔海岸实施记录
 
+## 后续：整片星空与银河缓慢旋转
+
+2026-11-01（北京时间） · 本地Codex · 基线`28fcfd6`。作者明确要求整个星空与银河缓慢旋转；本节覆盖下文历史版本“只按真实恒星时、几秒内不明显转动”的取舍，不修改原需求或47项统计。
+
+| 步骤 | 是否修改 | 是否完成 | 当前步骤 / 下一步 |
+| --- | --- | --- | --- |
+| R00 现状与旋转方式 | 修改 | 是 | 本地干净、fetch后0 / 0；当前约24小时一圈几乎不可察。保留天极与刚体星场，普通模式以约60倍视觉时间缓慢转动；真实日月 / 天气不加速 |
+| R01 同步旋转与生命周期 | 修改 | 是 | 14项专项通过：两层真实GPU像素同步移动并能重放同一日期；完整房间2.5秒位移、阅读 / 后台恢复、月亮原速度与地景不动；减少动态自然速度 / 同池释放通过 |
+| R02 实绘、回归与交付 | 修改 | 是 | 已完成：14＋31共45个唯一用例、类型 / 构建、5种生产场景8图与22.2秒40帧动效复核通过；同条件前后约60FPS、资源不增，文档同步；随普通开发分支提交交付，不发布 |
+
+- 共享环境仍为`~/.local/bin/project-node` / `~/.nvm/versions/node/v24.14.0`、已有node_modules和`~/Library/pnpm/store/v11`，无安装或隔离。修改前项目165,092KiB、store1,445,180KiB。
+- 初次性能命令误用空格参数，脚本仅支持`--key=value`，未启动浏览器或产生测量；纠正后完成修改前普通动效夜景5秒采样，59.999FPS / 帧间隔P95 16.8ms / CPU提交P95 1.2ms、257几何 / 41纹理 / 62程序，无错误。单次基线仅作成本观察，不宣称改善。
+- R01完成：复用现有矩阵和uniform，`SKY_DRIFT_PERIOD_MS=1440000`，普通视觉在自然恒星时上叠加0.25°/秒，总约0.25418°/秒；模角边界连续、无新增资源或时钟。TypeScript与生产构建通过（96模块、应用355.81KB / gzip132.19KB），既有Three.js大分包提示保留。专项14/14通过，其中新增4项；原流程 / 性能 / 生产画面仍待R02。
+- 浏览器技能未提供，使用仓库现有Playwright。验收路径：加载少云新月夜→清雾→推门→观察数十秒的星点 / 银河整体位移→开册关闭→检查恢复、画质与控制台；固定地景 / 云不跟随星空旋转。
+
+- R02回归完成：专项14/14（新增4）与另9个spec的31/31，合计45个唯一用例，分两次运行且没有相加重叠。覆盖真实星点 / 银河运动像素、原历法 / 月相、环境调试 / 减少动态传递、纪念册过渡、入室 / 声音 / 返回、WebGL阅读兜底、预热 / 后台停止和画质策略；本批未改应用源码后再测。
+- 验证命令：`project-node node_modules/typescript/bin/tsc --noEmit`；`project-node node_modules/vite/bin/vite.js build`；`project-node node_modules/@playwright/test/cli.js test tests/night-sky.spec.ts tests/night-coast-integration.spec.ts --output=/tmp/memory-sky-rotation-targeted-tests`；另一次同CLI运行`environment-controller`、`environment-celestial`、`environment-sky`、`performance`、`preparation`、`experience`、`book-transition`、`quality-policy`、`lighthouse-beacon`对应9个spec，输出`/tmp/memory-sky-rotation-regression-tests`。不沿用旧86项或Safari结果。
+- R02性能：与本轮修改前相同的960×640 / DPR1 / 完整动态 / 普通画质 / 少云新月22:00 / 无船鸟 / 默认暖光，同机Chrome / Metal，每版各一次5秒、300帧。59.999→60.005FPS；帧间隔P95 16.8→18.1ms、CPU提交P95 1.2→1.4ms，139绘制 / 390,449三角 / 257几何 / 41纹理 / 62程序完全不变，无错误、警告或画质下降。单次短样本不据此宣称提速或归因性能变化。原始记录与方法见`benchmark/sky-rotation-2026-11-01.json`；生产截图在采样之后串行完成。
+
+- R02生产验收完成：4173生产包实际清雾 / 推门，桌面普通少云新月夜、390×844省电夜景、减少动态夜景、厚云夜景及晴天共5场景8张完整截图；桌面 / 手机实际开册关闭返回。普通夜景另外40帧、实际间隔22.201秒已复核，星点与银河整体缓移，地平线 / 码头 / 灯塔保持固定，云保留独立风驱动而不跟着星空转。无错误蒙层、页面 / 控制台错误或横向溢出，标题与目标页面一致。证据在`memory-sky-rotation/production/`（同上共享visualizations目录），含`production-review.jpg`、`motion-review.jpg`、`sky-rotation.gif`及原始`results.json`；GIF按采样实际间隔编码，仅作为动效证据，不代替帧率测量。
+- R02文档与交付：README功能说明 / 更新日志、AGENTS最新覆盖规则、ENVIRONMENT / PERFORMANCE、本记录和JSON同批更新；原始环境原文与47项 / 15完成保护检查通过，不修改依赖、docs、main或部署。再次fetch、比较远端、差异检查后普通提交 / 推送当前开发分支；实际提交号与远端核验以Git历史和本轮交付消息为准，日志不循环写自身哈希。
+- 追加最终记录前磁盘实测：`du -sk . /Users/jiangyuhan/Library/pnpm/store/v11`为项目165,128KiB（本轮基线165,092KiB，+36KiB，含构建 / 测试输出和文档，不作运行内存结论），共享store仍1,445,180KiB（+0）。复用共享Node24.14.0 / project-node、已有依赖与pnpm store，图片复核用共享document-python；无安装、迁移或隔离例外。未测Safari / 实体手机 / 长时温度电池，不把桌面手机尺寸称作实机。
+
+## 原始星空与海岸批次（历史）
+
 2026-11-01（北京时间） · 本地 Codex · 基线 `5bd1270`。
 
 作者先要求参考图片中的深蓝夜空、星星及会转动的银河，随后明确补充：窗外不只是海，要有一条通往灯塔的路，路下方是海。本轮合并实施这两个连续需求，保留圣托里尼书房、岛礁、船只、天气和原有交互。独立于原47项（仍15项完成）；仅开发分支与本地预览，不发布网站。

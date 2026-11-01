@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import * as THREE from 'three';
 import { DEFAULT_LOCATION, timestampFromZonedInput } from '../src/calendar-seed';
 import { calculateCelestial, greenwichSiderealAngle } from '../src/celestial-controller';
-import { EQUATORIAL_TO_GALACTIC, LOW_STAR_COUNT, STAR_COUNT, createNightSky, equatorialFrame, nightSkyVisibility, stellarDirection } from '../src/night-sky';
+import { EQUATORIAL_TO_GALACTIC, LOW_STAR_COUNT, STAR_COUNT, SKY_DRIFT_PERIOD_MS, createNightSky, equatorialFrame, nightSkyFrame, nightSkyVisibility, stellarDirection } from '../src/night-sky';
 import { sampleWeather } from '../src/weather-controller';
 
 const RAD = Math.PI / 180, at = timestampFromZonedInput('2026-10-31T22:00');
@@ -48,6 +48,43 @@ test('the galactic band uses the IAU pole and centre rather than a camera-facing
   const centreRA = 266.4051 * RAD, centreDec = -28.936175 * RAD;
   const centre = new THREE.Vector3(Math.cos(centreDec) * Math.cos(centreRA), Math.cos(centreDec) * Math.sin(centreRA), Math.sin(centreDec)).applyMatrix3(matrix);
   expect(centre.x).toBeCloseTo(1, 8); expect(Math.hypot(centre.y, centre.z)).toBeLessThan(2e-6);
+});
+
+test('the complete stellar frame drifts slowly about the geographic pole without a phase seam or a refresh reset', () => {
+  const vector = (time: number, reduced = false) => new THREE.Vector3(1, 0, 0).applyMatrix3(new THREE.Matrix3().fromArray(nightSkyFrame(time, DEFAULT_LOCATION, undefined, reduced))).toArray();
+  const seconds = 12, degrees = angularDistance(vector(at), vector(at + seconds * 1000)) / RAD;
+  expect(degrees).toBeCloseTo(3 + 15.0410686 / 3600 * seconds, 5);
+  expect(degrees).toBeGreaterThan(3); expect(degrees).toBeLessThan(3.1);
+  for (const time of [at, at + 2 * 86400000, -2 * SKY_DRIFT_PERIOD_MS, 0]) {
+    const frame = nightSkyFrame(time), matrix = new THREE.Matrix3().fromArray(frame);
+    expect(matrix.determinant()).toBeCloseTo(1, 10);
+    expect(frame.slice(6)).toEqual(equatorialFrame(time).slice(6));
+    expect(nightSkyFrame(time)).toEqual(frame);
+  }
+  const boundary = Math.ceil(at / SKY_DRIFT_PERIOD_MS) * SKY_DRIFT_PERIOD_MS;
+  expect(angularDistance(vector(boundary - 1), vector(boundary + 1)) / RAD).toBeCloseTo(.000508356, 7);
+  expect(angularDistance(vector(at, true), vector(at + 12000, true)) / RAD).toBeCloseTo(.050136895, 6);
+});
+
+test('every star stays locked to the same galactic position while visual time advances, quality changes and a new sky restores the date', () => {
+  const sky = createNightSky(), replica = createNightSky();
+  const celestial = calculateCelestial(at), weather = sampleWeather(at, { kind: 'clear' });
+  const galactic = new THREE.Matrix3().set(...EQUATORIAL_TO_GALACTIC), star = new THREE.Vector3(1, 0, 0);
+  try {
+    const originalResources = [sky.stars.geometry, sky.stars.material, sky.galaxyMap];
+    for (const time of [at, at + 12000, at + 10 * 60000, at + 9 * 3600000]) {
+      sky.update(celestial, weather, time, false, 0);
+      const rotation = new THREE.Matrix3().setFromMatrix4(sky.stars.matrix);
+      const actual = star.clone().applyMatrix3(rotation).applyMatrix3(sky.worldToGalactic);
+      expect(actual.distanceTo(star.clone().applyMatrix3(galactic))).toBeLessThan(1e-10);
+      const matrix = sky.stars.matrix.elements.slice(), galaxy = sky.worldToGalactic.elements.slice();
+      replica.update(celestial, weather, time, true, 0);
+      expect(replica.stars.matrix.elements).toEqual(matrix); expect(replica.worldToGalactic.elements).toEqual(galaxy);
+      expect([sky.stars.geometry, sky.stars.material, sky.galaxyMap]).toEqual(originalResources);
+    }
+    sky.update(celestial, weather, at + 12345, false, 0, true);
+    expect(new THREE.Matrix3().setFromMatrix4(sky.stars.matrix).elements).toEqual(Array.from(equatorialFrame(at + 12345)));
+  } finally { sky.dispose(); replica.dispose(); }
 });
 
 test('twilight, clouds and visible moonlight extinguish the galaxy continuously while a set moon does not', () => {
@@ -208,4 +245,50 @@ test('actual galaxy pixels have mottled structure and real cloud alpha attenuate
   expect(errors).toEqual([]); expect(result.gpuError).toBe(0);
   expect(result.strength).toBeGreaterThan(.03); expect(result.changed).toBeGreaterThan(3000); expect(result.maxDifference).toBeGreaterThan(8);
   expect(result.without).toBeGreaterThan(100); expect(result.throughCloud).toBeLessThan(result.without * .9);
+});
+
+test('both real star and Milky Way pixels move over a twelve-second visual interval and reproduce exactly at the same date', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  await page.route('**/__night-sky-motion', route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Night sky motion pixels</title>' }));
+  await page.goto('/__night-sky-motion');
+  const result = await page.evaluate(async () => {
+    const THREE = await import('/node_modules/.vite/deps/three.js');
+    const { createEnvironmentSky } = await import('/src/environment-sky.ts');
+    const { calculateCelestial } = await import('/src/celestial-controller.ts');
+    const { sampleWeather } = await import('/src/weather-controller.ts');
+    const at = Date.parse('2026-10-31T20:00:00Z'), celestial = calculateCelestial(at, undefined, 0);
+    const weather = sampleWeather(at, { kind: 'clear', cloudCover: 0 });
+    const renderer = new THREE.WebGLRenderer({ antialias: false }); renderer.setSize(320, 240); renderer.setPixelRatio(1);
+    const target = new THREE.WebGLRenderTarget(320, 240), scene = new THREE.Scene(), sun = new THREE.Group();
+    const camera = new THREE.PerspectiveCamera(44, 4 / 3, .1, 500); camera.position.set(0, -8, 0); camera.lookAt(0, 7, -80); camera.updateMatrixWorld(true);
+    const sky = createEnvironmentSky(sun); scene.add(sky.group);
+    const stars = sky.group.getObjectByName('quiet-night-stars') as any, dome = sky.group.getObjectByName('continuous-day-night-sky') as any;
+    const pixels = (time: number, kind: 'stars' | 'galaxy') => {
+      sky.update(celestial, weather, camera, 0, time);
+      sky.moon.visible = false; stars.visible = kind === 'stars';
+      if (kind === 'stars') dome.material.uniforms.galaxyStrength.value = 0;
+      renderer.setRenderTarget(target); renderer.render(scene, camera);
+      const data = new Uint8Array(320 * 240 * 4); renderer.readRenderTargetPixels(target, 0, 0, 320, 240, data); return data;
+    };
+    const difference = (a: Uint8Array, b: Uint8Array) => {
+      let changed = 0, energy = 0;
+      for (let i = 0; i < a.length; i += 4) {
+        const delta = Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2]);
+        if (delta > 3) changed++; energy += delta;
+      }
+      return { changed, energy };
+    };
+    try {
+      const starBefore = pixels(at, 'stars'), starAfter = pixels(at + 12000, 'stars');
+      const galaxyBefore = pixels(at, 'galaxy'), galaxyAfter = pixels(at + 12000, 'galaxy');
+      return { stars: difference(starBefore, starAfter), galaxy: difference(galaxyBefore, galaxyAfter),
+        replayStars: difference(starBefore, pixels(at, 'stars')), replayGalaxy: difference(galaxyBefore, pixels(at, 'galaxy')),
+        gpuError: renderer.getContext().getError() };
+    } finally { sky.dispose(); target.dispose(); renderer.dispose(); }
+  });
+  expect(errors).toEqual([]); expect(result.gpuError).toBe(0);
+  expect(result.stars.changed).toBeGreaterThan(150); expect(result.galaxy.changed).toBeGreaterThan(500);
+  expect(result.replayStars.energy).toBe(0); expect(result.replayGalaxy.energy).toBe(0);
 });

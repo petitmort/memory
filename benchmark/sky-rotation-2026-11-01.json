@@ -1,0 +1,519 @@
+{
+  "schema": 1,
+  "dateBeijing": "2026-11-01",
+  "source": "local Codex",
+  "baseline": "28fcfd6",
+  "branch": "codex/calendar-environment-requirements",
+  "deployed": false,
+  "scope": "Only the stellar sphere and Milky Way share an additional 24-minute absolute-calendar phase; geographic pole unchanged; natural solar/lunar/weather clocks unchanged; reduced motion uses real sidereal speed.",
+  "method": {
+    "script": "scripts/measure-performance.mjs",
+    "temporaryCopy": "Changed only the package import to an absolute shared-project module and reducedMotion preference/metadata to no-preference/false. No sampler or application logic changed.",
+    "samplesPerVersion": 1,
+    "sampleMs": 5000,
+    "gpuWork": "serial, application source frozen; preview follows sampling",
+    "evidenceDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/11/01/memory-sky-rotation"
+  },
+  "before": {
+    "schema": 1,
+    "environment": {
+      "viewport": {
+        "width": 960,
+        "height": 640
+      },
+      "deviceScaleFactor": 1,
+      "cpuThrottle": 1,
+      "sampleMs": 5000,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browser": "156.0.8078.74",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "reducedMotion": false,
+      "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+      "device": {
+        "hardwareConcurrency": 10,
+        "deviceMemoryGiB": 16,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "vendor": "Google Inc. (Apple)",
+        "unmaskedRendererAvailable": true,
+        "softwareRendererDetected": false
+      }
+    },
+    "errors": [],
+    "loadingMs": 1439.9686250000002,
+    "entryMs": 8667.247875000001,
+    "before": {
+      "calls": 139,
+      "triangles": 390449,
+      "geometries": 257,
+      "textures": 41,
+      "programs": 62,
+      "pixelRatio": 1,
+      "low": false
+    },
+    "room": {
+      "calls": 139,
+      "triangles": 390449,
+      "geometries": 257,
+      "textures": 41,
+      "programs": 62,
+      "pixelRatio": 1,
+      "low": false,
+      "drawnFrames": 300,
+      "measuredFps": 59.99919733508094,
+      "frameIntervalMedianMs": 16.69999998807907,
+      "frameIntervalP95Ms": 16.80000001192093,
+      "frameSubmitP95Ms": 1.2000000029802322
+    },
+    "warnings": [],
+    "input": {
+      "events": [
+        {
+          "name": "pointerdown",
+          "durationMs": 32,
+          "inputDelayMs": 20.799999997019768,
+          "processingMs": 0.4000000059604645
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 32,
+          "inputDelayMs": 21.700000002980232,
+          "processingMs": 0.09999999403953552
+        },
+        {
+          "name": "click",
+          "durationMs": 32,
+          "inputDelayMs": 23.599999994039536,
+          "processingMs": 0.5
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 56,
+          "inputDelayMs": 17.700000002980232,
+          "processingMs": 0.20000000298023224
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 56,
+          "inputDelayMs": 17.900000005960464,
+          "processingMs": 0.09999999403953552
+        },
+        {
+          "name": "click",
+          "durationMs": 56,
+          "inputDelayMs": 18.700000002980232,
+          "processingMs": 0.20000000298023224
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 40,
+          "inputDelayMs": 15,
+          "processingMs": 0.29999999701976776
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 40,
+          "inputDelayMs": 15.399999991059303,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 40,
+          "inputDelayMs": 16.700000002980232,
+          "processingMs": 0.3999999910593033
+        }
+      ],
+      "pointerDispatchMs": [
+        21.200000002980232,
+        17.900000005960464,
+        15.200000002980232
+      ]
+    },
+    "memory": {
+      "jsHeapUsedBytes": 25718388,
+      "jsHeapTotalBytes": 53592064,
+      "documents": 5,
+      "nodes": 1442,
+      "jsEventListeners": 156
+    }
+  },
+  "after": {
+    "schema": 1,
+    "environment": {
+      "viewport": {
+        "width": 960,
+        "height": 640
+      },
+      "deviceScaleFactor": 1,
+      "cpuThrottle": 1,
+      "sampleMs": 5000,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browser": "156.0.8078.74",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "reducedMotion": false,
+      "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+      "device": {
+        "hardwareConcurrency": 10,
+        "deviceMemoryGiB": 16,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "vendor": "Google Inc. (Apple)",
+        "unmaskedRendererAvailable": true,
+        "softwareRendererDetected": false
+      }
+    },
+    "errors": [],
+    "loadingMs": 1218.0564590000004,
+    "entryMs": 8663.053958,
+    "before": {
+      "calls": 139,
+      "triangles": 390449,
+      "geometries": 257,
+      "textures": 41,
+      "programs": 62,
+      "pixelRatio": 1,
+      "low": false
+    },
+    "room": {
+      "calls": 139,
+      "triangles": 390449,
+      "geometries": 257,
+      "textures": 41,
+      "programs": 62,
+      "pixelRatio": 1,
+      "low": false,
+      "drawnFrames": 300,
+      "measuredFps": 60.005217844958224,
+      "frameIntervalMedianMs": 16.700000002980232,
+      "frameIntervalP95Ms": 18.100000008940697,
+      "frameSubmitP95Ms": 1.4000000059604645
+    },
+    "warnings": [],
+    "input": {
+      "events": [
+        {
+          "name": "pointerdown",
+          "durationMs": 40,
+          "inputDelayMs": 13.5,
+          "processingMs": 0.30000001192092896
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 40,
+          "inputDelayMs": 13.900000005960464,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 40,
+          "inputDelayMs": 15,
+          "processingMs": 0.4000000059604645
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 48,
+          "inputDelayMs": 16.80000001192093,
+          "processingMs": 0.29999999701976776
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 48,
+          "inputDelayMs": 17.100000008940697,
+          "processingMs": 0.09999999403953552
+        },
+        {
+          "name": "click",
+          "durationMs": 48,
+          "inputDelayMs": 18,
+          "processingMs": 0.20000000298023224
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 64,
+          "inputDelayMs": 35.19999998807907,
+          "processingMs": 0.20000000298023224
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 64,
+          "inputDelayMs": 35.3999999910593,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 64,
+          "inputDelayMs": 36.099999994039536,
+          "processingMs": 0.4000000059604645
+        }
+      ],
+      "pointerDispatchMs": [
+        13.800000011920929,
+        17.100000008940697,
+        35.29999999701977
+      ]
+    },
+    "memory": {
+      "jsHeapUsedBytes": 19836516,
+      "jsHeapTotalBytes": 53854208,
+      "documents": 5,
+      "nodes": 1443,
+      "jsEventListeners": 156
+    }
+  },
+  "verification": {
+    "targeted": {
+      "passed": 14,
+      "added": 4,
+      "output": "/tmp/memory-sky-rotation-targeted-tests"
+    },
+    "regression": {
+      "passed": 31,
+      "output": "/tmp/memory-sky-rotation-regression-tests"
+    },
+    "uniqueTests": 45,
+    "typescript": "passed",
+    "build": "passed; 96 modules; application355.81kB gzip132.19kB; existing Three.js large-chunk warning"
+  },
+  "production": {
+    "cases": 5,
+    "fullScreenshots": 8,
+    "motionFrames": 40,
+    "motionIntervalSeconds": 22.201,
+    "evidenceDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/11/01/memory-sky-rotation/production",
+    "review": "Desktop and phone, normal/low/reduced, day and overcast; desktop and phone book return; star/Milky Way motion reviewed against stationary geography; no errors or overflow.",
+    "results": [
+      {
+        "name": "desktop-night",
+        "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00&envWeather=few-clouds&envPhase=0&envQuality=normal&envDensity=0&envBirdDensity=0&envWind=8&envWindDirection=348",
+        "width": 1280,
+        "height": 800,
+        "reduced": false,
+        "quality": "normal",
+        "title": "潮汐之间 · Between the tides",
+        "errors": [],
+        "overflow": false,
+        "frames": [
+          {
+            "filename": "motion/frame-00.png",
+            "at": 8662.70000000298
+          },
+          {
+            "filename": "motion/frame-01.png",
+            "at": 9230.39999999106
+          },
+          {
+            "filename": "motion/frame-02.png",
+            "at": 9796.39999999106
+          },
+          {
+            "filename": "motion/frame-03.png",
+            "at": 10365.79999999702
+          },
+          {
+            "filename": "motion/frame-04.png",
+            "at": 10936
+          },
+          {
+            "filename": "motion/frame-05.png",
+            "at": 11497.59999999404
+          },
+          {
+            "filename": "motion/frame-06.png",
+            "at": 12062.89999999106
+          },
+          {
+            "filename": "motion/frame-07.png",
+            "at": 12630.70000000298
+          },
+          {
+            "filename": "motion/frame-08.png",
+            "at": 13198.20000000298
+          },
+          {
+            "filename": "motion/frame-09.png",
+            "at": 13772.09999999404
+          },
+          {
+            "filename": "motion/frame-10.png",
+            "at": 14353.39999999106
+          },
+          {
+            "filename": "motion/frame-11.png",
+            "at": 14920.89999999106
+          },
+          {
+            "filename": "motion/frame-12.png",
+            "at": 15481.59999999404
+          },
+          {
+            "filename": "motion/frame-13.png",
+            "at": 16052.29999999702
+          },
+          {
+            "filename": "motion/frame-14.png",
+            "at": 16616.5
+          },
+          {
+            "filename": "motion/frame-15.png",
+            "at": 17183.70000000298
+          },
+          {
+            "filename": "motion/frame-16.png",
+            "at": 17752.5
+          },
+          {
+            "filename": "motion/frame-17.png",
+            "at": 18320
+          },
+          {
+            "filename": "motion/frame-18.png",
+            "at": 18882.29999999702
+          },
+          {
+            "filename": "motion/frame-19.png",
+            "at": 19449.59999999404
+          },
+          {
+            "filename": "motion/frame-20.png",
+            "at": 20016.39999999106
+          },
+          {
+            "filename": "motion/frame-21.png",
+            "at": 20587.09999999404
+          },
+          {
+            "filename": "motion/frame-22.png",
+            "at": 21148.39999999106
+          },
+          {
+            "filename": "motion/frame-23.png",
+            "at": 21721.5
+          },
+          {
+            "filename": "motion/frame-24.png",
+            "at": 22299.5
+          },
+          {
+            "filename": "motion/frame-25.png",
+            "at": 22871.5
+          },
+          {
+            "filename": "motion/frame-26.png",
+            "at": 23449.20000000298
+          },
+          {
+            "filename": "motion/frame-27.png",
+            "at": 24017.39999999106
+          },
+          {
+            "filename": "motion/frame-28.png",
+            "at": 24588
+          },
+          {
+            "filename": "motion/frame-29.png",
+            "at": 25166.09999999404
+          },
+          {
+            "filename": "motion/frame-30.png",
+            "at": 25737.59999999404
+          },
+          {
+            "filename": "motion/frame-31.png",
+            "at": 26303.79999999702
+          },
+          {
+            "filename": "motion/frame-32.png",
+            "at": 26870
+          },
+          {
+            "filename": "motion/frame-33.png",
+            "at": 27432.20000000298
+          },
+          {
+            "filename": "motion/frame-34.png",
+            "at": 28004.39999999106
+          },
+          {
+            "filename": "motion/frame-35.png",
+            "at": 28569.59999999404
+          },
+          {
+            "filename": "motion/frame-36.png",
+            "at": 29139.20000000298
+          },
+          {
+            "filename": "motion/frame-37.png",
+            "at": 29716.59999999404
+          },
+          {
+            "filename": "motion/frame-38.png",
+            "at": 30301.29999999702
+          },
+          {
+            "filename": "motion/frame-39.png",
+            "at": 30863.89999999106
+          }
+        ]
+      },
+      {
+        "name": "phone-low-night",
+        "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00&envWeather=few-clouds&envPhase=0&envQuality=low&envDensity=0&envBirdDensity=0&envWind=8&envWindDirection=348",
+        "width": 390,
+        "height": 844,
+        "reduced": false,
+        "quality": "low",
+        "title": "潮汐之间 · Between the tides",
+        "errors": [],
+        "overflow": false,
+        "frames": []
+      },
+      {
+        "name": "desktop-reduced",
+        "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00&envWeather=few-clouds&envPhase=0&envQuality=normal&envDensity=0&envBirdDensity=0&envWind=8&envWindDirection=348",
+        "width": 1280,
+        "height": 800,
+        "reduced": true,
+        "quality": "normal",
+        "title": "潮汐之间 · Between the tides",
+        "errors": [],
+        "overflow": false,
+        "frames": []
+      },
+      {
+        "name": "desktop-cloudy",
+        "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00&envWeather=overcast&envPhase=0&envQuality=normal&envDensity=0&envBirdDensity=0&envWind=8&envWindDirection=348",
+        "width": 1280,
+        "height": 800,
+        "reduced": false,
+        "quality": "normal",
+        "title": "潮汐之间 · Between the tides",
+        "errors": [],
+        "overflow": false,
+        "frames": []
+      },
+      {
+        "name": "desktop-day",
+        "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envPhase=&envQuality=normal&envDensity=0&envBirdDensity=0&envWind=8&envWindDirection=348",
+        "width": 1280,
+        "height": 800,
+        "reduced": false,
+        "quality": "normal",
+        "title": "潮汐之间 · Between the tides",
+        "errors": [],
+        "overflow": false,
+        "frames": []
+      }
+    ]
+  },
+  "limitations": [
+    "Single five-second pair; not a causal speed or regression estimate.",
+    "CPU submit time excludes GPU completion.",
+    "No additional resources or render batches.",
+    "No physical-phone, Safari, battery or long-duration validation.",
+    "Normal sky rotation is artistic time compression; not real-time astronomical alignment."
+  ]
+}

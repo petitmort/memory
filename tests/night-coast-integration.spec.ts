@@ -1,4 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
+import * as THREE from 'three';
+import { EQUATORIAL_TO_GALACTIC, nightSkyFrame } from '../src/night-sky';
 
 /** Instrument only the served development module; no production test API. */
 async function observe(page: Page) {
@@ -12,10 +14,13 @@ async function observe(page: Page) {
     await route.fulfill({ response, body: source.replace(marker, `
       window.__nightCoast = {
         snapshot() {
-          const state=environment.snapshot(),stars=scene.getObjectByName('quiet-night-stars');
+          const state=environment.snapshot(),stars=scene.getObjectByName('quiet-night-stars'),dome=scene.getObjectByName('continuous-day-night-sky');
           return {timestamp:state.timestamp,paused:state.paused,updates:state.updates,low:state.low,
             weather:state.weather,night:state.celestial.night,
             starsMatrix:stars.matrixWorld.elements.slice(),
+            galaxyMatrix:dome.material.uniforms.worldToGalactic.value.elements.slice(),
+            coastMatrix:scene.getObjectByName('lighthouse-coast').matrixWorld.elements.slice(),
+            sun:state.celestial.sun.direction,moon:state.celestial.moon.direction,
             resources:{...renderer.info.memory,programs:renderer.info.programs.length}};
         },
         difference(name,uniform) {
@@ -47,6 +52,52 @@ async function enter(page: Page) {
 const snapshot = (page: Page) => page.evaluate(() => (window as any).__nightCoast.snapshot());
 const difference = (page: Page, name: string, uniform?: string) => page.evaluate(
   ({ name, uniform }) => (window as any).__nightCoast.difference(name, uniform), { name, uniform });
+
+test('the live room rotates stars and the galaxy as one slow sphere while land and celestial clocks stay stable, including reading and background recovery', async ({ browser }) => {
+  test.setTimeout(120000);
+  const context = await browser.newContext({ viewport: { width: 1000, height: 740 }, reducedMotion: 'no-preference' });
+  const page = await context.newPage(), errors = await observe(page);
+  const rotation = (state: any) => new THREE.Matrix3().setFromMatrix4(new THREE.Matrix4().fromArray(state.starsMatrix));
+  const verifyFrame = (state: any) => {
+    rotation(state).elements.forEach((value, index) => expect(value).toBeCloseTo(nightSkyFrame(state.timestamp)[index], 8));
+    const combined = new THREE.Matrix3().fromArray(state.galaxyMatrix).multiply(rotation(state));
+    const expected = new THREE.Matrix3().set(...EQUATORIAL_TO_GALACTIC);
+    combined.elements.forEach((value, index) => expect(value).toBeCloseTo(expected.elements[index], 8));
+  };
+  try {
+    await enter(page);
+    const before = await snapshot(page); verifyFrame(before);
+    await page.waitForTimeout(2500);
+    const after = await snapshot(page); verifyFrame(after);
+    const a = new THREE.Vector3(1, 0, 0).applyMatrix3(rotation(before)), b = new THREE.Vector3(1, 0, 0).applyMatrix3(rotation(after));
+    expect(a.angleTo(b) * 180 / Math.PI).toBeGreaterThan(.5);
+    expect(a.angleTo(b) * 180 / Math.PI).toBeLessThan(1.5);
+    expect(new THREE.Vector3(...before.moon).angleTo(new THREE.Vector3(...after.moon)) * 180 / Math.PI).toBeLessThan(.05);
+    expect(after.coastMatrix).toEqual(before.coastMatrix);
+    await page.locator('#open-book').click();
+    await expect(page.locator('#reader')).toHaveAttribute('data-phase', 'ready', { timeout: 45000 });
+    await expect.poll(async () => (await snapshot(page)).paused).toBe(true);
+    const paused = await snapshot(page);
+    await page.evaluate(() => { const now = Date.now; Date.now = () => now() + 60000; });
+    await page.waitForTimeout(150);
+    expect((await snapshot(page)).updates).toBe(paused.updates);
+    await page.locator('#close-book').click();
+    await expect(page.locator('#open-book')).toBeEnabled({ timeout: 45000 });
+    const restored = await snapshot(page); verifyFrame(restored);
+    expect(restored.timestamp - after.timestamp).toBeGreaterThan(60000);
+    await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => true }); document.dispatchEvent(new Event('visibilitychange')); });
+    const hidden = await snapshot(page);
+    await page.evaluate(() => { const now = Date.now; Date.now = () => now() + 12000; });
+    await page.waitForTimeout(150);
+    expect((await snapshot(page)).updates).toBe(hidden.updates);
+    await page.evaluate(() => { delete (document as any).hidden; document.dispatchEvent(new Event('visibilitychange')); });
+    await expect.poll(async () => (await snapshot(page)).updates).toBeGreaterThan(hidden.updates);
+    const resumed = await snapshot(page); verifyFrame(resumed);
+    expect(resumed.resources).toEqual(before.resources);
+    expect(resumed.coastMatrix).toEqual(before.coastMatrix);
+    expect(errors).toEqual([]);
+  } finally { await context.close(); }
+});
 
 test('stars, galactic texture, the lighthouse and connected cliff path render through desktop and phone windows', async ({ browser }) => {
   test.setTimeout(180000);

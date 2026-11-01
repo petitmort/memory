@@ -136,7 +136,7 @@ export function createEnvironmentController(bindings: Bindings) {
       if (progress === 1) transition = undefined;
     } else weather = target;
     const stormFrame = storm.update(timestamp, weather, low, reduced || !outdoors, celestial.daylight);
-    sky.update(celestial, weather, camera, stormFrame.flash, timestamp, low);
+    sky.update(celestial, weather, camera, stormFrame.flash, timestamp, low, reduced);
     const d = celestial.daylight, cover = weather.cloudCover;
     const sunlight = THREE.MathUtils.smoothstep(celestial.sun.altitude, -.02, .23) * (1 - cover * .84);
     const moonlight = celestial.night * celestial.moonIllumination * THREE.MathUtils.smoothstep(celestial.moon.altitude, -.02, .15) * (1 - cover * .86);

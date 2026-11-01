@@ -5,6 +5,8 @@ import type { WeatherState } from "./weather-controller";
 
 const RAD = Math.PI / 180, TAU = Math.PI * 2;
 export const STAR_COUNT = 6000, LOW_STAR_COUNT = 2800;
+/** One gentle visual revolution in 24 minutes, in addition to real sidereal drift. */
+export const SKY_DRIFT_PERIOD_MS = 24 * 60 * 1000;
 /** J2000 equatorial Cartesian basis to IAU galactic Cartesian basis (row-major). */
 export const EQUATORIAL_TO_GALACTIC = [
   -.0548755604, -.8734370902, -.4838350155,
@@ -16,8 +18,8 @@ export const EQUATORIAL_TO_GALACTIC = [
  * Column-major equatorial-to-world rotation. Its Z axis is the celestial pole,
  * tilted by the observer's latitude, rather than an arbitrary world-Y spin.
  */
-export function equatorialFrame(timestamp: number, location: CalendarLocation = DEFAULT_LOCATION, out = new Float64Array(9)) {
-  const theta = greenwichSiderealAngle(timestamp) + location.longitude * RAD;
+export function equatorialFrame(timestamp: number, location: CalendarLocation = DEFAULT_LOCATION, out = new Float64Array(9), drift = 0) {
+  const theta = greenwichSiderealAngle(timestamp) + location.longitude * RAD + drift;
   const latitude = location.latitude * RAD, yaw = location.northYaw ?? 0;
   const st = Math.sin(theta), ct = Math.cos(theta), sp = Math.sin(latitude), cp = Math.cos(latitude);
   const sy = Math.sin(yaw), cy = Math.cos(yaw);
@@ -25,6 +27,16 @@ export function equatorialFrame(timestamp: number, location: CalendarLocation = 
   out[3] = cy * ct + sy * sp * st; out[4] = cp * st; out[5] = -sy * ct + cy * sp * st;
   out[6] = -sy * cp; out[7] = sp; out[8] = -cy * cp;
   return out;
+}
+
+/**
+ * The whole stellar sphere shares one calendar-derived presentation phase.
+ * Modulo wraps only the angle, so midnight, refresh and pauses cannot restart
+ * the motion. Sun, moon, weather and the geographic pole retain their clocks.
+ */
+export function nightSkyFrame(timestamp: number, location: CalendarLocation = DEFAULT_LOCATION, out = new Float64Array(9), reduced = false) {
+  const phase = reduced ? 0 : ((timestamp % SKY_DRIFT_PERIOD_MS + SKY_DRIFT_PERIOD_MS) % SKY_DRIFT_PERIOD_MS) / SKY_DRIFT_PERIOD_MS * TAU;
+  return equatorialFrame(timestamp, location, out, phase);
 }
 
 export function stellarDirection(rightAscension: number, declination: number, timestamp: number, location: CalendarLocation = DEFAULT_LOCATION): Direction3 {
@@ -158,9 +170,9 @@ export function createNightSky(location: CalendarLocation = DEFAULT_LOCATION) {
   let disposed = false;
   return {
     stars, galaxyMap, worldToGalactic, galaxyStrength,
-    update(celestial: CelestialState, weather: WeatherState, timestamp: number, low: boolean, flash: number) {
+    update(celestial: CelestialState, weather: WeatherState, timestamp: number, low: boolean, flash: number, reduced = false) {
       if (disposed) return;
-      equatorialFrame(timestamp, location, frame);
+      nightSkyFrame(timestamp, location, frame, reduced);
       rotation.fromArray(frame);
       worldToGalactic.copy(galactic).multiply(inverse.copy(rotation).transpose());
       stars.matrix.set(frame[0], frame[3], frame[6], 0, frame[1], frame[4], frame[7], -8, frame[2], frame[5], frame[8], 0, 0, 0, 0, 1);
