@@ -22,12 +22,12 @@ export function sampleLighthouseBeacon(timestamp: number, sunAltitude: number, w
   const angle = reduced ? seawardAngle : ((timestamp % PERIOD + PERIOD) % PERIOD) / PERIOD * TAU;
   const dx = Math.cos(angle), dz = Math.sin(angle);
   const dot = dx * path.tangentX + dz * path.tangentZ;
-  // The shoreward half is intercepted by the pier/land and never sweeps the
-  // room. Fade the edge of that sector rather than blink the beam on and off.
+  // Coastal housing attenuates the shoreward sweep without extinguishing an
+  // entire half-turn. The air/sea shaders fade the actual near-shore boundary.
   const seaward = THREE.MathUtils.smoothstep(dot, -.16, .24);
   const twilight = 1 - THREE.MathUtils.smoothstep(sunAltitude, -3 * radians, 8 * radians);
   const haze = clamp(1 - weather.visibility + weather.precipitation * .22, 0, 1);
-  const beamStrength = twilight * seaward * (.38 + haze * .46) * (reduced ? .55 : 1) * (low ? .8 : 1);
+  const beamStrength = twilight * (.4 + .6 * seaward) * (.6 + haze * .4) * (reduced ? .55 : 1) * (low ? .8 : 1);
   const horizontal = Math.max(0, origin.y - PIER_SEA_LEVEL) / SLOPE;
   return {
     timestamp, angle, twilight, seaward, beamStrength, origin: { ...origin },
@@ -37,7 +37,7 @@ export function sampleLighthouseBeacon(timestamp: number, sunAltitude: number, w
   };
 }
 
-/** A faint, narrow atmospheric beam; no extra scene or shadow light. */
+/** A soft-cored atmospheric beam; one pooled mesh, no extra light or shadow. */
 export function createLighthouseBeacon(origin: Position) {
   const group = new THREE.Group(); group.name = "rotating-lighthouse-beacon";
   group.position.set(origin.x, origin.y, origin.z);
@@ -57,7 +57,7 @@ export function createLighthouseBeacon(origin: Position) {
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
   geometry.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
   geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2)); geometry.setIndex(indices);
-  const material = new THREE.ShaderMaterial({ transparent: true, side: THREE.DoubleSide, depthWrite: false, fog: true, toneMapped: false,
+  const material = new THREE.ShaderMaterial({ transparent: true, side: THREE.DoubleSide, depthWrite: false, fog: true, toneMapped: false, blending: THREE.AdditiveBlending,
     uniforms: { ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog), strength: { value: 0 }, seaLevel: { value: PIER_SEA_LEVEL } },
     vertexShader: `varying vec2 vUv;varying vec3 vNormal,vView;varying float vHeight,vWorldZ;
       #include <fog_pars_vertex>
@@ -69,11 +69,14 @@ export function createLighthouseBeacon(origin: Position) {
     fragmentShader: `uniform float strength,seaLevel;varying vec2 vUv;varying vec3 vNormal,vView;varying float vHeight,vWorldZ;
       #include <fog_pars_fragment>
       void main(){if(vHeight<seaLevel+.025||vWorldZ>-5.||strength<.001)discard;
-        float facing=pow(abs(dot(normalize(vNormal),normalize(vView))),.65);
-        float envelope=smoothstep(.005,.04,vUv.y)*(1.-smoothstep(.65,1.,vUv.y));
+        float facing=pow(abs(dot(normalize(vNormal),normalize(vView))),1.35);
+        float envelope=smoothstep(.001,.012,vUv.y)*(1.-smoothstep(.55,1.,vUv.y));
         float waterFade=smoothstep(seaLevel+.025,seaLevel+.5,vHeight);
-        float alpha=strength*.065*facing*envelope*waterFade;
-        if(alpha<.0008)discard;gl_FragColor=vec4(.92,.77,.51,alpha);
+        float shoreFade=1.-smoothstep(-18.,-5.,vWorldZ);
+        float core=pow(facing,4.);
+        float alpha=strength*(.045*facing+.32*core)*envelope*waterFade*shoreFade*mix(1.,.6,vUv.y);
+        vec3 color=mix(vec3(.95,.76,.46),vec3(1.,.93,.76),pow(facing,3.));
+        if(alpha<.0008)discard;gl_FragColor=vec4(color,alpha);
         #include <colorspace_fragment>
         #include <fog_fragment>
       }`,

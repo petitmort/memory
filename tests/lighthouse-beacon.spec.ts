@@ -34,14 +34,15 @@ test('beacon rotation follows a stable 28-second calendar phase rather than rend
     .toEqual(sampleLighthouseBeacon(27999, -8 * radians, clear, origin).direction);
 });
 
-test('the sea beam fades through its seaward sector, stays on the sea and never illuminates toward the shore', () => {
+test('the beam remains continuous through the full turn, attenuates toward shore and meets the sea along its true direction', () => {
   const path = samplePierPath(1);
   let visible = 0, hidden = 0, previous: ReturnType<typeof sampleLighthouseBeacon> | undefined;
   for (let timestamp = 0; timestamp <= 28000; timestamp += 50) {
     const state = sampleLighthouseBeacon(timestamp, -8 * radians, clear, origin);
     const direction = state.direction.x * path.tangentX + state.direction.z * path.tangentZ;
-    if (direction <= -.16) { expect(state.beamStrength).toBe(0); hidden++; }
-    if (direction >= .24) { expect(state.beamStrength).toBeGreaterThan(0); visible++; }
+    if (direction <= -.16) { expect(state.beamStrength).toBeCloseTo(.24, 10); hidden++; }
+    if (direction >= .24) { expect(state.beamStrength).toBeCloseTo(.6, 10); visible++; }
+    expect(state.beamStrength).toBeGreaterThan(0); expect(state.beamStrength).toBeLessThanOrEqual(.6);
     if (previous) expect(Math.abs(state.beamStrength - previous.beamStrength)).toBeLessThan(.025);
     expect(state.seaIntersection.y).toBe(PIER_SEA_LEVEL);
     const dx = state.seaIntersection.x - origin.x, dz = state.seaIntersection.z - origin.z;
@@ -72,6 +73,7 @@ test('one pooled texture-free unlit beam aligns with its sampled world direction
   expect(beacon.group.children).toHaveLength(1);
   expect(material.uniforms.strength.value).toBe(0);
   expect(material.depthWrite).toBe(false);
+  expect(material.blending).toBe(THREE.AdditiveBlending);
   expect(material.uniforms.seaLevel.value).toBe(PIER_SEA_LEVEL);
   const lights: THREE.Light[] = [], textures: THREE.Texture[] = [];
   beacon.group.traverse(object => { if (object instanceof THREE.Light) lights.push(object); });

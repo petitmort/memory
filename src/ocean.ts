@@ -151,7 +151,8 @@ export function createOcean() {
           float vertical=exp(-2.*pow((vWorld.y-height)/radius,2.));
           float reach=smoothstep(18.,45.,along)*(1.-smoothstep(125.,150.,along));
           float broken=.18+.82*smoothstep(-.25,.65,wave.x+grain.x*.3);
-          color+=vec3(1.,.76,.39)*beaconStrength*horizontal*vertical*reach*broken*.65*(1.-haze*.7);
+          float shoreFade=1.-smoothstep(-18.,-5.,vWorld.z);
+          color+=vec3(1.,.76,.39)*beaconStrength*horizontal*vertical*reach*broken*.65*(1.-haze*.7)*shoreFade;
         }
         // A broad, broken silver reflection follows the same offshore source.
         // This is a short radiance pulse, not a new lamp, mesh or shadow pass.

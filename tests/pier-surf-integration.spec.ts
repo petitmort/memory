@@ -166,7 +166,7 @@ test('the rotating dusk beacon and its matching broken sea illumination have act
     await enter(page, true);
     const resources = (await snapshot(page)).resources;
     const samples = [];
-    for (const phase of [13000, 16000, 18000, 19000, 20000, 22000, 25000]) {
+    for (const phase of [1000, 5000, 9000, 13000, 16000, 18000, 19000, 20000, 22000, 25000]) {
       const air = await page.evaluate(phase => (window as any).__pierReview.beaconFrame(phase, 'air'), phase);
       const sea = await page.evaluate(phase => (window as any).__pierReview.beaconFrame(phase, 'sea'), phase);
       samples.push({ phase, air: air.changed, sea: sea.changed, airEnergy: air.energy, seaEnergy: sea.energy, direction: air.beam.direction });
@@ -176,6 +176,7 @@ test('the rotating dusk beacon and its matching broken sea illumination have act
     }
     console.log(JSON.stringify({ mobile, beaconPixels: samples, errors }));
     expect(samples.filter(sample => sample.air > 5).length, 'Atmospheric beam must visibly sweep').toBeGreaterThanOrEqual(2);
+    expect(Math.max(...samples.map(sample => sample.airEnergy)), 'The beam needs clearly luminous window pixels, not only a barely detectable difference').toBeGreaterThan(mobile ? 70000 : 160000);
     expect(samples.filter(sample => sample.sea > 5).length, 'The rotating beam must illuminate the actual sea').toBeGreaterThanOrEqual(2);
     expect(new Set(samples.map(sample => sample.seaEnergy)).size).toBeGreaterThan(3);
     expect((await snapshot(page)).resources).toEqual(resources);
