@@ -3,6 +3,7 @@ import { sampleWaterHeight } from "./water-surface";
 import { createSailingShip } from "./sailing-ship";
 import { createCoastalEnvironment } from "./coastal-environment";
 import { createVesselController } from "./vessel-controller";
+import { createLighthouseCoast } from "./lighthouse-coast";
 
 // Metres in the world; positions are composed through the study's real window.
 export const seaComposition = {
@@ -21,6 +22,8 @@ export function createSeascape(dynamic = false) {
   if (vessels) group.add(vessels.group);
   const coast = createCoastalEnvironment();
   group.add(coast.group);
+  const lighthouseCoast = createLighthouseCoast();
+  group.add(lighthouseCoast.group);
 
   const helios = new THREE.Group(); helios.name = "helios-radiant-sun";
   helios.position.copy(seaComposition.sun); group.add(helios);
@@ -53,7 +56,7 @@ export function createSeascape(dynamic = false) {
   corona.scale.set(7.8, 7.8, 1); corona.position.z = -3.5; helios.add(corona);
   helios.lookAt(new THREE.Vector3(1.1, 1.65, .75));
 
-  return { group, sunGroup: helios, vessels, update(t: number, reduced: boolean) {
+  return { group, sunGroup: helios, vessels, lighthouseCoast, update(t: number, reduced: boolean) {
     const a = reduced ? t * .12 : t;
     const waterTime = t * (reduced ? .15 : 1);
     const waterline = sampleWaterHeight(ship.position.x, ship.position.z, waterTime);

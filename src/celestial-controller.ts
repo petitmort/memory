@@ -111,10 +111,15 @@ function position(
   return { altitude, azimuth, direction: [Math.cos(yaw) * x + Math.sin(yaw) * z, Math.sin(altitude), -Math.sin(yaw) * x + Math.cos(yaw) * z] };
 }
 
+/** Mean Greenwich sidereal angle, shared by the solar/lunar and stellar frames. */
+export function greenwichSiderealAngle(timestamp: number): number {
+  const days = timestamp / DAY - 10957.5, t = days / 36525;
+  return positiveModulo((280.46061837 + 360.98564736629 * days + .000387933 * t * t - t * t * t / 38710000) * RAD, TAU);
+}
+
 function orbitalState(timestamp: number, location: CalendarLocation) {
   const days = timestamp / DAY - 10957.5;
-  const t = days / 36525;
-  const sidereal = (280.46061837 + 360.98564736629 * days + .000387933 * t * t - t * t * t / 38710000) * RAD;
+  const sidereal = greenwichSiderealAngle(timestamp);
   const sun = solarOrbit(days), moon = lunarOrbit(days, sun.obliquity);
   return { sun, moon, sidereal, sunPosition: position(sun.rightAscension, sun.declination, sidereal, location) };
 }

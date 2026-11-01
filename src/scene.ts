@@ -313,6 +313,7 @@ export function createScene(
     sunGroup: mythology.seascape.sunGroup, vessels: mythology.seascape.vessels!,
     invalidate: requestRender,
     onSound: onEnvironmentSound,
+    onDaylight: value => mythology.seascape.lighthouseCoast.update(value),
     quality(value) { qualityPolicy.setManual(value); applyQuality(qualityPolicy.low); },
   });
   const rug = box(
@@ -825,7 +826,7 @@ export function createScene(
     // Asset factories own their loading cancellation and private resources.
     // Release the remaining room resources once, including Points and uniforms.
     const resources = collectResources(scene);
-    for (const owned of [cat.group, recordPlayer.group, deskClock.group, courtyardFog.group, ...environment.ownedGroups]) {
+    for (const owned of [cat.group, recordPlayer.group, deskClock.group, courtyardFog.group, mythology.seascape.lighthouseCoast.group, ...environment.ownedGroups]) {
       const asset = collectResources(owned);
       asset.geometries.forEach(value => resources.geometries.delete(value));
       asset.materials.forEach(value => resources.materials.delete(value));
@@ -840,6 +841,7 @@ export function createScene(
     lounge.dispose();
     courtyardFog.dispose();
     environment.dispose();
+    mythology.seascape.lighthouseCoast.dispose();
     roomLight.dispose();
     bouquet.traverse(object => { if (object instanceof THREE.InstancedMesh) object.dispose(); });
     resources.geometries.forEach(value => value.dispose());

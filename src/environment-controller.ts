@@ -22,6 +22,7 @@ type Bindings = {
   invalidate: () => void;
   quality: (value?: boolean) => void;
   onSound?: (frame: EnvironmentSoundFrame) => void;
+  onDaylight?: (daylight: number) => void;
 };
 const lerp = THREE.MathUtils.lerp;
 function interpolateCelestial(a: CelestialState, b: CelestialState, f: number): CelestialState {
@@ -45,7 +46,7 @@ function interpolateCelestial(a: CelestialState, b: CelestialState, f: number): 
 export function createEnvironmentController(bindings: Bindings) {
   const { scene, camera, ambient, sun, fill, ocean, vessels } = bindings;
   const options = readEnvironmentOptions();
-  const sky = createEnvironmentSky(bindings.sunGroup);
+  const sky = createEnvironmentSky(bindings.sunGroup, options.location);
   const clouds = createCloudController(), particles = createWeatherController();
   const birds = createBirdController(), storm = createStormController();
   scene.add(sky.group, clouds.group, particles.group, birds.group, storm.group);
@@ -120,6 +121,7 @@ export function createEnvironmentController(bindings: Bindings) {
       celestialKey = second;
     }
     celestial = interpolateCelestial(...celestialPair, timestamp / 1000 - second);
+    bindings.onDaylight?.(celestial.daylight);
     if (tenSeconds !== weatherKey) {
       const config = { kind: options.weather, cloudCover: options.cloudCover, windSpeed: options.windSpeed,
         windDirection:options.windDirection, precipitation:options.precipitation, waveScale:options.waveScale, thunder:options.thunder, timeZone: options.location.timeZone };
@@ -133,7 +135,7 @@ export function createEnvironmentController(bindings: Bindings) {
       if (progress === 1) transition = undefined;
     } else weather = target;
     const stormFrame = storm.update(timestamp, weather, low, reduced || !outdoors, celestial.daylight);
-    sky.update(celestial, weather, camera, stormFrame.flash);
+    sky.update(celestial, weather, camera, stormFrame.flash, timestamp, low);
     const d = celestial.daylight, cover = weather.cloudCover;
     const sunlight = THREE.MathUtils.smoothstep(celestial.sun.altitude, -.02, .23) * (1 - cover * .84);
     const moonlight = celestial.night * celestial.moonIllumination * THREE.MathUtils.smoothstep(celestial.moon.altitude, -.02, .15) * (1 - cover * .86);

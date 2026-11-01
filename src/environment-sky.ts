@@ -1,22 +1,34 @@
 import * as THREE from "three";
 import type { CelestialState } from "./celestial-controller";
 import type { WeatherState } from "./weather-controller";
+import { DEFAULT_LOCATION, type CalendarLocation } from "./calendar-seed";
+import { createNightSky } from "./night-sky";
 
 /** Sky and moon use shared uniforms, never an external image or another light. */
-export function createEnvironmentSky(sunGroup: THREE.Group) {
+export function createEnvironmentSky(sunGroup: THREE.Group, location: CalendarLocation = DEFAULT_LOCATION) {
   const group = new THREE.Group(); group.name = "calendar-sky";
   const horizon = new THREE.Color(), zenith = new THREE.Color();
+  const nightSky = createNightSky(location);
   const material = new THREE.ShaderMaterial({
     side: THREE.BackSide, depthWrite: false, toneMapped: false,
-    uniforms: { horizon: { value: horizon }, zenith: { value: zenith } },
+    uniforms: { horizon: { value: horizon }, zenith: { value: zenith }, galaxyMap: { value: nightSky.galaxyMap },
+      worldToGalactic: { value: nightSky.worldToGalactic }, galaxyStrength: nightSky.galaxyStrength },
     vertexShader: "varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
     fragmentShader: `varying vec3 vDirection;uniform vec3 horizon,zenith;
-      void main(){float h=normalize(vDirection).y;gl_FragColor=vec4(mix(horizon,zenith,smoothstep(-.035,.32,h)),1.);
+      uniform sampler2D galaxyMap;uniform mat3 worldToGalactic;uniform float galaxyStrength;
+      void main(){vec3 direction=normalize(vDirection);float h=direction.y;
+        vec3 color=mix(horizon,zenith,smoothstep(-.035,.32,h));
+        if(galaxyStrength>.00001&&h>-.015){
+          vec3 g=normalize(worldToGalactic*direction);
+          vec2 uv=vec2(atan(g.y,g.x)/6.28318530718+.5,asin(clamp(g.z,-1.,1.))/3.14159265359+.5);
+          color+=texture2D(galaxyMap,uv).rgb*galaxyStrength*smoothstep(-.015,.12,h);
+        }
+        gl_FragColor=vec4(color,1.);
       #include <colorspace_fragment>
       }`,
   });
   const dome = new THREE.Mesh(new THREE.SphereGeometry(350, 24, 12), material);
-  dome.name = "continuous-day-night-sky"; dome.renderOrder = -10; group.add(dome);
+  dome.name = "continuous-day-night-sky"; dome.position.y = -8; dome.renderOrder = -10; group.add(dome);
   const moonMaterial = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, toneMapped: false,
     uniforms: { light: { value: new THREE.Vector3(0, 0, 1) }, opacity: { value: 1 } },
@@ -32,24 +44,17 @@ export function createEnvironmentSky(sunGroup: THREE.Group) {
   });
   const moon = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 5.2), moonMaterial);
   moon.name = "continuous-phase-moon"; group.add(moon);
-  const vertices: number[] = [];
-  let seed = 942031;
-  const random = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-  for (let i = 0; i < 115; i++) {
-    const y = .03 + random() * .97, angle = random() * Math.PI * 2, r = Math.sqrt(1 - y * y);
-    vertices.push(Math.cos(angle) * r * 280, y * 280, Math.sin(angle) * r * 280);
-  }
-  const starsGeometry = new THREE.BufferGeometry(); starsGeometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-  const starsMaterial = new THREE.PointsMaterial({ color: "#b3c5d8", size: 1.1, sizeAttenuation: false, transparent: true, opacity: 0, depthWrite: false, fog: false });
-  const stars = new THREE.Points(starsGeometry, starsMaterial); stars.name = "quiet-night-stars"; group.add(stars);
+  group.add(nightSky.stars);
   const nightHorizon = new THREE.Color("#162538"), dayHorizon = new THREE.Color("#a4cbdc");
-  const nightZenith = new THREE.Color("#061020"), dayZenith = new THREE.Color("#4b95be");
+  const nightZenith = new THREE.Color("#071426"), dayZenith = new THREE.Color("#4b95be");
   const sunset = new THREE.Color("#e1a17b"), gray = new THREE.Color("#899aa5"), cold = new THREE.Color("#96aebb");
   const solarWhite = new THREE.Color("#fff9e8"), solarWarm = new THREE.Color("#ffd18a");
   const lightningWhite = new THREE.Color("#d9e7f1");
+  let disposed = false;
   return {
-    group, horizon, zenith, moon, warmObjects: [group, moon, stars, sunGroup],
-    update(celestial: CelestialState, weather: WeatherState, camera: THREE.Camera, flash = 0) {
+    group, horizon, zenith, moon, warmObjects: [group, moon, nightSky.stars, sunGroup],
+    update(celestial: CelestialState, weather: WeatherState, camera: THREE.Camera, flash = 0, timestamp = 946728000000, low = false) {
+      if (disposed) return;
       const d = celestial.daylight, overcast = THREE.MathUtils.smoothstep(weather.cloudCover, .12, .98);
       horizon.copy(nightHorizon).lerp(dayHorizon, d);
       zenith.copy(nightZenith).lerp(dayZenith, d);
@@ -77,9 +82,14 @@ export function createEnvironmentSky(sunGroup: THREE.Group) {
       moon.lookAt(camera.position);
       moonMaterial.uniforms.light.value.fromArray(celestial.moonLightDirection);
       moonMaterial.uniforms.opacity.value = THREE.MathUtils.smoothstep(celestial.moon.altitude, -.035, .025) * (1 - weather.cloudCover * .88) * (.18 + .82 * (1 - d));
-      starsMaterial.opacity = celestial.night * (1 - weather.cloudCover) * .55 * (1 - celestial.moonIllumination * .3);
+      nightSky.update(celestial, weather, timestamp, low, flash);
       group.userData.daylight = d; group.userData.moonPhase = celestial.moonPhase;
+      group.userData.timestamp = timestamp; group.userData.galaxyStrength = nightSky.galaxyStrength.value;
     },
-    dispose() { group.removeFromParent(); dome.geometry.dispose(); material.dispose(); moon.geometry.dispose(); moonMaterial.dispose(); starsGeometry.dispose(); starsMaterial.dispose(); group.clear(); },
+    dispose() {
+      if (disposed) return;
+      disposed = true;
+      group.removeFromParent(); dome.geometry.dispose(); material.dispose(); moon.geometry.dispose(); moonMaterial.dispose(); nightSky.dispose(); group.clear();
+    },
   };
 }
