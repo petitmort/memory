@@ -31,6 +31,7 @@ import type { EnvironmentSoundFrame } from "./weather-audio";
 import { createRoomLight, type RoomLightSettings } from "./room-light";
 import { createDeskClock } from "./desk-clock";
 import { clockReading } from "./desk-clock-time";
+import type { TimeFlowFrame, TimeFlowSettings } from "./environment-time";
 
 export type PageProjection = { corners: { x: number; y: number }[] };
 export type BookProjection = PageProjection & { pages: [PageProjection, PageProjection] };
@@ -54,6 +55,7 @@ export function createScene(
   onCatInteract?: () => boolean,
   onFeedbackVisibility?: (visible: boolean) => void,
   onEnvironmentSound?: (frame: EnvironmentSoundFrame) => void,
+  onEnvironmentTime?: (frame: TimeFlowFrame) => void,
 ) {
   const listeners = new AbortController();
   const listenerOptions = { signal: listeners.signal };
@@ -313,6 +315,7 @@ export function createScene(
     sunGroup: mythology.seascape.sunGroup, vessels: mythology.seascape.vessels!,
     invalidate: requestRender,
     onSound: onEnvironmentSound,
+    onTime: onEnvironmentTime,
     onDaylight: value => mythology.seascape.lighthouseCoast.update(value),
     onCoastFrame(waterTime, weather, isLow, reduced, daylight, active, timestamp, sunAltitude) {
       const surf = mythology.seascape.pierSurf;
@@ -407,6 +410,16 @@ export function createScene(
   table.add(deskClock.group);
   const clockStatus = document.getElementById("desk-clock-status");
   let clockMinute: number | undefined;
+  function syncDeskClock() {
+    const visible = environment.isRealtime();
+    if (roomRevealed && visible && !deskClock.group.visible) { deskClock.resume(); clockMinute = undefined; }
+    deskClock.group.visible = roomRevealed && visible;
+    if (clockStatus && clockStatus.hidden !== !visible) {
+      clockStatus.hidden = !visible;
+      if (!visible) clockStatus.textContent = "";
+    }
+    return visible;
+  }
   const bookHinge = album.hinge;
   const bouquet = createBouquet();
   bouquet.name = "bouquet";
@@ -1028,7 +1041,7 @@ export function createScene(
       mythology.update(t, reducedMotion);
       if (cat.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
       if (recordPlayer.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
-      if (!readerBackdropFrozen) {
+      if (syncDeskClock() && !readerBackdropFrozen) {
         const clockNow = Date.now();
         // Keep the nearby album cover's opening space clear of moving flaps.
         deskClock.update(clockNow, t * 1000, reducedMotion || current === "book");
@@ -1543,6 +1556,14 @@ export function createScene(
     setRoomLight(settings: RoomLightSettings) {
       if (disposed || unavailableError) return;
       roomLight.setSettings(settings);
+      requestRender();
+    },
+    getEnvironmentTime() { return environment.getTime(); },
+    setTimeFlow(patch: Partial<TimeFlowSettings>) {
+      if (disposed || unavailableError) return;
+      environment.setTimeFlow(patch);
+      if (syncDeskClock()) { deskClock.resume(); clockMinute = undefined; }
+      sun.shadow.needsUpdate = true;
       requestRender();
     },
     setRecordPlaying(playing: boolean) {

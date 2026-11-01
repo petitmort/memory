@@ -34,8 +34,8 @@ export function equatorialFrame(timestamp: number, location: CalendarLocation = 
  * Modulo wraps only the angle, so midnight, refresh and pauses cannot restart
  * the motion. Sun, moon, weather and the geographic pole retain their clocks.
  */
-export function nightSkyFrame(timestamp: number, location: CalendarLocation = DEFAULT_LOCATION, out = new Float64Array(9), reduced = false) {
-  const phase = reduced ? 0 : ((timestamp % SKY_DRIFT_PERIOD_MS + SKY_DRIFT_PERIOD_MS) % SKY_DRIFT_PERIOD_MS) / SKY_DRIFT_PERIOD_MS * TAU;
+export function nightSkyFrame(timestamp: number, location: CalendarLocation = DEFAULT_LOCATION, out = new Float64Array(9), reduced = false, motionTimestamp = timestamp) {
+  const phase = reduced ? 0 : ((motionTimestamp % SKY_DRIFT_PERIOD_MS + SKY_DRIFT_PERIOD_MS) % SKY_DRIFT_PERIOD_MS) / SKY_DRIFT_PERIOD_MS * TAU;
   return equatorialFrame(timestamp, location, out, phase);
 }
 
@@ -170,9 +170,9 @@ export function createNightSky(location: CalendarLocation = DEFAULT_LOCATION) {
   let disposed = false;
   return {
     stars, galaxyMap, worldToGalactic, galaxyStrength,
-    update(celestial: CelestialState, weather: WeatherState, timestamp: number, low: boolean, flash: number, reduced = false) {
+    update(celestial: CelestialState, weather: WeatherState, timestamp: number, low: boolean, flash: number, reduced = false, motionTimestamp = timestamp) {
       if (disposed) return;
-      nightSkyFrame(timestamp, location, frame, reduced);
+      nightSkyFrame(timestamp, location, frame, reduced, motionTimestamp);
       rotation.fromArray(frame);
       worldToGalactic.copy(galactic).multiply(inverse.copy(rotation).transpose());
       stars.matrix.set(frame[0], frame[3], frame[6], 0, frame[1], frame[4], frame[7], -8, frame[2], frame[5], frame[8], 0, 0, 0, 0, 1);

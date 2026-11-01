@@ -22,12 +22,14 @@ async function controllerPage(page: Page, query: string, wall: number) {
       sunGroup: new THREE.Group(), vessels: createVesselController(),
       ambient: new THREE.HemisphereLight(), sun: new THREE.DirectionalLight(), fill: new THREE.DirectionalLight(),
       invalidate() {}, quality() {},
+      onSound(frame: any) { host.__soundFrame = frame; },
+      onCoastFrame(_water: any, _weather: any, _low: any, _reduced: any, _day: any, _active: any, at: number) { host.__coastTime = at; },
     });
     let controller = create();
     host.__adapter = {
       step(wallDelta = 0, perfDelta = wallDelta) {
         clocks.wall += wallDelta; clocks.perf += perfDelta;
-        controller.update(20, false, true, true);
+        controller.update(20, false, host.__adapter.reduced !== false, true);
         return controller.snapshot();
       },
       patch(id: string, value: string) {
@@ -36,6 +38,7 @@ async function controllerPage(page: Page, query: string, wall: number) {
       },
       refresh() { controller.dispose(); controller = create(); return this.step(); },
       pause() { controller.pause(); }, resume() { controller.resume(); },
+      setTimeFlow(patch: any) { controller.setTimeFlow(patch); return this.step(); },
       dispose() { controller.dispose(); ocean.geometry.dispose(); ocean.material.dispose(); },
     };
     host.__adapter.step();
@@ -91,6 +94,38 @@ test('the adapter stages clouds before rain over six seconds after date jumps an
   expect(result.back.weather.precipitation).toBe(0);
 });
 
+test('free time advances astronomy but keeps vessels on their natural schedule and resumes without replaying background frames', async ({ page }) => {
+  await controllerPage(page, '?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envDensity=3&envRoute=left-to-right&envVessel=motor-yacht', Date.UTC(2026, 9, 31, 10));
+  const result = await page.evaluate(() => {
+    const adapter = (window as any).__adapter;
+    const before = adapter.step(), free = adapter.setTimeFlow({ mode: 'free', speed: 3600 });
+    const after = adapter.step(1000);
+    const stopped = adapter.setTimeFlow({ speed: 0 }), waiting = adapter.step(5000);
+    adapter.setTimeFlow({ speed: 60 }); const reading = adapter.step();
+    adapter.pause(); const paused = adapter.step(120000); adapter.resume(); const resumed = adapter.step();
+    adapter.setTimeFlow({ speed: 0 }); adapter.patch('env-date', '2026-11-01T22:00'); const seek = adapter.step();
+    const real = adapter.setTimeFlow({ mode: 'realtime' }); adapter.dispose();
+    return { before, free, after, stopped, waiting, reading, paused, resumed, seek, real };
+  });
+  expect(result.free.timestamp).toBe(result.before.timestamp);
+  expect(result.after.timestamp - result.free.timestamp).toBe(3600000);
+  expect(result.after.motionTimestamp - result.free.motionTimestamp).toBe(1000);
+  expect(result.after.vessels.length).toBeGreaterThan(0);
+  for (const vessel of result.after.vessels) {
+    const earlier = result.free.vessels.find((value: typeof vessel) => value.id === vessel.id);
+    if (!earlier) continue;
+    const distance = Math.hypot(vessel.position[0] - earlier.position[0], vessel.position[2] - earlier.position[2]);
+    expect(distance).toBeLessThan(2);
+  }
+  expect(result.waiting.timestamp).toBe(result.stopped.timestamp);
+  expect(result.waiting.motionTimestamp - result.stopped.motionTimestamp).toBe(5000);
+  expect(result.paused.updates).toBe(result.reading.updates);
+  expect(result.resumed.timestamp - result.reading.timestamp).toBe(120000 * 60);
+  expect(result.resumed.updates).toBe(result.reading.updates + 1);
+  expect(new Date(result.seek.timestamp).toISOString()).toBe('2026-11-01T20:00:00.000Z');
+  expect(result.real.timestamp).toBe(result.seek.timestamp);
+});
+
 test('the real adapter stays continuous across the old DST cache boundary and restores the same time after pause or refresh', async ({ browser }) => {
   const context = await browser.newContext({ timezoneId: 'Asia/Shanghai' });
   const page = await context.newPage();
@@ -117,5 +152,53 @@ test('the real adapter stays continuous across the old DST cache boundary and re
     expect(result.refreshed.timestamp).toBe(result.resumed.timestamp);
     expect(result.refreshed.weather).toEqual(result.resumed.weather);
     expect(result.refreshed.vessels).toEqual(result.resumed.vessels);
+  } finally { await context.close(); }
+});
+
+test('free calendars keep lightning preview, audio and coast on real seconds and the debug reset restores realtime', async ({ page }) => {
+  await controllerPage(page, '?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00&envWeather=thunderstorm', Date.UTC(2026, 9, 31, 20));
+  const result = await page.evaluate(() => {
+    const host = window as any, adapter = host.__adapter;
+    adapter.reduced = false; adapter.step(1000);
+    const before = adapter.setTimeFlow({ mode: 'free', speed: 3600 });
+    document.getElementById('env-preview-lightning')!.click();
+    const soon = adapter.step(1000), strike = adapter.step(6000);
+    const sound = host.__soundFrame, coastTime = host.__coastTime;
+    (document.querySelector('.environment-debug-reset') as HTMLButtonElement).click(); const reset = adapter.step();
+    adapter.dispose(); return { before, soon, strike, sound, coastTime, reset };
+  });
+  expect(result.strike.timestamp - result.before.timestamp).toBe(7000 * 3600);
+  expect(result.soon.storm.eventId?.startsWith('preview:')).toBeFalsy();
+  expect(result.strike.storm.eventId?.startsWith('preview:')).toBe(true);
+  expect(result.sound.timestamp).toBe(result.strike.motionTimestamp);
+  expect(result.coastTime).toBe(result.strike.motionTimestamp);
+  expect(result.sound.storm.strikeTime).toBe(result.before.motionTimestamp + 7000);
+  expect(result.reset.timeFlow.mode).toBe('realtime');
+});
+
+test('saved free time reconstructs the same natural vessel journeys after refreshing', async ({ browser }) => {
+  const context = await browser.newContext({ timezoneId: 'Europe/Athens' });
+  const page = await context.newPage();
+  try {
+    await controllerPage(page, '', Date.UTC(2026, 6, 12, 10, 3));
+    const result = await page.evaluate(() => {
+      const adapter = (window as any).__adapter;
+      adapter.setTimeFlow({ mode: 'free', speed: 3600 });
+      const before = adapter.step(60000), fresh = adapter.refresh();
+      // Wave height/heel and fading legitimately react to the current weather;
+      // voyage identity, path and progress must reconstruct independently.
+      const journeys = (frame: any) => frame.vessels.map((vessel: any) => ({
+        id: vessel.id, kind: vessel.kind, route: vessel.route,
+        x: vessel.position[0], z: vessel.position[2], yaw: vessel.yaw,
+      })).sort((a: any, b: any) => a.id - b.id);
+      adapter.dispose();
+      return { before: journeys(before), fresh: journeys(fresh),
+        calendar: before.timestamp, freshCalendar: fresh.timestamp,
+        motion: before.motionTimestamp };
+    });
+    expect(result.calendar - result.motion).toBeGreaterThan(2 * 86400000);
+    expect(result.before.length).toBeGreaterThan(0);
+    expect(result.freshCalendar).toBe(result.calendar);
+    expect(result.fresh).toEqual(result.before);
   } finally { await context.close(); }
 });

@@ -94,7 +94,7 @@ const frontNames: Record<string, string> = {
 };
 
 /** Small DOM-only tools; the scene owns its update clock and all rendering. */
-export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: (patch: Partial<EnvironmentOverrides>) => void, onLightningPreview?: () => void) {
+export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: (patch: Partial<EnvironmentOverrides>) => void, onLightningPreview?: () => void, onTimeReset?: () => void) {
   if (!options.enabled) return { update(_info: DebugInfo) {}, dispose() {} };
   const state = { ...options }, events = new AbortController();
   const panel = document.createElement("details");
@@ -231,7 +231,7 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
     apply({ timestamp: undefined, timeMode: "local-clock", weather: undefined, moonPhase: undefined, cloudCover: undefined,
       windSpeed: undefined, windDirection:undefined, precipitation:undefined, waveScale:undefined, thunder:undefined, birdDensity:undefined,
       vesselDensity: undefined, vesselRoute: undefined, vesselKind: undefined, paths: false, quality: undefined });
-    dateError.textContent = ""; date.value = ""; fill();
+    onTimeReset?.(); dateError.textContent = ""; date.value = ""; fill();
   }, { signal: events.signal });
   // Keep controls out of the scene's bubbling raycast and pointer handlers.
   for (const event of ["pointerdown", "pointerup", "click", "dblclick", "wheel", "touchstart", "touchend"])

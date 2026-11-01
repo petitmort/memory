@@ -1,0 +1,696 @@
+{
+  "schema": 1,
+  "dateBeijing": "2026-11-01",
+  "source": "local Codex",
+  "baseline": "dde1b6e",
+  "branch": "codex/calendar-environment-requirements",
+  "deployed": false,
+  "scope": "Visitor realtime/free calendar modes, continuous persisted rate anchors, hidden desk clock in free mode, independent natural animation timeline, bounded astronomy/weather work, deterministic natural vessel planning after reload.",
+  "method": {
+    "script": "scripts/measure-performance.mjs",
+    "temporaryCopy": "Absolute existing Playwright import; no-preference motion with truthful metadata; optional --time-speed opens the actual visitor UI. No changes to the repository sampler or dependencies.",
+    "temporarySampler": "/tmp/memory-time-flow-performance.mjs",
+    "samplesPerVersion": 1,
+    "sampleMs": 5000,
+    "gpuWork": "Serial after tests; application source frozen during sampling. Realtime before/after share full-motion night, normal quality, same viewport/DPR and forced environment with no vessels or birds.",
+    "evidenceDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/11/01/memory-time-flow"
+  },
+  "before": {
+    "schema": 1,
+    "environment": {
+      "viewport": {
+        "width": 960,
+        "height": 640
+      },
+      "deviceScaleFactor": 1,
+      "cpuThrottle": 1,
+      "sampleMs": 5000,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browser": "156.0.8078.74",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "reducedMotion": false,
+      "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+      "device": {
+        "hardwareConcurrency": 10,
+        "deviceMemoryGiB": 16,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "vendor": "Google Inc. (Apple)",
+        "unmaskedRendererAvailable": true,
+        "softwareRendererDetected": false
+      }
+    },
+    "errors": [],
+    "loadingMs": 1496.154125,
+    "entryMs": 8652.794458,
+    "before": {
+      "calls": 139,
+      "triangles": 390449,
+      "geometries": 257,
+      "textures": 41,
+      "programs": 62,
+      "pixelRatio": 1,
+      "low": false
+    },
+    "room": {
+      "calls": 139,
+      "triangles": 390449,
+      "geometries": 257,
+      "textures": 41,
+      "programs": 62,
+      "pixelRatio": 1,
+      "low": false,
+      "drawnFrames": 300,
+      "measuredFps": 60.00040134033366,
+      "frameIntervalMedianMs": 16.700000002980232,
+      "frameIntervalP95Ms": 17,
+      "frameSubmitP95Ms": 1.2000000029802322
+    },
+    "warnings": [],
+    "input": {
+      "events": [
+        {
+          "name": "pointerdown",
+          "durationMs": 40,
+          "inputDelayMs": 17.5,
+          "processingMs": 0.5
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 40,
+          "inputDelayMs": 18,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 40,
+          "inputDelayMs": 19,
+          "processingMs": 0.4000000059604645
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 48,
+          "inputDelayMs": 16.799999997019768,
+          "processingMs": 0.20000000298023224
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 48,
+          "inputDelayMs": 17,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 48,
+          "inputDelayMs": 17.700000002980232,
+          "processingMs": 0.3999999910593033
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 40,
+          "inputDelayMs": 15.299999997019768,
+          "processingMs": 0.20000000298023224
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 40,
+          "inputDelayMs": 15.5,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 40,
+          "inputDelayMs": 16.299999997019768,
+          "processingMs": 0.4000000059604645
+        }
+      ],
+      "pointerDispatchMs": [
+        17.900000005960464,
+        16.900000005960464,
+        15.400000005960464
+      ]
+    },
+    "memory": {
+      "jsHeapUsedBytes": 25209888,
+      "jsHeapTotalBytes": 53854208,
+      "documents": 5,
+      "nodes": 1442,
+      "jsEventListeners": 156
+    }
+  },
+  "after": {
+    "schema": 1,
+    "environment": {
+      "viewport": {
+        "width": 960,
+        "height": 640
+      },
+      "deviceScaleFactor": 1,
+      "cpuThrottle": 1,
+      "sampleMs": 5000,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browser": "156.0.8078.74",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "reducedMotion": false,
+      "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+      "device": {
+        "hardwareConcurrency": 10,
+        "deviceMemoryGiB": 16,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "vendor": "Google Inc. (Apple)",
+        "unmaskedRendererAvailable": true,
+        "softwareRendererDetected": false
+      }
+    },
+    "errors": [],
+    "loadingMs": 1227.5805840000003,
+    "entryMs": 8654.08775,
+    "before": {
+      "calls": 139,
+      "triangles": 390449,
+      "geometries": 257,
+      "textures": 41,
+      "programs": 62,
+      "pixelRatio": 1,
+      "low": false
+    },
+    "room": {
+      "calls": 139,
+      "triangles": 390449,
+      "geometries": 257,
+      "textures": 41,
+      "programs": 62,
+      "pixelRatio": 1,
+      "low": false,
+      "drawnFrames": 300,
+      "measuredFps": 59.99077065074087,
+      "frameIntervalMedianMs": 16.700000002980232,
+      "frameIntervalP95Ms": 18.200000002980232,
+      "frameSubmitP95Ms": 1.5
+    },
+    "warnings": [],
+    "input": {
+      "events": [
+        {
+          "name": "pointerdown",
+          "durationMs": 40,
+          "inputDelayMs": 14.200000002980232,
+          "processingMs": 0.3999999910593033
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 40,
+          "inputDelayMs": 14.599999994039536,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 40,
+          "inputDelayMs": 15.5,
+          "processingMs": 0.5
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 48,
+          "inputDelayMs": 16,
+          "processingMs": 0.30000001192092896
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 48,
+          "inputDelayMs": 16.30000001192093,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 48,
+          "inputDelayMs": 17,
+          "processingMs": 0.30000001192092896
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 64,
+          "inputDelayMs": 30.399999991059303,
+          "processingMs": 0.4000000059604645
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 64,
+          "inputDelayMs": 30.799999997019768,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 64,
+          "inputDelayMs": 31.69999998807907,
+          "processingMs": 0.4000000059604645
+        }
+      ],
+      "pointerDispatchMs": [
+        14.599999994039536,
+        16.200000002980232,
+        30.599999994039536
+      ]
+    },
+    "memory": {
+      "jsHeapUsedBytes": 25638012,
+      "jsHeapTotalBytes": 53592064,
+      "documents": 5,
+      "nodes": 1513,
+      "jsEventListeners": 172
+    }
+  },
+  "additionalCurrentState": {
+    "free3600": {
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 960,
+          "height": 640
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.74",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": false,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1217.6398330000002,
+      "entryMs": 8671.185625,
+      "timeFlow": {
+        "mode": "free",
+        "speed": 3600
+      },
+      "before": {
+        "calls": 129,
+        "triangles": 390233,
+        "geometries": 257,
+        "textures": 41,
+        "programs": 62,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 129,
+        "triangles": 390233,
+        "geometries": 257,
+        "textures": 41,
+        "programs": 62,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 59.99438179705823,
+        "frameIntervalMedianMs": 16.69999998807907,
+        "frameIntervalP95Ms": 17,
+        "frameSubmitP95Ms": 1.5999999940395355
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 18.399999991059303,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 18.799999997019768,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 19.799999997019768,
+            "processingMs": 0.29999999701976776
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 17.100000008940697,
+            "processingMs": 0.3999999910593033
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 17.5,
+            "processingMs": 0.10000000894069672
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 18.80000001192093,
+            "processingMs": 0.3999999910593033
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 15,
+            "processingMs": 0.20000000298023224
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.200000002980232,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 16,
+            "processingMs": 2.0999999940395355
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 64,
+            "inputDelayMs": 0.3999999910593033,
+            "processingMs": 0.10000000894069672
+          },
+          {
+            "name": "click",
+            "durationMs": 64,
+            "inputDelayMs": 0.7000000029802322,
+            "processingMs": 1.0999999940395355
+          },
+          {
+            "name": "keydown",
+            "durationMs": 48,
+            "inputDelayMs": 0.09999999403953552,
+            "processingMs": 0.9000000059604645
+          },
+          {
+            "name": "keydown",
+            "durationMs": 40,
+            "inputDelayMs": 0.20000000298023224,
+            "processingMs": 0.3999999910593033
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 80,
+            "inputDelayMs": 32,
+            "processingMs": 0.19999998807907104
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 80,
+            "inputDelayMs": 32.19999998807907,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 80,
+            "inputDelayMs": 33.19999998807907,
+            "processingMs": 0.30000001192092896
+          }
+        ],
+        "pointerDispatchMs": [
+          18.69999998807907,
+          17.5,
+          15.099999994039536,
+          0.5,
+          32.19999998807907
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 30507768,
+        "jsHeapTotalBytes": 53854208,
+        "documents": 5,
+        "nodes": 2485,
+        "jsEventListeners": 172
+      }
+    },
+    "phoneLow60": {
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "deviceScaleFactor": 2,
+        "cpuThrottle": 4,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.74",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": false,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 3282.167875,
+      "entryMs": 8757.284167,
+      "timeFlow": {
+        "mode": "free",
+        "speed": 60
+      },
+      "before": {
+        "calls": 98,
+        "triangles": 288884,
+        "geometries": 257,
+        "textures": 40,
+        "programs": 55,
+        "pixelRatio": 1,
+        "low": true
+      },
+      "room": {
+        "calls": 98,
+        "triangles": 288884,
+        "geometries": 257,
+        "textures": 40,
+        "programs": 55,
+        "pixelRatio": 1,
+        "low": true,
+        "drawnFrames": 150,
+        "measuredFps": 30.001610824706262,
+        "frameIntervalMedianMs": 33.30000001192093,
+        "frameIntervalP95Ms": 35.20000000298023,
+        "frameSubmitP95Ms": 4.0999999940395355
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 32,
+            "inputDelayMs": 6.5,
+            "processingMs": 2.0999999940395355
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 32,
+            "inputDelayMs": 8.599999994039536,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 32,
+            "inputDelayMs": 13.099999994039536,
+            "processingMs": 1.7000000029802322
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 80,
+            "inputDelayMs": 17.799999997019768,
+            "processingMs": 0.9000000059604645
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 80,
+            "inputDelayMs": 18.700000002980232,
+            "processingMs": 0.8999999910593033
+          },
+          {
+            "name": "click",
+            "durationMs": 80,
+            "inputDelayMs": 21.5,
+            "processingMs": 1.2000000029802322
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 23.900000005960464,
+            "processingMs": 1.5
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 25.400000005960464,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 28.19999998807907,
+            "processingMs": 7.100000008940697
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 72,
+            "inputDelayMs": 1.5,
+            "processingMs": 0.8999999910593033
+          },
+          {
+            "name": "click",
+            "durationMs": 72,
+            "inputDelayMs": 3.0999999940395355,
+            "processingMs": 3.7000000029802322
+          },
+          {
+            "name": "keydown",
+            "durationMs": 16,
+            "inputDelayMs": 0.20000000298023224,
+            "processingMs": 1.7000000029802322
+          },
+          {
+            "name": "keydown",
+            "durationMs": 32,
+            "inputDelayMs": 0.09999999403953552,
+            "processingMs": 1.7999999970197678
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 6.9000000059604645,
+            "processingMs": 0.20000000298023224
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 7.100000008940697,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 10.700000002980232,
+            "processingMs": 1.5
+          }
+        ],
+        "pointerDispatchMs": [
+          7.899999991059303,
+          18.700000002980232,
+          24.900000005960464,
+          1.5999999940395355,
+          7
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 37091792,
+        "jsHeapTotalBytes": 60276736,
+        "documents": 9,
+        "nodes": 1823,
+        "jsEventListeners": 199
+      }
+    }
+  },
+  "validation": {
+    "typecheck": "project-node node_modules/typescript/bin/tsc --noEmit: passed",
+    "build": "project-node node_modules/vite/bin/vite.js build: passed; 99 modules, application 364.54KB / gzip 135.18KB, CSS 41.20KB; existing Three chunk warning.",
+    "finalCommand": "project-node node_modules/@playwright/test/cli.js test tests/time-flow.spec.ts tests/desk-clock.spec.ts tests/room-light.spec.ts tests/environment-controller.spec.ts tests/environment-vessels.spec.ts tests/wind-vessels.spec.ts tests/wind-water.spec.ts --output=/tmp/memory-time-flow-final-delivery",
+    "finalTests": {
+      "passed": 35,
+      "failed": 0,
+      "duration": "1.1 minutes"
+    },
+    "earlierBroaderRegression": "15 specs, 73 cases: 72 passed; existing actual room-light timed out once at 90s. Standalone and later overlapping runs passed; final run passed it in 9.3s. Cause of the initial timeout was not confirmed; do not call the initial run 73/73.",
+    "refreshRegression": "New adapter case failed before final planner fix (3 vessels reconstructed as 1 and changed progress), then passed with natural departure planning. Final 35 includes it.",
+    "production": {
+      "command": "project-node /tmp/memory-time-flow-preview.mjs",
+      "buildAsset": "index-CpNj9GLI.js",
+      "cases": [
+        {
+          "name": "desktop-day-cycle",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "reducedMotion": false,
+          "quality": "normal",
+          "speed": 3600,
+          "errors": [],
+          "overflow": false,
+          "cycleFrames": 13
+        },
+        {
+          "name": "phone-free",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "reducedMotion": false,
+          "quality": "low",
+          "speed": 60,
+          "errors": [],
+          "overflow": false,
+          "cycleFrames": 0
+        },
+        {
+          "name": "small-paused",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "reducedMotion": true,
+          "quality": "low",
+          "speed": 0,
+          "errors": [],
+          "overflow": false,
+          "cycleFrames": 0
+        },
+        {
+          "name": "landscape-free",
+          "viewport": {
+            "width": 844,
+            "height": 390
+          },
+          "reducedMotion": true,
+          "quality": "low",
+          "speed": 300,
+          "errors": [],
+          "overflow": false,
+          "cycleFrames": 0
+        }
+      ],
+      "screenshots": 25,
+      "coverage": "Actual fog/door entry, realtime clock, free settings, panel/room 2D non-overlap, album open/next/close, realtime and focus restore; desktop cat view. 13 sequential frames cover over a simulated day. Final production rerun after vessel-planning fix passed.",
+      "limits": "Vessels/birds disabled in screenshot cases; natural voyages tested by adapter and wind/vessel specs independently."
+    }
+  },
+  "limits": [
+    "Single short samples close to a 60Hz display ceiling cannot prove speedup or assign costs; CPU submission is not GPU completion.",
+    "Free 3600 and phone 60 samples have no matched pre-change free-mode baseline; they only characterize current state. Clock hidden and lighting phase change draws, so do not attribute draw-count differences solely to cost savings.",
+    "Phone viewport, DPR request and 4x CPU throttle use desktop Chrome/Metal, not a physical mobile device. Low mode caps actual DPR at 1 and targets 30FPS.",
+    "No new Safari, physical phone or long-duration temperature, battery or GPU-memory validation.",
+    "Rapid calendar sampling may merge short weather events; vessel departures remain on the natural timeline while the simulated current weather controls sails and sea."
+  ]
+}

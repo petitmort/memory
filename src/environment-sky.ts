@@ -53,7 +53,7 @@ export function createEnvironmentSky(sunGroup: THREE.Group, location: CalendarLo
   let disposed = false;
   return {
     group, horizon, zenith, moon, warmObjects: [group, moon, nightSky.stars, sunGroup],
-    update(celestial: CelestialState, weather: WeatherState, camera: THREE.Camera, flash = 0, timestamp = 946728000000, low = false, reduced = false) {
+    update(celestial: CelestialState, weather: WeatherState, camera: THREE.Camera, flash = 0, timestamp = 946728000000, low = false, reduced = false, motionTimestamp = timestamp) {
       if (disposed) return;
       const d = celestial.daylight, overcast = THREE.MathUtils.smoothstep(weather.cloudCover, .12, .98);
       horizon.copy(nightHorizon).lerp(dayHorizon, d);
@@ -82,7 +82,7 @@ export function createEnvironmentSky(sunGroup: THREE.Group, location: CalendarLo
       moon.lookAt(camera.position);
       moonMaterial.uniforms.light.value.fromArray(celestial.moonLightDirection);
       moonMaterial.uniforms.opacity.value = THREE.MathUtils.smoothstep(celestial.moon.altitude, -.035, .025) * (1 - weather.cloudCover * .88) * (.18 + .82 * (1 - d));
-      nightSky.update(celestial, weather, timestamp, low, flash, reduced);
+      nightSky.update(celestial, weather, timestamp, low, flash, reduced, motionTimestamp);
       group.userData.daylight = d; group.userData.moonPhase = celestial.moonPhase;
       group.userData.timestamp = timestamp; group.userData.galaxyStrength = nightSky.galaxyStrength.value;
     },

@@ -7,7 +7,7 @@ import { dimensions as D } from "./dimensions";
 const CAPACITY = 36, LOW_CAPACITY = 16;
 const LAYER_SPEEDS = [.038, .03, .023] as const;
 export const CLOUD_LIFETIME = 8 * 3600000, CLOUD_FADE_DURATION = 180000;
-export type CloudOptions = { timeZone?: string; weather?: WeatherKind; windSpeed?: number; windDirection?: number; revision?: number; camera?: THREE.Camera; flash?: number };
+export type CloudOptions = { timeZone?: string; weather?: WeatherKind; windSpeed?: number; windDirection?: number; revision?: number; camera?: THREE.Camera; flash?: number; liveWind?: Pick<WeatherState, "windSpeed" | "windDirection"> };
 type CloudSeed = { phase: number; offset: number; z: number; y: number; width: number; height: number; shade: number; layer: number };
 function cloudSeed(index: number): CloudSeed {
   const random = createSeededRandom(893181 + index * 77917), layer = index % 3;
@@ -162,8 +162,8 @@ export function createCloudController() {
       if (disposed) return;
       const zone = options.timeZone ?? "Europe/Athens";
       wind.prepare(timestampMs, zone);
-      const forced = options.weather !== undefined || options.windSpeed !== undefined || options.windDirection !== undefined;
-      const key = `${zone}:${options.weather ?? ""}:${options.windSpeed ?? ""}:${options.windDirection ?? ""}:${options.revision ?? 0}`;
+      const forced = !!options.liveWind || options.weather !== undefined || options.windSpeed !== undefined || options.windDirection !== undefined;
+      const key = options.liveWind ? `${zone}:live:${options.revision ?? 0}` : `${zone}:${options.weather ?? ""}:${options.windSpeed ?? ""}:${options.windDirection ?? ""}:${options.revision ?? 0}`;
       const automatic = (index: number) => {
         const life = cloudLife(seeds[index], timestampMs), offset = carry[index];
         if (offset && offset.birth !== life.birth) carry[index] = undefined;
@@ -171,10 +171,10 @@ export function createCloudController() {
       };
       // An override owns only its explicit channels; the other wind channel
       // keeps following natural fronts without discarding the preview history.
-      const sampleBucket = Math.floor(timestampMs / 10000);
-      const tracksAutomatic = options.windSpeed === undefined || options.windDirection === undefined;
+      const sampleBucket = Math.floor(timestampMs / (options.liveWind ? 1000 : 10000));
+      const tracksAutomatic = !!options.liveWind || options.windSpeed === undefined || options.windDirection === undefined;
       if (forced && (manual?.key !== key || (tracksAutomatic && manual.sampleBucket !== sampleBucket))) {
-        const state = sampleWeather(timestampMs, { kind: options.weather, windSpeed: options.windSpeed, windDirection:options.windDirection, timeZone: zone });
+        const state = options.liveWind ?? sampleWeather(timestampMs, { kind: options.weather, windSpeed: options.windSpeed, windDirection:options.windDirection, timeZone: zone });
         const target = cloudWindVector(state.windSpeed, state.windDirection);
         const initial = !last.some(Boolean);
         const from = initial ? target : manual ? manualVelocity(manual, timestampMs) : wind.velocity(timestampMs, zone);

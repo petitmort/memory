@@ -9,6 +9,7 @@ import type { createVesselController } from "./vessel-controller";
 import { createBirdController } from "./bird-controller";
 import { createStormController } from "./storm-controller";
 import type { EnvironmentSoundFrame } from "./weather-audio";
+import { createTimeFlowClock, loadTimeFlow, saveTimeFlow, type TimeFlowFrame, type TimeFlowSettings } from "./environment-time";
 
 type Bindings = {
   scene: THREE.Scene;
@@ -23,6 +24,7 @@ type Bindings = {
   quality: (value?: boolean) => void;
   onSound?: (frame: EnvironmentSoundFrame) => void;
   onDaylight?: (daylight: number) => void;
+  onTime?: (frame: TimeFlowFrame) => void;
   onCoastFrame?: (waterTime: number, weather: WeatherState, low: boolean, reduced: boolean, daylight: number, active: boolean, timestamp: number, sunAltitude: number) => void;
 };
 const lerp = THREE.MathUtils.lerp;
@@ -59,9 +61,12 @@ export function createEnvironmentController(bindings: Bindings) {
   let celestialKey = -Infinity, weatherKey = -Infinity, debugAt = -Infinity, shadowAt = -Infinity;
   let celestialPair: [CelestialState, CelestialState];
   let weatherPair: [ReturnType<typeof sampleWeather>, ReturnType<typeof sampleWeather>];
-  let timestamp = 0, celestial = calculateCelestial(Date.now(), options.location);
+  let timestamp = 0, motionTimestamp = 0, celestial = calculateCelestial(Date.now(), options.location);
   let weather = sampleWeather(Date.now());
   let transition: { from: typeof weather; started: number } | undefined;
+  let skyTransition: { from: CelestialState; started: number } | undefined;
+  let timeInfoAt = -Infinity;
+  const timeFlow = createTimeFlowClock(realtimeTime(anchorWall), anchorWall, options.enabled ? undefined : loadTimeFlow());
   const warmObjects: THREE.Object3D[] = [
     ...sky.warmObjects, clouds.group, ...clouds.group.children,
     particles.group, ...particles.group.children, ...vessels.warmObjects, ...birds.warmObjects, ...storm.warmObjects,
@@ -72,14 +77,33 @@ export function createEnvironmentController(bindings: Bindings) {
   const waterDay = new THREE.Color(1, 1, 1), waterNight = new THREE.Color(.19, .28, .4), waterGray = new THREE.Color(.67, .75, .8);
   const tint = new THREE.Color(), weatherTint = new THREE.Color(), lightColor = new THREE.Color();
 
-  function selectedTime(wall: number) {
+  function realtimeTime(wall: number) {
     if (options.timestamp !== undefined) return options.timestamp + wall - anchorWall;
     if (options.timeMode === "scene") return wall;
     // Daily timezone anchors are cached by the calendar; interpolate on every
     // frame so DST smoothing cannot become a 30-second staircase.
     return timestampForLocalClock(wall, options.location.timeZone, userTimeZone);
   }
+  function timeFrame(wall = Date.now()): TimeFlowFrame {
+    return { ...timeFlow.sample(realtimeTime(wall), wall), timeZone: options.location.timeZone };
+  }
+  function setTimeFlow(patch: Partial<TimeFlowSettings>) {
+    if (disposed) return;
+    const before = timeFrame(), wall = Date.now();
+    const next = timeFlow.set(patch, realtimeTime(wall), wall);
+    if (before.mode !== next.mode || before.speed !== next.speed)
+      transition = { from: { ...weather }, started: performance.now() };
+    if (before.mode !== next.mode) {
+      if (Math.abs(next.timestamp - before.timestamp) > 1000) skyTransition = { from: celestial, started: performance.now() };
+      storm.cancelPreview();
+    }
+    if (!options.enabled) saveTimeFlow(timeFlow.saved());
+    celestialKey = weatherKey = timeInfoAt = -Infinity;
+    bindings.onTime?.(timeFrame()); bindings.invalidate();
+  }
   function departureState(at: number) {
+    // Plan on the same natural timeline as vessel positions, including after
+    // refresh. The accelerated calendar only changes current light/sea/trim.
     const skyAtDeparture = calculateCelestial(at, options.location);
     const weatherAtDeparture = sampleWeather(at, {
       kind: options.weather, cloudCover: options.cloudCover,
@@ -102,41 +126,55 @@ export function createEnvironmentController(bindings: Bindings) {
     if (["weather","windSpeed","windDirection","timestamp","timeMode"].some(key=>key in patch)) cloudRevision++;
     Object.assign(options, patch);
     if ("timestamp" in patch) anchorWall = Date.now();
+    if ("timestamp" in patch || "timeMode" in patch) {
+      timeFlow.seek(realtimeTime(Date.now()), Date.now());
+      skyTransition = undefined; timeInfoAt = -Infinity;
+    }
     if ("quality" in patch) bindings.quality(options.quality);
-    celestialKey = weatherKey = -Infinity; debugAt = -Infinity;
+    celestialKey = weatherKey = -Infinity; debugAt = shadowAt = -Infinity;
     bindings.invalidate();
   }, () => {
     // This one-off developer action leaves calendar time and saved state alone.
     // First complete the ordinary cloud/rain transition, then show a discharge.
-    storm.previewOnce(selectedTime(Date.now()),7000);
+    storm.previewOnce(realtimeTime(Date.now()),7000);
     bindings.invalidate();
-  });
+  }, () => setTimeFlow({ mode: "realtime" }));
 
   function update(waterTime: number, isLow: boolean, reduced: boolean, outdoors: boolean) {
     if (disposed || paused) return;
     updates++; low = isLow;
-    timestamp = selectedTime(Date.now());
-    const second = Math.floor(timestamp / 1000), tenSeconds = Math.floor(timestamp / 10000);
-    if (second !== celestialKey) {
-      celestialPair = [calculateCelestial(second * 1000, options.location, options.moonPhase), calculateCelestial((second + 1) * 1000, options.location, options.moonPhase)];
-      celestialKey = second;
+    const time = timeFrame(), perf = performance.now();
+    timestamp = time.timestamp; motionTimestamp = time.motionTimestamp;
+    // Limit expensive calendar sampling by elapsed real time, then interpolate
+    // on the virtual timeline. High rates must not multiply CPU work by 3600.
+    const rate = time.mode === "free" ? time.speed : 1;
+    const celestialStep = Math.max(1000, rate * 250), weatherStep = Math.max(10000, rate * 500);
+    const celestialBucket = Math.floor(timestamp / celestialStep), weatherBucket = Math.floor(timestamp / weatherStep);
+    if (celestialBucket !== celestialKey) {
+      celestialPair = [calculateCelestial(celestialBucket * celestialStep, options.location, options.moonPhase), calculateCelestial((celestialBucket + 1) * celestialStep, options.location, options.moonPhase)];
+      celestialKey = celestialBucket;
     }
-    celestial = interpolateCelestial(...celestialPair, timestamp / 1000 - second);
+    const skyTarget = interpolateCelestial(...celestialPair, timestamp / celestialStep - celestialBucket);
+    if (skyTransition) {
+      const progress = THREE.MathUtils.clamp((perf - skyTransition.started) / (reduced ? 300 : 4000), 0, 1);
+      celestial = interpolateCelestial(skyTransition.from, skyTarget, progress * progress * (3 - 2 * progress));
+      if (progress === 1) skyTransition = undefined;
+    } else celestial = skyTarget;
     bindings.onDaylight?.(celestial.daylight);
-    if (tenSeconds !== weatherKey) {
+    if (weatherBucket !== weatherKey) {
       const config = { kind: options.weather, cloudCover: options.cloudCover, windSpeed: options.windSpeed,
         windDirection:options.windDirection, precipitation:options.precipitation, waveScale:options.waveScale, thunder:options.thunder, timeZone: options.location.timeZone };
-      weatherPair = [sampleWeather(tenSeconds * 10000, config), sampleWeather((tenSeconds + 1) * 10000, config)];
-      weatherKey = tenSeconds;
+      weatherPair = [sampleWeather(weatherBucket * weatherStep, config), sampleWeather((weatherBucket + 1) * weatherStep, config)];
+      weatherKey = weatherBucket;
     }
-    const target = blendWeather(...weatherPair, timestamp / 10000 - tenSeconds);
+    const target = blendWeather(...weatherPair, timestamp / weatherStep - weatherBucket);
     if (transition) {
-      const progress = THREE.MathUtils.clamp((performance.now() - transition.started) / 6000, 0, 1);
+      const progress = THREE.MathUtils.clamp((perf - transition.started) / 6000, 0, 1);
       weather = transitionWeather(transition.from, target, progress);
       if (progress === 1) transition = undefined;
     } else weather = target;
-    const stormFrame = storm.update(timestamp, weather, low, reduced || !outdoors, celestial.daylight);
-    sky.update(celestial, weather, camera, stormFrame.flash, timestamp, low, reduced);
+    const stormFrame = storm.update(motionTimestamp, weather, low, reduced || !outdoors, celestial.daylight);
+    sky.update(celestial, weather, camera, stormFrame.flash, timestamp, low, reduced, motionTimestamp);
     const d = celestial.daylight, cover = weather.cloudCover;
     const sunlight = THREE.MathUtils.smoothstep(celestial.sun.altitude, -.02, .23) * (1 - cover * .84);
     const moonlight = celestial.night * celestial.moonIllumination * THREE.MathUtils.smoothstep(celestial.moon.altitude, -.02, .15) * (1 - cover * .86);
@@ -150,7 +188,7 @@ export function createEnvironmentController(bindings: Bindings) {
     sun.intensity = 3.35 * sunlight + .14 * moonlight;
     sun.color.copy(sunlight > .005 ? lightColor : moonColor);
     sun.position.fromArray(sunlight > .005 ? celestial.sun.direction : celestial.moon.direction).multiplyScalar(12);
-    if (Math.abs(timestamp - shadowAt) > 15000) { sun.shadow.needsUpdate = true; shadowAt = timestamp; }
+    if (Math.abs(perf - shadowAt) > (time.mode === "free" ? 1000 : 15000)) { sun.shadow.needsUpdate = true; shadowAt = perf; }
     const uniforms = ocean.uniforms;
     uniforms.sunPosition.value.fromArray(celestial.sun.direction).multiplyScalar(235); uniforms.sunPosition.value.y -= 8;
     uniforms.moonPosition.value.copy(sky.moon.position);
@@ -175,22 +213,24 @@ export function createEnvironmentController(bindings: Bindings) {
     birds.group.visible = storm.group.visible = outdoors;
     if (outdoors) {
       const direction = sunlight > .005 ? celestial.sun.direction : celestial.moon.direction;
-      clouds.update(timestamp, weather, low, reduced, d, direction, {
+      clouds.update(motionTimestamp, weather, low, reduced, d, direction, {
         timeZone: options.location.timeZone, weather: options.weather,
         windSpeed: options.windSpeed, windDirection:options.windDirection, revision: cloudRevision, camera, flash:stormFrame.flash,
+        liveWind: time.mode === "free" ? weather : undefined,
       });
-      particles.update(timestamp, weather, low, reduced, d);
-      birds.update(timestamp, weather, low, reduced, d, options.birdDensity);
+      particles.update(motionTimestamp, weather, low, reduced, d);
+      birds.update(motionTimestamp, weather, low, reduced, d, options.birdDensity);
       vessels.setDebugPaths(options.paths);
-      vessels.update(timestamp, waterTime, {
+      vessels.update(motionTimestamp, waterTime, {
         low, reduced, daylight: d, windSpeed: weather.windSpeed, windDirection:weather.windDirection,
         severity: Math.max(weather.precipitation, (1 - weather.visibility) * .7, THREE.MathUtils.smoothstep(weather.windSpeed, 8, 16)),
         density: options.vesselDensity, forcedRoute: options.vesselRoute, forcedKind: options.vesselKind, waveScale: weather.waveScale,
         departureState, departureRevision,
       });
     }
-    bindings.onCoastFrame?.(waterTime, weather, low, reduced, d, outdoors, timestamp, celestial.sun.altitude);
-    bindings.onSound?.({ timestamp, weather, storm: stormFrame, active: outdoors });
+    bindings.onCoastFrame?.(waterTime, weather, low, reduced, d, outdoors, motionTimestamp, celestial.sun.altitude);
+    bindings.onSound?.({ timestamp: motionTimestamp, weather, storm: stormFrame, active: outdoors });
+    if (perf - timeInfoAt >= 250) { timeInfoAt = perf; bindings.onTime?.(time); }
     if (timestamp - debugAt >= 1000 || timestamp < debugAt) {
       debugAt = timestamp;
       debug.update({ timestamp, timeZone: options.location.timeZone, weather: weather.kind, sunAltitude: celestial.sun.altitude, moonPhase: celestial.moonPhase, vessels: vessels.snapshot().length, low,
@@ -200,9 +240,12 @@ export function createEnvironmentController(bindings: Bindings) {
   }
   return {
     update, warmObjects, ownedGroups, initialQuality: options.quality,
+    getTime: timeFrame,
+    isRealtime() { return timeFlow.getSettings().mode === "realtime"; },
+    setTimeFlow,
     pause() { paused = true; storm.cancelPreview(); },
     resume() { paused = false; userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; },
-    snapshot() { return { timestamp, celestial, weather, vessels: vessels.snapshot(), birds: birds.snapshot(), storm: storm.snapshot(), low, updates, paused }; },
+    snapshot() { return { timestamp, motionTimestamp, timeFlow: timeFrame(), celestial, weather, vessels: vessels.snapshot(), birds: birds.snapshot(), storm: storm.snapshot(), low, updates, paused }; },
     dispose() {
       if (disposed) return;
       disposed = true; paused = true; debug.dispose(); sky.dispose(); clouds.dispose(); particles.dispose(); vessels.dispose(); birds.dispose(); storm.dispose();
