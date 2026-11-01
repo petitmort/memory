@@ -23,6 +23,8 @@ export function createOcean() {
       waveScale: { value: 1 }, rainAmount: { value: 0 }, fogDensity: { value: .005 },
       rainDetail: { value: 1 },
       stormFlash: { value: 0 }, stormSource: { value: new THREE.Vector3(0, 45, -350) },
+      beaconStrength: { value: 0 }, beaconPosition: { value: new THREE.Vector3() },
+      beaconDirection: { value: new THREE.Vector3(0, -.068, -1) },
     },
     vertexShader: `${waves}
       varying vec3 vWorld;
@@ -40,6 +42,7 @@ export function createOcean() {
       uniform vec3 moonPosition, skyHorizon, skyZenith, waterTint, lightColor;
       uniform float lightStrength, moonStrength, waveScale, rainAmount, fogDensity, rainDetail;
       uniform float stormFlash; uniform vec3 stormSource;
+      uniform float beaconStrength; uniform vec3 beaconPosition, beaconDirection;
       float fifth(float x) { float x2=x*x;return x2*x2*x; }
       float windHash(vec2 p) {
         vec3 h=fract(vec3(p.xyx)*.1031);
@@ -135,6 +138,21 @@ export function createOcean() {
         float distanceToEye=length(cameraPosition-vWorld);
         float haze=max(smoothstep(55.,235.,distanceToEye)*.8,1.-exp(-distanceToEye*distanceToEye*fogDensity*fogDensity));
         color=mix(color,skyHorizon,haze);
+        // The same narrow, downward-tilted lighthouse cone meets the displaced
+        // sea. Broken crests reflect it; this adds no light or shadow pass.
+        if(beaconStrength>.0001 && vWorld.z < -5.) {
+          vec2 offset=vWorld.xz-beaconPosition.xz;
+          float along=dot(offset,beaconDirection.xz);
+          float across=abs(offset.x*beaconDirection.z-offset.y*beaconDirection.x);
+          float width=.6+max(along,0.)*.024;
+          float horizontal=exp(-2.*across*across/(width*width));
+          float height=beaconPosition.y+beaconDirection.y*along;
+          float radius=.5+max(along,0.)*.021;
+          float vertical=exp(-2.*pow((vWorld.y-height)/radius,2.));
+          float reach=smoothstep(18.,45.,along)*(1.-smoothstep(125.,150.,along));
+          float broken=.18+.82*smoothstep(-.25,.65,wave.x+grain.x*.3);
+          color+=vec3(1.,.76,.39)*beaconStrength*horizontal*vertical*reach*broken*.65*(1.-haze*.7);
+        }
         // A broad, broken silver reflection follows the same offshore source.
         // This is a short radiance pulse, not a new lamp, mesh or shadow pass.
         if(stormFlash>.0001){

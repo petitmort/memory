@@ -1,237 +1,187 @@
 import * as THREE from "three";
 import { mergeGeometries, mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import { PIER_DECK_HEIGHT, PIER_FOOT_WIDTH, PIER_LENGTH, PIER_PLATFORM_RADIUS, PIER_SEA_LEVEL, PIER_TOWER_SITE, PIER_WIDTH, samplePierEdge, samplePierPath } from "./pier-layout";
+import { createLighthouseBeacon, type BeaconWeather } from "./lighthouse-beacon";
 
+// Compatibility exports keep the seascape and existing diagnostics on one layout.
+export const lighthouseSite = PIER_TOWER_SITE;
+export const sampleLighthousePath = samplePierPath;
+export const LIGHTHOUSE_HEIGHT = 8.66;
 const TAU = Math.PI * 2;
-const clamp = THREE.MathUtils.clamp;
-const smooth = (t: number) => t * t * (3 - 2 * t);
+type Batch = "support" | "paving" | "coping" | "tower" | "metal" | "lantern" | "glass";
 
-/** The path and its supporting headland share this world-space centre line. */
-export function sampleLighthousePath(amount: number) {
-  const t = clamp(amount, 0, 1);
-  return {
-    x: 3.8 - 8 * smooth(t) + .8 * Math.sin(t * Math.PI),
-    y: -.15 - .95 * t,
-    z: -5 - 26 * t,
-    width: 2.2 - .5 * t,
-  };
-}
-
-export const lighthouseSite = Object.freeze({ x: -4.2, y: -1.1, z: -31 });
-
-const rockyShoulder = (t: number) => 1.35 + .48 * (1 + Math.sin(t * 19 + .4))
-  + .32 * (1 + Math.sin(t * 43 - .7));
-
-function shoreline() {
-  const left: THREE.Vector2[] = [], right: THREE.Vector2[] = [];
-  for (let i = 0; i <= 48; i++) {
-    const t = i / 48, p = sampleLighthousePath(t);
-    left.push(new THREE.Vector2(p.x - p.width / 2 - rockyShoulder(t), p.z));
-    right.push(new THREE.Vector2(p.x + p.width / 2 + 4.8 + .45 * Math.sin(t * 7), p.z));
-  }
-  // A round, connected rock promontory supports both the path end and tower.
-  const end: THREE.Vector2[] = [];
-  const a = left[left.length - 1], b = right[right.length - 1];
-  const centre = (a.x + b.x) / 2, radius = (b.x - a.x) / 2;
-  for (let i = 1; i < 24; i++) {
-    const angle = i / 24 * Math.PI;
-    end.push(new THREE.Vector2(centre - radius * Math.cos(angle), -31 - Math.sin(angle) * 4.1));
-  }
-  return [...left, ...end, ...right.reverse()];
-}
-
-const groundHeight = (z: number) => -.15 - .95 * Math.max(0, (-z - 5) / 26);
-const grain = (x: number, y: number, z: number) => Math.sin(x * 4.7 + y * 1.9 + z * 2.6) * .55
-  + Math.sin(x * 11.1 - y * 2.7 + z * 5.9) * .27;
-
-function cliffGeometry(outline: THREE.Vector2[]) {
-  const positions: number[] = [], colors: number[] = [], indices: number[] = [];
-  const dry = new THREE.Color("#787e79"), wet = new THREE.Color("#3f4e50");
-  const scrub = new THREE.Color("#626f53"), c = new THREE.Color();
-  const count = outline.length, levels = 14;
-  for (let level = 0; level <= levels; level++) {
-    const t = level / levels;
-    for (let j = 0; j < count; j++) {
-      const p = outline[j], before = outline[(j + count - 1) % count], after = outline[(j + 1) % count];
-      const top = groundHeight(p.y), y = THREE.MathUtils.lerp(top, -9.5, t);
-      const dx = after.x - before.x, dz = after.y - before.y, length = Math.hypot(dx, dz);
-      // A broad sloping talus, stepped beds and tilted fracture planes replace
-      // the former straight extrusion beneath the path. The very top stays
-      // connected to the paved ground, while its coastline is independently ragged.
-      const strata = .28 * Math.sin(t * 24 + p.y * .31) + .2 * Math.sin(t * 39 - p.y * .7);
-      const edge = 2.15 * t + (.57 + strata + .24 * Math.sin(p.y * .83)) * Math.sin(t * Math.PI);
-      const fracture = grain(p.x * .6, y, p.y * .65) * .31 * Math.sin(t * Math.PI);
-      const x = p.x + dz / length * edge + fracture;
-      // Keep the most distant submerged toe clear of every existing vessel lane.
-      const z = clamp(p.y - dx / length * edge + Math.sin(p.x * 1.7 + y * 1.3) * .15 * Math.sin(t * Math.PI), -37.1, -4.4);
-      positions.push(x, y, z);
-      const tide = THREE.MathUtils.smoothstep(y, -8.5, -6.8);
-      const bed = Math.sin(y * 3.7 + p.y * .19 + Math.sin(p.x * .7) * .3);
-      const joint = Math.pow(.5 + .5 * Math.sin(y * 7.3 + p.y * .2), 8);
-      c.copy(wet).lerp(dry, tide).multiplyScalar(.96 + bed * .075 - joint * .1 + grain(x, y, z) * .055);
-      if (level === 0) c.lerp(scrub, .14 + .12 * Math.sin(p.x * 2 + p.y));
-      colors.push(c.r, c.g, c.b);
-    }
-  }
-  for (let level = 0; level < levels; level++) for (let j = 0; j < count; j++) {
-    const next = (j + 1) % count, a = level * count + j, b = level * count + next;
-    indices.push(a, b, a + count, b, b + count, a + count);
-  }
-  // Triangulated top uses the very same rim positions; no floating road skirt.
-  const topTriangles = THREE.ShapeUtils.triangulateShape(outline, []);
-  for (const face of topTriangles) indices.push(face[2], face[1], face[0]);
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-  geometry.setIndex(indices); geometry.computeVertexNormals();
-  return geometry;
-}
-
-type Batch = "rock" | "paving" | "plaster" | "tower" | "metal" | "lantern" | "vegetation";
-
-/** A small seven-draw headland: no textures, added lights, shadows or own clock. */
+/** Six masonry batches and one pooled rotating beacon. */
 export function createLighthouseCoast() {
   const group = new THREE.Group(); group.name = "lighthouse-coast";
-  const batches: Record<Batch, THREE.BufferGeometry[]> = { rock: [], paving: [], plaster: [], tower: [], metal: [], lantern: [], vegetation: [] };
-  const matrix = new THREE.Matrix4(), quaternion = new THREE.Quaternion();
-  const unit = new THREE.Vector3(1, 1, 1), translation = new THREE.Vector3(), euler = new THREE.Euler();
-  const add = (batch: Batch, source: THREE.BufferGeometry, color: string, x = 0, y = 0, z = 0, yaw = 0) => {
-    let geometry = source;
-    if (geometry.index) { geometry = source.toNonIndexed(); source.dispose(); }
+  const parts: Record<Batch, THREE.BufferGeometry[]> = { support: [], paving: [], coping: [], tower: [], metal: [], lantern: [], glass: [] };
+  const matrix = new THREE.Matrix4(), quaternion = new THREE.Quaternion(), scale = new THREE.Vector3(1, 1, 1);
+  const translation = new THREE.Vector3(), euler = new THREE.Euler();
+  const add = (batch: Batch, original: THREE.BufferGeometry, color: string, x = 0, y = 0, z = 0, yaw = 0) => {
+    const geometry = original.index ? original.toNonIndexed() : original;
+    if (geometry !== original) original.dispose();
     geometry.deleteAttribute("uv");
-    matrix.compose(translation.set(x, y, z), quaternion.setFromEuler(euler.set(0, yaw, 0)), unit);
+    matrix.compose(translation.set(x, y, z), quaternion.setFromEuler(euler.set(0, yaw, 0)), scale);
     geometry.applyMatrix4(matrix);
-    if (!geometry.getAttribute("color")) {
-      const position = geometry.getAttribute("position"), colors = new Float32Array(position.count * 3);
-      const base = new THREE.Color(color), shade = new THREE.Color();
-      for (let i = 0; i < position.count; i++) {
-        shade.copy(base).multiplyScalar(1 + grain(position.getX(i), position.getY(i), position.getZ(i)) * .035);
-        colors.set([shade.r, shade.g, shade.b], i * 3);
-      }
-      geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    const position = geometry.getAttribute("position"), colors = new Float32Array(position.count * 3);
+    const base = new THREE.Color(color), shade = new THREE.Color();
+    for (let i = 0; i < position.count; i++) {
+      const px = position.getX(i), py = position.getY(i), pz = position.getZ(i);
+      const grain = Math.sin(px * 2.3 + pz * 3.7 + py * 1.3) * .012 + Math.sin(px * 13 - pz * 9 + py * 7) * .008;
+      const wet = batch === "support" ? THREE.MathUtils.smoothstep(py, PIER_SEA_LEVEL - .4, PIER_SEA_LEVEL + .85) : 1;
+      shade.copy(base).multiplyScalar((.69 + wet * .31) * (1 + grain));
+      colors.set([shade.r, shade.g, shade.b], i * 3);
     }
-    batches[batch].push(geometry);
+    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3)); parts[batch].push(geometry);
   };
   const box = (batch: Batch, color: string, width: number, height: number, depth: number, x: number, y: number, z: number, yaw = 0) =>
     add(batch, new THREE.BoxGeometry(width, height, depth), color, x, y, z, yaw);
-  const cylinder = (batch: Batch, color: string, radiusTop: number, radiusBottom: number, height: number, x: number, y: number, z: number, segments = 20) =>
-    add(batch, new THREE.CylinderGeometry(radiusTop, radiusBottom, height, segments), color, x, y, z);
-  add("rock", cliffGeometry(shoreline()), "#787e79");
-  const boulder = (x: number, y: number, z: number, radius: number, phase: number, flat: boolean) => {
-    const geometry = new THREE.IcosahedronGeometry(radius, 1), position = geometry.getAttribute("position");
-    for (let i = 0; i < position.count; i++) {
-      const px = position.getX(i), py = position.getY(i), pz = position.getZ(i);
-      const relief = 1 + .14 * grain(px + phase, py, pz - phase);
-      position.setXYZ(i, px * relief * 1.2, py * relief * (flat ? .58 : .95), pz * relief * 1.45);
-    }
-    geometry.computeVertexNormals();
-    add("rock", geometry, y < -6.9 ? "#465554" : "#6f7870", x, y, z, phase);
+  const cylinder = (batch: Batch, color: string, top: number, bottom: number, height: number, x: number, y: number, z: number, sides = 32, open = false) =>
+    add(batch, new THREE.CylinderGeometry(top, bottom, height, sides, 1, open), color, x, y, z);
+  const tube = (batch: Batch, color: string, a: THREE.Vector3, b: THREE.Vector3, radius: number, sides = 6) => {
+    const delta = b.clone().sub(a), geometry = new THREE.CylinderGeometry(radius, radius, delta.length(), sides);
+    geometry.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), delta.normalize()));
+    geometry.translate((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2); add(batch, geometry, color);
   };
-  // Broken shoulders interrupt the cliff skyline; interlocking toe stones
-  // emerge from the sloped face instead of looking like a retaining wall.
-  for (let i = 0; i < 15; i++) {
-    const t = .035 + i / 15 * .92, p = sampleLighthousePath(t);
-    const edge = p.x - p.width / 2 - rockyShoulder(t);
-    const radius = .45 + .22 * (.5 + .5 * Math.sin(i * 3.7));
-    boulder(edge + .07, p.y - .16, p.z, radius, i * .73, true);
-    if (i % 2 === 0) boulder(edge - 1.4, -6.65 - .7 * Math.sin(i * 2.8), p.z + .3, .7 + radius * .5, i * 1.37, false);
+  const p = samplePierPath(.5), yaw = Math.atan2(p.tangentX, p.tangentZ);
+  // A continuous submerged footing and vertical ashlar walls replace the rock promontory.
+  const bottom = PIER_SEA_LEVEL - 2.1, wallTop = PIER_DECK_HEIGHT - .18;
+  box("support", "#87928c", PIER_WIDTH, wallTop - bottom, PIER_LENGTH + .04, p.x, (wallTop + bottom) / 2, p.z, yaw);
+  box("support", "#6c7d79", PIER_FOOT_WIDTH, .42, PIER_LENGTH + .12, p.x, bottom + .2, p.z, yaw);
+  const blocks = 32, courses = 6, courseHeight = (wallTop - bottom) / courses;
+  for (const side of [-1, 1] as const) for (let row = 0; row < courses; row++) for (let column = 0; column < blocks; column++) {
+    const stagger = row % 2 * .5, t = (column + .5 + stagger) / blocks;
+    if (t > 1) continue;
+    const q = samplePierEdge(t, side), length = PIER_LENGTH / blocks - .018;
+    box("support", row < 2 ? "#667c77" : column % 5 === 0 ? "#9ca49a" : "#a5ada2", .075, courseHeight - .018, length,
+      q.x + q.normalX * side * .025, bottom + (row + .5) * courseHeight, q.z + q.normalZ * side * .025, yaw);
   }
-
-  // A dark mortar bed ties staggered stone flags into one continuous walkway.
-  const samples = 52;
-  for (let i = 0; i < samples; i++) {
-    const a = sampleLighthousePath(i / samples), b = sampleLighthousePath((i + 1) / samples);
-    const length = Math.hypot(b.x - a.x, b.z - a.z), yaw = Math.atan2(b.x - a.x, b.z - a.z);
-    const x = (a.x + b.x) / 2, y = (a.y + b.y) / 2, z = (a.z + b.z) / 2, width = (a.width + b.width) / 2;
-    box("paving", "#6f756e", width, .055, length + .025, x, y + .04, z, yaw);
-    for (let side = -1; side <= 1; side += 2) {
-      const offset = side * width * .25;
-      box("paving", i % 3 === 0 ? "#b9b7a5" : "#c3c1b0", width * .5 - .022, .022, length - .022,
-        x + Math.cos(yaw) * offset, y + .078, z - Math.sin(yaw) * offset, yaw);
-    }
-    if (i % 3 === 0) {
-      const left = width * .5 + .09;
-      box("plaster", "#c1bda9", .21, .43, length * 3 + .06,
-        x - Math.cos(yaw) * left, y + .24, z + Math.sin(yaw) * left, yaw);
+  // The landing and deck are level and join without a visible gap or floating skirt.
+  cylinder("support", "#8c9890", PIER_PLATFORM_RADIUS, PIER_PLATFORM_RADIUS + .2, wallTop - bottom,
+    lighthouseSite.x, (wallTop + bottom) / 2, lighthouseSite.z, 48);
+  box("paving", "#8b968d", PIER_WIDTH + .04, .20, PIER_LENGTH + .08, p.x, PIER_DECK_HEIGHT - .1, p.z, yaw);
+  cylinder("paving", "#b9b9a8", PIER_PLATFORM_RADIUS + .02, PIER_PLATFORM_RADIUS + .02, .20,
+    lighthouseSite.x, PIER_DECK_HEIGHT - .1, lighthouseSite.z, 48);
+  const flags = 48;
+  for (let i = 0; i < flags; i++) {
+    const q = samplePierPath((i + .5) / flags);
+    for (const side of [-1, 1]) box("paving", i % 7 === 0 ? "#b0b4a7" : "#c2c2b1", PIER_WIDTH / 2 - .045, .026, PIER_LENGTH / flags - .024,
+      q.x + q.normalX * side * PIER_WIDTH * .25, PIER_DECK_HEIGHT + .013, q.z + q.normalZ * side * PIER_WIDTH * .25, yaw);
+  }
+  // Low regular curb blocks leave the water-facing edge open to visible wave run-up.
+  for (const side of [-1, 1] as const) {
+    const q = samplePierEdge(.5, side);
+    box("coping", "#d1d0bc", .18, .22, PIER_LENGTH + .04, q.x, PIER_DECK_HEIGHT + .11, q.z, yaw);
+    for (let i = 0; i <= 16; i++) {
+      const r = samplePierEdge(i / 16, side);
+      cylinder("metal", "#6e7d78", .035, .043, .68, r.x, PIER_DECK_HEIGHT + .45, r.z, 8);
+      if (i < 16) {
+        const next = samplePierEdge((i + 1) / 16, side), a = new THREE.Vector3(r.x, PIER_DECK_HEIGHT + .62, r.z), b = new THREE.Vector3(next.x, PIER_DECK_HEIGHT + .62, next.z);
+        const midpoint = a.clone().lerp(b, .5); midpoint.y -= .09;
+        tube("metal", "#77837a", a, midpoint, .018); tube("metal", "#77837a", midpoint, b, .018);
+      }
     }
   }
+  // The tower's silhouette is entirely inside the right pane on both room cameras.
   const site = lighthouseSite;
-  cylinder("paving", "#b6b5a3", 1.5, 1.55, .26, site.x, site.y + .01, site.z, 32);
-  cylinder("tower", "#d7d5c5", .66, .73, .22, site.x, site.y + .25, site.z);
-  cylinder("tower", "#e6e4d7", .42, .57, 4.45, site.x, site.y + 2.585, site.z, 24);
-  cylinder("tower", "#d5d4c4", .66, .51, .18, site.x, site.y + 4.9, site.z);
-  cylinder("metal", "#39474a", .69, .69, .065, site.x, site.y + 5.02, site.z);
-  cylinder("lantern", "#ffc77b", .43, .43, .61, site.x, site.y + 5.37, site.z, 16);
-  cylinder("metal", "#364448", .63, .63, .07, site.x, site.y + 5.72, site.z);
-  cylinder("metal", "#354349", 0, .72, .43, site.x, site.y + 5.96, site.z, 16);
-  cylinder("metal", "#354349", .018, .027, .27, site.x, site.y + 6.31, site.z, 8);
-  for (let i = 0; i < 8; i++) {
-    const angle = i / 8 * TAU;
-    cylinder("metal", "#334348", .025, .025, .69, site.x + Math.cos(angle) * .46, site.y + 5.37, site.z + Math.sin(angle) * .46, 6);
-    cylinder("metal", "#3c4948", .018, .018, .42, site.x + Math.cos(angle) * .66, site.y + 5.22, site.z + Math.sin(angle) * .66, 6);
+  const profile = [
+    [1.0, 0], [1.0, .18], [.92, .25], [.90, .34], [.84, .40], [.73, 5.19],
+    [.80, 5.21], [.82, 5.35], [.73, 5.43], [.73, 5.59], [1.09, 5.68], [1.13, 5.78], [1.10, 5.9], [.63, 5.95], [.63, 6.13],
+  ];
+  add("tower", new THREE.LatheGeometry(profile.map(([radius, y]) => new THREE.Vector2(radius, y)), 48), "#e1e0cf", site.x, site.y, site.z);
+  cylinder("tower", "#a86c56", .855, .87, .12, site.x, site.y + .47, site.z, 48);
+  cylinder("tower", "#b27a60", .815, .815, .10, site.x, site.y + 5.29, site.z, 48);
+  cylinder("metal", "#4a5c5a", 1.135, 1.135, .06, site.x, site.y + 5.91, site.z, 48);
+  for (let i = 0; i < 24; i++) {
+    const angle = i / 24 * TAU, x = site.x + Math.cos(angle) * 1.07, z = site.z + Math.sin(angle) * 1.07;
+    cylinder("metal", "#576b68", .019, .025, .66, x, site.y + 6.27, z, 6);
   }
-  // Door and narrow recessed windows face back toward the room and path.
-  box("metal", "#485553", .31, .83, .035, site.x, site.y + .79, site.z + .542);
-  for (const height of [2.06, 3.5]) box("metal", "#3c5357", .13, .28, .04,
-    site.x, site.y + height, site.z + .559 - height * .028);
-
-  // Sparse salt-tolerant scrub stays low; the walkway itself remains clear.
-  for (let i = 0; i < 28; i++) {
-    const t = .05 + i / 29 * .91, p = sampleLighthousePath(t);
-    const x = p.x + p.width / 2 + .55 + .35 * Math.sin(i * 2.7), z = p.z + .16 * Math.sin(i * 5);
-    const height = .11 + .08 * (.5 + .5 * Math.sin(i * 7.1));
-    add("vegetation", new THREE.IcosahedronGeometry(.24 + .07 * Math.sin(i * 3.7), 0), i % 3 ? "#6d7758" : "#909374", x, p.y + height * .4, z);
+  for (const h of [6.13, 6.38, 6.59]) {
+    const ring = new THREE.TorusGeometry(1.075, .019, 5, 64); ring.rotateX(Math.PI / 2); add("metal", ring, "#5a6d68", site.x, site.y + h, site.z);
   }
-  for (let i = 0; i < 11; i++) {
-    const t = .08 + i / 11 * .83, p = sampleLighthousePath(t);
-    const x = p.x - p.width / 2 - .68 - .2 * Math.sin(i * 3.1);
-    const geometry = new THREE.IcosahedronGeometry(.18 + .04 * Math.sin(i * 4.7), 0);
-    geometry.scale(1.25, .65, .9);
-    add("vegetation", geometry, i % 3 ? "#657354" : "#8b8c6c", x, p.y + .045, p.z);
+  cylinder("metal", "#536969", .675, .675, .17, site.x, site.y + 6.12, site.z, 48);
+  cylinder("glass", "#aac4c7", .642, .642, 1.05, site.x, site.y + 6.71, site.z, 32, true);
+  for (let i = 0; i < 12; i++) {
+    const angle = i / 12 * TAU;
+    cylinder("metal", "#526567", .021, .021, 1.13, site.x + Math.cos(angle) * .648, site.y + 6.71, site.z + Math.sin(angle) * .648, 6);
   }
-  for (const t of [.22, .54, .84]) {
-    const p = sampleLighthousePath(t), x = p.x - p.width * .5 + .08;
-    box("metal", "#4d5550", .12, .16, .11, x, p.y + .31, p.z);
-    box("lantern", "#ffd397", .075, .055, .115, x, p.y + .32, p.z + .006);
+  for (const h of [6.20, 6.73, 7.27]) cylinder("metal", "#53696a", .67, .67, .035, site.x, site.y + h, site.z, 48, true);
+  cylinder("lantern", "#ffddaa", .19, .24, .48, site.x, site.y + 6.67, site.z, 20);
+  cylinder("metal", "#586e70", .72, .78, .11, site.x, site.y + 7.30, site.z, 48);
+  const dome = new THREE.SphereGeometry(.89, 40, 12, 0, TAU, 0, Math.PI / 2); dome.scale(1, .74, 1);
+  add("metal", dome, "#647a7c", site.x, site.y + 7.36, site.z);
+  cylinder("metal", "#536a6d", .23, .25, .12, site.x, site.y + 8.08, site.z, 24);
+  cylinder("metal", "#52676c", .015, .025, .43, site.x, site.y + 8.36, site.z, 8);
+  tube("metal", "#637777", new THREE.Vector3(site.x - .17, site.y + 8.5, site.z), new THREE.Vector3(site.x + .17, site.y + 8.5, site.z), .012);
+  // Recessed door, limestone lintel and narrow white window frames face the room.
+  const facing = Math.atan2(.55 - site.x, 1.7 - site.z), front = (distance: number) => ({ x: site.x + Math.sin(facing) * distance, z: site.z + Math.cos(facing) * distance });
+  let face = front(.86);
+  box("metal", "#506866", .47, 1.24, .045, face.x, site.y + .95, face.z, facing);
+  for (const s of [-1, 1]) box("tower", "#f0ead8", .07, 1.37, .065, face.x + Math.cos(facing) * .27 * s, site.y + .98, face.z - Math.sin(facing) * .27 * s, facing);
+  box("tower", "#ddd9c5", .62, .09, .08, face.x, site.y + 1.69, face.z, facing);
+  for (const h of [3.15, 4.38]) {
+    face = front(.80 - h * .015);
+    box("metal", "#46616b", .27, .49, .032, face.x, site.y + h, face.z, facing);
+    for (const s of [-1, 1]) box("tower", "#f0ecdc", .055, .57, .055, face.x + Math.cos(facing) * .165 * s, site.y + h, face.z - Math.sin(facing) * .165 * s, facing);
+    box("tower", "#eee9d8", .37, .055, .065, face.x, site.y + h - .28, face.z, facing);
+    box("tower", "#eee9d8", .37, .055, .065, face.x, site.y + h + .28, face.z, facing);
+    box("tower", "#eee9d8", .026, .49, .045, face.x, site.y + h, face.z + .018, facing);
   }
-
-  const plaster = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .96, emissive: "#b4a17a", emissiveIntensity: 0 });
+  const landingLights = [.17, .44, .71, .94];
+  for (const t of landingLights) {
+    const q = samplePierEdge(t, -1);
+    box("metal", "#5c6d68", .12, .16, .13, q.x, PIER_DECK_HEIGHT + .28, q.z, yaw);
+    box("lantern", "#ffdbac", .08, .06, .135, q.x, PIER_DECK_HEIGHT + .29, q.z, yaw);
+  }
+  // Curbs and paving share one stone batch, leaving the geometry budget intact
+  // when the single atmospheric beacon is added.
+  parts.paving.push(...parts.coping); parts.coping.length = 0;
+  const plaster = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .93, emissive: "#b5a27e", emissiveIntensity: 0 });
   const materials: Record<Batch, THREE.MeshStandardMaterial> = {
-    rock: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, flatShading: true }),
-    paving: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .95 }),
-    plaster, tower: plaster,
-    metal: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .73, metalness: .12 }),
-    lantern: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .55, emissive: "#ffc77b", emissiveIntensity: 0 }),
-    vegetation: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1 }),
+    support: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .95 }),
+    paving: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .94 }),
+    coping: plaster, tower: plaster,
+    metal: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .53, metalness: .32 }),
+    lantern: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .45, emissive: "#ffcc88", emissiveIntensity: 0 }),
+    glass: new THREE.MeshStandardMaterial({ vertexColors: true, transparent: true, opacity: .21, depthWrite: false, roughness: .18, metalness: .12, side: THREE.DoubleSide }),
   };
   const geometries: THREE.BufferGeometry[] = [];
-  for (const name of Object.keys(batches) as Batch[]) {
-    const merged = mergeGeometries(batches[name])!;
-    const geometry = mergeVertices(merged); merged.dispose();
-    for (const part of batches[name]) part.dispose();
-    geometry.computeBoundingSphere(); geometries.push(geometry);
+  for (const name of Object.keys(parts) as Batch[]) {
+    if (!parts[name].length) continue;
+    const merged = mergeGeometries(parts[name])!, geometry = mergeVertices(merged); merged.dispose();
+    parts[name].forEach(value => value.dispose()); geometry.computeBoundingSphere(); geometries.push(geometry);
     const mesh = new THREE.Mesh(geometry, materials[name]);
-    mesh.name = name === "paving" ? "cliff-path" : name === "tower" ? "coastal-lighthouse" : `lighthouse-coast-${name}`; mesh.userData.kind = name;
-    group.add(mesh);
+    mesh.name = name === "paving" ? "cliff-path" : name === "tower" ? "coastal-lighthouse" : `lighthouse-coast-${name}`;
+    mesh.userData.kind = name; group.add(mesh);
   }
-  group.userData.path = Array.from({ length: 53 }, (_, i) => sampleLighthousePath(i / 52));
-  group.userData.lighthouse = { ...site, height: 6.445 };
-  group.userData.seaLevel = -8;
+  group.userData.path = Array.from({ length: 53 }, (_, i) => samplePierPath(i / 52));
+  group.userData.lighthouse = { ...site, height: LIGHTHOUSE_HEIGHT };
+  group.userData.seaLevel = PIER_SEA_LEVEL; group.userData.kind = "regular-breakwater-pier";
+  const beacon = createLighthouseBeacon({ x: site.x, y: site.y + 6.67, z: site.z });
+  group.add(beacon.group);
   let disposed = false;
   return {
-    group,
+    group, beacon, warmObjects: beacon.warmObjects,
+    updateBeacon(timestamp: number, sunAltitude: number, weather: BeaconWeather, reduced = false, low = false) {
+      if (disposed) return;
+      const state = beacon.update(timestamp, sunAltitude, weather, reduced, low);
+      if (state) {
+        materials.lantern.emissiveIntensity = state.lanternIntensity;
+        materials.glass.emissive.set("#ffd395");
+        materials.glass.emissiveIntensity = state.twilight * .07;
+      }
+      return state;
+    },
     update(daylight: number) {
       if (disposed) return;
-      const night = 1 - THREE.MathUtils.smoothstep(clamp(daylight, 0, 1), .04, .55);
-      // Emission marks a lit lantern without illuminating sea or room through walls.
-      materials.lantern.emissiveIntensity = night * .95;
-      materials.plaster.emissiveIntensity = night * .012;
+      const night = 1 - THREE.MathUtils.smoothstep(THREE.MathUtils.clamp(daylight, 0, 1), .04, .55);
+      materials.lantern.emissiveIntensity = night * 1.15;
+      plaster.emissiveIntensity = night * .012;
     },
     dispose() {
-      if (disposed) return;
-      disposed = true;
-      for (const geometry of geometries) geometry.dispose();
-      for (const material of new Set(Object.values(materials))) material.dispose();
-      group.clear();
+      if (disposed) return; disposed = true;
+      beacon.dispose();
+      geometries.forEach(value => value.dispose());
+      new Set(Object.values(materials)).forEach(value => value.dispose()); group.clear();
     },
   };
 }

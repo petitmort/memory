@@ -4,7 +4,7 @@ import { calculateCelestial, type CelestialState, type Direction3 } from "./cele
 import { createCloudController } from "./cloud-controller";
 import { createEnvironmentDebug, readEnvironmentOptions } from "./environment-debug";
 import { createEnvironmentSky } from "./environment-sky";
-import { blendWeather, createWeatherController, sampleWeather, sampleWeatherFront, transitionWeather } from "./weather-controller";
+import { blendWeather, createWeatherController, sampleWeather, sampleWeatherFront, transitionWeather, type WeatherState } from "./weather-controller";
 import type { createVesselController } from "./vessel-controller";
 import { createBirdController } from "./bird-controller";
 import { createStormController } from "./storm-controller";
@@ -23,6 +23,7 @@ type Bindings = {
   quality: (value?: boolean) => void;
   onSound?: (frame: EnvironmentSoundFrame) => void;
   onDaylight?: (daylight: number) => void;
+  onCoastFrame?: (waterTime: number, weather: WeatherState, low: boolean, reduced: boolean, daylight: number, active: boolean, timestamp: number, sunAltitude: number) => void;
 };
 const lerp = THREE.MathUtils.lerp;
 function interpolateCelestial(a: CelestialState, b: CelestialState, f: number): CelestialState {
@@ -188,6 +189,7 @@ export function createEnvironmentController(bindings: Bindings) {
         departureState, departureRevision,
       });
     }
+    bindings.onCoastFrame?.(waterTime, weather, low, reduced, d, outdoors, timestamp, celestial.sun.altitude);
     bindings.onSound?.({ timestamp, weather, storm: stormFrame, active: outdoors });
     if (timestamp - debugAt >= 1000 || timestamp < debugAt) {
       debugAt = timestamp;

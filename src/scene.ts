@@ -314,6 +314,21 @@ export function createScene(
     invalidate: requestRender,
     onSound: onEnvironmentSound,
     onDaylight: value => mythology.seascape.lighthouseCoast.update(value),
+    onCoastFrame(waterTime, weather, isLow, reduced, daylight, active, timestamp, sunAltitude) {
+      const surf = mythology.seascape.pierSurf;
+      surf.group.visible = active;
+      const coast = mythology.seascape.lighthouseCoast;
+      coast.beacon.group.visible = active;
+      if (active) {
+        surf.update(waterTime, weather, isLow, reduced, daylight);
+        const beam = coast.updateBeacon(timestamp, sunAltitude, weather, reduced, isLow);
+        if (beam) {
+          seaMat.uniforms.beaconPosition.value.set(beam.origin.x, beam.origin.y, beam.origin.z);
+          seaMat.uniforms.beaconDirection.value.set(beam.direction.x, beam.direction.y, beam.direction.z);
+          seaMat.uniforms.beaconStrength.value = beam.beamStrength;
+        }
+      } else seaMat.uniforms.beaconStrength.value = 0;
+    },
     quality(value) { qualityPolicy.setManual(value); applyQuality(qualityPolicy.low); },
   });
   const rug = box(
@@ -826,7 +841,7 @@ export function createScene(
     // Asset factories own their loading cancellation and private resources.
     // Release the remaining room resources once, including Points and uniforms.
     const resources = collectResources(scene);
-    for (const owned of [cat.group, recordPlayer.group, deskClock.group, courtyardFog.group, mythology.seascape.lighthouseCoast.group, ...environment.ownedGroups]) {
+    for (const owned of [cat.group, recordPlayer.group, deskClock.group, courtyardFog.group, mythology.seascape.lighthouseCoast.group, mythology.seascape.pierSurf.group, ...environment.ownedGroups]) {
       const asset = collectResources(owned);
       asset.geometries.forEach(value => resources.geometries.delete(value));
       asset.materials.forEach(value => resources.materials.delete(value));
@@ -842,6 +857,7 @@ export function createScene(
     courtyardFog.dispose();
     environment.dispose();
     mythology.seascape.lighthouseCoast.dispose();
+    mythology.seascape.pierSurf.dispose();
     roomLight.dispose();
     bouquet.traverse(object => { if (object instanceof THREE.InstancedMesh) object.dispose(); });
     resources.geometries.forEach(value => value.dispose());
@@ -1413,7 +1429,7 @@ export function createScene(
   const ready = whileAvailable(Promise.all([cat.ready, lounge.ready])).then(() => {
     requireAvailable();
     return whileAvailable(renderer.compileAsync(scene, camera));
-  }).then(() => whileAvailable(warmSceneResources(renderer, scene, camera, [...shelteredDetails, ...deskClock.warmObjects, ...environment.warmObjects], requireAvailable))).then(() => {
+  }).then(() => whileAvailable(warmSceneResources(renderer, scene, camera, [...shelteredDetails, ...deskClock.warmObjects, ...mythology.seascape.lighthouseCoast.warmObjects, ...mythology.seascape.pierSurf.warmObjects, ...environment.warmObjects], requireAvailable))).then(() => {
     requireAvailable();
     album.leaf.visible = false;
     renderer.render(scene, camera);

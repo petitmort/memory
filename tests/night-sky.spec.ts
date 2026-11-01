@@ -82,6 +82,79 @@ test('night and low quality reuse preallocated stars and density resources, with
   sky.dispose(); sky.dispose(); expect([geometries, materials, textures]).toEqual([1, 1, 1]);
 });
 
+test('the denser night field follows the Milky Way while preserving bright anchors, quiet high latitudes and low-quality distribution', () => {
+  const sky = createNightSky(), replica = createNightSky();
+  const positions = sky.stars.geometry.getAttribute('position'), styles = sky.stars.geometry.getAttribute('starStyle');
+  const galactic = new THREE.Matrix3().set(...EQUATORIAL_TO_GALACTIC), direction = new THREE.Vector3();
+  try {
+    expect(positions.count).toBeGreaterThanOrEqual(5000);
+    expect(positions.count).toBeLessThanOrEqual(7000);
+    expect(LOW_STAR_COUNT).toBeGreaterThanOrEqual(2000);
+    expect(LOW_STAR_COUNT).toBeLessThanOrEqual(positions.count / 2);
+    expect(replica.stars.geometry.getAttribute('position').array).toEqual(positions.array);
+    for (const count of [LOW_STAR_COUNT, STAR_COUNT]) {
+      let inPlane = 0, highLatitude = 0, luminous = 0, brightness = 0;
+      for (let i = 20; i < count; i++) {
+        direction.fromBufferAttribute(positions, i).normalize().applyMatrix3(galactic);
+        const latitude = Math.abs(Math.asin(THREE.MathUtils.clamp(direction.z, -1, 1)));
+        if (latitude < 12 * RAD) inPlane++;
+        if (latitude > 30 * RAD) highLatitude++;
+        if (styles.getY(i) > .8) luminous++;
+        brightness += styles.getY(i);
+      }
+      const faintCount = count - 20;
+      // Uniform white noise would put only sin(12deg), about21%, in this band.
+      expect(inPlane / faintCount).toBeGreaterThan(.62);
+      expect(inPlane / faintCount).toBeLessThan(.8);
+      expect(highLatitude / faintCount).toBeGreaterThan(.15);
+      expect(highLatitude / faintCount).toBeLessThan(.26);
+      expect(luminous / faintCount).toBeGreaterThan(.04);
+      expect(luminous / faintCount).toBeLessThan(.2);
+      expect(brightness / faintCount).toBeGreaterThan(.42);
+      expect(brightness / faintCount).toBeLessThan(.5);
+    }
+    const celestial = calculateCelestial(at), weather = sampleWeather(at, { kind: 'clear', cloudCover: 0 });
+    const dark = { ...celestial, night: 1, moonIllumination: 0 };
+    sky.update(dark, weather, at, false, 0);
+    expect((sky.stars.material as THREE.ShaderMaterial).uniforms.opacity.value).toBeGreaterThan(1.3);
+    expect(sky.galaxyStrength.value).toBeGreaterThan(.12);
+    expect(sky.galaxyStrength.value).toBeLessThan(.16);
+    sky.update({ ...dark, night: 0 }, weather, at, false, 0);
+    expect((sky.stars.material as THREE.ShaderMaterial).uniforms.opacity.value).toBe(0);
+    expect(sky.galaxyStrength.value).toBe(0);
+  } finally { sky.dispose(); replica.dispose(); }
+});
+
+test('the galactic texture keeps an uneven luminous band and dark dust instead of filling the whole sky', () => {
+  const sky = createNightSky();
+  try {
+    const image = sky.galaxyMap.image, pixels = image.data as Uint8Array;
+    let bandLight = 0, bandCount = 0, farLight = 0, farCount = 0, darkCuts = 0;
+    const luminance = (x: number, y: number) => {
+      const i = (y * image.width + x) * 4;
+      return .2126 * pixels[i] + .7152 * pixels[i + 1] + .0722 * pixels[i + 2];
+    };
+    for (let y = 0; y < image.height; y++) for (let x = 0; x < image.width; x++) {
+      const latitude = Math.abs(((y + .5) / image.height - .5) * Math.PI);
+      const light = luminance(x, y);
+      if (latitude < 8 * RAD) { bandLight += light; bandCount++; }
+      if (latitude > 35 * RAD) { farLight += light; farCount++; }
+    }
+    const ridges: number[] = [];
+    for (let x = 0; x < image.width; x++) {
+      const centre = Math.floor(image.height / 2);
+      const brightest = Math.max(...Array.from({ length: 21 }, (_, i) => luminance(x, centre - 10 + i)));
+      ridges.push(brightest);
+      const centralCut = Math.min(...Array.from({ length: 7 }, (_, i) => luminance(x, centre - 3 + i)));
+      if (centralCut < brightest * .7) darkCuts++;
+    }
+    expect(bandLight / bandCount).toBeGreaterThan(20);
+    expect(farLight / farCount).toBeLessThan(.1);
+    expect(Math.max(...ridges) - Math.min(...ridges)).toBeGreaterThan(20);
+    expect(darkCuts / image.width).toBeGreaterThan(.65);
+  } finally { sky.dispose(); }
+});
+
 test('actual galaxy pixels have mottled structure and real cloud alpha attenuates a star drawn behind it', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));

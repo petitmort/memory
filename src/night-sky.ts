@@ -4,7 +4,7 @@ import { greenwichSiderealAngle, type CelestialState, type Direction3 } from "./
 import type { WeatherState } from "./weather-controller";
 
 const RAD = Math.PI / 180, TAU = Math.PI * 2;
-export const STAR_COUNT = 3000, LOW_STAR_COUNT = 1500;
+export const STAR_COUNT = 6000, LOW_STAR_COUNT = 2800;
 /** J2000 equatorial Cartesian basis to IAU galactic Cartesian basis (row-major). */
 export const EQUATORIAL_TO_GALACTIC = [
   -.0548755604, -.8734370902, -.4838350155,
@@ -67,12 +67,16 @@ export function createGalacticTexture() {
       const fine = noise(px * 25 + 11, py * 25 + 30, sb * 41 + 17);
       const grain = noise(px * 71 + 7, py * 71 + 3, sb * 91 + 41);
       const offset = b - .018 * Math.sin(l * 4) - .009 * Math.sin(l * 11);
-      const band = Math.exp(-Math.pow(offset / (.075 + .045 * n), 2));
+      const band = Math.exp(-Math.pow(offset / (.07 + .045 * n), 2));
       const halo = Math.exp(-Math.pow(offset / .25, 2));
       const core = Math.exp(-Math.pow(Math.atan2(Math.sin(l), Math.cos(l)) / .52, 2) - Math.pow(b / .2, 2));
       const lane = Math.exp(-Math.pow((offset + .012 * Math.sin(l * 7)) / (.022 + .025 * fine), 2));
-      const dust = 1 - lane * (.5 + .35 * n);
-      const density = Math.min(1, (halo * .06 + band * (.12 + .58 * Math.pow(n, 1.4) + .32 * Math.pow(fine, 1.6) + .12 * grain) + core * .28) * dust);
+      // A broken secondary dust branch and clumpy star clouds keep the band
+      // from reading as a smooth, uniformly luminous stripe across the sky.
+      const branch = Math.exp(-Math.pow((offset + .054 + .027 * Math.sin(l * 3 + .6)) / (.018 + .018 * n), 2));
+      const dust = (1 - lane * (.54 + .34 * n)) * (1 - branch * (.15 + .3 * fine));
+      const density = Math.min(1, (halo * .055 + band * (.1 + .7 * Math.pow(n, 1.5)
+        + .42 * Math.pow(fine, 1.8) + .17 * Math.pow(grain, 2)) + core * .34) * dust);
       const index = (y * width + x) * 4, warm = core * .22;
       pixels[index] = Math.round(density * (140 + warm * 110));
       pixels[index + 1] = Math.round(density * (174 + warm * 40));
@@ -109,8 +113,8 @@ export function createNightSky(location: CalendarLocation = DEFAULT_LOCATION) {
       brightness = value; size = 2.25 + value * .65;
     } else {
       const longitude = random() * TAU;
-      if (random() < .42) {
-        const b = (random() + random() + random() - 1.5) * .25;
+      if (random() < .6) {
+        const b = (random() + random() + random() - 1.5) * .2;
         direction.set(Math.cos(b) * Math.cos(longitude), Math.cos(b) * Math.sin(longitude), Math.sin(b)).applyMatrix3(galacticInverse);
       } else {
         const z = random() * 2 - 1, r = Math.sqrt(1 - z * z);
@@ -118,8 +122,8 @@ export function createNightSky(location: CalendarLocation = DEFAULT_LOCATION) {
       }
       // A stable pixel footprint survives the full room view and low-DPR phones;
       // variation comes from both intensity and size, rather than subpixel loss.
-      brightness = .15 + Math.pow(random(), 2.4) * .71;
-      size = 1.45 + Math.pow(random(), 3) * 1.05;
+      brightness = .24 + Math.pow(random(), 2.6) * .76;
+      size = 1.55 + Math.pow(random(), 3) * 1.1;
     }
     positions.push(direction.x * 280, direction.y * 280, direction.z * 280);
     styles.push(size, brightness);
@@ -162,8 +166,8 @@ export function createNightSky(location: CalendarLocation = DEFAULT_LOCATION) {
       stars.matrix.set(frame[0], frame[3], frame[6], 0, frame[1], frame[4], frame[7], -8, frame[2], frame[5], frame[8], 0, 0, 0, 0, 1);
       stars.matrixWorldNeedsUpdate = true;
       const visibility = nightSkyVisibility(celestial, weather, flash);
-      material.uniforms.opacity.value = visibility.stars;
-      galaxyStrength.value = visibility.galaxy * .09;
+      material.uniforms.opacity.value = visibility.stars * 1.4;
+      galaxyStrength.value = visibility.galaxy * .135;
       geometry.setDrawRange(0, low ? LOW_STAR_COUNT : STAR_COUNT);
       // Keep zero-opacity objects in warmup; never allocate a reveal-time shader.
       stars.userData.visibility = visibility.stars;

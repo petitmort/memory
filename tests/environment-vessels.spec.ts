@@ -64,7 +64,7 @@ test('pooled six-model traffic restores current positions, survives debug change
     const controller = createVesselController(), fresh = createVesselController(), steady = createVesselController();
     // Three simultaneous voyages, all past their entry fade; a one-voyage
     // timestamp would hide actors being overwritten during first-frame fill.
-    const now = Date.UTC(2026, 6, 10, 12, 3, 16);
+    const now = Date.UTC(2026, 6, 10, 11, 59, 50);
     const resources = (root: any) => {
       const geometry = new Set<any>(), materials = new Set<any>();
       root.traverse((object: any) => {

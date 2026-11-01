@@ -9,11 +9,13 @@ type Point = readonly [number, number];
 type Route = readonly [Point, Point, Point, Point];
 
 export const vesselRoutePoints: Record<VesselRoute, Route> = {
-  "left-to-right": [[-145, -48], [-60, -46], [65, -42], [145, -46]],
+  // The right-hand pier reaches the near shore: crossings pass behind its
+  // lighthouse and the adjacent reef, rather than cutting through the quay.
+  "left-to-right": [[-145, -80], [-60, -112], [65, -106], [145, -80]],
   "right-to-left": [[145, -114], [65, -121], [-65, -116], [-145, -125]],
   approach: [[120, -238], [65, -210], [10, -45], [-145, -24]],
   depart: [[-145, -24], [10, -45], [65, -210], [120, -238]],
-  diagonal: [[145, -160], [80, -80], [-60, -22], [-145, -38]],
+  diagonal: [[145, -160], [70, -175], [-75, -10], [-145, -38]],
   arc: [[145, -140], [55, -65], [-70, -120], [-145, -144]],
 };
 
