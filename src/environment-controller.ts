@@ -174,7 +174,7 @@ export function createEnvironmentController(bindings: Bindings) {
       if (progress === 1) transition = undefined;
     } else weather = target;
     const stormFrame = storm.update(motionTimestamp, weather, low, reduced || !outdoors, celestial.daylight);
-    sky.update(celestial, weather, camera, stormFrame.flash, timestamp, low, reduced, motionTimestamp);
+    sky.update(celestial, weather, camera, stormFrame.flash, timestamp, low, reduced, motionTimestamp, options.celestialView);
     const d = celestial.daylight, cover = weather.cloudCover;
     const sunlight = THREE.MathUtils.smoothstep(celestial.sun.altitude, -.02, .23) * (1 - cover * .84);
     const moonlight = celestial.night * celestial.moonIllumination * THREE.MathUtils.smoothstep(celestial.moon.altitude, -.02, .15) * (1 - cover * .86);
@@ -187,10 +187,10 @@ export function createEnvironmentController(bindings: Bindings) {
     lightColor.copy(daylightColor).lerp(warm, warmAmount);
     sun.intensity = 3.35 * sunlight + .14 * moonlight;
     sun.color.copy(sunlight > .005 ? lightColor : moonColor);
-    sun.position.fromArray(sunlight > .005 ? celestial.sun.direction : celestial.moon.direction).multiplyScalar(12);
+    sun.position.copy(sunlight > .005 ? bindings.sunGroup.position : sky.moon.position).normalize().multiplyScalar(12);
     if (Math.abs(perf - shadowAt) > (time.mode === "free" ? 1000 : 15000)) { sun.shadow.needsUpdate = true; shadowAt = perf; }
     const uniforms = ocean.uniforms;
-    uniforms.sunPosition.value.fromArray(celestial.sun.direction).multiplyScalar(235); uniforms.sunPosition.value.y -= 8;
+    uniforms.sunPosition.value.copy(bindings.sunGroup.position);
     uniforms.moonPosition.value.copy(sky.moon.position);
     uniforms.skyHorizon.value.copy(sky.horizon); uniforms.skyZenith.value.copy(sky.zenith);
     tint.copy(waterNight).lerp(waterDay, d).multiply(weatherTint.copy(waterGray).lerp(waterDay, 1 - cover * .78));
@@ -212,7 +212,7 @@ export function createEnvironmentController(bindings: Bindings) {
     clouds.group.visible = particles.group.visible = outdoors;
     birds.group.visible = storm.group.visible = outdoors;
     if (outdoors) {
-      const direction = sunlight > .005 ? celestial.sun.direction : celestial.moon.direction;
+      const direction = sunlight > .005 ? sky.directions.sun : sky.directions.moon;
       clouds.update(motionTimestamp, weather, low, reduced, d, direction, {
         timeZone: options.location.timeZone, weather: options.weather,
         windSpeed: options.windSpeed, windDirection:options.windDirection, revision: cloudRevision, camera, flash:stormFrame.flash,
@@ -245,7 +245,7 @@ export function createEnvironmentController(bindings: Bindings) {
     setTimeFlow,
     pause() { paused = true; storm.cancelPreview(); },
     resume() { paused = false; userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; },
-    snapshot() { return { timestamp, motionTimestamp, timeFlow: timeFrame(), celestial, weather, vessels: vessels.snapshot(), birds: birds.snapshot(), storm: storm.snapshot(), low, updates, paused }; },
+    snapshot() { return { timestamp, motionTimestamp, timeFlow: timeFrame(), celestial, celestialView: options.celestialView, displayDirections: sky.directions, weather, vessels: vessels.snapshot(), birds: birds.snapshot(), storm: storm.snapshot(), low, updates, paused }; },
     dispose() {
       if (disposed) return;
       disposed = true; paused = true; debug.dispose(); sky.dispose(); clouds.dispose(); particles.dispose(); vessels.dispose(); birds.dispose(); storm.dispose();

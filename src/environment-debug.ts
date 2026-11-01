@@ -1,12 +1,14 @@
 import { calendarAt, DEFAULT_LOCATION, timestampFromZonedInput, type CalendarLocation } from "./calendar-seed";
 import { WEATHER_KINDS, WEATHER_LABELS, type WeatherKind } from "./weather-controller";
 import { vesselKinds, vesselRoutes, type VesselKind, type VesselRoute } from "./vessel-navigation";
+import type { CelestialView } from "./celestial-view";
 import "./environment-debug.css";
 
 export type EnvironmentOverrides = {
   enabled: boolean;
   location: CalendarLocation;
   timeMode: "local-clock" | "scene";
+  celestialView: CelestialView;
   timestamp?: number;
   weather?: WeatherKind;
   moonPhase?: number;
@@ -45,10 +47,11 @@ function previewTimestamp(value: string, timeZone: string) {
 export function readEnvironmentOptions(search = typeof window === "undefined" ? "" : window.location.search): EnvironmentOverrides {
   const params = new URLSearchParams(search);
   const options: EnvironmentOverrides = {
-    enabled: params.get("debugEnv") === "1", location: { ...DEFAULT_LOCATION }, timeMode: "local-clock", paths: false,
+    enabled: params.get("debugEnv") === "1", location: { ...DEFAULT_LOCATION }, timeMode: "local-clock", celestialView: "window", paths: false,
   };
   if (!options.enabled) return options;
   options.timeMode = option(params.get("envTimeMode"), ["scene", "local-clock"]) ?? "local-clock";
+  options.celestialView = option(params.get("envCelestialView"), ["window", "astronomical"]) ?? "window";
   const date = params.get("envDate");
   if (date) {
     try { options.timestamp = previewTimestamp(date, options.location.timeZone); }
@@ -134,6 +137,7 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
   const dateError = document.createElement("span"); dateError.className = "environment-debug-error";
   dateError.setAttribute("role", "alert"); content.append(dateError);
   const mode = select("时间模式", "env-time-mode", [["local-clock", "与设备本地时钟一致"], ["scene", "场景所在地时间"]]);
+  const celestialView = select("日月方位", "env-celestial-view", [["window", "观景构图 · 更容易从窗内看到"], ["astronomical", "真实天文方位"]]);
   const weather = select("模拟天气", "env-weather", [["", "季节随机演变（含渐变）"], ...WEATHER_KINDS.map(kind => [kind, WEATHER_LABELS[kind]] as const)]);
   const phase = select("月相", "env-phase", [["", "按真实日期计算"], ["0", "新月"], ["0.25", "上弦月"], ["0.5", "满月"], ["0.75", "下弦月"], ["custom", "连续月相"]]);
   const moon = document.createElement("input"); moon.type = "range"; moon.id = "env-phase-range";
@@ -183,7 +187,7 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
   reset.className = "environment-debug-reset"; content.append(reset);
 
   function fill() {
-    mode.value = state.timeMode; weather.value = state.weather ?? "";
+    mode.value = state.timeMode; celestialView.value = state.celestialView; weather.value = state.weather ?? "";
     const value = String(state.moonPhase);
     phase.value = state.moonPhase === undefined ? "" : ["0", "0.25", "0.5", "0.75"].includes(value) ? value : "custom";
     if (state.moonPhase !== undefined) moon.value = value;
@@ -207,6 +211,7 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
     catch { dateError.textContent = PREVIEW_DATE_ERROR; }
   });
   change(mode, () => apply({ timeMode: mode.value as EnvironmentOverrides["timeMode"] }));
+  change(celestialView, () => apply({ celestialView: celestialView.value as CelestialView }));
   change(weather, () => apply({ weather: option(weather.value, WEATHER_KINDS) }));
   change(phase, () => {
     const value = phase.value === "custom" ? Number(moon.value) : numeric(phase.value, 0, 1);
@@ -228,7 +233,7 @@ export function createEnvironmentDebug(options: EnvironmentOverrides, onChange: 
   change(paths, () => apply({ paths: paths.checked }));
   change(quality, () => apply({ quality: quality.value === "auto" ? undefined : quality.value === "low" }));
   reset.addEventListener("click", () => {
-    apply({ timestamp: undefined, timeMode: "local-clock", weather: undefined, moonPhase: undefined, cloudCover: undefined,
+    apply({ timestamp: undefined, timeMode: "local-clock", celestialView: "window", weather: undefined, moonPhase: undefined, cloudCover: undefined,
       windSpeed: undefined, windDirection:undefined, precipitation:undefined, waveScale:undefined, thunder:undefined, birdDensity:undefined,
       vesselDensity: undefined, vesselRoute: undefined, vesselKind: undefined, paths: false, quality: undefined });
     onTimeReset?.(); dateError.textContent = ""; date.value = ""; fill();

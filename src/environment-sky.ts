@@ -1,14 +1,16 @@
 import * as THREE from "three";
-import type { CelestialState } from "./celestial-controller";
+import type { CelestialState, Direction3 } from "./celestial-controller";
 import type { WeatherState } from "./weather-controller";
 import { DEFAULT_LOCATION, type CalendarLocation } from "./calendar-seed";
 import { createNightSky } from "./night-sky";
+import { celestialDisplayDirection, type CelestialView } from "./celestial-view";
 
 /** Sky and moon use shared uniforms, never an external image or another light. */
 export function createEnvironmentSky(sunGroup: THREE.Group, location: CalendarLocation = DEFAULT_LOCATION) {
   const group = new THREE.Group(); group.name = "calendar-sky";
   const horizon = new THREE.Color(), zenith = new THREE.Color();
   const nightSky = createNightSky(location);
+  const directions: { sun: Direction3; moon: Direction3 } = { sun: [0, 0, -1], moon: [0, 0, -1] };
   const material = new THREE.ShaderMaterial({
     side: THREE.BackSide, depthWrite: false, toneMapped: false,
     uniforms: { horizon: { value: horizon }, zenith: { value: zenith }, galaxyMap: { value: nightSky.galaxyMap },
@@ -52,8 +54,8 @@ export function createEnvironmentSky(sunGroup: THREE.Group, location: CalendarLo
   const lightningWhite = new THREE.Color("#d9e7f1");
   let disposed = false;
   return {
-    group, horizon, zenith, moon, warmObjects: [group, moon, nightSky.stars, sunGroup],
-    update(celestial: CelestialState, weather: WeatherState, camera: THREE.Camera, flash = 0, timestamp = 946728000000, low = false, reduced = false, motionTimestamp = timestamp) {
+    group, horizon, zenith, moon, directions, warmObjects: [group, moon, nightSky.stars, sunGroup],
+    update(celestial: CelestialState, weather: WeatherState, camera: THREE.Camera, flash = 0, timestamp = 946728000000, low = false, reduced = false, motionTimestamp = timestamp, view: CelestialView = "astronomical") {
       if (disposed) return;
       const d = celestial.daylight, overcast = THREE.MathUtils.smoothstep(weather.cloudCover, .12, .98);
       horizon.copy(nightHorizon).lerp(dayHorizon, d);
@@ -65,7 +67,9 @@ export function createEnvironmentSky(sunGroup: THREE.Group, location: CalendarLo
       // A single restrained cloud-light pulse; no new light or post-processing.
       horizon.lerp(lightningWhite, flash * (.28 + d * .2));
       zenith.lerp(lightningWhite, flash * (.23 + d * .19));
-      sunGroup.position.fromArray(celestial.sun.direction).multiplyScalar(235);
+      celestialDisplayDirection(celestial.sun, view, directions.sun);
+      celestialDisplayDirection(celestial.moon, view, directions.moon);
+      sunGroup.position.fromArray(directions.sun).multiplyScalar(235);
       sunGroup.position.y -= 8;
       sunGroup.lookAt(camera.position);
       const sunOpacity = THREE.MathUtils.smoothstep(celestial.sun.altitude, -.035, .035)
@@ -78,7 +82,7 @@ export function createEnvironmentSky(sunGroup: THREE.Group, location: CalendarLo
         if (object.name === "solar-disc") m.color.copy(solarWarm).lerp(solarWhite, THREE.MathUtils.smoothstep(celestial.sun.altitude, .025, .35));
         m.transparent = true;
       });
-      moon.position.fromArray(celestial.moon.direction).multiplyScalar(240); moon.position.y -= 8;
+      moon.position.fromArray(directions.moon).multiplyScalar(240); moon.position.y -= 8;
       moon.lookAt(camera.position);
       moonMaterial.uniforms.light.value.fromArray(celestial.moonLightDirection);
       moonMaterial.uniforms.opacity.value = THREE.MathUtils.smoothstep(celestial.moon.altitude, -.035, .025) * (1 - weather.cloudCover * .88) * (.18 + .82 * (1 - d));

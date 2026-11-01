@@ -29,6 +29,21 @@ test("environment overrides are inert for normal visitors and accept the complet
   });
 });
 
+test('window composition is the visitor default while strict celestial positions remain an isolated developer choice', async ({ page }) => {
+  await isolatedPage(page, '?envCelestialView=astronomical');
+  expect(await page.evaluate(() => (window as any).__environmentOptions.celestialView)).toBe('window');
+  await isolatedPage(page, '?debugEnv=1&envCelestialView=astronomical');
+  expect(await page.evaluate(() => (window as any).__environmentOptions.celestialView)).toBe('astronomical');
+  await page.locator('summary').click();
+  await expect(page.locator('#env-celestial-view')).toHaveValue('astronomical');
+  await page.locator('#env-celestial-view').selectOption('window');
+  expect(await page.evaluate(() => (window as any).__environmentChanges.at(-1))).toEqual({ celestialView: 'window' });
+  await page.locator('#env-celestial-view').selectOption('astronomical');
+  await page.locator('.environment-debug-reset').click();
+  await expect(page.locator('#env-celestial-view')).toHaveValue('window');
+  expect(await page.evaluate(() => localStorage.length)).toBe(0);
+});
+
 test("preview links reject invalid dates, enums and nonfinite values and clamp bounded numeric controls", async ({ page }) => {
   await isolatedPage(page);
   const parsed = await page.evaluate(() => {

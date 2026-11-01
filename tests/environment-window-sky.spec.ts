@@ -16,13 +16,20 @@ async function observe(page: Page) {
       window.__windowSky = {
         snapshot() {
           camera.updateMatrixWorld(true);
-          const state=environment.snapshot(),sun=scene.getObjectByName('helios-radiant-sun');
-          const position=sun.position.clone(),q=position.clone().project(camera);
+          const state=environment.snapshot(),disc=scene.getObjectByName('helios-radiant-sun'),moon=scene.getObjectByName('continuous-phase-moon');
+          const position=disc.position.clone(),q=position.clone().project(camera);
           const ratio=(-2.7-camera.position.z)/(position.z-camera.position.z);
           const portal=camera.position.clone().lerp(position,ratio);
-          return {sun:state.celestial.sun,weather:state.weather,low:state.low,
-            visibleSun:sun.visible&&ratio>0&&ratio<1&&Math.abs(portal.x)<1.5&&portal.y>.85&&portal.y<2.45&&Math.abs(q.x)<1&&Math.abs(q.y)<1,
+          const lunarPosition=moon.position.clone(),lunarScreen=lunarPosition.clone().project(camera);
+          const lunarRatio=(-2.7-camera.position.z)/(lunarPosition.z-camera.position.z);
+          const lunarPortal=camera.position.clone().lerp(lunarPosition,lunarRatio);
+          return {sun:state.celestial.sun,moon:state.celestial.moon,phase:state.celestial.moonPhase,illumination:state.celestial.moonIllumination,
+            mode:state.celestialView,weather:state.weather,low:state.low,
+            visibleSun:disc.visible&&ratio>0&&ratio<1&&Math.abs(portal.x)<1.5&&portal.y>.85&&portal.y<2.45&&Math.abs(q.x)<1&&Math.abs(q.y)<1,
+            visibleMoon:lunarRatio>0&&lunarRatio<1&&Math.abs(lunarPortal.x)<1.5&&lunarPortal.y>.85&&lunarPortal.y<2.45&&Math.abs(lunarScreen.x)<1&&Math.abs(lunarScreen.y)<1,
             sunPosition:position.toArray(),reflectionPosition:seaMat.uniforms.sunPosition.value.toArray(),
+            moonPosition:lunarPosition.toArray(),moonReflection:seaMat.uniforms.moonPosition.value.toArray(),
+            lightDirection:sun.position.clone().normalize().toArray(),
             resources:{...renderer.info.memory,programs:renderer.info.programs.length}};
         },
         pixels(name) {
@@ -34,10 +41,12 @@ async function observe(page: Page) {
           object.visible=false;renderer.render(scene,camera);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,after);
           const calls=beforeCalls-renderer.info.render.calls;
           object.visible=visible;renderer.render(scene,camera);
-          let changed=0,maxDifference=0;
-          for(let i=0;i<before.length;i+=4){const delta=Math.abs(before[i]-after[i])+Math.abs(before[i+1]-after[i+1])+Math.abs(before[i+2]-after[i+2]);
+          let changed=0,maxDifference=0,addedLight=0;
+          for(let i=0;i<before.length;i+=4){const dr=before[i]-after[i],dg=before[i+1]-after[i+1],db=before[i+2]-after[i+2];
+            const delta=Math.abs(dr)+Math.abs(dg)+Math.abs(db);
+            addedLight+=Math.max(0,dr*.2126+dg*.7152+db*.0722);
             if(delta>6)changed++;maxDifference=Math.max(maxDifference,delta);}
-          return {changed,maxDifference,calls};
+          return {changed,maxDifference,calls,addedLight};
         },
         skyPalette() {
           const clouds=scene.getObjectByName('calendar-cloud-layers'),visible=clouds.visible;
@@ -108,7 +117,7 @@ test('daytime low sky is blue and distinct clouds render through the real window
     try {
       await enter(page, '2026-06-21T12:00', 'cloudy');
       const state = await snapshot(page);
-      expect(state.visibleSun, 'A high midday sun is allowed to remain above the physical window').toBe(false);
+      expect(state.visibleSun, 'The chosen viewing composition brings the high midday sun into the physical window').toBe(true);
       const palette = await page.evaluate(() => (window as any).__windowSky.skyPalette());
       expect(palette.count).toBeGreaterThan(20);
       expect(palette.mean[2] - palette.mean[0], 'The low daytime sky retains blue instead of near-white glare').toBeGreaterThan(30);
@@ -126,6 +135,60 @@ test('daytime low sky is blue and distinct clouds render through the real window
         expect((await snapshot(page)).resources.geometries).toBe(state.resources.geometries);
         await capture(page, `clouds-${mobile ? 'phone' : 'desktop'}-${quality}`);
       }
+      expect(errors).toEqual([]);
+    } finally { await context.close(); }
+  }
+});
+
+test('viewing arcs show noon sun in every season and the real full moon, retain phases and occlusion, and restore through reading', async ({ browser }) => {
+  test.setTimeout(120_000);
+  for (const mobile of [false, true]) {
+    const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 800 },
+      hasTouch: mobile, reducedMotion: 'reduce' });
+    const page = await context.newPage(), errors = await observe(page);
+    const frame = () => page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+    try {
+      await enter(page, '2026-06-21T12:00', 'clear');
+      await page.locator('.environment-debug summary').click();
+      for (const date of ['2026-03-20T12:00', '2026-06-21T12:00', '2026-09-22T12:00', '2026-12-21T12:00']) {
+        await page.locator('#env-date').fill(date); await page.locator('#env-date').dispatchEvent('change'); await frame();
+        const state = await snapshot(page);
+        expect(state.mode).toBe('window'); expect(state.visibleSun).toBe(true);
+        expect(state.sunPosition).toEqual(state.reflectionPosition);
+        const direction = state.sunPosition.map((v: number) => v / Math.hypot(...state.sunPosition));
+        for (let i = 0; i < 3; i++) expect(state.lightDirection[i]).toBeCloseTo(direction[i], 8);
+        const disc = await pixels(page, 'solar-disc'); expect(disc.changed, `${mobile ? 'Phone' : 'Desktop'} ${date} solar disc`).toBeGreaterThan(20);
+      }
+      const composed = await snapshot(page);
+      await page.locator('#env-date').fill('2026-06-21T12:00'); await page.locator('#env-date').dispatchEvent('change');
+      await page.locator('#env-celestial-view').selectOption('astronomical'); await frame();
+      const real = await snapshot(page);
+      expect(real.visibleSun).toBe(false); expect(real.mode).toBe('astronomical');
+      const realPoint = real.sun.direction.map((v: number, i: number) => v * 235 - (i === 1 ? 8 : 0));
+      for (let i = 0; i < 3; i++) expect(real.sunPosition[i]).toBeCloseTo(realPoint[i], 8);
+      await page.locator('#env-celestial-view').selectOption('window');
+      await page.locator('#env-date').fill('2026-11-24T23:00'); await page.locator('#env-date').dispatchEvent('change'); await frame();
+      const lunar = await snapshot(page);
+      expect(lunar.sun.altitude).toBeLessThan(0); expect(lunar.moon.altitude).toBeGreaterThan(0);
+      expect(lunar.illumination).toBeGreaterThan(.95); expect(lunar.visibleSun).toBe(false); expect(lunar.visibleMoon).toBe(true);
+      expect(lunar.moonPosition).toEqual(lunar.moonReflection);
+      const moon = await pixels(page, 'continuous-phase-moon'); expect(moon.changed).toBeGreaterThan(30); expect(moon.maxDifference).toBeGreaterThan(50);
+      await page.locator('.environment-debug summary').click();
+      await capture(page, `full-moon-${mobile ? 'phone' : 'desktop'}`);
+      await page.locator('#open-book').click(); await expect(page.locator('#reader')).toHaveAttribute('data-phase', 'ready');
+      await page.locator('#close-book').click(); await expect(page.locator('#open-book')).toBeEnabled(); await frame();
+      const returned = await snapshot(page); expect(returned.visibleMoon).toBe(true);
+      expect(returned.resources).toEqual(composed.resources);
+      await page.locator('.environment-debug summary').click();
+      await page.locator('#env-phase').selectOption('0'); await frame();
+      // A dark lunar surface still occludes the sky; count added light, not
+      // every changed pixel, when checking its illuminated phase.
+      const dark = await pixels(page, 'continuous-phase-moon'); expect(dark.addedLight).toBeLessThan(moon.addedLight / 20);
+      await page.locator('#env-phase').selectOption('0.5');
+      await page.locator('#env-cloud').fill('1'); await page.locator('#env-cloud').dispatchEvent('change');
+      await expect.poll(async () => (await snapshot(page)).weather.cloudCover, { timeout: 12000 }).toBeGreaterThan(.99);
+      const covered = await pixels(page, 'continuous-phase-moon'); expect(covered.addedLight).toBeLessThan(moon.addedLight / 2);
+      expect((await snapshot(page)).resources).toEqual(composed.resources);
       expect(errors).toEqual([]);
     } finally { await context.close(); }
   }
