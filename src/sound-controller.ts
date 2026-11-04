@@ -4,6 +4,7 @@ import { createCatVoice } from "./cat-voice";
 import { CAT_REACTIONS, type CatReactionProfile } from "./cat-reactions";
 import { createRecordMusic, type RecordMusicState } from "./record-music";
 import { createRecordStorage } from "./record-storage";
+import { createWeatherSoundscape, type EnvironmentSoundFrame } from "./weather-audio";
 
 type SoundOptions = {
   getState: () => string;
@@ -39,6 +40,8 @@ export function createSoundController(options: SoundOptions) {
   let audio: AudioContext | undefined, gain: GainNode | undefined;
   let audioPreparation: Promise<void> | undefined;
   let catVoice: ReturnType<typeof createCatVoice> | undefined;
+  let weatherAudio: ReturnType<typeof createWeatherSoundscape> | undefined;
+  let latestEnvironment: EnvironmentSoundFrame | undefined;
   const nodes: AudioNode[] = [], sources: AudioScheduledSourceNode[] = [];
   let recordState: RecordMusicState = { status: "empty", title: "我的音乐" };
   let recordObjectUrl: string | undefined, recordSelectionVersion = 0;
@@ -87,6 +90,7 @@ export function createSoundController(options: SoundOptions) {
   function updateContext() {
     if (disposed) return;
     const state = options.getState(), available = options.getSceneAvailable();
+    weatherAudio?.setContext(soundEnabled && available && !document.hidden && ["room", "opening", "reading", "closing"].includes(state), recordState.status === "playing", state === "room");
     catVoice?.setEnabled(soundEnabled && available && state === "room" && !document.hidden);
     recordMusic.setMuted(!soundEnabled);
     if (!available && (recordState.status === "playing" || recordState.status === "loading")) recordMusic.pause();
@@ -194,6 +198,7 @@ export function createSoundController(options: SoundOptions) {
     // Optional Web Audio support must never decide whether the 3D room works.
     try { prepareEffects(); }
     catch {
+      weatherAudio?.dispose(); weatherAudio = undefined;
       catVoice?.dispose(); catVoice = undefined;
       for (const node of nodes) { try { node.disconnect(); } catch { /* Partial setup. */ } }
       nodes.length = sources.length = 0;
@@ -216,6 +221,14 @@ export function createSoundController(options: SoundOptions) {
     catVoice.setEnabled(false);
     audioPreparation = Promise.all([prepareAmbientNoise(context), suspended]).then(([buffer]) => {
       if (disposed || context.state === "closed") throw new DOMException("Audio preparation stopped", "AbortError");
+      try {
+        weatherAudio = createWeatherSoundscape(context, buffer);
+        if (latestEnvironment) weatherAudio.update(latestEnvironment);
+      } catch {
+        // Weather layers are optional; keep the original sea and cat device alive.
+        weatherAudio?.dispose(); weatherAudio = undefined;
+      }
+      updateContext();
       const source = context.createBufferSource(), filter = context.createBiquadFilter();
       source.buffer = buffer;
       source.loop = true;
@@ -307,6 +320,7 @@ export function createSoundController(options: SoundOptions) {
     delete el("pet-cat").dataset.busy;
     recordMusic.dispose();
     catVoice?.dispose();
+    weatherAudio?.dispose();
     if (recordObjectUrl) URL.revokeObjectURL(recordObjectUrl);
     recordObjectUrl = undefined;
     for (const source of sources) { try { source.stop(); } catch { /* Already ended. */ } }
@@ -342,5 +356,12 @@ export function createSoundController(options: SoundOptions) {
     if (!(event as PageTransitionEvent).persisted) dispose();
   });
   listen(window, "pageshow", () => { if (!disposed) recordMusic.setPageVisible(!document.hidden); });
-  return { prepare, unlock, updateContext, onCatPet, stopCat, onRecord, dispose };
+  function updateEnvironment(frame: EnvironmentSoundFrame) {
+    if (disposed) return;
+    latestEnvironment = frame;
+    try { weatherAudio?.update(frame); }
+    catch { weatherAudio?.dispose(); weatherAudio = undefined; }
+  }
+  return { prepare, unlock, updateContext, updateEnvironment, onCatPet, stopCat, onRecord, dispose,
+    environmentSnapshot: () => weatherAudio?.snapshot() };
 }

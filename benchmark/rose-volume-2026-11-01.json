@@ -1,0 +1,1575 @@
+{
+  "schema": 1,
+  "dateBeijing": "2026-11-01",
+  "source": "本地Codex",
+  "baseline": "e845c27",
+  "branch": "codex/calendar-environment-requirements",
+  "deployed": false,
+  "method": {
+    "script": "scripts/measure-performance.mjs",
+    "url": "http://127.0.0.1:5173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envDensity=0&envBirds=0",
+    "runsPerVersion": 3,
+    "gpuTasks": "serial; no application source edits during browser runs",
+    "light": "warm on 50%; fresh browser contexts",
+    "limits": "Three short reduced-motion desktop samples per version. Frame rate is display-capped; CPU submit time is not GPU completion. No speed or GPU-memory improvement claim, no physical-device or animation-peak inference."
+  },
+  "geometryReview": {
+    "reviewedAt": "2026-10-31T18:10:40.660Z",
+    "method": "CPU-only procedural-geometry review; no browser or GPU used",
+    "repository": "/Users/jiangyuhan/Documents/ChatGPT/hub memory",
+    "baseline": "e845c27685a26f68c0abeaac804f23ae10c1ddd1",
+    "sourceSHA256": {
+      "src/bouquet.ts": "5881c9ba844c96828eac6e322121704c8699120cac8d8904e8ff916091f0b964",
+      "src/bouquet-details.ts": "f778efa4dc6f9f3f039d5958c2ed557c18804d50435a45dff7f041e028111d92",
+      "src/scene.ts": "8de5f9c7aa965a73424f1461d636526cc7e3b9cf9a96beedb00e68ce2baa7e90"
+    },
+    "topologyAndFlowerVolume": {
+      "flowers": [
+        {
+          "flower": 0,
+          "diameter": 0.32646004877130896,
+          "axisDepth": 0.2408566804405243,
+          "ratio": 0.7377830192301682
+        },
+        {
+          "flower": 1,
+          "diameter": 0.3298094697019457,
+          "axisDepth": 0.2440179680164033,
+          "ratio": 0.7398755658438989
+        },
+        {
+          "flower": 2,
+          "diameter": 0.34106920817068476,
+          "axisDepth": 0.2445633819364007,
+          "ratio": 0.7170491386428861
+        },
+        {
+          "flower": 3,
+          "diameter": 0.32731000870725474,
+          "axisDepth": 0.24528217321869508,
+          "ratio": 0.7493879401594311
+        },
+        {
+          "flower": 4,
+          "diameter": 0.322267326258561,
+          "axisDepth": 0.24697984911156445,
+          "ratio": 0.7663819102573494
+        },
+        {
+          "flower": 5,
+          "diameter": 0.3288643251540496,
+          "axisDepth": 0.2417949272793058,
+          "ratio": 0.735242191946609
+        },
+        {
+          "flower": 6,
+          "diameter": 0.3351542172437821,
+          "axisDepth": 0.24427356958899496,
+          "ratio": 0.7288393134296054
+        },
+        {
+          "flower": 7,
+          "diameter": 0.3215596304255045,
+          "axisDepth": 0.2407021256315671,
+          "ratio": 0.7485458461096546
+        },
+        {
+          "flower": 8,
+          "diameter": 0.33569114334198413,
+          "axisDepth": 0.2419640938501591,
+          "ratio": 0.720793797063806
+        }
+      ],
+      "shells": [
+        {
+          "name": "rose-coiled-inner-petals",
+          "vertices": 198,
+          "triangles": 392,
+          "volume": 0.005850900535356946,
+          "minArea": 1.9013840977434524e-05,
+          "nonManifoldEdges": 0,
+          "inconsistentWindingEdges": 0,
+          "normalsFinite": true
+        },
+        {
+          "name": "rose-cupped-middle-petals",
+          "vertices": 198,
+          "triangles": 392,
+          "volume": 0.005086349244140465,
+          "minArea": 1.9347442844793045e-05,
+          "nonManifoldEdges": 0,
+          "inconsistentWindingEdges": 0,
+          "normalsFinite": true
+        },
+        {
+          "name": "rose-rolled-outer-petals",
+          "vertices": 198,
+          "triangles": 392,
+          "volume": 0.005311006026226688,
+          "minArea": 2.242804963225957e-05,
+          "nonManifoldEdges": 0,
+          "inconsistentWindingEdges": 0,
+          "normalsFinite": true
+        }
+      ]
+    },
+    "resourcesAndOrientation": {
+      "geometries": 8,
+      "materials": 5,
+      "textures": 0,
+      "drawBatches": 8,
+      "instancedBatches": 4,
+      "triangles": 148000,
+      "vertices": 91067,
+      "allAttributesFinite": true,
+      "minInstanceDeterminant": 4.488544275166338e-06,
+      "leafCounts": {
+        "regularLeaves": 32,
+        "calyxLeaves": 45,
+        "excludedLeaves": 15
+      },
+      "maxFlowerAxisSeparationDegrees": 31.57283689150288,
+      "axes": [
+        {
+          "flower": 0,
+          "axis": [
+            -0.20163396937484487,
+            -0.3520392940329841,
+            0.9140087952809328
+          ],
+          "initialWorldAxis": [
+            -0.21439728022131488,
+            0.6231452392830472,
+            0.7521461407150719
+          ],
+          "parkedWorldAxis": [
+            0.6141622811329883,
+            0.7861870369761248,
+            -0.06866320211165389
+          ],
+          "attachment": [
+            -0.2209264755504571,
+            0.8458417515421838,
+            0.008869604957416087
+          ],
+          "attachmentDistance": 0.045000000000000005
+        },
+        {
+          "flower": 1,
+          "axis": [
+            0.021857063309026543,
+            -0.4094936072762146,
+            0.9120511248737203
+          ],
+          "initialWorldAxis": [
+            -0.00020746854077963173,
+            0.7001089568330637,
+            0.714035997355122
+          ],
+          "parkedWorldAxis": [
+            0.583210630638286,
+            0.7566927410581042,
+            -0.2954343513210096
+          ],
+          "attachment": [
+            0.0590164308099893,
+            0.9684272004065007,
+            -0.14104230210943353
+          ],
+          "attachmentDistance": 0.04499999999999998
+        },
+        {
+          "flower": 2,
+          "axis": [
+            0.26174543524927896,
+            -0.41150855602551245,
+            0.8730120477083712
+          ],
+          "initialWorldAxis": [
+            0.20862437725835264,
+            0.7657192790311637,
+            0.6083994205565612
+          ],
+          "parkedWorldAxis": [
+            0.48739771446639824,
+            0.7065225501722631,
+            -0.5130978016236416
+          ],
+          "attachment": [
+            0.2582214661426185,
+            0.7985178564109185,
+            -0.019285542593911534
+          ],
+          "attachmentDistance": 0.045
+        },
+        {
+          "flower": 3,
+          "axis": [
+            -0.08469107441535842,
+            -0.5022065429263336,
+            0.8605905008518006
+          ],
+          "initialWorldAxis": [
+            -0.028533602032157934,
+            0.5870926590218466,
+            0.8090167138432484
+          ],
+          "parkedWorldAxis": [
+            0.6928751724088755,
+            0.6866075371617368,
+            -0.22021372657503813
+          ],
+          "attachment": [
+            -0.0661889019493321,
+            0.7525993135051713,
+            0.20127342209725094
+          ],
+          "attachmentDistance": 0.04499999999999998
+        },
+        {
+          "flower": 4,
+          "axis": [
+            0.15963841564964368,
+            -0.48114180698302206,
+            0.8619849986061149
+          ],
+          "initialWorldAxis": [
+            0.16227484395067743,
+            0.6957064354478918,
+            0.6997566939280908
+          ],
+          "parkedWorldAxis": [
+            0.584645618547535,
+            0.6814663416584414,
+            -0.44021940654613423
+          ],
+          "attachment": [
+            0.15281626771948734,
+            0.7916513622407496,
+            0.2012106696983068
+          ],
+          "attachmentDistance": 0.04499999999999997
+        },
+        {
+          "flower": 5,
+          "axis": [
+            -0.2821995918369268,
+            -0.41967855103754964,
+            0.8626895757838358
+          ],
+          "initialWorldAxis": [
+            -0.23399454633920896,
+            0.5274964894123138,
+            0.8166970098764854
+          ],
+          "parkedWorldAxis": [
+            0.6918279157308984,
+            0.7220051263778934,
+            -0.009095740733078062
+          ],
+          "attachment": [
+            -0.2673010195594312,
+            0.6888855514859903,
+            0.19117897326205252
+          ],
+          "attachmentDistance": 0.045000000000000005
+        },
+        {
+          "flower": 6,
+          "axis": [
+            0.03423450931596472,
+            -0.32479827522167,
+            0.9451635196011976
+          ],
+          "initialWorldAxis": [
+            -0.041068515527690475,
+            0.7557555296041738,
+            0.6535648066604158
+          ],
+          "parkedWorldAxis": [
+            0.510799037455868,
+            0.8117283181262466,
+            -0.2831633466501172
+          ],
+          "attachment": [
+            0.01845944663374675,
+            0.8946159176166035,
+            -0.2925323583820539
+          ],
+          "attachmentDistance": 0.04499999999999998
+        },
+        {
+          "flower": 7,
+          "axis": [
+            -0.12359483359331873,
+            -0.35272116469139847,
+            0.9275301057581815
+          ],
+          "initialWorldAxis": [
+            -0.15293516891245917,
+            0.6673505591271748,
+            0.7288717756521821
+          ],
+          "parkedWorldAxis": [
+            0.5894510379870174,
+            0.7949742214953113,
+            -0.14339965472047755
+          ],
+          "attachment": [
+            -0.1944382354685329,
+            1.005872461947856,
+            -0.22173886191167552
+          ],
+          "attachmentDistance": 0.04499999999999998
+        },
+        {
+          "flower": 8,
+          "axis": [
+            0.23034279150928358,
+            -0.25868333568043606,
+            0.9380965463324942
+          ],
+          "initialWorldAxis": [
+            0.08918643093176559,
+            0.8483433416717814,
+            0.5218805947521024
+          ],
+          "parkedWorldAxis": [
+            0.3777686515518906,
+            0.8136750316370861,
+            -0.4418413615711566
+          ],
+          "attachment": [
+            0.279634566037432,
+            0.9716407286479475,
+            -0.2222143517375196
+          ],
+          "attachmentDistance": 0.044999999999999984
+        }
+      ],
+      "parts": [
+        {
+          "name": "rose-coiled-inner-petals",
+          "instances": 108,
+          "geometryVertices": 198,
+          "trianglesPerInstance": 392
+        },
+        {
+          "name": "rose-cupped-middle-petals",
+          "instances": 126,
+          "geometryVertices": 198,
+          "trianglesPerInstance": 392
+        },
+        {
+          "name": "rose-rolled-outer-petals",
+          "instances": 63,
+          "geometryVertices": 198,
+          "trianglesPerInstance": 392
+        },
+        {
+          "name": "rose-shadowed-receptacles",
+          "instances": 9,
+          "geometryVertices": 200,
+          "trianglesPerInstance": 336
+        },
+        {
+          "name": "bouquet-foliage-and-veins",
+          "instances": 1,
+          "geometryVertices": 24525,
+          "trianglesPerInstance": 19624
+        },
+        {
+          "name": "bouquet-white-five-petal-flowers",
+          "instances": 1,
+          "geometryVertices": 2538,
+          "trianglesPerInstance": 3216
+        },
+        {
+          "name": "bouquet-folded-kraft-paper",
+          "instances": 1,
+          "geometryVertices": 3060,
+          "trianglesPerInstance": 5376
+        },
+        {
+          "name": "bouquet-linen-binding",
+          "instances": 1,
+          "geometryVertices": 338,
+          "trianglesPerInstance": 336
+        }
+      ]
+    },
+    "motionParameters": {
+      "from": [
+        0.07,
+        0.8458,
+        0.04
+      ],
+      "to": [
+        0.51,
+        0.8001,
+        0.13
+      ],
+      "scale": 0.32,
+      "lift": 0.027,
+      "forwardArc": 0.08,
+      "steps": 400
+    },
+    "sampledSweep": {
+      "lift": 0.027,
+      "forward": 0.08,
+      "steps": 400,
+      "vertices": 378374,
+      "best": {
+        "distance": 0.009936427243763035,
+        "t": 0.46,
+        "name": "bouquet-folded-kraft-paper-surface",
+        "point": [
+          0.13939869453497125,
+          0.8483637684950317,
+          0.011576451762967205
+        ],
+        "part": "upper-lip"
+      },
+      "book": {
+        "gap": 0.00046635196720146155,
+        "t": 0,
+        "name": "bouquet-foliage-and-veins",
+        "point": [
+          -0.057864547363668334,
+          0.7854663519672015,
+          -0.12328511103568826
+        ]
+      },
+      "fullBounds": {
+        "min": [
+          -0.18569096154411446,
+          0.7502397667121972,
+          -0.30497626101474773
+        ],
+        "max": [
+          0.5845100728280497,
+          1.0564767721816368,
+          0.3557262902183368
+        ]
+      }
+    },
+    "exactTriangleBookFootprintClipping": {
+      "steps": 400,
+      "clippedCandidateTriangles": 287,
+      "coverTop": 0.7853,
+      "minHeight": 0.7854663519672014,
+      "gapMm": 0.16635196720138357,
+      "closest": {
+        "name": "bouquet-foliage-and-veins",
+        "index": 0,
+        "t": 0,
+        "world": [
+          -0.05786454736366835,
+          0.7854663519672014,
+          -0.12328511103568833
+        ]
+      }
+    },
+    "endpoints": {
+      "initialParts": [
+        {
+          "name": "rose-coiled-inner-petals",
+          "min": [
+            -0.14802570287164943,
+            0.8520973017024808,
+            -0.27003949374851194
+          ],
+          "max": [
+            0.030278507467428592,
+            1.0354444340079618,
+            -0.023321788819261287
+          ]
+        },
+        {
+          "name": "rose-cupped-middle-petals",
+          "min": [
+            -0.16714813445857388,
+            0.8429024084984134,
+            -0.28150256089837006
+          ],
+          "max": [
+            0.051269329184609164,
+            1.0424013387265498,
+            -0.023564169820056845
+          ]
+        },
+        {
+          "name": "rose-rolled-outer-petals",
+          "min": [
+            -0.18046213689553692,
+            0.8347156259971743,
+            -0.30497626101474773
+          ],
+          "max": [
+            0.06795603695382574,
+            1.0514226415648686,
+            -0.01851107370920249
+          ]
+        },
+        {
+          "name": "rose-shadowed-receptacles",
+          "min": [
+            -0.15456832853764596,
+            0.8357531371381005,
+            -0.28980650258374596
+          ],
+          "max": [
+            0.03876640034722263,
+            1.0181412878372749,
+            -0.05132219638085648
+          ]
+        },
+        {
+          "name": "bouquet-foliage-and-veins",
+          "min": [
+            -0.18569096154411446,
+            0.7854663519672015,
+            -0.29851033021875456
+          ],
+          "max": [
+            0.10974276250297844,
+            1.026546907906773,
+            0.09499352358126531
+          ]
+        },
+        {
+          "name": "bouquet-white-five-petal-flowers",
+          "min": [
+            -0.158476512915109,
+            0.808431265600237,
+            -0.26867441890352295
+          ],
+          "max": [
+            0.030294985891722026,
+            1.0198009206249687,
+            -0.104737402855649
+          ]
+        },
+        {
+          "name": "bouquet-folded-kraft-paper",
+          "min": [
+            -0.11132756096376359,
+            0.793012625811238,
+            -0.1902280547396377
+          ],
+          "max": [
+            0.11720814504265367,
+            0.9861414414565663,
+            0.09459767721200293
+          ]
+        },
+        {
+          "name": "bouquet-linen-binding",
+          "min": [
+            -0.01875545724495238,
+            0.8287420676107295,
+            -0.03428216893261143
+          ],
+          "max": [
+            0.12235292897426593,
+            0.9185726334554227,
+            0.1176513568827893
+          ]
+        }
+      ],
+      "parkedParts": [
+        {
+          "name": "rose-coiled-inner-petals",
+          "min": [
+            0.187715568176753,
+            0.8063989645496581,
+            0.10033764393224867
+          ],
+          "max": [
+            0.4110862810508882,
+            0.9803428440539081,
+            0.30969998113880315
+          ]
+        },
+        {
+          "name": "rose-cupped-middle-petals",
+          "min": [
+            0.17117043840378499,
+            0.7975096736340055,
+            0.08398054453984218
+          ],
+          "max": [
+            0.41354983707918913,
+            0.9873056920721852,
+            0.32568290612366735
+          ]
+        },
+        {
+          "name": "rose-rolled-outer-petals",
+          "min": [
+            0.14600793664858747,
+            0.7884627376622434,
+            0.07202547053429612
+          ],
+          "max": [
+            0.42401115306604326,
+            0.992878235709275,
+            0.3433707203419394
+          ]
+        },
+        {
+          "name": "rose-shadowed-receptacles",
+          "min": [
+            0.1663337101052461,
+            0.7901643284011977,
+            0.10872232877635629
+          ],
+          "max": [
+            0.39015586315991224,
+            0.9627159270789329,
+            0.32751454060218255
+          ]
+        },
+        {
+          "name": "bouquet-foliage-and-veins",
+          "min": [
+            0.16148821333963181,
+            0.7642194408658406,
+            0.07739345812387484
+          ],
+          "max": [
+            0.5675450940571674,
+            0.9845553523409407,
+            0.33502907804271975
+          ]
+        },
+        {
+          "name": "bouquet-white-five-petal-flowers",
+          "min": [
+            0.1911720589401778,
+            0.7942606927751553,
+            0.10390398763935038
+          ],
+          "max": [
+            0.3347373663965385,
+            0.9827979347465922,
+            0.33346633419906174
+          ]
+        },
+        {
+          "name": "bouquet-folded-kraft-paper",
+          "min": [
+            0.2801262014178372,
+            0.7502397667121972,
+            0.07878460857343338
+          ],
+          "max": [
+            0.5647883999972196,
+            0.9401882150176872,
+            0.29648578479963705
+          ]
+        },
+        {
+          "name": "bouquet-linen-binding",
+          "min": [
+            0.4226092112612031,
+            0.7845138427203311,
+            0.06636643405715673
+          ],
+          "max": [
+            0.5845100728280497,
+            0.8652288152533372,
+            0.1958680479552578
+          ]
+        }
+      ],
+      "parkedWholeBouquet": {
+        "min": [
+          0.14600793664858747,
+          0.7502397667121972,
+          0.06636643405715673
+        ],
+        "max": [
+          0.5845100728280497,
+          0.992878235709275,
+          0.3433707203419394
+        ],
+        "recordSeparationZ": 0.04586643334190099
+      }
+    },
+    "clearancesMm": {
+      "recordCaseMinimum": 9.936427243763035,
+      "bookMinimum": 0.16635196720138357,
+      "desktopMinimum": 0.23976671219716472,
+      "frontEdgeMinimum": 19.273709781663207,
+      "parkedRecordSeparationZ": 45.86643334190099
+    },
+    "checks": {
+      "closedConsistentPetalShells": true,
+      "depthDiameterRatioAtLeastPoint65": true,
+      "attributesFinite": true,
+      "positiveInstanceTransforms": true,
+      "flowersFaceUpAtBothEndpoints": true,
+      "belowOriginalTriangleBudget": true,
+      "aboveDesktop": true,
+      "insideDesktopXZ": true,
+      "clearOfClosedBook": true,
+      "clearOfRoundedRecordCase": true
+    },
+    "limitations": [
+      "Temporal motion evaluated at 401 evenly spaced poses; this is sampled clearance evidence, not a continuous collision proof.",
+      "Record-case SDF includes lower rebate, walnut case, upper lip and dark deck. Paper triangles were sampled at <=2 mm spacing; all other surfaces used their actual mesh vertices.",
+      "Book footprint check clips actual bouquet triangles to a conservative 0.32 by 0.26 m cover rectangle at Y=0.7853 m.",
+      "Visual quality, actual runtime rendering and resource disposal are validated separately by the main agent; this file contains CPU geometry checks only."
+    ],
+    "scripts": [
+      "/tmp/bouquet-shell-review.mjs",
+      "/tmp/bouquet-resource-review.mjs",
+      "/tmp/memory-bouquet-surface-clearance.mjs",
+      "/tmp/bouquet-final-book-clearance.mjs",
+      "/tmp/bouquet-contact-review.mjs"
+    ]
+  },
+  "validation": {
+    "files": [
+      "tests/bouquet.spec.ts",
+      "tests/experience.spec.ts",
+      "tests/interaction-hotspots.spec.ts",
+      "tests/performance.spec.ts",
+      "tests/book-transition.spec.ts",
+      "tests/preparation.spec.ts"
+    ],
+    "passed": 16,
+    "failed": 0,
+    "bouquetTests": 5,
+    "typecheck": "passed",
+    "productionBuild": {
+      "status": "passed",
+      "modules": 91,
+      "applicationKb": 329.42,
+      "applicationGzipKb": 122.04,
+      "warning": "Existing Three.js vendor chunk >500KB"
+    },
+    "productionPreview": {
+      "scenarios": 4,
+      "screenshots": 8,
+      "viewports": [
+        [
+          1280,
+          800
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          844,
+          390
+        ]
+      ],
+      "desktopTimes": [
+        "12:00",
+        "22:00"
+      ],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "horizontalOverflow": false
+    },
+    "closeup": {
+      "views": [
+        "bouquet-close",
+        "bouquet-face",
+        "bouquet-side",
+        "rose-front",
+        "rose-three-quarter",
+        "rose-side"
+      ],
+      "inspected": true
+    },
+    "limits": [
+      "No full weather suite rerun",
+      "No Safari or physical phone verification",
+      "No long-term thermal, battery, GPU memory or reduced-motion-disabled peak measurement",
+      "No deployment"
+    ]
+  },
+  "medians": {
+    "before": {
+      "measuredFps": 60.00120002401836,
+      "frameIntervalP95Ms": 18.5,
+      "frameSubmitP95Ms": 3.2000000029802322,
+      "calls": 128,
+      "triangles": 328261,
+      "geometries": 247,
+      "textures": 40,
+      "programs": 55
+    },
+    "after": {
+      "measuredFps": 60.015604057019054,
+      "frameIntervalP95Ms": 18.399999998509884,
+      "frameSubmitP95Ms": 2.5,
+      "calls": 128,
+      "triangles": 369301,
+      "geometries": 247,
+      "textures": 40,
+      "programs": 56
+    }
+  },
+  "samples": {
+    "before": [
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1247.8904999999997,
+        "entryMs": 2528.522,
+        "before": {
+          "calls": 128,
+          "triangles": 328261,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 128,
+          "triangles": 328261,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 300,
+          "measuredFps": 60.01123956319089,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 17.80000000447035,
+          "frameSubmitP95Ms": 2.2999999970197678
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 32,
+              "inputDelayMs": 21.600000001490116,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 32,
+              "inputDelayMs": 22.5,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "click",
+              "durationMs": 32,
+              "inputDelayMs": 24.799999997019768,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 48,
+              "inputDelayMs": 14.700000002980232,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 48,
+              "inputDelayMs": 14.899999998509884,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "click",
+              "durationMs": 48,
+              "inputDelayMs": 15.5,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 16.799999997019768,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 17.099999994039536,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 19.399999998509884,
+              "processingMs": 0.3999999985098839
+            }
+          ],
+          "pointerDispatchMs": [
+            21.899999998509884,
+            14.899999998509884,
+            17
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 20329864,
+          "jsHeapTotalBytes": 52281344,
+          "documents": 3,
+          "nodes": 1413,
+          "jsEventListeners": 156
+        }
+      },
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1052.2913749999998,
+        "entryMs": 2530.3836659999997,
+        "before": {
+          "calls": 128,
+          "triangles": 328261,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 128,
+          "triangles": 328261,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 300,
+          "measuredFps": 59.99438179705823,
+          "frameIntervalMedianMs": 16.700000002980232,
+          "frameIntervalP95Ms": 18.5,
+          "frameSubmitP95Ms": 3.7000000029802322
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 17.5,
+              "processingMs": 0.5
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 18,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 19.100000001490116,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 48,
+              "inputDelayMs": 13.199999995529652,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 48,
+              "inputDelayMs": 13.399999998509884,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "click",
+              "durationMs": 48,
+              "inputDelayMs": 14.199999995529652,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 48,
+              "inputDelayMs": 14.899999998509884,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 48,
+              "inputDelayMs": 15.099999994039536,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 48,
+              "inputDelayMs": 16.599999994039536,
+              "processingMs": 0.7000000029802322
+            }
+          ],
+          "pointerDispatchMs": [
+            17.899999998509884,
+            13.399999998509884,
+            15
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 20372644,
+          "jsHeapTotalBytes": 52543488,
+          "documents": 3,
+          "nodes": 1413,
+          "jsEventListeners": 156
+        }
+      },
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1021.1405420000001,
+        "entryMs": 2522.0375000000004,
+        "before": {
+          "calls": 128,
+          "triangles": 328261,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 128,
+          "triangles": 328261,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 55,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 60.00120002401836,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 18.5,
+          "frameSubmitP95Ms": 3.2000000029802322
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 17,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 17.299999997019768,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 18.299999997019768,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 48,
+              "inputDelayMs": 13.799999997019768,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 48,
+              "inputDelayMs": 14,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "click",
+              "durationMs": 48,
+              "inputDelayMs": 14.600000001490116,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 13.5,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 13.800000004470348,
+              "processingMs": 0.09999999403953552
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 14.799999997019768,
+              "processingMs": 0.4000000059604645
+            }
+          ],
+          "pointerDispatchMs": [
+            17.299999997019768,
+            14,
+            13.700000002980232
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 20434584,
+          "jsHeapTotalBytes": 52805632,
+          "documents": 3,
+          "nodes": 1413,
+          "jsEventListeners": 156
+        }
+      }
+    ],
+    "after": [
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 994.867833,
+        "entryMs": 2513.2990000000004,
+        "before": {
+          "calls": 128,
+          "triangles": 369301,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 56,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 128,
+          "triangles": 369301,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 56,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 60.015604057019054,
+          "frameIntervalMedianMs": 16.700000002980232,
+          "frameIntervalP95Ms": 18.399999998509884,
+          "frameSubmitP95Ms": 3.3000000044703484
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 32,
+              "inputDelayMs": 11.899999998509884,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 32,
+              "inputDelayMs": 12.299999997019768,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 32,
+              "inputDelayMs": 13.100000001490116,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 48,
+              "inputDelayMs": 13.100000001490116,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 48,
+              "inputDelayMs": 13.299999997019768,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "click",
+              "durationMs": 48,
+              "inputDelayMs": 14.100000001490116,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 14.800000004470348,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15.100000001490116,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 16.200000002980232,
+              "processingMs": 0.5
+            }
+          ],
+          "pointerDispatchMs": [
+            12.200000002980232,
+            13.299999997019768,
+            15
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 30232280,
+          "jsHeapTotalBytes": 55017472,
+          "documents": 7,
+          "nodes": 1459,
+          "jsEventListeners": 183
+        }
+      },
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 999.7291250000001,
+        "entryMs": 2523.2936670000004,
+        "before": {
+          "calls": 128,
+          "triangles": 369301,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 56,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 128,
+          "triangles": 369301,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 56,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 59.99160117579963,
+          "frameIntervalMedianMs": 16.700000002980232,
+          "frameIntervalP95Ms": 18.399999998509884,
+          "frameSubmitP95Ms": 2.5
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 32,
+              "inputDelayMs": 14.5,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 32,
+              "inputDelayMs": 14.799999997019768,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 32,
+              "inputDelayMs": 15.799999997019768,
+              "processingMs": 0.4000000059604645
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 48,
+              "inputDelayMs": 14,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 48,
+              "inputDelayMs": 14.199999995529652,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "click",
+              "durationMs": 48,
+              "inputDelayMs": 14.899999998509884,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 15.300000004470348,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15.600000001490116,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 17,
+              "processingMs": 0.5
+            }
+          ],
+          "pointerDispatchMs": [
+            14.799999997019768,
+            14.100000001490116,
+            15.600000001490116
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 30650196,
+          "jsHeapTotalBytes": 55312384,
+          "documents": 7,
+          "nodes": 1459,
+          "jsEventListeners": 183
+        }
+      },
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1029.27,
+        "entryMs": 2527.8633750000004,
+        "before": {
+          "calls": 128,
+          "triangles": 369301,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 56,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 128,
+          "triangles": 369301,
+          "geometries": 247,
+          "textures": 40,
+          "programs": 56,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 60.015604057108504,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 18,
+          "frameSubmitP95Ms": 2.2999999970197678
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 13.600000001490116,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 14,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 14.699999995529652,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 48,
+              "inputDelayMs": 14,
+              "processingMs": 0.09999999403953552
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 48,
+              "inputDelayMs": 14.099999994039536,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "click",
+              "durationMs": 48,
+              "inputDelayMs": 14.699999995529652,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 15.100000001490116,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15.399999998509884,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 16.799999997019768,
+              "processingMs": 0.3999999985098839
+            }
+          ],
+          "pointerDispatchMs": [
+            13.899999998509884,
+            14.099999994039536,
+            15.199999995529652
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 31458756,
+          "jsHeapTotalBytes": 54788096,
+          "documents": 7,
+          "nodes": 1460,
+          "jsEventListeners": 183
+        }
+      }
+    ]
+  },
+  "note": "Deeper petal cups and closed thin shells increase rendered triangles by 41040 over e845c27. Geometry and texture counts are unchanged; one extra front-side material program is prepared at loading. No new runtime, dependency, external asset or AI image."
+}

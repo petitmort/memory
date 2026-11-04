@@ -1,0 +1,2361 @@
+{
+  "date": "2026-10-31",
+  "baselineCommit": "33b9075",
+  "validation": {
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "playwright": {
+      "finalWholeSuitePassed": 185,
+      "failed": 0,
+      "repairedFocusedPassed": 34,
+      "initialWholeSuite": {
+        "passed": 174,
+        "failed": 6,
+        "note": "GLSL reserved word fixed and causal weather test timeout corrected; physical-entry and frozen-reader transients passed unchanged on repair rerun; original failures retained outside repository."
+      }
+    },
+    "productionCases": [
+      {
+        "name": "low-cloudy-phone",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "2026-04-01 12:00 · Europe/Athens\n模拟天气：多云\n太阳高度 53.1° · 月相 47.7%\n航行 3 艘 · 省电画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "sunny-noon",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-06-21 12:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 68.5° · 月相 23.2%\n航行 4 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "rainy-dusk",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-10-01 18:45 · Europe/Athens\n模拟天气：大雨\n太阳高度 2.5° · 月相 68.0%\n航行 4 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "snowy-noon",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-01-15 12:00 · Europe/Athens\n模拟天气：中雪\n太阳高度 32.2° · 月相 89.4%\n航行 5 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "full-moon",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "status": "2026-06-29 22:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 -13.8° · 月相 50.0%\n航行 4 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "small-phone",
+        "viewport": {
+          "width": 320,
+          "height": 568
+        },
+        "status": "2026-06-21 12:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 68.5° · 月相 23.2%\n航行 3 艘 · 省电画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "portrait-phone",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "2026-01-15 12:00 · Europe/Athens\n模拟天气：中雪\n太阳高度 32.2° · 月相 89.4%\n航行 5 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      },
+      {
+        "name": "landscape-phone",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "status": "2026-10-01 18:45 · Europe/Athens\n模拟天气：中雨\n太阳高度 2.6° · 月相 68.0%\n航行 5 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+        "errors": [],
+        "passed": true
+      }
+    ],
+    "safari": {
+      "status": "passed",
+      "startedAt": "2026-10-31T08:52:54.516Z",
+      "completedAt": "2026-10-31T08:53:32.709Z",
+      "scope": "Desktop macOS Safari via safaridriver; no iPhone, iPad or mobile Safari emulation.",
+      "environment": {
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "url": "http://127.0.0.1:4173/",
+        "windowSize": {
+          "width": 1280,
+          "height": 900
+        },
+        "clickMode": "element",
+        "capabilities": {
+          "safari:platformVersion": "27.2",
+          "safari:automaticInspection": false,
+          "webkit:WebRTC": {
+            "DisableICECandidateFiltering": false,
+            "DisableInsecureMediaCapture": false
+          },
+          "webkit:alwaysAllowAutoplay": false,
+          "browserVersion": "27.2",
+          "strictFileInteractability": false,
+          "browserName": "Safari",
+          "safari:useSimulator": false,
+          "safari:platformBuildVersion": "26B123",
+          "setWindowRect": true,
+          "acceptInsecureCerts": false,
+          "safari:automaticProfiling": false,
+          "pageLoadStrategy": "eager",
+          "safari:experimentalWebSocketUrl": false,
+          "platformName": "macOS",
+          "safari:diagnose": false
+        },
+        "ownedHandle": "page-92B3245A-45AF-4910-B80C-7C3E4C47F78E"
+      },
+      "steps": [
+        {
+          "name": "Load sunny production room and retain browser error observations",
+          "status": "passed",
+          "startedAt": "2026-10-31T08:52:55.848Z",
+          "result": {
+            "quality": "画质 · 自适应",
+            "readerPhase": null,
+            "focused": true,
+            "renderer": "Apple GPU",
+            "fallback": false,
+            "bodyClasses": "",
+            "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12%3A00&envWeather=clear",
+            "chapter": "",
+            "viewport": {
+              "width": 1280,
+              "dpr": 2,
+              "height": 848
+            },
+            "title": "潮汐之间 · Between the tides",
+            "room": false,
+            "trustedClicks": [],
+            "reader": false,
+            "muted": false,
+            "hidden": false,
+            "visibilityState": "visible",
+            "environment": "2026-06-21 12:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 68.4° · 月相 23.2%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+            "errors": [],
+            "diagnostic": {
+              "reason": "Production load completed",
+              "at": "2026-10-31T08:52:57.355Z",
+              "ownedHandle": "page-92B3245A-45AF-4910-B80C-7C3E4C47F78E",
+              "page": {
+                "readyState": "complete",
+                "focused": true,
+                "bodyClasses": "",
+                "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12%3A00&envWeather=clear",
+                "screen": {
+                  "availHeight": 1084,
+                  "availWidth": 1728,
+                  "width": 1728,
+                  "height": 1117
+                },
+                "viewport": {
+                  "width": 1280,
+                  "dpr": 2,
+                  "height": 848
+                },
+                "title": "潮汐之间 · Between the tides",
+                "activeElement": {
+                  "tag": "BODY",
+                  "id": "",
+                  "classes": ""
+                },
+                "window": {
+                  "y": 33,
+                  "x": 231,
+                  "width": 1280,
+                  "height": 900
+                },
+                "clickEvents": [],
+                "hidden": false,
+                "visibilityState": "visible",
+                "controls": [
+                  {
+                    "id": "enter",
+                    "style": {
+                      "visibility": "visible",
+                      "display": "inline-flex",
+                      "pointerEvents": "auto",
+                      "opacity": "1"
+                    },
+                    "hit": {
+                      "tag": "SPAN",
+                      "id": "enter-label",
+                      "classes": ""
+                    },
+                    "classes": "primary-button",
+                    "selector": "#enter",
+                    "busy": null,
+                    "disabled": false,
+                    "ariaBusy": "false",
+                    "phase": null,
+                    "exists": true,
+                    "tag": "BUTTON",
+                    "text": "让风吹散迷雾",
+                    "hitInsideTarget": true,
+                    "center": {
+                      "x": 223,
+                      "y": 600
+                    },
+                    "inertAncestor": null,
+                    "ariaPressed": null,
+                    "hitStack": [
+                      {
+                        "tag": "SPAN",
+                        "id": "enter-label",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "BUTTON",
+                        "id": "enter",
+                        "classes": "primary-button"
+                      },
+                      {
+                        "tag": "SECTION",
+                        "id": "intro",
+                        "classes": "intro"
+                      },
+                      {
+                        "tag": "CANVAS",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DIV",
+                        "id": "world",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "HTML",
+                        "id": "",
+                        "classes": ""
+                      }
+                    ],
+                    "rect": {
+                      "y": 573.0562744140625,
+                      "x": 128,
+                      "width": 191,
+                      "height": 54
+                    }
+                  },
+                  {
+                    "id": "intro",
+                    "style": {
+                      "visibility": "visible",
+                      "display": "block",
+                      "pointerEvents": "auto",
+                      "opacity": "1"
+                    },
+                    "hit": {
+                      "tag": "SPAN",
+                      "id": "",
+                      "classes": ""
+                    },
+                    "classes": "intro",
+                    "selector": "#intro",
+                    "busy": null,
+                    "disabled": false,
+                    "ariaBusy": null,
+                    "phase": null,
+                    "exists": true,
+                    "tag": "SECTION",
+                    "text": "A LITTLE PLACE FOR OUR MEMORIES把时光，留在潮汐之间。有些瞬间，值得慢慢想起。推开这扇门，让海风替你翻开回忆。让风吹散迷雾戴上耳机，给自己一小段安静的时间",
+                    "hitInsideTarget": true,
+                    "center": {
+                      "x": 359,
+                      "y": 457
+                    },
+                    "inertAncestor": null,
+                    "ariaPressed": null,
+                    "hitStack": [
+                      {
+                        "tag": "SPAN",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "H1",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "SECTION",
+                        "id": "intro",
+                        "classes": "intro"
+                      },
+                      {
+                        "tag": "CANVAS",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DIV",
+                        "id": "world",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "HTML",
+                        "id": "",
+                        "classes": ""
+                      }
+                    ],
+                    "rect": {
+                      "y": 248.64999389648438,
+                      "x": 128,
+                      "width": 463.125,
+                      "height": 417.4062805175781
+                    }
+                  },
+                  {
+                    "id": "loading",
+                    "style": {
+                      "visibility": "visible",
+                      "display": "none",
+                      "pointerEvents": "auto",
+                      "opacity": "1"
+                    },
+                    "hit": {
+                      "tag": "HEADER",
+                      "id": "",
+                      "classes": "header"
+                    },
+                    "classes": "loading hidden",
+                    "selector": "#loading",
+                    "busy": null,
+                    "disabled": false,
+                    "ariaBusy": null,
+                    "phase": null,
+                    "exists": true,
+                    "tag": "DIV",
+                    "text": "正在把海风装进房间",
+                    "hitInsideTarget": false,
+                    "center": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "inertAncestor": null,
+                    "ariaPressed": null,
+                    "hitStack": [
+                      {
+                        "tag": "HEADER",
+                        "id": "",
+                        "classes": "header"
+                      },
+                      {
+                        "tag": "CANVAS",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DIV",
+                        "id": "world",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "HTML",
+                        "id": "",
+                        "classes": ""
+                      }
+                    ],
+                    "rect": {
+                      "y": 0,
+                      "x": 0,
+                      "width": 0,
+                      "height": 0
+                    }
+                  },
+                  {
+                    "id": "room-ui",
+                    "style": {
+                      "visibility": "visible",
+                      "display": "none",
+                      "pointerEvents": "auto",
+                      "opacity": "1"
+                    },
+                    "hit": {
+                      "tag": "HEADER",
+                      "id": "",
+                      "classes": "header"
+                    },
+                    "classes": "room-ui hidden",
+                    "selector": "#room-ui",
+                    "busy": null,
+                    "disabled": false,
+                    "ariaBusy": null,
+                    "phase": null,
+                    "exists": true,
+                    "tag": "SECTION",
+                    "text": "SOMEWHERE, BY THE SEA海风如旧，故事等你。猫咪在身旁睡着，海风替你翻开回忆。· 点击桌上的花束，或轻触按钮把花放到一旁 · 打开纪念册 看看睡着的小猫 ↖抚摸小猫更换音乐Merry Christmas Mr. Lawrence — 坂本龍一已暂停可只听海浪桌上的唱片机×Merry Christmas Mr. Lawrence — 坂本龍一",
+                    "hitInsideTarget": false,
+                    "center": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "inertAncestor": null,
+                    "ariaPressed": null,
+                    "hitStack": [
+                      {
+                        "tag": "HEADER",
+                        "id": "",
+                        "classes": "header"
+                      },
+                      {
+                        "tag": "CANVAS",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DIV",
+                        "id": "world",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "HTML",
+                        "id": "",
+                        "classes": ""
+                      }
+                    ],
+                    "rect": {
+                      "y": 0,
+                      "x": 0,
+                      "width": 0,
+                      "height": 0
+                    }
+                  },
+                  {
+                    "id": "open-book",
+                    "style": {
+                      "visibility": "visible",
+                      "display": "inline-flex",
+                      "pointerEvents": "auto",
+                      "opacity": "0.65"
+                    },
+                    "hit": {
+                      "tag": "HEADER",
+                      "id": "",
+                      "classes": "header"
+                    },
+                    "classes": "primary-button",
+                    "selector": "#open-book",
+                    "busy": null,
+                    "disabled": true,
+                    "ariaBusy": null,
+                    "phase": null,
+                    "exists": true,
+                    "tag": "BUTTON",
+                    "text": "把花放到一旁 · 打开纪念册",
+                    "hitInsideTarget": false,
+                    "center": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "inertAncestor": null,
+                    "ariaPressed": null,
+                    "hitStack": [
+                      {
+                        "tag": "HEADER",
+                        "id": "",
+                        "classes": "header"
+                      },
+                      {
+                        "tag": "CANVAS",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DIV",
+                        "id": "world",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "HTML",
+                        "id": "",
+                        "classes": ""
+                      }
+                    ],
+                    "rect": {
+                      "y": 0,
+                      "x": 0,
+                      "width": 0,
+                      "height": 0
+                    }
+                  },
+                  {
+                    "id": "cozy-view",
+                    "style": {
+                      "visibility": "visible",
+                      "display": "flex",
+                      "pointerEvents": "auto",
+                      "opacity": "1"
+                    },
+                    "hit": {
+                      "tag": "HEADER",
+                      "id": "",
+                      "classes": "header"
+                    },
+                    "classes": "cozy-view text-button",
+                    "selector": "#cozy-view",
+                    "busy": null,
+                    "disabled": true,
+                    "ariaBusy": null,
+                    "phase": null,
+                    "exists": true,
+                    "tag": "BUTTON",
+                    "text": "看看睡着的小猫 ↖",
+                    "hitInsideTarget": false,
+                    "center": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "inertAncestor": null,
+                    "ariaPressed": "false",
+                    "hitStack": [
+                      {
+                        "tag": "HEADER",
+                        "id": "",
+                        "classes": "header"
+                      },
+                      {
+                        "tag": "CANVAS",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DIV",
+                        "id": "world",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "HTML",
+                        "id": "",
+                        "classes": ""
+                      }
+                    ],
+                    "rect": {
+                      "y": 0,
+                      "x": 0,
+                      "width": 0,
+                      "height": 0
+                    }
+                  },
+                  {
+                    "id": "pet-cat",
+                    "style": {
+                      "visibility": "visible",
+                      "display": "none",
+                      "pointerEvents": "auto",
+                      "opacity": "1"
+                    },
+                    "hit": {
+                      "tag": "HEADER",
+                      "id": "",
+                      "classes": "header"
+                    },
+                    "classes": "cozy-view text-button hidden",
+                    "selector": "#pet-cat",
+                    "busy": null,
+                    "disabled": true,
+                    "ariaBusy": null,
+                    "phase": null,
+                    "exists": true,
+                    "tag": "BUTTON",
+                    "text": "抚摸小猫",
+                    "hitInsideTarget": false,
+                    "center": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "inertAncestor": null,
+                    "ariaPressed": null,
+                    "hitStack": [
+                      {
+                        "tag": "HEADER",
+                        "id": "",
+                        "classes": "header"
+                      },
+                      {
+                        "tag": "CANVAS",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DIV",
+                        "id": "world",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "HTML",
+                        "id": "",
+                        "classes": ""
+                      }
+                    ],
+                    "rect": {
+                      "y": 0,
+                      "x": 0,
+                      "width": 0,
+                      "height": 0
+                    }
+                  },
+                  {
+                    "id": "reader",
+                    "style": {
+                      "visibility": "visible",
+                      "display": "none",
+                      "pointerEvents": "auto",
+                      "opacity": "1"
+                    },
+                    "hit": {
+                      "tag": "HEADER",
+                      "id": "",
+                      "classes": "header"
+                    },
+                    "classes": "reader hidden",
+                    "selector": "#reader",
+                    "busy": null,
+                    "disabled": false,
+                    "ariaBusy": null,
+                    "phase": null,
+                    "exists": true,
+                    "tag": "SECTION",
+                    "text": "THE THINGS WE KEEP章节目录回到房间 ✳︎← → 切换章节 · ESC 返回",
+                    "hitInsideTarget": false,
+                    "center": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "inertAncestor": null,
+                    "ariaPressed": null,
+                    "hitStack": [
+                      {
+                        "tag": "HEADER",
+                        "id": "",
+                        "classes": "header"
+                      },
+                      {
+                        "tag": "CANVAS",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DIV",
+                        "id": "world",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "HTML",
+                        "id": "",
+                        "classes": ""
+                      }
+                    ],
+                    "rect": {
+                      "y": 0,
+                      "x": 0,
+                      "width": 0,
+                      "height": 0
+                    }
+                  },
+                  {
+                    "id": "fallback",
+                    "style": {
+                      "visibility": "visible",
+                      "display": "none",
+                      "pointerEvents": "auto",
+                      "opacity": "1"
+                    },
+                    "hit": {
+                      "tag": "HEADER",
+                      "id": "",
+                      "classes": "header"
+                    },
+                    "classes": "fallback hidden",
+                    "selector": "#fallback",
+                    "busy": null,
+                    "disabled": false,
+                    "ariaBusy": null,
+                    "phase": null,
+                    "exists": true,
+                    "tag": "DIV",
+                    "text": "房间画面暂时无法显示纪念册仍可阅读，也可以重新载入房间。阅读纪念册 重新载入房间",
+                    "hitInsideTarget": false,
+                    "center": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "inertAncestor": null,
+                    "ariaPressed": null,
+                    "hitStack": [
+                      {
+                        "tag": "HEADER",
+                        "id": "",
+                        "classes": "header"
+                      },
+                      {
+                        "tag": "CANVAS",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DIV",
+                        "id": "world",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "HTML",
+                        "id": "",
+                        "classes": ""
+                      }
+                    ],
+                    "rect": {
+                      "y": 0,
+                      "x": 0,
+                      "width": 0,
+                      "height": 0
+                    }
+                  },
+                  {
+                    "id": "",
+                    "style": {
+                      "visibility": "visible",
+                      "display": "block",
+                      "pointerEvents": "auto",
+                      "opacity": "1"
+                    },
+                    "hit": {
+                      "tag": "SUMMARY",
+                      "id": "",
+                      "classes": ""
+                    },
+                    "classes": "environment-debug",
+                    "selector": ".environment-debug",
+                    "busy": null,
+                    "disabled": false,
+                    "ariaBusy": null,
+                    "phase": null,
+                    "exists": true,
+                    "tag": "DETAILS",
+                    "text": "环境调试开发预览 · 独立模拟天气 · 设置仅在本页有效2026-06-21 12:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 68.4° · 月相 23.2%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡模拟日期与时间（场景时区，1900–2100 年）时间模式与设备本地时钟一致场景所在地时间模拟天气季节随机演",
+                    "hitInsideTarget": true,
+                    "center": {
+                      "x": 64,
+                      "y": 35
+                    },
+                    "inertAncestor": null,
+                    "ariaPressed": null,
+                    "hitStack": [
+                      {
+                        "tag": "SUMMARY",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DETAILS",
+                        "id": "",
+                        "classes": "environment-debug"
+                      },
+                      {
+                        "tag": "SPAN",
+                        "id": "",
+                        "classes": "brand-mark"
+                      },
+                      {
+                        "tag": "HEADER",
+                        "id": "",
+                        "classes": "header"
+                      },
+                      {
+                        "tag": "CANVAS",
+                        "id": "",
+                        "classes": ""
+                      },
+                      {
+                        "tag": "DIV",
+                        "id": "world",
+                        "classes": ""
+                      }
+                    ],
+                    "rect": {
+                      "y": 12,
+                      "x": 12,
+                      "width": 104.421875,
+                      "height": 46.296875
+                    }
+                  }
+                ],
+                "environment": "2026-06-21 12:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 68.4° · 月相 23.2%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+                "pointerEvents": [],
+                "errors": []
+              },
+              "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12%3A00&envWeather=clear",
+              "handle": "page-92B3245A-45AF-4910-B80C-7C3E4C47F78E",
+              "handles": [
+                "page-92B3245A-45AF-4910-B80C-7C3E4C47F78E"
+              ],
+              "windowRect": {
+                "y": 33,
+                "x": 231,
+                "width": 1280,
+                "height": 900
+              }
+            }
+          },
+          "durationMs": 1523
+        },
+        {
+          "name": "Disperse fog and enter through two native clicks",
+          "status": "passed",
+          "startedAt": "2026-10-31T08:52:57.371Z",
+          "result": {
+            "quality": "画质 · 自适应",
+            "readerPhase": null,
+            "focused": true,
+            "renderer": "Apple GPU",
+            "fallback": false,
+            "bodyClasses": "",
+            "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12%3A00&envWeather=clear",
+            "chapter": "",
+            "viewport": {
+              "width": 1280,
+              "dpr": 2,
+              "height": 848
+            },
+            "title": "潮汐之间 · Between the tides",
+            "room": true,
+            "trustedClicks": [
+              {
+                "x": 223,
+                "selector": "#enter",
+                "id": "enter",
+                "y": 600,
+                "at": 1500,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 216,
+                "selector": "#enter",
+                "id": "enter",
+                "y": 598,
+                "at": 3513,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              }
+            ],
+            "reader": false,
+            "muted": false,
+            "hidden": false,
+            "visibilityState": "visible",
+            "environment": "2026-06-21 12:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 68.5° · 月相 23.2%\n航行 2 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+            "errors": []
+          },
+          "durationMs": 9099
+        },
+        {
+          "name": "Read the live calendar and simulated weather panel",
+          "status": "passed",
+          "startedAt": "2026-10-31T08:53:06.470Z",
+          "result": {
+            "date": "2026-06-21T12:00",
+            "weather": "clear",
+            "status": "2026-06-21 12:00 · Europe/Athens\n模拟天气：晴天\n太阳高度 68.5° · 月相 23.2%\n航行 2 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡"
+          },
+          "durationMs": 187
+        },
+        {
+          "name": "Approach the cat, pet it and return to the desk",
+          "status": "passed",
+          "startedAt": "2026-10-31T08:53:06.657Z",
+          "result": {
+            "hint": "可以再次抚摸"
+          },
+          "durationMs": 8940
+        },
+        {
+          "name": "Open the album, turn a chapter and close it continuously",
+          "status": "passed",
+          "startedAt": "2026-10-31T08:53:15.597Z",
+          "result": {
+            "before": "风经过的地方",
+            "after": "把日子过成夏天"
+          },
+          "durationMs": 6924
+        },
+        {
+          "name": "Switch the live calendar to simulated rain at dusk",
+          "status": "passed",
+          "startedAt": "2026-10-31T08:53:22.520Z",
+          "result": {
+            "quality": "画质 · 自适应",
+            "readerPhase": "closed",
+            "focused": true,
+            "renderer": "Apple GPU",
+            "fallback": false,
+            "bodyClasses": "",
+            "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12%3A00&envWeather=clear",
+            "chapter": "把日子过成夏天",
+            "viewport": {
+              "width": 1280,
+              "dpr": 2,
+              "height": 848
+            },
+            "title": "潮汐之间 · Between the tides",
+            "room": true,
+            "trustedClicks": [
+              {
+                "x": 223,
+                "selector": "#enter",
+                "id": "enter",
+                "y": 600,
+                "at": 1500,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 216,
+                "selector": "#enter",
+                "id": "enter",
+                "y": 598,
+                "at": 3513,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 64,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 10600,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 162,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 10695,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1056,
+                "selector": "#cozy-view",
+                "id": "cozy-view",
+                "y": 716,
+                "at": 10783,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1088,
+                "selector": "#pet-cat",
+                "id": "pet-cat",
+                "y": 666,
+                "at": 13059,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 983,
+                "selector": "#cozy-view",
+                "id": "cozy-view",
+                "y": 666,
+                "at": 17732,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 991,
+                "selector": "#open-book",
+                "id": "open-book",
+                "y": 660,
+                "at": 19717,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1223,
+                "selector": "#next",
+                "id": "next",
+                "y": 443,
+                "at": 23498,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1141,
+                "selector": "#close-book",
+                "id": "close-book",
+                "y": 62,
+                "at": 24408,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 64,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 26648,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              }
+            ],
+            "reader": false,
+            "muted": false,
+            "hidden": false,
+            "visibilityState": "visible",
+            "environment": "2026-10-01 18:45 · Europe/Athens\n模拟天气：中雨\n太阳高度 2.5° · 月相 68.0%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+            "errors": []
+          },
+          "durationMs": 9210
+        },
+        {
+          "name": "Mute and restore audio using native gestures, then select low quality",
+          "status": "passed",
+          "startedAt": "2026-10-31T08:53:31.731Z",
+          "result": {
+            "quality": "画质 · 省电",
+            "readerPhase": "closed",
+            "focused": true,
+            "renderer": "Apple GPU",
+            "fallback": false,
+            "bodyClasses": "",
+            "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12%3A00&envWeather=clear",
+            "chapter": "把日子过成夏天",
+            "viewport": {
+              "width": 1280,
+              "dpr": 2,
+              "height": 848
+            },
+            "title": "潮汐之间 · Between the tides",
+            "room": true,
+            "trustedClicks": [
+              {
+                "x": 223,
+                "selector": "#enter",
+                "id": "enter",
+                "y": 600,
+                "at": 1500,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 216,
+                "selector": "#enter",
+                "id": "enter",
+                "y": 598,
+                "at": 3513,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 64,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 10600,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 162,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 10695,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1056,
+                "selector": "#cozy-view",
+                "id": "cozy-view",
+                "y": 716,
+                "at": 10783,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1088,
+                "selector": "#pet-cat",
+                "id": "pet-cat",
+                "y": 666,
+                "at": 13059,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 983,
+                "selector": "#cozy-view",
+                "id": "cozy-view",
+                "y": 666,
+                "at": 17732,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 991,
+                "selector": "#open-book",
+                "id": "open-book",
+                "y": 660,
+                "at": 19717,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1223,
+                "selector": "#next",
+                "id": "next",
+                "y": 443,
+                "at": 23498,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1141,
+                "selector": "#close-book",
+                "id": "close-book",
+                "y": 62,
+                "at": 24408,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 64,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 26648,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 162,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 35466,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1141,
+                "selector": "#sound",
+                "id": "sound",
+                "y": 59,
+                "at": 35840,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1141,
+                "selector": "#sound",
+                "id": "sound",
+                "y": 59,
+                "at": 35929,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1176,
+                "selector": "#quality",
+                "id": "quality",
+                "y": 796,
+                "at": 36015,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              }
+            ],
+            "reader": false,
+            "muted": false,
+            "hidden": false,
+            "visibilityState": "visible",
+            "environment": "2026-10-01 18:45 · Europe/Athens\n模拟天气：中雨\n太阳高度 2.5° · 月相 68.0%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+            "errors": []
+          },
+          "durationMs": 758
+        },
+        {
+          "name": "Verify the room remains available without captured errors and clicks were trusted",
+          "status": "passed",
+          "startedAt": "2026-10-31T08:53:32.488Z",
+          "result": {
+            "quality": "画质 · 省电",
+            "readerPhase": "closed",
+            "focused": true,
+            "renderer": "Apple GPU",
+            "fallback": false,
+            "bodyClasses": "",
+            "url": "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-06-21T12%3A00&envWeather=clear",
+            "chapter": "把日子过成夏天",
+            "viewport": {
+              "width": 1280,
+              "dpr": 2,
+              "height": 848
+            },
+            "title": "潮汐之间 · Between the tides",
+            "room": true,
+            "trustedClicks": [
+              {
+                "x": 223,
+                "selector": "#enter",
+                "id": "enter",
+                "y": 600,
+                "at": 1500,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 216,
+                "selector": "#enter",
+                "id": "enter",
+                "y": 598,
+                "at": 3513,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 64,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 10600,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 162,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 10695,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1056,
+                "selector": "#cozy-view",
+                "id": "cozy-view",
+                "y": 716,
+                "at": 10783,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1088,
+                "selector": "#pet-cat",
+                "id": "pet-cat",
+                "y": 666,
+                "at": 13059,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 983,
+                "selector": "#cozy-view",
+                "id": "cozy-view",
+                "y": 666,
+                "at": 17732,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 991,
+                "selector": "#open-book",
+                "id": "open-book",
+                "y": 660,
+                "at": 19717,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1223,
+                "selector": "#next",
+                "id": "next",
+                "y": 443,
+                "at": 23498,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1141,
+                "selector": "#close-book",
+                "id": "close-book",
+                "y": 62,
+                "at": 24408,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 64,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 26648,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 162,
+                "selector": ".environment-debug summary",
+                "id": "SUMMARY",
+                "y": 35,
+                "at": 35466,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1141,
+                "selector": "#sound",
+                "id": "sound",
+                "y": 59,
+                "at": 35840,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1141,
+                "selector": "#sound",
+                "id": "sound",
+                "y": 59,
+                "at": 35929,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              },
+              {
+                "x": 1176,
+                "selector": "#quality",
+                "id": "quality",
+                "y": 796,
+                "at": 36015,
+                "type": "click",
+                "matches": true,
+                "trusted": true
+              }
+            ],
+            "reader": false,
+            "muted": false,
+            "hidden": false,
+            "visibilityState": "visible",
+            "environment": "2026-10-01 18:45 · Europe/Athens\n模拟天气：中雨\n太阳高度 2.5° · 月相 68.0%\n航行 0 艘 · 普通画质\n飞鸟 0 只 · 强制预览 · 分阶段过渡",
+            "errors": []
+          },
+          "durationMs": 6
+        }
+      ],
+      "screenshots": [
+        {
+          "name": "sunny-noon-room",
+          "path": "/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-living-weather/safari/sunny-noon-room.png"
+        },
+        {
+          "name": "cat-camera",
+          "path": "/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-living-weather/safari/cat-camera.png"
+        },
+        {
+          "name": "album-next-chapter",
+          "path": "/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-living-weather/safari/album-next-chapter.png"
+        },
+        {
+          "name": "rainy-dusk-room",
+          "path": "/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-living-weather/safari/rainy-dusk-room.png"
+        },
+        {
+          "name": "rainy-dusk-low-quality",
+          "path": "/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-living-weather/safari/rainy-dusk-low-quality.png"
+        }
+      ],
+      "cleanupErrors": [],
+      "errorObservation": "Window errors and unhandled rejections collected after navigation returned; no claim of complete browser-console capture.",
+      "nativeClicks": 15,
+      "resultPath": "/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-living-weather/safari/result.json"
+    },
+    "productionJS": "index-DyfhbZEA.js"
+  },
+  "performance": {
+    "before": [
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1133.609667,
+        "entryMs": 2521.4295,
+        "before": {
+          "calls": 130,
+          "triangles": 369936,
+          "geometries": 248,
+          "textures": 39,
+          "programs": 51,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 130,
+          "triangles": 369936,
+          "geometries": 248,
+          "textures": 39,
+          "programs": 51,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 60.003600215977194,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 17.600000001490116,
+          "frameSubmitP95Ms": 1.2999999970197678
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 17.200000002980232,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 17.80000000447035,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 18.899999998509884,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 48,
+              "inputDelayMs": 14.300000004470348,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 48,
+              "inputDelayMs": 14.600000001490116,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 48,
+              "inputDelayMs": 15.200000002980232,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 15.5,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15.800000004470348,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 17.600000001490116,
+              "processingMs": 0.3999999985098839
+            }
+          ],
+          "pointerDispatchMs": [
+            17.5,
+            14.600000001490116,
+            15.700000002980232
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 17613768,
+          "jsHeapTotalBytes": 52133888,
+          "documents": 6,
+          "nodes": 344,
+          "jsEventListeners": 104
+        }
+      },
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1075.0713329999999,
+        "entryMs": 2515.7231250000004,
+        "before": {
+          "calls": 130,
+          "triangles": 369936,
+          "geometries": 248,
+          "textures": 39,
+          "programs": 51,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 130,
+          "triangles": 369936,
+          "geometries": 248,
+          "textures": 39,
+          "programs": 51,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 60.00960153621003,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 17.5,
+          "frameSubmitP95Ms": 1.2000000029802322
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 16.799999997019768,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 17.099999994039536,
+              "processingMs": 0.10000000149011612
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 18.200000002980232,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 13.5,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 13.799999997019768,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 14.299999997019768,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 13.900000005960464,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 14.200000002980232,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 15.300000004470348,
+              "processingMs": 0.29999999701976776
+            }
+          ],
+          "pointerDispatchMs": [
+            17.099999994039536,
+            13.699999995529652,
+            14.100000001490116
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 26783024,
+          "jsHeapTotalBytes": 52379648,
+          "documents": 6,
+          "nodes": 344,
+          "jsEventListeners": 104
+        }
+      },
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1044.887792,
+        "entryMs": 2498.9227920000003,
+        "before": {
+          "calls": 130,
+          "triangles": 369936,
+          "geometries": 248,
+          "textures": 39,
+          "programs": 51,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 127,
+          "triangles": 369816,
+          "geometries": 248,
+          "textures": 39,
+          "programs": 51,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 60.006000600060005,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 17.700000002980232,
+          "frameSubmitP95Ms": 1.3999999985098839
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 17.5,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 17.899999998509884,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 18.899999998509884,
+              "processingMs": 0.4000000059604645
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 13.799999997019768,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 14.100000001490116,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 14.600000001490116,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 15.400000005960464,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15.700000002980232,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 16.700000002980232,
+              "processingMs": 0.6000000014901161
+            }
+          ],
+          "pointerDispatchMs": [
+            17.80000000447035,
+            14,
+            15.600000001490116
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 29036312,
+          "jsHeapTotalBytes": 52789248,
+          "documents": 6,
+          "nodes": 344,
+          "jsEventListeners": 104
+        }
+      }
+    ],
+    "after": [
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1055.261916,
+        "entryMs": 2495.848417,
+        "before": {
+          "calls": 128,
+          "triangles": 369704,
+          "geometries": 251,
+          "textures": 39,
+          "programs": 54,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 130,
+          "triangles": 376616,
+          "geometries": 251,
+          "textures": 39,
+          "programs": 54,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 300,
+          "measuredFps": 60.00401364639775,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 17.69999999552965,
+          "frameSubmitP95Ms": 1.2000000029802322
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 17.600000001490116,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 18,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 19,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 14.199999995529652,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 14.399999998509884,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 15,
+              "processingMs": 0.19999999552965164
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 15.399999998509884,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15.699999995529652,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 16.69999999552965,
+              "processingMs": 0.4000000059604645
+            }
+          ],
+          "pointerDispatchMs": [
+            17.80000000447035,
+            14.299999997019768,
+            15.600000001490116
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 29556748,
+          "jsHeapTotalBytes": 52527104,
+          "documents": 6,
+          "nodes": 345,
+          "jsEventListeners": 124
+        }
+      },
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1006.2018330000001,
+        "entryMs": 2522.858792,
+        "before": {
+          "calls": 144,
+          "triangles": 409292,
+          "geometries": 251,
+          "textures": 39,
+          "programs": 54,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 144,
+          "triangles": 409292,
+          "geometries": 251,
+          "textures": 39,
+          "programs": 54,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 59.99880002398164,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 17.700000002980232,
+          "frameSubmitP95Ms": 1.4000000059604645
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 16.899999998509884,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 17.299999997019768,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 18.30000000447035,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 13.600000001490116,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 13.899999998509884,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 14.5,
+              "processingMs": 0.20000000298023224
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 15.200000002980232,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15.5,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 16.600000001490116,
+              "processingMs": 0.3999999985098839
+            }
+          ],
+          "pointerDispatchMs": [
+            17.299999997019768,
+            13.800000004470348,
+            15.399999998509884
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 19982376,
+          "jsHeapTotalBytes": 49528832,
+          "documents": 6,
+          "nodes": 344,
+          "jsEventListeners": 104
+        }
+      },
+      {
+        "schema": 1,
+        "environment": {
+          "viewport": {
+            "width": 960,
+            "height": 640
+          },
+          "deviceScaleFactor": 1,
+          "cpuThrottle": 1,
+          "sampleMs": 5000,
+          "platform": "darwin",
+          "architecture": "arm64",
+          "node": "v24.14.0",
+          "browser": "156.0.8078.74",
+          "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+          "reducedMotion": true,
+          "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+          "device": {
+            "hardwareConcurrency": 10,
+            "deviceMemoryGiB": 16,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "unmaskedRendererAvailable": true,
+            "softwareRendererDetected": false
+          }
+        },
+        "errors": [],
+        "loadingMs": 1020.8447080000001,
+        "entryMs": 2522.569334,
+        "before": {
+          "calls": 144,
+          "triangles": 409292,
+          "geometries": 251,
+          "textures": 39,
+          "programs": 54,
+          "pixelRatio": 1,
+          "low": false
+        },
+        "room": {
+          "calls": 144,
+          "triangles": 409292,
+          "geometries": 251,
+          "textures": 39,
+          "programs": 54,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 300,
+          "measuredFps": 60.01364858894086,
+          "frameIntervalMedianMs": 16.69999999552965,
+          "frameIntervalP95Ms": 17.700000002980232,
+          "frameSubmitP95Ms": 1.4000000059604645
+        },
+        "warnings": [],
+        "input": {
+          "events": [
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 17.899999998509884,
+              "processingMs": 0.3999999985098839
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 18.299999997019768,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 19.299999997019768,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 13.5,
+              "processingMs": 0.30000000447034836
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 13.800000004470348,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 14.400000005960464,
+              "processingMs": 0.09999999403953552
+            },
+            {
+              "name": "pointerdown",
+              "durationMs": 40,
+              "inputDelayMs": 14.700000002980232,
+              "processingMs": 0.29999999701976776
+            },
+            {
+              "name": "touchstart",
+              "durationMs": 40,
+              "inputDelayMs": 15,
+              "processingMs": 0
+            },
+            {
+              "name": "click",
+              "durationMs": 40,
+              "inputDelayMs": 16.200000002980232,
+              "processingMs": 0.29999999701976776
+            }
+          ],
+          "pointerDispatchMs": [
+            18.200000002980232,
+            13.700000002980232,
+            14.800000004470348
+          ]
+        },
+        "memory": {
+          "jsHeapUsedBytes": 18708460,
+          "jsHeapTotalBytes": 45727744,
+          "documents": 2,
+          "nodes": 320,
+          "jsEventListeners": 97
+        }
+      }
+    ],
+    "beforeMedian": {
+      "fps": 60.006000600060005,
+      "frameIntervalP95Ms": 17.600000001490116,
+      "frameSubmitP95Ms": 1.2999999970197678,
+      "loadingMs": 1075.0713329999999,
+      "jsHeapUsedBytes": 26783024
+    },
+    "afterMedian": {
+      "fps": 60.00401364639775,
+      "frameIntervalP95Ms": 17.700000002980232,
+      "frameSubmitP95Ms": 1.4000000059604645,
+      "loadingMs": 1020.8447080000001,
+      "jsHeapUsedBytes": 19982376
+    },
+    "mobileRainLowCPU4": {
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "deviceScaleFactor": 2,
+        "cpuThrottle": 4,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.74",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 2822.795584,
+      "entryMs": 2565.5832920000003,
+      "before": {
+        "calls": 79,
+        "triangles": 263487,
+        "geometries": 251,
+        "textures": 38,
+        "programs": 47,
+        "pixelRatio": 1,
+        "low": true
+      },
+      "room": {
+        "calls": 79,
+        "triangles": 263487,
+        "geometries": 251,
+        "textures": 38,
+        "programs": 47,
+        "pixelRatio": 1,
+        "low": true,
+        "drawnFrames": 150,
+        "measuredFps": 29.984705787678912,
+        "frameIntervalMedianMs": 33.399999998509884,
+        "frameIntervalP95Ms": 36.29999999701977,
+        "frameSubmitP95Ms": 3.9000000059604645
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 17.5,
+            "processingMs": 1.3999999985098839
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 18.899999998509884,
+            "processingMs": 0.6000000014901161
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 23.100000001490116,
+            "processingMs": 1.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 56,
+            "inputDelayMs": 9.300000004470348,
+            "processingMs": 0.5
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 56,
+            "inputDelayMs": 9.900000005960464,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 56,
+            "inputDelayMs": 13.200000002980232,
+            "processingMs": 1.2999999970197678
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 16.799999997019768,
+            "processingMs": 0.8999999985098839
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 17.69999999552965,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 23.5,
+            "processingMs": 2
+          }
+        ],
+        "pointerDispatchMs": [
+          18.899999998509884,
+          9.800000004470348,
+          17.599999994039536
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 16626668,
+        "jsHeapTotalBytes": 50429952,
+        "documents": 9,
+        "nodes": 737,
+        "jsEventListeners": 144
+      }
+    },
+    "notes": [
+      "All browser/GPU jobs serialized; three same-machine 960x640 DPR1 reduced-motion 5s samples each side.",
+      "Default weather/traffic can differ with the new sampler and absolute time, so draw calls and CPU/heap differences are confounded; no claim of speedup or long-term leak freedom.",
+      "Desktop Chrome CPU4 and mobile-sized viewport are not physical phone evidence. JS heap excludes GPU/process memory."
+    ]
+  },
+  "evidenceRoot": "/Users/jiangyuhan/.codex/visualizations/2026/10/31/memory-living-weather",
+  "knownLimitations": [
+    "Programmatic birds and coastal weather are scenic approximations, not meteorology/ecological simulation.",
+    "Rain rings are analytic wave-surface effects, not collisions paired to each rain line.",
+    "Synthetic wind/rain/thunder rendered in native OfflineAudioContext; subjective speaker/headphone listening pending.",
+    "Physical phone, low-end sustained temperature/battery/process/GPU memory pending."
+  ],
+  "scope": {
+    "deploymentChanged": false,
+    "dependenciesChanged": false,
+    "original47PlanRowsPreserved": true,
+    "originalCompleted": 15,
+    "sharedRuntime": "~/.nvm/versions/node/v24.14.0",
+    "sharedStore": "~/Library/pnpm/store/v11",
+    "originalRequirementTextPreserved": true
+  }
+}

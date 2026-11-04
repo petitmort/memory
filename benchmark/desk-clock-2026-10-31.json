@@ -1,0 +1,328 @@
+{
+  "schema": 1,
+  "dateBeijing": "2026-10-31",
+  "baseline": "c45a003",
+  "source": "本地Codex",
+  "branch": "codex/calendar-environment-requirements",
+  "deployed": false,
+  "historicalReference": {
+    "source": "benchmark/room-light-2026-10-31.json",
+    "kind": "previous single default, light off; not paired before measurement",
+    "fps": 60.012,
+    "frameIntervalP95Ms": 18,
+    "frameSubmitP95Ms": 2.2,
+    "geometries": 249,
+    "textures": 39,
+    "programs": 55
+  },
+  "currentDefaultWarmOn": {
+    "schema": 1,
+    "environment": {
+      "viewport": {
+        "width": 960,
+        "height": 640
+      },
+      "deviceScaleFactor": 1,
+      "cpuThrottle": 1,
+      "sampleMs": 5000,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browser": "156.0.8078.74",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "reducedMotion": true,
+      "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+      "device": {
+        "hardwareConcurrency": 10,
+        "deviceMemoryGiB": 16,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "vendor": "Google Inc. (Apple)",
+        "unmaskedRendererAvailable": true,
+        "softwareRendererDetected": false
+      }
+    },
+    "errors": [],
+    "loadingMs": 1046.3273749999998,
+    "entryMs": 2502.869375,
+    "before": {
+      "calls": 132,
+      "triangles": 371065,
+      "geometries": 251,
+      "textures": 40,
+      "programs": 57,
+      "pixelRatio": 1,
+      "low": false
+    },
+    "room": {
+      "calls": 132,
+      "triangles": 371065,
+      "geometries": 251,
+      "textures": 40,
+      "programs": 57,
+      "pixelRatio": 1,
+      "low": false,
+      "drawnFrames": 300,
+      "measuredFps": 59.99558560913943,
+      "frameIntervalMedianMs": 16.700000002980232,
+      "frameIntervalP95Ms": 17.899999998509884,
+      "frameSubmitP95Ms": 1.1999999955296516
+    },
+    "warnings": [],
+    "input": {
+      "events": [
+        {
+          "name": "pointerdown",
+          "durationMs": 40,
+          "inputDelayMs": 16.899999998509884,
+          "processingMs": 0.3999999985098839
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 40,
+          "inputDelayMs": 17.299999997019768,
+          "processingMs": 1
+        },
+        {
+          "name": "click",
+          "durationMs": 40,
+          "inputDelayMs": 19.299999997019768,
+          "processingMs": 0.30000000447034836
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 48,
+          "inputDelayMs": 13.800000004470348,
+          "processingMs": 0.19999999552965164
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 48,
+          "inputDelayMs": 14,
+          "processingMs": 0.10000000149011612
+        },
+        {
+          "name": "click",
+          "durationMs": 48,
+          "inputDelayMs": 14.600000001490116,
+          "processingMs": 0.20000000298023224
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 40,
+          "inputDelayMs": 16.30000000447035,
+          "processingMs": 0.19999999552965164
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 40,
+          "inputDelayMs": 16.5,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 40,
+          "inputDelayMs": 17.5,
+          "processingMs": 0.30000000447034836
+        }
+      ],
+      "pointerDispatchMs": [
+        17.299999997019768,
+        14,
+        16.400000005960464
+      ]
+    },
+    "memory": {
+      "jsHeapUsedBytes": 26664816,
+      "jsHeapTotalBytes": 53067776,
+      "documents": 2,
+      "nodes": 362,
+      "jsEventListeners": 114
+    }
+  },
+  "measurementNotes": [
+    "One serial 5-second desktop Chrome sample, 960x640 DPR1, reduced motion; no net cost or speed improvement claim.",
+    "Default lighting and automatic date/weather differ from the historical reference. No fresh paired baseline.",
+    "Reduced-motion timing does not measure the normal flip peak; actual normal flips separately passed prewarm and resource stability tests.",
+    "CPU submission is not GPU completion. JS heap excludes GPU and browser processes. Physical phones and Safari not tested this task."
+  ],
+  "clockResources": {
+    "geometries": 2,
+    "atlasTextures": 1,
+    "atlasSize": [
+      2048,
+      1024
+    ],
+    "materials": 13,
+    "minuteChangesMeasured": 120,
+    "noFirstFlipBufferUploadsOrShaderCompiles": true
+  },
+  "lampPixels": {
+    "warm": {
+      "changed": 795269,
+      "rgb": [
+        46506218,
+        33195743,
+        19142550
+      ]
+    },
+    "cool": {
+      "changed": 784875,
+      "rgb": [
+        7691530,
+        12645717,
+        34351867
+      ]
+    },
+    "initial": {
+      "settings": {
+        "enabled": true,
+        "color": "#ffd6a3",
+        "brightness": 50
+      },
+      "intensity": 15,
+      "position": [
+        0,
+        2.48,
+        0
+      ],
+      "visible": true,
+      "lights": 1,
+      "memory": {
+        "geometries": 251,
+        "textures": 40,
+        "programs": 57
+      },
+      "use": {
+        "buffers": 929,
+        "shaders": 114
+      }
+    },
+    "toggled": {
+      "settings": {
+        "enabled": true,
+        "color": "#557dff",
+        "brightness": 25
+      },
+      "intensity": 7.5,
+      "position": [
+        0,
+        2.48,
+        0
+      ],
+      "visible": true,
+      "lights": 1,
+      "memory": {
+        "geometries": 251,
+        "textures": 40,
+        "programs": 57
+      },
+      "use": {
+        "buffers": 929,
+        "shaders": 114
+      }
+    }
+  },
+  "production": [
+    {
+      "name": "desktop-day",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "date": "2026-06-21T12:00",
+      "layout": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "clock": "2026年10月31日，星期六，22点53分"
+      },
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "desktop-night",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "date": "2026-10-31T22:00",
+      "layout": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "clock": "2026年10月31日，星期六，22点53分"
+      },
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "phone-night",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "date": "2026-10-31T22:00",
+      "layout": {
+        "width": 390,
+        "scrollWidth": 390,
+        "clock": "2026年10月31日，星期六，22点53分"
+      },
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "phone-landscape",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "date": "2026-06-21T12:00",
+      "layout": {
+        "width": 844,
+        "scrollWidth": 844,
+        "clock": "2026年10月31日，星期六，22点53分"
+      },
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "validation": {
+    "uniquePassed": 29,
+    "initialFocused": {
+      "passed": 9,
+      "total": 9
+    },
+    "relatedRegression": {
+      "passed": 13,
+      "total": 13
+    },
+    "finalClockLightPerformance": {
+      "passed": 9,
+      "total": 9
+    },
+    "framingEntryCatPerformance": {
+      "passed": 13,
+      "total": 13
+    },
+    "finalClockWindowHotspots": {
+      "passed": 7,
+      "total": 7
+    },
+    "countsOverlap": true,
+    "typecheck": "passed",
+    "build": "passed",
+    "modules": 90,
+    "appKB": 323.93,
+    "appGzipKB": 119.68,
+    "cssKB": 38.34,
+    "cssGzipKB": 8.97
+  },
+  "sharedRuntime": {
+    "node": "24.14.0",
+    "entry": "~/.local/bin/project-node",
+    "store": "~/Library/pnpm/store/v11",
+    "dependencies": "existing node_modules",
+    "installs": 0,
+    "newEnvironments": 0
+  },
+  "evidenceDirectory": "memory-desk-clock"
+}

@@ -1,0 +1,273 @@
+{
+  "schema": 1,
+  "dateBeijing": "2026-10-31",
+  "baseline": "f7be21f",
+  "source": "本地Codex",
+  "featureBranch": "codex/calendar-environment-requirements",
+  "deployed": false,
+  "historicalReference": {
+    "source": "benchmark/wind-world-2026-10-31.json",
+    "note": "Previous three-run medians, not a freshly paired old-version measurement.",
+    "fpsMedian": 60.001,
+    "frameIntervalP95MedianMs": 18.9,
+    "frameSubmitP95MedianMs": 3.8,
+    "geometries": 249,
+    "textures": 39,
+    "programs": 55
+  },
+  "currentSingleSample": {
+    "schema": 1,
+    "environment": {
+      "viewport": {
+        "width": 960,
+        "height": 640
+      },
+      "deviceScaleFactor": 1,
+      "cpuThrottle": 1,
+      "sampleMs": 5000,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browser": "156.0.8078.74",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "reducedMotion": true,
+      "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+      "device": {
+        "hardwareConcurrency": 10,
+        "deviceMemoryGiB": 16,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "vendor": "Google Inc. (Apple)",
+        "unmaskedRendererAvailable": true,
+        "softwareRendererDetected": false
+      }
+    },
+    "errors": [],
+    "loadingMs": 1250.931208,
+    "entryMs": 2525.2572920000002,
+    "before": {
+      "calls": 122,
+      "triangles": 370849,
+      "geometries": 249,
+      "textures": 39,
+      "programs": 55,
+      "pixelRatio": 1,
+      "low": false
+    },
+    "room": {
+      "calls": 123,
+      "triangles": 370993,
+      "geometries": 249,
+      "textures": 39,
+      "programs": 55,
+      "pixelRatio": 1,
+      "low": false,
+      "drawnFrames": 300,
+      "measuredFps": 60.00401364639775,
+      "frameIntervalMedianMs": 16.600000001490116,
+      "frameIntervalP95Ms": 17.69999999552965,
+      "frameSubmitP95Ms": 1.1000000014901161
+    },
+    "warnings": [],
+    "input": {
+      "events": [
+        {
+          "name": "pointerdown",
+          "durationMs": 40,
+          "inputDelayMs": 23,
+          "processingMs": 0.5
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 40,
+          "inputDelayMs": 23.599999994039536,
+          "processingMs": 0.10000000149011612
+        },
+        {
+          "name": "click",
+          "durationMs": 40,
+          "inputDelayMs": 25,
+          "processingMs": 0.3999999985098839
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 48,
+          "inputDelayMs": 14.399999998509884,
+          "processingMs": 0.20000000298023224
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 48,
+          "inputDelayMs": 14.600000001490116,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 48,
+          "inputDelayMs": 15.200000002980232,
+          "processingMs": 0.10000000149011612
+        },
+        {
+          "name": "pointerdown",
+          "durationMs": 40,
+          "inputDelayMs": 14.399999998509884,
+          "processingMs": 0.20000000298023224
+        },
+        {
+          "name": "touchstart",
+          "durationMs": 40,
+          "inputDelayMs": 14.700000002980232,
+          "processingMs": 0
+        },
+        {
+          "name": "click",
+          "durationMs": 40,
+          "inputDelayMs": 15.799999997019768,
+          "processingMs": 0.4000000059604645
+        }
+      ],
+      "pointerDispatchMs": [
+        23.399999998509884,
+        14.600000001490116,
+        14.5
+      ]
+    },
+    "memory": {
+      "jsHeapUsedBytes": 27503516,
+      "jsHeapTotalBytes": 50446336,
+      "documents": 4,
+      "nodes": 333,
+      "jsEventListeners": 97
+    }
+  },
+  "actualContrast": {
+    "cases": 12,
+    "viewports": [
+      "1280x800",
+      "390x844"
+    ],
+    "times": [
+      "day",
+      "dusk",
+      "night"
+    ],
+    "qualities": [
+      "normal",
+      "low"
+    ],
+    "ranges": {
+      "bolt": {
+        "pixels": [
+          543,
+          1374
+        ],
+        "contrast": [
+          248,
+          625
+        ],
+        "max": [
+          77.6074,
+          160.1914
+        ]
+      },
+      "cloud": {
+        "pixels": [
+          31265,
+          50773
+        ],
+        "contrast": [
+          0,
+          11094
+        ],
+        "max": [
+          17.6378,
+          28.212599999999995
+        ]
+      },
+      "sea": {
+        "pixels": [
+          36024,
+          106179
+        ],
+        "contrast": [
+          0,
+          26653
+        ],
+        "max": [
+          17.063,
+          34.072199999999995
+        ]
+      }
+    },
+    "method": "Same rendered frame with and without the selected component. pixels counts positive luminance delta >2, contrast >18. Not a paired comparison to old production code."
+  },
+  "production": [
+    {
+      "mobile": false,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "elapsedMs": 7081,
+      "errors": [],
+      "dimensions": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "probe": "undefined"
+      },
+      "weather": "thunderstorm",
+      "passed": true
+    },
+    {
+      "mobile": true,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 7078.60000000149,
+      "errors": [],
+      "dimensions": {
+        "width": 390,
+        "scrollWidth": 390,
+        "probe": "undefined"
+      },
+      "weather": "thunderstorm",
+      "passed": true
+    }
+  ],
+  "validation": {
+    "specialized": {
+      "passed": 10,
+      "total": 10,
+      "duration": "1.0m"
+    },
+    "relatedRegression": {
+      "passed": 46,
+      "total": 46,
+      "duration": "3.0m"
+    },
+    "uniquePassed": 56,
+    "typecheck": "passed",
+    "build": "passed",
+    "modules": 85,
+    "appKB": 311.35,
+    "appGzipKB": 115.08,
+    "fullPrevious209SuiteRerun": false
+  },
+  "resourceStrategy": "Replace the prewarmed line with one pooled ribbon; keep two storm geometries/materials, force single pass, no new light/texture/postprocessing. Existing pause and reduced-motion gates retained.",
+  "limitations": [
+    "One current default five-second timing sample; cannot claim performance improvement.",
+    "Timing sample uses reduced motion, so does not measure peak lightning rendering.",
+    "No new Safari, physical phone, speaker/headphone listening or long-duration experiment.",
+    "Natural discharges can be inside clouds or outside the window; preview deliberately uses a visible source."
+  ],
+  "runtime": {
+    "node": "24.14.0",
+    "entry": "~/.local/bin/project-node",
+    "dependencies": "Existing project node_modules",
+    "sharedStore": "~/Library/pnpm/store/v11",
+    "installs": 0,
+    "newEnvironments": 0
+  },
+  "evidenceDirectory": "memory-lightning-visibility"
+}

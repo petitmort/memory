@@ -1,0 +1,328 @@
+{
+  "schema": 1,
+  "dateBeijing": "2026-10-31",
+  "baseline": "9508790",
+  "source": "本地Codex",
+  "branch": "codex/calendar-environment-requirements",
+  "deployed": false,
+  "historicalReference": {
+    "source": "benchmark/lightning-visibility-2026-10-31.json",
+    "kind": "previous single default sample, not a paired before measurement",
+    "fps": 60.004,
+    "frameIntervalP95Ms": 17.7,
+    "frameSubmitP95Ms": 1.1,
+    "geometries": 249,
+    "textures": 39,
+    "programs": 55
+  },
+  "currentLightOff": {
+    "environment": {
+      "viewport": {
+        "width": 960,
+        "height": 640
+      },
+      "deviceScaleFactor": 1,
+      "cpuThrottle": 1,
+      "sampleMs": 5000,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browser": "156.0.8078.74",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "reducedMotion": true,
+      "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+      "device": {
+        "hardwareConcurrency": 10,
+        "deviceMemoryGiB": 16,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "vendor": "Google Inc. (Apple)",
+        "unmaskedRendererAvailable": true,
+        "softwareRendererDetected": false
+      }
+    },
+    "loadingMs": 1034.9215,
+    "entryMs": 2515.2722089999997,
+    "before": {
+      "calls": 122,
+      "triangles": 370849,
+      "geometries": 249,
+      "textures": 39,
+      "programs": 55,
+      "pixelRatio": 1,
+      "low": false
+    },
+    "room": {
+      "calls": 122,
+      "triangles": 370849,
+      "geometries": 249,
+      "textures": 39,
+      "programs": 55,
+      "pixelRatio": 1,
+      "low": false,
+      "drawnFrames": 300,
+      "measuredFps": 60.01244405197978,
+      "frameIntervalMedianMs": 16.600000001490116,
+      "frameIntervalP95Ms": 18,
+      "frameSubmitP95Ms": 2.2000000029802322
+    },
+    "memory": {
+      "jsHeapUsedBytes": 27372344,
+      "jsHeapTotalBytes": 52576256,
+      "documents": 6,
+      "nodes": 384,
+      "jsEventListeners": 131
+    },
+    "warnings": [],
+    "errors": []
+  },
+  "currentLightOn100Percent": {
+    "environment": {
+      "viewport": {
+        "width": 960,
+        "height": 640
+      },
+      "deviceScaleFactor": 1,
+      "cpuThrottle": 1,
+      "sampleMs": 5000,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "node": "v24.14.0",
+      "browser": "156.0.8078.74",
+      "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "reducedMotion": true,
+      "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+      "device": {
+        "hardwareConcurrency": 10,
+        "deviceMemoryGiB": 16,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "vendor": "Google Inc. (Apple)",
+        "unmaskedRendererAvailable": true,
+        "softwareRendererDetected": false
+      }
+    },
+    "loadingMs": 1051.443459,
+    "entryMs": 2509.145708,
+    "before": {
+      "calls": 122,
+      "triangles": 370849,
+      "geometries": 249,
+      "textures": 39,
+      "programs": 55,
+      "pixelRatio": 1,
+      "low": false
+    },
+    "room": {
+      "calls": 122,
+      "triangles": 370849,
+      "geometries": 249,
+      "textures": 39,
+      "programs": 55,
+      "pixelRatio": 1,
+      "low": false,
+      "drawnFrames": 300,
+      "measuredFps": 60.023286626267605,
+      "frameIntervalMedianMs": 16.69999999552965,
+      "frameIntervalP95Ms": 19.5,
+      "frameSubmitP95Ms": 2.899999998509884
+    },
+    "memory": {
+      "jsHeapUsedBytes": 20614096,
+      "jsHeapTotalBytes": 51494912,
+      "documents": 3,
+      "nodes": 1410,
+      "jsEventListeners": 156
+    },
+    "warnings": [],
+    "errors": []
+  },
+  "measurementNotes": [
+    "Serial five-second current samples; off uses automatic date/weather, on uses a clear night with no vessels/birds and saved brightness 100.",
+    "Different date/weather and one sample per case prevent causal timing comparisons; no speed improvement claimed.",
+    "CPU submission is not GPU completion; desktop Chrome phone-sized previews do not replace physical device testing."
+  ],
+  "pixelEvidence": {
+    "warm": {
+      "changed": 795367,
+      "rgb": [
+        46582720,
+        33223471,
+        19135170
+      ]
+    },
+    "cool": {
+      "changed": 784978,
+      "rgb": [
+        7692507,
+        12642957,
+        34353299
+      ]
+    },
+    "initial": {
+      "settings": {
+        "enabled": false,
+        "color": "#ffd6a3",
+        "brightness": 50
+      },
+      "intensity": 0,
+      "position": [
+        0,
+        2.48,
+        0
+      ],
+      "visible": true,
+      "lights": 1,
+      "memory": {
+        "geometries": 249,
+        "textures": 39,
+        "programs": 55
+      },
+      "use": {
+        "buffers": 917,
+        "shaders": 110
+      }
+    },
+    "toggled": {
+      "settings": {
+        "enabled": true,
+        "color": "#557dff",
+        "brightness": 25
+      },
+      "intensity": 7.5,
+      "position": [
+        0,
+        2.48,
+        0
+      ],
+      "visible": true,
+      "lights": 1,
+      "memory": {
+        "geometries": 249,
+        "textures": 39,
+        "programs": 55
+      },
+      "use": {
+        "buffers": 917,
+        "shaders": 110
+      }
+    }
+  },
+  "production": [
+    {
+      "name": "desktop-day",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "date": "2026-06-21T12:00",
+      "layout": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "stored": {
+          "enabled": true,
+          "color": "#ffd6a3",
+          "brightness": 65
+        }
+      },
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "desktop-night",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "date": "2026-10-31T22:00",
+      "layout": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "stored": {
+          "enabled": true,
+          "color": "#ffd6a3",
+          "brightness": 65
+        }
+      },
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "phone-night",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "date": "2026-10-31T22:00",
+      "layout": {
+        "width": 390,
+        "scrollWidth": 390,
+        "stored": {
+          "enabled": true,
+          "color": "#ffd6a3",
+          "brightness": 65
+        }
+      },
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "phone-landscape",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "date": "2026-06-21T12:00",
+      "layout": {
+        "width": 844,
+        "scrollWidth": 844,
+        "stored": {
+          "enabled": true,
+          "color": "#ffd6a3",
+          "brightness": 65
+        }
+      },
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "validation": {
+    "first": {
+      "passed": 7,
+      "total": 8,
+      "failure": "Test expected a dispose event on PointLight; Three.js releases the shadow object instead. Corrected test only."
+    },
+    "regression": {
+      "passed": 36,
+      "total": 36,
+      "duration": "1.2m"
+    },
+    "layoutAfterStickyHeader": {
+      "passed": 4,
+      "total": 4,
+      "duration": "19.1s",
+      "overlapsPrevious": true
+    },
+    "uniquePassed": 41,
+    "typecheck": "passed",
+    "build": "passed",
+    "modules": 88,
+    "appKB": 317.09,
+    "appGzipKB": 116.88,
+    "cssKB": 38.34,
+    "cssGzipKB": 8.97
+  },
+  "limits": [
+    "One point light with finite 4.3m distance and no shadows; near surfaces across walls may receive some light.",
+    "Physical phones, Safari, subjective lighting preferences and long-duration thermal/memory tests not rerun."
+  ],
+  "sharedRuntime": {
+    "node": "24.14.0",
+    "entry": "~/.local/bin/project-node",
+    "store": "~/Library/pnpm/store/v11",
+    "dependencies": "Existing node_modules",
+    "installs": 0,
+    "newEnvironments": 0
+  },
+  "evidenceDirectory": "memory-room-light"
+}

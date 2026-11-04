@@ -8,6 +8,9 @@ import { createExplorationGuide } from "./exploration-guide";
 import { createScene, SceneUnavailableError } from "./scene";
 import { createReaderJourney, transitionReader } from "./reader-transition";
 import { captureBookPages } from "./page-raster";
+import { createRoomLightControls } from "./room-light-controls";
+import { loadRoomLightSettings } from "./room-light";
+import { createTimeFlowControls } from "./time-flow-controls";
 
 
 mountAppView();
@@ -144,12 +147,20 @@ const readerController = createReaderController({
   onClose: () => void closeBook(),
 });
 const exploration = createExplorationGuide();
+const roomLightControls = createRoomLightControls(el<HTMLButtonElement>("room-light"), loadRoomLightSettings(), settings => {
+  scene?.setRoomLight?.(settings);
+});
+const timeFlowControls = createTimeFlowControls(el<HTMLButtonElement>("time-flow"), patch => {
+  scene?.setTimeFlow?.(patch);
+});
 function viewingCat() {
   return cozyViewRequested || (sceneAvailable && (scene?.isCozyFocused?.() ?? false));
 }
 function syncControls() {
   const inRoom = flow.getState() === "room" && !changingView;
   const catContext = viewingCat();
+  roomLightControls.setAvailable(inRoom && sceneAvailable);
+  timeFlowControls.setAvailable(inRoom && sceneAvailable);
   for (const id of ["open-book", "cozy-view", "pet-cat", "choose-record", "record-toggle"])
     el<HTMLButtonElement>(id).disabled = !inRoom || (id === "open-book" && catContext) || (id === "pet-cat" && el(id).dataset.busy === "true");
   el("open-book").classList.toggle("hidden", catContext);
@@ -174,6 +185,8 @@ syncControls();
 flow.own(() => exploration.dispose());
 flow.own(() => readerController.dispose());
 flow.own(() => sound.dispose());
+flow.own(() => roomLightControls.dispose());
+flow.own(() => timeFlowControls.dispose());
 flow.own(() => scene?.dispose());
 flow.own(() => window.clearTimeout(toastTimer));
 flow.own(cancelRoomObservation);
@@ -475,6 +488,8 @@ try {
     low => updateQualityLabel(low),
     requestCatPet,
     visible => exploration.setFeedbackActive(visible),
+    sound.updateEnvironment,
+    frame => timeFlowControls.update(frame),
   );
   // Prepare alongside GPU loading, before continuous scene drawing starts.
   // Browsers requiring gesture-time construction retain the lazy fallback.
@@ -483,6 +498,7 @@ try {
     .then(() => {
       if (flow.sceneInvalidated || generation !== flow.sceneVersion) return;
       sceneAvailable = true;
+      scene?.setRoomLight?.(roomLightControls.getSettings());
       el("loading").classList.add("hidden");
       setBackgroundInert(false);
       syncControls();

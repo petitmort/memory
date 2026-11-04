@@ -25,7 +25,13 @@ import { advanceReadingClock, createReadingPath, readingRetargetDuration, retarg
 import { createInteractionFeedback, type InteractionKind } from "./interaction-feedback";
 import { createQualityPolicy } from "./quality-policy";
 import { createEntryPath } from "./entry-motion";
+import { createEnvironmentController } from "./environment-controller";
 import type { CatReactionProfile } from "./cat-reactions";
+import type { EnvironmentSoundFrame } from "./weather-audio";
+import { createRoomLight, type RoomLightSettings } from "./room-light";
+import { createDeskClock } from "./desk-clock";
+import { clockReading } from "./desk-clock-time";
+import type { TimeFlowFrame, TimeFlowSettings } from "./environment-time";
 
 export type PageProjection = { corners: { x: number; y: number }[] };
 export type BookProjection = PageProjection & { pages: [PageProjection, PageProjection] };
@@ -48,6 +54,8 @@ export function createScene(
   onQualityChange?: (low: boolean) => void,
   onCatInteract?: () => boolean,
   onFeedbackVisibility?: (visible: boolean) => void,
+  onEnvironmentSound?: (frame: EnvironmentSoundFrame) => void,
+  onEnvironmentTime?: (frame: TimeFlowFrame) => void,
 ) {
   const listeners = new AbortController();
   const listenerOptions = { signal: listeners.signal };
@@ -103,6 +111,8 @@ export function createScene(
   const fill = new THREE.DirectionalLight("#fff4e4", .9);
   fill.position.set(3, 5, 8);
   scene.add(fill);
+  const roomLight = createRoomLight();
+  scene.add(roomLight.light);
   const mat = (color: string, roughness = 0.8, metalness = 0) =>
     new THREE.MeshStandardMaterial({ color, roughness, metalness });
   const palette = createPalette();
@@ -298,17 +308,32 @@ export function createScene(
   const ocean = createOcean();
   const seaMat = ocean.material;
   scene.add(ocean);
-  const mythology = createMythology();
+  const mythology = createMythology(true);
   scene.add(mythology.group);
-  const skyMat = new THREE.ShaderMaterial({
-    side: THREE.BackSide,
-    vertexShader:
-      "varying vec3 vPos;void main(){vPos=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
-    fragmentShader:
-      "varying vec3 vPos;void main(){float h=normalize(vPos).y;vec3 col=mix(vec3(.84,.92,.95),vec3(.36,.65,.82),smoothstep(0.,.8,h));gl_FragColor=vec4(col,1.);}",
+  const environment = createEnvironmentController({
+    scene, camera, ambient, sun, fill, ocean: seaMat,
+    sunGroup: mythology.seascape.sunGroup, vessels: mythology.seascape.vessels!,
+    invalidate: requestRender,
+    onSound: onEnvironmentSound,
+    onTime: onEnvironmentTime,
+    onDaylight: value => mythology.seascape.lighthouseCoast.update(value),
+    onCoastFrame(waterTime, weather, isLow, reduced, daylight, active, timestamp, sunAltitude) {
+      const surf = mythology.seascape.pierSurf;
+      surf.group.visible = active;
+      const coast = mythology.seascape.lighthouseCoast;
+      coast.beacon.group.visible = active;
+      if (active) {
+        surf.update(waterTime, weather, isLow, reduced, daylight);
+        const beam = coast.updateBeacon(timestamp, sunAltitude, weather, reduced, isLow);
+        if (beam) {
+          seaMat.uniforms.beaconPosition.value.set(beam.origin.x, beam.origin.y, beam.origin.z);
+          seaMat.uniforms.beaconDirection.value.set(beam.direction.x, beam.direction.y, beam.direction.z);
+          seaMat.uniforms.beaconStrength.value = beam.beamStrength;
+        }
+      } else seaMat.uniforms.beaconStrength.value = 0;
+    },
+    quality(value) { qualityPolicy.setManual(value); applyQuality(qualityPolicy.low); },
   });
-  const sky = new THREE.Mesh(new THREE.SphereGeometry(350, 24, 12), skyMat);
-  scene.add(sky);
   const rug = box(
     D.rug.width,
     D.rug.thickness,
@@ -379,11 +404,27 @@ export function createScene(
   const recordPlayer = createRecordPlayer();
   recordPlayer.group.position.set(.34, D.desk.height, -.16);
   table.add(recordPlayer.group);
+  const deskClock = createDeskClock();
+  deskClock.group.position.set(-.48, D.desk.height, -.29);
+  deskClock.group.rotation.y = .18;
+  table.add(deskClock.group);
+  const clockStatus = document.getElementById("desk-clock-status");
+  let clockMinute: number | undefined;
+  function syncDeskClock() {
+    const visible = environment.isRealtime();
+    if (roomRevealed && visible && !deskClock.group.visible) { deskClock.resume(); clockMinute = undefined; }
+    deskClock.group.visible = roomRevealed && visible;
+    if (clockStatus && clockStatus.hidden !== !visible) {
+      clockStatus.hidden = !visible;
+      if (!visible) clockStatus.textContent = "";
+    }
+    return visible;
+  }
   const bookHinge = album.hinge;
   const bouquet = createBouquet();
   bouquet.name = "bouquet";
   bouquet.scale.setScalar(D.bouquet.scale);
-  bouquet.position.set(0.07, 0.811, 0.04);
+  bouquet.position.set(0.07, 0.8458, 0.04);
   bouquet.rotation.set(-1.12, -0.25, 0.55);
   table.add(bouquet);
   // An ordinary ~300 ml mug with a 3 mm wall and a properly sized handle.
@@ -455,9 +496,9 @@ export function createScene(
     0.0005,
     0.105,
     paper,
-    -0.48,
+    -0.25,
     D.desk.height + 0.0003,
-    -0.28,
+    0.26,
     table,
   );
   letter.rotation.y = 0.12;
@@ -675,8 +716,8 @@ export function createScene(
   const roomPose = (): Pose =>
     mobile()
       ? {
-          p: new THREE.Vector3(0.55, D.eye, 1.15),
-          t: new THREE.Vector3(0.15, 1.05, -1.4),
+          p: new THREE.Vector3(0.55, D.eye, 1.7),
+          t: new THREE.Vector3(0, 1.05, -1.4),
         }
       : {
           p: new THREE.Vector3(1.1, D.eye, 0.75),
@@ -695,7 +736,7 @@ export function createScene(
   let fogMotion: { elapsed: number; duration: number; lastDrawAt: number | null; done: () => void } | null = null;
   // These objects sit behind the closed entrance. Reveal them before the door
   // starts moving, rather than drawing their hidden triangles in the courtyard.
-  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group, recordPlayer.group];
+  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group, recordPlayer.group, deskClock.group];
   shelteredDetails.forEach(object => { object.visible = false; });
   let roomRevealed = false;
   let simulationTime = 0;
@@ -813,7 +854,7 @@ export function createScene(
     // Asset factories own their loading cancellation and private resources.
     // Release the remaining room resources once, including Points and uniforms.
     const resources = collectResources(scene);
-    for (const owned of [cat.group, recordPlayer.group, courtyardFog.group]) {
+    for (const owned of [cat.group, recordPlayer.group, deskClock.group, courtyardFog.group, mythology.seascape.lighthouseCoast.group, mythology.seascape.pierSurf.group, ...environment.ownedGroups]) {
       const asset = collectResources(owned);
       asset.geometries.forEach(value => resources.geometries.delete(value));
       asset.materials.forEach(value => resources.materials.delete(value));
@@ -824,8 +865,14 @@ export function createScene(
     fabric.textures.forEach(value => resources.textures.delete(value));
     cat.dispose();
     recordPlayer.dispose();
+    deskClock.dispose();
     lounge.dispose();
     courtyardFog.dispose();
+    environment.dispose();
+    mythology.seascape.lighthouseCoast.dispose();
+    mythology.seascape.pierSurf.dispose();
+    roomLight.dispose();
+    bouquet.traverse(object => { if (object instanceof THREE.InstancedMesh) object.dispose(); });
     resources.geometries.forEach(value => value.dispose());
     resources.materials.forEach(value => value.dispose());
     resources.textures.forEach(value => value.dispose());
@@ -903,7 +950,7 @@ export function createScene(
     return whileAvailable(new Promise<void>((done) => {
       bouquetMotion = {
         from: bouquet.position.clone(),
-        to: new THREE.Vector3(.51, .805, .13),
+        to: new THREE.Vector3(.51, .8001, .13),
         fromQ: bouquet.quaternion.clone(),
         toQ: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2)
           .multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-1.32, .15, .35))),
@@ -938,12 +985,14 @@ export function createScene(
   }
   function visibilityChanged() {
     if (document.hidden) {
+      environment.pause();
       clearInteractionFeedback();
       qualityPolicy.resetSamples();
       if (cat.cancelPet()) sun.shadow.needsUpdate = true;
       pauseFrames();
     }
     else {
+      if (!readerBackdropFrozen) { environment.resume(); deskClock.resume(); }
       if (!readerBackdropFrozen || singleRenderRequested) scheduleFrame();
     }
   }
@@ -966,7 +1015,9 @@ export function createScene(
     const t = simulationTime;
     let finishFogFrame: (() => void) | undefined;
     let updateFog = false;
-    if (current === "entry" && fogClearance < 1) {
+    // Easing can round to one before its clock ends; still draw and finish the
+    // active motion so the second entry click is released after the last frame.
+    if (current === "entry" && (fogClearance < 1 || fogMotion !== null)) {
       if (fogMotion) {
         const motion = fogMotion;
         // Clearing begins on an actual draw and pauses with a hidden tab.
@@ -990,7 +1041,18 @@ export function createScene(
       mythology.update(t, reducedMotion);
       if (cat.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
       if (recordPlayer.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
+      if (syncDeskClock() && !readerBackdropFrozen) {
+        const clockNow = Date.now();
+        // Keep the nearby album cover's opening space clear of moving flaps.
+        deskClock.update(clockNow, t * 1000, reducedMotion || current === "book");
+        const minute = Math.floor(clockNow / 60000);
+        if (minute !== clockMinute) {
+          clockMinute = minute;
+          if (clockStatus) clockStatus.textContent = clockReading(clockNow).accessible;
+        }
+      }
     }
+    if (!readerBackdropFrozen) environment.update(t * (reducedMotion ? .15 : 1), low, reducedMotion, roomRevealed);
     let finishLookFrame: (() => void) | undefined;
     if (lookMotion) {
       const motion = lookMotion;
@@ -1036,8 +1098,8 @@ export function createScene(
         ),
         ease = a * a * (3 - 2 * a);
       bouquet.position.lerpVectors(bouquetMotion.from, bouquetMotion.to, ease);
-      bouquet.position.y += Math.sin(Math.PI * a) * 0.025;
-      bouquet.position.z += Math.sin(Math.PI * a) * .06;
+      bouquet.position.y += Math.sin(Math.PI * a) * 0.027;
+      bouquet.position.z += Math.sin(Math.PI * a) * .08;
       bouquet.quaternion.slerpQuaternions(
         bouquetMotion.fromQ,
         bouquetMotion.toQ,
@@ -1087,6 +1149,7 @@ export function createScene(
           animating = false;
           current = motion.kind === "opening" ? "book" : "room";
           readerBackdropFrozen = motion.kind === "opening";
+          if (readerBackdropFrozen) environment.pause();
           motion.done();
         };
       }
@@ -1369,12 +1432,17 @@ export function createScene(
   }, listenerOptions);
   camera.lookAt(target);
   camera.updateMatrixWorld(true);
+  if (environment.initialQuality !== undefined) {
+    qualityPolicy.setManual(environment.initialQuality);
+    applyQuality(qualityPolicy.low);
+  }
+  environment.update(0, low, reducedMotion, false);
   // Warm the two-sided paper shader before its first visible turn.
   album.leaf.visible = true;
   const ready = whileAvailable(Promise.all([cat.ready, lounge.ready])).then(() => {
     requireAvailable();
     return whileAvailable(renderer.compileAsync(scene, camera));
-  }).then(() => whileAvailable(warmSceneResources(renderer, scene, camera, shelteredDetails, requireAvailable))).then(() => {
+  }).then(() => whileAvailable(warmSceneResources(renderer, scene, camera, [...shelteredDetails, ...deskClock.warmObjects, ...mythology.seascape.lighthouseCoast.warmObjects, ...mythology.seascape.pierSurf.warmObjects, ...environment.warmObjects], requireAvailable))).then(() => {
     requireAvailable();
     album.leaf.visible = false;
     renderer.render(scene, camera);
@@ -1423,6 +1491,7 @@ export function createScene(
       qualityPolicy.resetSamples();
       if (!roomRevealed) {
         roomRevealed = true;
+        roomLight.setActive(true);
         shelteredDetails.forEach(object => { object.visible = true; });
         sun.shadow.needsUpdate = true;
       }
@@ -1444,6 +1513,8 @@ export function createScene(
       roomBeforeReading = { p: camera.position.clone(), t: target.clone(), fov: camera.fov, mobile: mobile() };
       animating = true;
       readerBackdropFrozen = false;
+      environment.resume();
+      deskClock.resume();
       current = "book";
       setAlbumVisibility(1);
       await whileAvailable(Promise.all([parkBouquet(), paperReady]));
@@ -1481,6 +1552,20 @@ export function createScene(
     clearInteractionFeedback,
     markInteractionUsed(kind: InteractionKind) { feedback.markUsed(kind); },
     getQuality() { return { low, manual: qualityPolicy.manual !== undefined }; },
+    getRoomLight() { return roomLight.getSettings(); },
+    setRoomLight(settings: RoomLightSettings) {
+      if (disposed || unavailableError) return;
+      roomLight.setSettings(settings);
+      requestRender();
+    },
+    getEnvironmentTime() { return environment.getTime(); },
+    setTimeFlow(patch: Partial<TimeFlowSettings>) {
+      if (disposed || unavailableError) return;
+      environment.setTimeFlow(patch);
+      if (syncDeskClock()) { deskClock.resume(); clockMinute = undefined; }
+      sun.shadow.needsUpdate = true;
+      requestRender();
+    },
     setRecordPlaying(playing: boolean) {
       if (disposed || unavailableError) return;
       recordPlayer.setPlaying(playing);
@@ -1503,6 +1588,8 @@ export function createScene(
       qualityPolicy.resetSamples();
       animating = true;
       readerBackdropFrozen = false;
+      environment.resume();
+      deskClock.resume();
       lastDraw = null;
       singleRenderRequested = true;
       scheduleFrame();

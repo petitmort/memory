@@ -1,0 +1,270 @@
+{
+  "date": "2026-10-31",
+  "baselineCommit": "1e10853",
+  "conditions": {
+    "viewport": {
+      "width": 960,
+      "height": 640
+    },
+    "deviceScaleFactor": 1,
+    "cpuThrottle": 1,
+    "sampleMs": 5000,
+    "platform": "darwin",
+    "architecture": "arm64",
+    "node": "v24.14.0",
+    "browser": "156.0.8078.74",
+    "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "reducedMotion": true,
+    "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+    "device": {
+      "hardwareConcurrency": 10,
+      "deviceMemoryGiB": 16,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+      "vendor": "Google Inc. (Apple)",
+      "unmaskedRendererAvailable": true,
+      "softwareRendererDetected": false
+    }
+  },
+  "before": {
+    "room": {
+      "measuredFps": 60.014403456820695,
+      "frameIntervalP95Ms": 17.899999998509884,
+      "frameSubmitP95Ms": 3.400000002235174,
+      "calls": 137,
+      "triangles": 404296,
+      "geometries": 217,
+      "textures": 37,
+      "programs": 40
+    },
+    "loadingMs": 947.1427500000001,
+    "jsHeapUsedBytes": 21673520,
+    "runs": [
+      {
+        "loadingMs": 952.3122499999998,
+        "room": {
+          "calls": 137,
+          "triangles": 404296,
+          "geometries": 217,
+          "textures": 37,
+          "programs": 40,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 59.99040153574534,
+          "frameIntervalMedianMs": 16.699999999254942,
+          "frameIntervalP95Ms": 17.899999998509884,
+          "frameSubmitP95Ms": 2.800000000745058
+        },
+        "memory": {
+          "jsHeapUsedBytes": 21636696,
+          "jsHeapTotalBytes": 44793856,
+          "documents": 6,
+          "nodes": 340,
+          "jsEventListeners": 104
+        },
+        "errors": []
+      },
+      {
+        "loadingMs": 947.1427500000001,
+        "room": {
+          "calls": 137,
+          "triangles": 404296,
+          "geometries": 217,
+          "textures": 37,
+          "programs": 40,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 60.014403456820695,
+          "frameIntervalMedianMs": 16.699999999254942,
+          "frameIntervalP95Ms": 17.5,
+          "frameSubmitP95Ms": 3.400000002235174
+        },
+        "memory": {
+          "jsHeapUsedBytes": 21673520,
+          "jsHeapTotalBytes": 45056000,
+          "documents": 6,
+          "nodes": 340,
+          "jsEventListeners": 104
+        },
+        "errors": []
+      },
+      {
+        "loadingMs": 920.412125,
+        "room": {
+          "calls": 137,
+          "triangles": 404296,
+          "geometries": 217,
+          "textures": 37,
+          "programs": 40,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 300,
+          "measuredFps": 60.01967199952721,
+          "frameIntervalMedianMs": 16.699999999254942,
+          "frameIntervalP95Ms": 19.699999999254942,
+          "frameSubmitP95Ms": 4
+        },
+        "memory": {
+          "jsHeapUsedBytes": 21863096,
+          "jsHeapTotalBytes": 45056000,
+          "documents": 6,
+          "nodes": 340,
+          "jsEventListeners": 104
+        },
+        "errors": []
+      }
+    ]
+  },
+  "after": {
+    "room": {
+      "measuredFps": 60.00120002397366,
+      "frameIntervalP95Ms": 17.800000000745058,
+      "frameSubmitP95Ms": 1.300000000745058,
+      "calls": 123,
+      "triangles": 369416,
+      "geometries": 248,
+      "textures": 39,
+      "programs": 51
+    },
+    "loadingMs": 999.6108330000001,
+    "jsHeapUsedBytes": 21939488,
+    "runs": [
+      {
+        "loadingMs": 999.6108330000001,
+        "room": {
+          "calls": 123,
+          "triangles": 369416,
+          "geometries": 248,
+          "textures": 39,
+          "programs": 51,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 300,
+          "measuredFps": 59.99919733512579,
+          "frameIntervalMedianMs": 16.699999999254942,
+          "frameIntervalP95Ms": 17.699999999254942,
+          "frameSubmitP95Ms": 1.199999999254942
+        },
+        "memory": {
+          "jsHeapUsedBytes": 21939488,
+          "jsHeapTotalBytes": 47939584,
+          "documents": 2,
+          "nodes": 320,
+          "jsEventListeners": 97
+        },
+        "errors": []
+      },
+      {
+        "loadingMs": 1000.0977920000001,
+        "room": {
+          "calls": 123,
+          "triangles": 369416,
+          "geometries": 248,
+          "textures": 39,
+          "programs": 51,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 301,
+          "measuredFps": 60.00120002397366,
+          "frameIntervalMedianMs": 16.699999999254942,
+          "frameIntervalP95Ms": 17.800000000745058,
+          "frameSubmitP95Ms": 1.300000000745058
+        },
+        "memory": {
+          "jsHeapUsedBytes": 24558932,
+          "jsHeapTotalBytes": 49774592,
+          "documents": 6,
+          "nodes": 344,
+          "jsEventListeners": 104
+        },
+        "errors": []
+      },
+      {
+        "loadingMs": 990.047791,
+        "room": {
+          "calls": 123,
+          "triangles": 369416,
+          "geometries": 248,
+          "textures": 39,
+          "programs": 51,
+          "pixelRatio": 1,
+          "low": false,
+          "drawnFrames": 300,
+          "measuredFps": 60.006422091987496,
+          "frameIntervalMedianMs": 16.699999999254942,
+          "frameIntervalP95Ms": 17.800000000745058,
+          "frameSubmitP95Ms": 1.3999999985098839
+        },
+        "memory": {
+          "jsHeapUsedBytes": 18212056,
+          "jsHeapTotalBytes": 50036736,
+          "documents": 2,
+          "nodes": 320,
+          "jsEventListeners": 97
+        },
+        "errors": []
+      }
+    ]
+  },
+  "stress": {
+    "rain": {
+      "room": {
+        "calls": 123,
+        "triangles": 369416,
+        "geometries": 248,
+        "textures": 39,
+        "programs": 51,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 301,
+        "measuredFps": 59.99280086392315,
+        "frameIntervalMedianMs": 16.699999999254942,
+        "frameIntervalP95Ms": 17.900000002235174,
+        "frameSubmitP95Ms": 1.3999999985098839
+      },
+      "errors": []
+    },
+    "snow": {
+      "room": {
+        "calls": 127,
+        "triangles": 369600,
+        "geometries": 248,
+        "textures": 39,
+        "programs": 51,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 60.01123956323576,
+        "frameIntervalMedianMs": 16.600000001490116,
+        "frameIntervalP95Ms": 17.799999997019768,
+        "frameSubmitP95Ms": 1.3999999985098839
+      },
+      "errors": []
+    },
+    "low": {
+      "room": {
+        "calls": 123,
+        "triangles": 369376,
+        "geometries": 248,
+        "textures": 38,
+        "programs": 44,
+        "pixelRatio": 1,
+        "low": true,
+        "drawnFrames": 150,
+        "measuredFps": 29.99919465248805,
+        "frameIntervalMedianMs": 33.30000000074506,
+        "frameIntervalP95Ms": 34.399999998509884,
+        "frameSubmitP95Ms": 1.300000000745058
+      },
+      "errors": []
+    }
+  },
+  "limits": [
+    "Only this Mac Chrome and viewport; no physical mobile or Safari measurement.",
+    "Before uses the static vessel; after traffic is calendar-scheduled, so visible draw count varies. CPU/heap differences do not prove a performance improvement.",
+    "JS heap excludes GPU/browser-process memory and depends on garbage collection.",
+    "Baseline script had an outdated Linux/SwiftShader note; the actual renderer was Apple M1 Pro in all compared runs. Current script records runtime platform and actual renderer."
+  ]
+}

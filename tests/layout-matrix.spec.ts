@@ -21,7 +21,7 @@ for (const viewport of viewports) {
       await mockExperienceScene(page); await page.goto('/');
       await enterFixtureRoom(page);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      for (const selector of ['#open-book', '#cozy-view', '#choose-record', '#record-toggle', '#sound', '#fullscreen', '#quality']) {
+      for (const selector of ['#open-book', '#cozy-view', '#choose-record', '#room-light', '#record-toggle', '#sound', '#fullscreen', '#quality']) {
         const button = page.locator(selector);
         await expect(button).toBeVisible();
         const box = await button.boundingBox();
@@ -36,6 +36,20 @@ for (const viewport of viewports) {
         expect(await button.evaluate((element, center) => element.contains(document.elementFromPoint(center.x, center.y)), center), selector).toBe(true);
       }
       await page.screenshot({ path: `test-results/${viewport.label}-room.png` });
+      await page.locator('#room-light').click();
+      const lightPanel=await page.locator('#room-light-panel').boundingBox();
+      expect(lightPanel!.x).toBeGreaterThanOrEqual(0);expect(lightPanel!.y).toBeGreaterThanOrEqual(0);
+      expect(lightPanel!.x+lightPanel!.width).toBeLessThanOrEqual(viewport.width);
+      expect(lightPanel!.y+lightPanel!.height).toBeLessThanOrEqual(viewport.height);
+      for(const selector of ['#room-light-toggle','#room-light-color','#room-light-brightness','#room-light-close']){
+        await page.locator(selector).scrollIntoViewIfNeeded();
+        const box=await page.locator(selector).boundingBox();expect(box!.height).toBeGreaterThanOrEqual(44);
+        expect(box!.y).toBeGreaterThanOrEqual(lightPanel!.y);expect(box!.y+box!.height).toBeLessThanOrEqual(lightPanel!.y+lightPanel!.height);
+        const close=await page.locator('#room-light-close').boundingBox();
+        expect(close!.y).toBeGreaterThanOrEqual(lightPanel!.y);
+        expect(close!.y+close!.height).toBeLessThanOrEqual(lightPanel!.y+lightPanel!.height);
+      }
+      await page.locator('#room-light-close').click();await expect(page.locator('#room-light')).toBeFocused();
       await openFixtureBook(page);
       for (const selector of ['#close-book', '#chapter-contents-toggle']) {
         const box = await page.locator(selector).boundingBox();
