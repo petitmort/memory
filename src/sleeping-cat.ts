@@ -2,8 +2,8 @@ import * as THREE from "three";
 import catModelUrl from "./assets/sleeping-tabby.glb?url";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { createCatRig } from "./cat-rig";
-import { sampleCatResponse } from "./cat-choreography";
-import { createCatReactionPicker, type CatReactionProfile } from "./cat-reactions";
+import type { CatReactionPose } from "./cat-choreography";
+import { createCatMotion } from "./cat-motion";
 
 /** A cleaned, locally hosted tabby scan. Attribution: public/models/README.md. */
 export function createSleepingCat() {
@@ -13,9 +13,15 @@ export function createSleepingCat() {
   const controller=new AbortController();
   let disposed=false;
   let rig:ReturnType<typeof createCatRig>|undefined;
-  let reaction:{elapsed:number;startedAt:number|null;clock?:()=>number;gentle:boolean;profile:CatReactionProfile}|null=null;
-  let cooldownUntil=-Infinity,lastTime=0;
-  const reactions=createCatReactionPicker();
+  const motion=createCatMotion();
+  const axes=["head","yaw","roll","ears","earOuter","stretch","tail","tailCurl"] as const;
+  const applied=new Float64Array(axes.length);
+  function applyPose(pose:CatReactionPose) {
+    if(!rig||!axes.some((axis,index)=>Math.abs(pose[axis]-applied[index])>1e-9))return false;
+    const changed=rig.setPose(pose);
+    axes.forEach((axis,index)=>{applied[index]=pose[axis];});
+    return changed;
+  }
   function release(root:THREE.Object3D) {
     const materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>(),skeletons=new Set<THREE.Skeleton>();
     root.traverse(object=>{
@@ -65,38 +71,24 @@ export function createSleepingCat() {
   return {
     group,ready,
     pet(time:number,reduced:boolean) {
-      if(disposed||!rig||reaction||!Number.isFinite(time)||time<cooldownUntil)return false;
-      reaction={elapsed:0,startedAt:null,gentle:reduced,profile:reactions.next()};
-      return true;
+      return !disposed&&!!rig&&motion.pet(time,reduced);
     },
-    getReaction() { return reaction?.profile; },
-    setReactionClock(clock: (()=>number)|undefined) { if(reaction)reaction.clock=clock; },
-    isPetting(){return reaction!==null;},
+    getReaction:motion.getReaction,
+    setReactionClock:motion.setReactionClock,
+    isPetting:motion.isPetting,
     cancelPet() {
-      reaction=null;cooldownUntil=lastTime+.12;
-      return rig?.reset()??false;
+      return applyPose(motion.cancel());
     },
     update(time:number,reduced:boolean) {
-      if(disposed)return false;
-      lastTime=time;
+      if(disposed||!Number.isFinite(time))return false;
       // The model's support is Y=0. Breath has no translational lift and is
       // frozen together with the room while reading or in a background tab.
       breathing.scale.y=1+Math.sin(time*.95)*(reduced?.0012:.0045);
-      if(!reaction)return false;
-      // Sounding gestures sample their own audio clock. Muted gestures use
-      // scene time from the first draw; neither clock stretches on slow frames.
-      if(reaction.startedAt===null)reaction.startedAt=time;
-      reaction.elapsed=Math.max(reaction.elapsed,reaction.clock?.()??time-reaction.startedAt);
-      const frame=sampleCatResponse(reaction.elapsed,reaction.gentle,reaction.profile);
-      if(frame.done) {
-        reaction=null;cooldownUntil=time+.20;
-        return rig!.reset();
-      }
-      return rig!.setPose(frame);
+      return applyPose(motion.update(time,reduced));
     },
     dispose() {
       if(disposed)return;
-      disposed=true;reaction=null;controller.abort();rig?.dispose();rig=undefined;release(breathing);breathing.clear();
+      disposed=true;motion.cancel();controller.abort();rig?.dispose();rig=undefined;release(breathing);breathing.clear();
     },
   };
 }

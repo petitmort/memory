@@ -5,6 +5,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { CAT_REACTIONS, type CatReactionProfile } from '../src/cat-reactions';
 import { CAT_REDUCED_WEIGHT, sampleCatResponse } from '../src/cat-choreography';
 import { createCatRig } from '../src/cat-rig';
+import { createCatSleepMotion } from '../src/cat-sleep-motion';
 
 const axes = ['head', 'yaw', 'roll', 'ears', 'earOuter', 'stretch', 'tail', 'tailCurl'] as const;
 const rest = { head:0, yaw:0, roll:0, ears:0, earOuter:0, stretch:0, tail:0, tailCurl:0 };
@@ -13,6 +14,8 @@ test('six response shapes differ while each vocal cue has an anticipatory head a
   const signatures = new Set<string>();
   for (const profile of CAT_REACTIONS) {
     signatures.add(JSON.stringify([.4,.8,1.3,1.9,2.5,3.3].map(time => sampleCatResponse(time,false,profile))));
+    expect(sampleCatResponse(.12,false,profile).ears).toBeCloseTo(.24,6);
+    expect(sampleCatResponse(.12,false,profile).earOuter).toBe(0);
     for (const [cueIndex,cue] of profile.cues.entries()) {
       const before = sampleCatResponse(Math.max(.001,cue.start-.25),false,profile);
       const accent = sampleCatResponse(cue.peak ?? cue.start+.15,false,profile);
@@ -31,6 +34,41 @@ test('six response shapes differ while each vocal cue has an anticipatory head a
     .toBeGreaterThan(sampleCatResponse(1.40,false,profile('curious')).stretch+.35);
   const tailEnergy = (id: string) => Array.from({length:88},(_,i)=>Math.abs(sampleCatResponse(i*.05,false,profile(id)).tail)).reduce((sum,value)=>sum+value,0);
   expect(tailEnergy('playful')).toBeGreaterThan(tailEnergy('sleepy')*1.7);
+});
+
+test('sleep twitches move only small parts of the native skin and keep support and buffers unchanged', async () => {
+  const {root,mesh,rig}=await loadRig(),geometry=mesh.geometry,base=geometry.getAttribute('position');
+  const buffers=Object.values(geometry.attributes).map(attribute=>attribute.array);
+  const from=new THREE.Vector3(),to=new THREE.Vector3();
+  const metrics:{kind:number;amplitude:number;maxMm:number;floor:number;hind:number}[]=[];
+  try {
+    for(const kindRandom of [0,.4,.9]) for(const amplitude of [0,.999]) {
+      let call=0;
+      const sleep=createCatSleepMotion(()=>{const index=call++;return index===0?kindRandom:index===3?amplitude:0;});
+      sleep.sample(0,false);
+      const peak=10+.7*(kindRandom>.8?.48:.28);
+      rig.setPose(sleep.sample(peak,false));root.updateMatrixWorld(true);mesh.skeleton.update();
+      let max=0,floor=0,hind=0,outside=0;
+      for(let i=0;i<base.count;i++) {
+        from.fromBufferAttribute(base,i);mesh.getVertexPosition(i,to);
+        const delta=from.distanceTo(to);max=Math.max(max,delta);
+        if(from.y<=.005)floor=Math.max(floor,delta);
+        if(from.x>.10&&from.z<.07)hind=Math.max(hind,delta);
+        if(!mesh.boundingBox!.containsPoint(to))outside++;
+      }
+      expect(max).toBeGreaterThan(.0001);expect(max).toBeLessThan(.005);
+      expect(floor).toBeLessThan(1e-7);expect(hind).toBeLessThan(1e-7);expect(outside).toBe(0);
+      expect(rig.bones[0].quaternion.angleTo(new THREE.Quaternion())).toBeLessThan(1e-7);
+      expect(rig.bones[6].quaternion.angleTo(new THREE.Quaternion())).toBeLessThan(1e-7);
+      Object.values(geometry.attributes).forEach((attribute,index)=>expect(attribute.array).toBe(buffers[index]));
+      metrics.push({kind:Math.floor(kindRandom*3),amplitude,maxMm:max*1000,floor,hind});
+      rig.reset();
+    }
+    console.log('Sleep skin measurements:',JSON.stringify(metrics));
+  } finally {
+    rig.dispose();mesh.skeleton.dispose();geometry.dispose();
+    for(const material of Array.isArray(mesh.material)?mesh.material:[mesh.material])material.dispose();
+  }
 });
 
 test('random response parameters preserve smooth bounded poses, quiet endpoints and reduced-motion timing', () => {

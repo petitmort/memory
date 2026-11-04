@@ -162,7 +162,8 @@ export function sampleCatResponse(elapsed: number, reduced: boolean, profile: Ca
     outerQuiet *= 1 - .68 * pulse(time, cue.start + .01, cue.start + Math.min(.24, width * .5), Math.min(duration, cue.end + .35));
   }
   const headBase = shape.head(phase);
-  const innerBase = shape.innerEar * pulse(time, .20, .52, 1.03);
+  const touch = .24 * pulse(time, .02, .12, .34);
+  const innerBase = 1 - (1 - shape.innerEar * pulse(time, .20, .52, 1.03)) * (1 - touch);
   const outerBase = shape.outerEar * pulse(time, .32, .74, 1.30);
   const wake = envelope(time, .15, duration * .20, duration * .80, duration);
   const curlWake = envelope(time, .28, duration * .26, duration * .84, duration);
