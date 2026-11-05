@@ -9,7 +9,7 @@ import { createWeatherSoundscape, type EnvironmentSoundFrame } from "./weather-a
 type SoundOptions = {
   getState: () => string;
   getSceneAvailable: () => boolean;
-  onRecordPlaying: (playing: boolean) => void;
+  onRecordPlaying: (playing: boolean, automatic?: boolean) => void;
   toast: (message: string) => void;
 };
 
@@ -46,6 +46,8 @@ export function createSoundController(options: SoundOptions) {
   let recordState: RecordMusicState = { status: "empty", title: "我的音乐" };
   let recordObjectUrl: string | undefined, recordSelectionVersion = 0;
   let restoreAllowed = true, customRecord = false;
+  let entryMusicAttempted = false;
+  let automaticRecord = false;
   let petHintTimer: number | undefined;
   let petExplained = false;
   const storage = createRecordStorage();
@@ -128,13 +130,17 @@ export function createSoundController(options: SoundOptions) {
       : next.status === "loading" ? "正在落针，音乐就要响起。"
       : `${next.title} · ${playing ? "轻触唱片机可暂停" : "轻触唱片机继续播放"}`);
     updateVisibleStatus();
-    options.onRecordPlaying(playing);
+    options.onRecordPlaying(playing, automaticRecord);
     updateContext();
-    if (next.error) { panel.classList.toggle("hidden", options.getState() !== "room"); toast(next.error); }
+    if (next.error) {
+      if (!automaticRecord) panel.classList.toggle("hidden", options.getState() !== "room");
+      toast(next.error);
+    }
   }
   function chooseRecord() {
     if (disposed || !["room", "fallback"].includes(options.getState())) return;
     restoreAllowed = false;
+    automaticRecord = false;
     panel.classList.remove("hidden");
     const input = el<HTMLInputElement>("record-file");
     input.value = "";
@@ -143,10 +149,23 @@ export function createSoundController(options: SoundOptions) {
   function onRecord() {
     if (disposed || options.getState() !== "room") return;
     restoreAllowed = false;
+    automaticRecord = false;
     if (recordState.status === "empty") chooseRecord();
     else void recordMusic.toggle();
   }
+  function onRoomEntry() {
+    if (disposed || entryMusicAttempted || options.getState() !== "entering"
+      || !options.getSceneAvailable() || document.hidden) return;
+    entryMusicAttempted = true;
+    if (!soundEnabled || !["paused", "error"].includes(recordState.status)) return;
+    // Run inside the door's click/key activation, before awaiting the camera.
+    // A late storage read must not replace a record already starting to play.
+    restoreAllowed = false;
+    automaticRecord = true;
+    void recordMusic.toggle();
+  }
   function loadRecordFile(file: File) {
+    automaticRecord = false;
     const previous = recordObjectUrl;
     recordObjectUrl = URL.createObjectURL(file);
     customRecord = true;
@@ -180,6 +199,7 @@ export function createSoundController(options: SoundOptions) {
     if (disposed || options.getState() !== "room") return;
     const selection = ++recordSelectionVersion;
     restoreAllowed = false;
+    automaticRecord = false;
     customRecord = false;
     const previous = recordObjectUrl;
     recordObjectUrl = undefined;
@@ -366,6 +386,6 @@ export function createSoundController(options: SoundOptions) {
     try { weatherAudio?.update(frame); }
     catch { weatherAudio?.dispose(); weatherAudio = undefined; }
   }
-  return { prepare, unlock, updateContext, updateEnvironment, onCatPet, stopCat, onRecord, dispose,
+  return { prepare, unlock, updateContext, updateEnvironment, onCatPet, stopCat, onRecord, onRoomEntry, dispose,
     environmentSnapshot: () => weatherAudio?.snapshot() };
 }

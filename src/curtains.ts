@@ -92,15 +92,30 @@ export function createCurtains({ width, height, sill, back }: CurtainWindow) {
 
   let lastTime = -1;
   let lastReducedMotion: boolean | undefined;
-  function update(time: number, reducedMotion: boolean) {
+  let lastUpdateAt = 0;
+  let windStrength = 0;
+  let initialized = false;
+  function update(time: number, reducedMotion: boolean, windSpeed = 4) {
     // The wind comes and settles over longer, unequal intervals. Compute its
     // envelope once per panel, leaving the original mesh and lace together.
     const t = time * (reducedMotion ? 0.16 : 1);
     if (Math.abs(t - lastTime) < 1 / 65 && lastTime >= 0 && lastReducedMotion === reducedMotion) return;
+    // The environment already blends its weather. A little cloth inertia also
+    // prevents a resumed calendar or manual wind change from snapping the hem.
+    const dt = THREE.MathUtils.clamp(time - lastUpdateAt, 0, 0.25);
+    lastUpdateAt = time;
+    const speed = Number.isFinite(windSpeed) ? THREE.MathUtils.clamp(windSpeed, 0, 20) : 0;
+    // 4 m/s retains the former breeze amplitude. The strongest simulated wind
+    // reaches 1.67 times that amplitude, keeping the openwork cloth restrained.
+    const strength = 2 * speed / (speed + 4);
+    const previousStrength = windStrength;
+    windStrength = THREE.MathUtils.damp(windStrength, strength, 2.2, dt);
+    if (strength === 0 && windStrength < 0.00001) windStrength = 0;
     lastTime = t;
     lastReducedMotion = reducedMotion;
+    if (initialized && windStrength === 0 && previousStrength === 0) return;
     const weather = 0.15 * Math.sin(t * 0.073 - 0.8);
-    const motionScale = reducedMotion ? 0.15 : 1;
+    const motionScale = (reducedMotion ? 0.15 : 1) * windStrength;
     for (const { side, mesh, coordinates, rest } of panels) {
       const positions = mesh.geometry.attributes.position;
       const phase = side * 1.9;
@@ -126,8 +141,9 @@ export function createCurtains({ width, height, sill, back }: CurtainWindow) {
       positions.needsUpdate = true;
       mesh.geometry.computeVertexNormals();
     }
+    initialized = true;
   }
-  update(0, false);
+  update(0, false, 0);
   return { group, update };
 }
 

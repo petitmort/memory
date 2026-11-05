@@ -25,7 +25,7 @@ test('the desk record accepts and remembers music, resumes in place and stays in
   page.on('filechooser', () => {});
   await page.addInitScript(() => {
     const host = window as any;
-    const stats = host.__recordStats = { contexts: 0, plays: 0, pauses: 0, targets: [] as number[], urls: [] as string[], revoked: [] as string[] };
+    const stats = host.__recordStats = { contexts: 0, plays: 0, pauses: 0, activations: [] as boolean[], targets: [] as number[], urls: [] as string[], revoked: [] as string[] };
     const NativeAudio = window.Audio;
     const TrackAudio = function (source?: string) {
       const element = source === undefined ? new NativeAudio() : new NativeAudio(source);
@@ -36,7 +36,7 @@ test('the desk record accepts and remembers music, resumes in place and stays in
     window.Audio = TrackAudio as unknown as typeof Audio;
     const play = HTMLMediaElement.prototype.play, pause = HTMLMediaElement.prototype.pause;
     HTMLMediaElement.prototype.play = function () {
-      if (this === host.__recordMedia) stats.plays++;
+      if (this === host.__recordMedia) { stats.plays++; stats.activations.push(navigator.userActivation.isActive); }
       return play.call(this);
     };
     HTMLMediaElement.prototype.pause = function () {
@@ -113,15 +113,19 @@ test('the desk record accepts and remembers music, resumes in place and stays in
     await page.goto('/');
     await expect(page.locator('#loading')).toBeHidden({ timeout: 60000 });
     expect((await media()).stats.plays).toBe(0);
+    expect((await media()).source).toBe('');
     await expect(page.locator('#record-toggle')).toBeHidden();
     await page.locator('#enter').click(); await expect(page.locator('#enter')).toBeEnabled();
+    expect((await media()).stats.plays).toBe(0);
     await page.locator('#enter').click(); await expect(page.locator('#room-ui')).toBeVisible({ timeout: 60000 });
-    await expect(page.locator('#record-toggle')).toHaveAttribute('aria-label', '播放唱片');
-    await expect(page.locator('#record-status')).toContainText('已暂停');
+    await playing();
+    expect((await media()).stats.plays).toBe(1);
+    expect((await media()).stats.activations[0]).toBe(true);
     await expect(page.locator('#record-track')).toContainText('Merry Christmas Mr. Lawrence');
-    // The default metadata is ready, but its remote source stays unattached
-    // until playback so entering the room cannot download the whole track.
-    expect((await media()).source).toBe('');
+    // Entry starts the default from the native door gesture. Pause it before
+    // exercising the existing physical record play/pause interactions.
+    expect((await media()).source).toMatch(/default-record.*\.mp3/);
+    await page.locator('#record-toggle').click(); await paused();
     const initial = await room();
     // Automatic discovery belongs to the single room guide. The scene must
     // leave object feedback quiet until an actual hover or touch.
@@ -250,8 +254,8 @@ test('the desk record accepts and remembers music, resumes in place and stays in
     const independent = await media(); expect(independent.muted).toBe(false); expect(independent.paused).toBe(false);
     await page.evaluate(() => { const host = window as any; host.__recordAmbient.resume = host.__restoreAmbientResume; });
 
-    // A new document restores the actual audio bytes and filename without a
-    // file picker or autoplay. Only the user's next click starts the record.
+    // A new document restores bytes and filename while the courtyard stays
+    // quiet; the next native door gesture starts the saved record.
     await page.reload();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 60000 });
     await expect(page.locator('#record-track')).toHaveText('replacement-record');
@@ -263,7 +267,8 @@ test('the desk record accepts and remembers music, resumes in place and stays in
     await page.locator('#enter').click(); await expect(page.locator('#enter')).toBeEnabled();
     await page.locator('#enter').click(); await expect(page.locator('#room-ui')).toBeVisible({ timeout: 60000 });
     await expect(page.locator('#choose-record')).toHaveText('更换音乐');
-    await page.locator('#record-toggle').click(); await playing();
+    await playing();
+    expect((await media()).stats.plays).toBe(1);
     expect((await media()).duration).toBeCloseTo(180, 2);
 
     // Storage failures cannot block playback or falsely claim the new song

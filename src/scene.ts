@@ -1038,7 +1038,6 @@ export function createScene(
     }
     if (roomRevealed) {
       seaMat.uniforms.time.value = t * (reducedMotion ? 0.15 : 1);
-      curtains.update(t, reducedMotion);
       mythology.update(t, reducedMotion);
       if (cat.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
       if (recordPlayer.update(t, reducedMotion)) sun.shadow.needsUpdate = true;
@@ -1054,6 +1053,7 @@ export function createScene(
       }
     }
     if (!readerBackdropFrozen) environment.update(t * (reducedMotion ? .15 : 1), low, reducedMotion, roomRevealed);
+    if (roomRevealed) curtains.update(t, reducedMotion, seaMat.uniforms.windSpeed.value);
     let finishLookFrame: (() => void) | undefined;
     if (lookMotion) {
       const motion = lookMotion;

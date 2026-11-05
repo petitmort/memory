@@ -98,6 +98,8 @@ test('chapter contents, keyboard and return agree while music stays optional', a
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await mockExperienceScene(page);
   await page.goto('/'); await enterFixtureRoom(page);
+  await expect(page.locator('#record-state')).toHaveText('播放中');
+  await page.locator('#record-toggle').click();
   await expect(page.locator('#record-state')).toHaveText('已暂停');
   await expect(page.locator('#record-track')).toContainText('Merry Christmas Mr. Lawrence');
   await expect(page.locator('#record-toggle')).toHaveAttribute('aria-label', '播放唱片');
@@ -180,7 +182,7 @@ test('optional audio failure keeps a healthy room usable and music loading error
   page.on('pageerror', error => errors.push(error.message));
   await mockExperienceScene(page); await page.goto('/'); await enterFixtureRoom(page);
   await expect(page.locator('#fallback')).toBeHidden();
-  await expect(page.locator('#record-state')).toHaveText('已暂停');
+  await expect(page.locator('#record-state')).toHaveText('加载中');
   // Keep a valid resource so native decoding cannot bypass the controlled
   // pending play promise with its own earlier error event.
   const wav = Buffer.alloc(44 + 16000);

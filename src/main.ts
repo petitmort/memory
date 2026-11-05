@@ -129,9 +129,9 @@ function step(n: number) {
 const sound = createSoundController({
   getState: () => flow.getState(),
   getSceneAvailable: () => sceneAvailable,
-  onRecordPlaying: playing => {
+  onRecordPlaying: (playing, automatic) => {
     scene?.setRecordPlaying?.(playing);
-    if (playing) scene?.markInteractionUsed?.("record");
+    if (playing && !automatic) scene?.markInteractionUsed?.("record");
   },
   toast,
 });
@@ -273,6 +273,7 @@ async function enter() {
   el("intro").classList.add("leaving");
   el("door-caption").classList.add("hidden");
   el<HTMLButtonElement>("enter").disabled = true;
+  sound.onRoomEntry();
   try {
     await scene?.enterRoom();
   } catch (error) {
