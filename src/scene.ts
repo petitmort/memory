@@ -16,6 +16,8 @@ import { createMythology } from "./mythology";
 import { createDecor } from "./decor";
 import { consoleLayout } from "./interior-layout";
 import { createCozySeating } from "./cozy-seating";
+import { createCozyLamp } from "./cozy-lamp";
+import { createHomeFabric, createCozyRug, createCozyTextiles } from "./cozy-textiles";
 import { createSleepingCat } from "./sleeping-cat";
 import { createRecordPlayer } from "./record-player";
 import { createCourtyardFog } from "./courtyard-fog";
@@ -113,6 +115,9 @@ export function createScene(
   scene.add(fill);
   const roomLight = createRoomLight();
   scene.add(roomLight.light);
+  const homeFabric = createHomeFabric();
+  const cozyLamp = createCozyLamp(homeFabric);
+  scene.add(cozyLamp.group, cozyLamp.light);
   const mat = (color: string, roughness = 0.8, metalness = 0) =>
     new THREE.MeshStandardMaterial({ color, roughness, metalness });
   const palette = createPalette();
@@ -338,16 +343,8 @@ export function createScene(
     },
     quality(value) { qualityPolicy.setManual(value); applyQuality(qualityPolicy.low); },
   });
-  const rug = box(
-    D.rug.width,
-    D.rug.thickness,
-    D.rug.depth,
-    palette.rug,
-    0.1,
-    D.rug.thickness / 2,
-    -0.65,
-  );
-  rug.name = "rug";
+  const rug = createCozyRug(palette.rug);
+  scene.add(rug);
   const table = new THREE.Group();
   table.name = "desk";
   table.position.set(0.1, 0, -0.9);
@@ -580,10 +577,14 @@ export function createScene(
   const drawerPull = new THREE.Mesh(new THREE.TorusGeometry(.010,.0018,8,24),brass);
   drawerPull.position.set(0,.701,.153); consoleTable.add(drawerPull);
   const lounge = createCozySeating();
+  const textiles = createCozyTextiles(lounge.group, homeFabric);
   // The back follows the left wall, with a slight angle opening into the room.
   lounge.group.position.set(-1.77, 0, -.27);
   lounge.group.rotation.y = Math.PI / 2 - .16;
   room.add(lounge.group);
+  textiles.group.position.copy(lounge.group.position);
+  textiles.group.rotation.copy(lounge.group.rotation);
+  room.add(textiles.group);
   const cat = createSleepingCat();
   cat.group.rotation.y = Math.PI / 2;
   lounge.catNest.add(cat.group);
@@ -740,7 +741,7 @@ export function createScene(
   let fogMotion: { elapsed: number; duration: number; lastDrawAt: number | null; done: () => void } | null = null;
   // These objects sit behind the closed entrance. Reveal them before the door
   // starts moving, rather than drawing their hidden triangles in the courtyard.
-  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group, recordPlayer.group, deskClock.group];
+  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group, textiles.group, cozyLamp.group, recordPlayer.group, deskClock.group];
   shelteredDetails.forEach(object => { object.visible = false; });
   let roomRevealed = false;
   let simulationTime = 0;
@@ -877,6 +878,7 @@ export function createScene(
     mythology.seascape.lighthouseCoast.dispose();
     mythology.seascape.pierSurf.dispose();
     roomLight.dispose();
+    cozyLamp.dispose();
     bouquet.traverse(object => { if (object instanceof THREE.InstancedMesh) object.dispose(); });
     resources.geometries.forEach(value => value.dispose());
     resources.materials.forEach(value => value.dispose());
@@ -1457,6 +1459,7 @@ export function createScene(
   function applyQuality(value: boolean, automatic = false) {
     if (disposed || unavailableError) return;
     low = value;
+    cozyLamp.setLighting(roomLight.getSettings(), roomRevealed, low);
     renderer.setPixelRatio(value ? Math.min(renderer.getPixelRatio(), automatic ? .85 : 1) : Math.min(devicePixelRatio, 1.5));
     // Automatic adaptation keeps the warmed shadow shader variant. Switching
     // resolution and frame pacing must not introduce new compilation stalls.
@@ -1497,6 +1500,7 @@ export function createScene(
       if (!roomRevealed) {
         roomRevealed = true;
         roomLight.setActive(true);
+        cozyLamp.setLighting(roomLight.getSettings(), true, low);
         shelteredDetails.forEach(object => { object.visible = true; });
         sun.shadow.needsUpdate = true;
       }
@@ -1562,6 +1566,7 @@ export function createScene(
     setRoomLight(settings: RoomLightSettings) {
       if (disposed || unavailableError) return;
       roomLight.setSettings(settings);
+      cozyLamp.setLighting(roomLight.getSettings(), roomRevealed, low);
       requestRender();
     },
     getEnvironmentTime() { return environment.getTime(); },

@@ -179,9 +179,11 @@ export function createEnvironmentController(bindings: Bindings) {
     const sunlight = THREE.MathUtils.smoothstep(celestial.sun.altitude, -.02, .23) * (1 - cover * .84);
     const moonlight = celestial.night * celestial.moonIllumination * THREE.MathUtils.smoothstep(celestial.moon.altitude, -.02, .15) * (1 - cover * .86);
     ambient.color.copy(nightAmbient).lerp(dayAmbient, d);
-    ambient.intensity = 1.02 + d * .52 * (1 - cover * .18);
+    // Preserve clear daylight while letting the ceiling and local linen lamp
+    // describe the room at night, instead of uniformly filling every corner.
+    ambient.intensity = .65 + d * .89 * (1 - cover * .18);
     ambient.groundColor.setRGB(.28 + .16 * d, .25 + .12 * d, .24 + .08 * d);
-    fill.intensity = .46 + .44 * d * (1 - cover * .22) + stormFrame.flash * (.12+.18*d);
+    fill.intensity = .26 + .64 * d * (1 - cover * .22) + stormFrame.flash * (.12+.18*d);
     fill.color.copy(moonColor).lerp(daylightColor, d);
     const warmAmount = 1 - THREE.MathUtils.smoothstep(celestial.sun.altitude, .03, .6);
     lightColor.copy(daylightColor).lerp(warm, warmAmount);

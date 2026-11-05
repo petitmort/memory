@@ -86,7 +86,7 @@ test('real overhead light changes room pixels and colour, remembers settings and
   const errors=await instrument(page);
   try{
     await enter(page);const initial=await page.evaluate(()=>(window as any).__lamp.snapshot());
-    expect(initial.intensity).toBe(15);expect(initial.lights).toBe(1);
+    expect(initial.intensity).toBe(15);expect(initial.lights).toBe(2);
     await page.locator('#room-light').click();await expect(page.locator('#room-light-toggle')).toHaveAttribute('aria-checked','true');
     const warm=await page.evaluate(()=>(window as any).__lamp.difference());expect(warm.changed).toBeGreaterThan(5000);
     expect(warm.rgb[0]).toBeGreaterThan(warm.rgb[2]);

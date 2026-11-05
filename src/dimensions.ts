@@ -15,7 +15,7 @@ export const dimensions = {
   album: { width: 0.32, depth: 0.26, height: 0.035 },
   cup: { diameter: 0.085, height: 0.095 },
   bouquet: { scale: 0.32, approximateLength: 0.4, approximateWidth: 0.28 },
-  rug: { width: 2.0, depth: 1.4, thickness: 0.008 },
+  rug: { width: 2.4, depth: 1.75, thickness: 0.008 },
   console: { width: 0.9, depth: 0.32, height: 0.78 },
   eye: 1.65,
 } as const;

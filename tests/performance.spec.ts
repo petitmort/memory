@@ -68,8 +68,10 @@ test('rendering sleeps while reading or hidden and resumes without skipping the 
     // Deterministic whole-room budgets complement the noisy lab frame metrics.
     // Six vessel types share pooled/batched geometry; calendar sky, cloud and
     // weather buffers add a fixed allowance to the preserved pre-environment baseline.
-    expect(entered.resources.geometries).toBeLessThanOrEqual(baseline.room.geometries + 40);
-    expect(entered.resources.textures).toBeLessThanOrEqual(baseline.room.textures + 4);
+    // Cozy-home B adds exactly three lamp batches, three textile batches and
+    // one shared linen texture; the new rounded rug replaces the previous mesh.
+    expect(entered.resources.geometries).toBeLessThanOrEqual(baseline.room.geometries + 40 + 6);
+    expect(entered.resources.textures).toBeLessThanOrEqual(baseline.room.textures + 4 + 1);
     const paused=await page.evaluate(()=>{
       Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
       document.dispatchEvent(new Event('visibilitychange'));
