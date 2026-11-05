@@ -803,6 +803,7 @@ export function createScene(
     done: () => void;
   } | null = null;
   let bouquetParked = false;
+  let bookOpened = false;
   let readerBackdropFrozen = false;
   let singleRenderRequested = false;
   let coverProgress = 0, leafProgress = 0;
@@ -923,7 +924,7 @@ export function createScene(
       const to = kind === "opening" ? bookReadingPose() : saved && saved.mobile === mobile()
         ? { p: saved.p.clone(), t: saved.t.clone(), fov: saved.fov }
         : { ...roomPose(), fov: 50 };
-      const duration = reducedMotion ? 180 : kind === "opening" ? 2600 : 2000;
+      const duration = reducedMotion ? 180 : kind === "opening" && !bookOpened ? 2600 : 2000;
       readingMotion = {
         kind, from, to,
         path: createReadingPath(from,to,duration),
@@ -1521,6 +1522,7 @@ export function createScene(
       requireAvailable();
       await moveToBook("opening", onFrame);
       requireAvailable();
+      bookOpened = true;
       return getBookProjection();
     },
     async focusCozyCorner(focus: boolean) {
