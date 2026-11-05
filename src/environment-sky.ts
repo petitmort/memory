@@ -23,7 +23,12 @@ export function createEnvironmentSky(sunGroup: THREE.Group, location: CalendarLo
         if(galaxyStrength>.00001&&h>-.015){
           vec3 g=normalize(worldToGalactic*direction);
           vec2 uv=vec2(atan(g.y,g.x)/6.28318530718+.5,asin(clamp(g.z,-1.,1.))/3.14159265359+.5);
-          color+=texture2D(galaxyMap,uv).rgb*galaxyStrength*smoothstep(-.015,.12,h);
+          vec3 starCloud=texture2D(galaxyMap,uv).rgb;
+          // Subtle unresolved star grain lives in the same atlas's alpha. A
+          // higher frequency avoids the enlarged glowing dots of the RGB map;
+          // implicit mip filtering keeps movement and low-DPR views stable.
+          float grain=texture2D(galaxyMap,fract(uv*6.)).a;
+          color+=starCloud*(.8+grain*.8)*galaxyStrength*smoothstep(-.015,.12,h);
         }
         gl_FragColor=vec4(color,1.);
       #include <colorspace_fragment>

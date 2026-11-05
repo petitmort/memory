@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import * as THREE from 'three';
 import { DEFAULT_LOCATION, timestampFromZonedInput } from '../src/calendar-seed';
 import { calculateCelestial, greenwichSiderealAngle } from '../src/celestial-controller';
-import { EQUATORIAL_TO_GALACTIC, LOW_STAR_COUNT, STAR_COUNT, SKY_DRIFT_PERIOD_MS, createNightSky, equatorialFrame, nightSkyFrame, nightSkyVisibility, stellarDirection } from '../src/night-sky';
+import { EQUATORIAL_TO_GALACTIC, LOW_STAR_COUNT, STAR_COUNT, SKY_DRIFT_PERIOD_MS, createGalacticTexture, createNightSky, equatorialFrame, nightSkyFrame, nightSkyVisibility, stellarDirection } from '../src/night-sky';
 import { sampleWeather } from '../src/weather-controller';
 
 const RAD = Math.PI / 180, at = timestampFromZonedInput('2026-10-31T22:00');
@@ -124,31 +124,33 @@ test('the denser night field follows the Milky Way while preserving bright ancho
   const positions = sky.stars.geometry.getAttribute('position'), styles = sky.stars.geometry.getAttribute('starStyle');
   const galactic = new THREE.Matrix3().set(...EQUATORIAL_TO_GALACTIC), direction = new THREE.Vector3();
   try {
-    expect(positions.count).toBeGreaterThanOrEqual(5000);
-    expect(positions.count).toBeLessThanOrEqual(7000);
-    expect(LOW_STAR_COUNT).toBeGreaterThanOrEqual(2000);
+    expect(positions.count).toBeGreaterThanOrEqual(12000);
+    expect(positions.count).toBeLessThanOrEqual(20000);
+    expect(LOW_STAR_COUNT).toBeGreaterThanOrEqual(6000);
     expect(LOW_STAR_COUNT).toBeLessThanOrEqual(positions.count / 2);
     expect(replica.stars.geometry.getAttribute('position').array).toEqual(positions.array);
     for (const count of [LOW_STAR_COUNT, STAR_COUNT]) {
-      let inPlane = 0, highLatitude = 0, luminous = 0, brightness = 0;
+      let inPlane = 0, highLatitude = 0, luminous = 0, brightness = 0, faint = 0;
       for (let i = 20; i < count; i++) {
         direction.fromBufferAttribute(positions, i).normalize().applyMatrix3(galactic);
         const latitude = Math.abs(Math.asin(THREE.MathUtils.clamp(direction.z, -1, 1)));
         if (latitude < 12 * RAD) inPlane++;
         if (latitude > 30 * RAD) highLatitude++;
         if (styles.getY(i) > .8) luminous++;
+        if (styles.getY(i) < .24) faint++;
         brightness += styles.getY(i);
       }
       const faintCount = count - 20;
       // Uniform white noise would put only sin(12deg), about21%, in this band.
-      expect(inPlane / faintCount).toBeGreaterThan(.62);
-      expect(inPlane / faintCount).toBeLessThan(.8);
-      expect(highLatitude / faintCount).toBeGreaterThan(.15);
-      expect(highLatitude / faintCount).toBeLessThan(.26);
-      expect(luminous / faintCount).toBeGreaterThan(.04);
-      expect(luminous / faintCount).toBeLessThan(.2);
-      expect(brightness / faintCount).toBeGreaterThan(.42);
-      expect(brightness / faintCount).toBeLessThan(.5);
+      expect(inPlane / faintCount).toBeGreaterThan(.7);
+      expect(inPlane / faintCount).toBeLessThan(.87);
+      expect(highLatitude / faintCount).toBeGreaterThan(.08);
+      expect(highLatitude / faintCount).toBeLessThan(.18);
+      expect(luminous / faintCount).toBeGreaterThan(.015);
+      expect(luminous / faintCount).toBeLessThan(.08);
+      expect(faint / faintCount).toBeGreaterThan(.5);
+      expect(brightness / faintCount).toBeGreaterThan(.2);
+      expect(brightness / faintCount).toBeLessThan(.32);
     }
     const celestial = calculateCelestial(at), weather = sampleWeather(at, { kind: 'clear', cloudCover: 0 });
     const dark = { ...celestial, night: 1, moonIllumination: 0 };
@@ -160,6 +162,121 @@ test('the denser night field follows the Milky Way while preserving bright ancho
     expect((sky.stars.material as THREE.ShaderMaterial).uniforms.opacity.value).toBe(0);
     expect(sky.galaxyStrength.value).toBe(0);
   } finally { sky.dispose(); replica.dispose(); }
+});
+
+test('galactic banks have varying widths and small-scale contrast, with repeatable fine grain in one bounded atlas', () => {
+  const texture = createGalacticTexture(), replica = createGalacticTexture();
+  try {
+    const { data, width, height } = texture.image;
+    expect(data).toEqual(replica.image.data);
+    expect(width).toBeGreaterThanOrEqual(1024);
+    expect(data.byteLength).toBeLessThanOrEqual(8 * 1024 * 1024);
+    const lum = (x: number, y: number) => {
+      const i = (y * width + x) * 4;
+      return data[i] * .2126 + data[i + 1] * .7152 + data[i + 2] * .0722;
+    };
+    const widths: number[] = [], ridges: number[] = [];
+    let total = 0, detail = 0, grain = 0, grainSquare = 0;
+    const radius = Math.max(1, Math.round(width / 720));
+    for (let x = 8; x < width - 8; x += 8) {
+      let light = 0, weightedB = 0, weightedBB = 0, max = 0;
+      for (let y = Math.floor(height * (.5 - 20 / 180)); y < height * (.5 + 20 / 180); y++) {
+        const l = lum(x, y), b = ((y + .5) / height - .5) * 180;
+        light += l; weightedB += l * b; weightedBB += l * b * b; max = Math.max(max, l);
+        if (Math.abs(b) < 12) {
+          total += l;
+          detail += Math.abs(l - (lum(x - radius, y) + lum(x + radius, y) + lum(x, y - radius) + lum(x, y + radius)) / 4);
+        }
+      }
+      widths.push(Math.sqrt(weightedBB / light - (weightedB / light) ** 2)); ridges.push(max);
+    }
+    const quantile = (a: number[], t: number) => a.sort((x, y) => x - y)[Math.floor((a.length - 1) * t)];
+    // A thin smooth rail or an equally bright band cannot satisfy these together.
+    expect(quantile(widths, .5)).toBeGreaterThan(6);
+    expect(quantile(widths, .95) - quantile(widths, .05)).toBeGreaterThan(1.2);
+    expect(quantile(ridges, .95) / quantile(ridges, .05)).toBeGreaterThan(1.6);
+    expect(detail / total).toBeGreaterThan(.08);
+    for (let y = 0; y < height; y += 7) {
+      expect(data[(y * width + width - 1) * 4 + 3]).toBe(data[y * width * 4 + 3]);
+      for (let x = 0; x < width; x += 7) {
+        const value = data[(y * width + x) * 4 + 3] / 255;
+        grain += value; grainSquare += value * value;
+      }
+    }
+    const samples = Math.ceil(height / 7) * Math.ceil(width / 7), mean = grain / samples;
+    expect(mean).toBeGreaterThan(.22); expect(mean).toBeLessThan(.28);
+    expect(grainSquare / samples - mean * mean).toBeGreaterThan(.04);
+    for (let x = 0; x < width; x += 7) expect(data[((height - 1) * width + x) * 4 + 3]).toBe(data[x * 4 + 3]);
+  } finally { texture.dispose(); replica.dispose(); }
+});
+
+test('fine stellar banks favor luminous cloud patches while foreground bright stars remain in dark dust', () => {
+  const sky = createNightSky();
+  try {
+    const positions = sky.stars.geometry.getAttribute('position'), style = sky.stars.geometry.getAttribute('starStyle');
+    const matrix = new THREE.Matrix3().set(...EQUATORIAL_TO_GALACTIC), v = new THREE.Vector3();
+    const { width, height, data } = sky.galaxyMap.image;
+    let fineLight = 0, fineCount = 0, foregroundLight = 0, foregroundCount = 0;
+    for (let i = 20; i < positions.count; i++) {
+      v.fromBufferAttribute(positions, i).normalize().applyMatrix3(matrix);
+      const b = Math.asin(THREE.MathUtils.clamp(v.z, -1, 1));
+      if (Math.abs(b) > 12 * RAD) continue;
+      const x = Math.min(width - 1, Math.floor((Math.atan2(v.y, v.x) / (2 * Math.PI) + .5) * width));
+      const y = Math.min(height - 1, Math.floor((b / Math.PI + .5) * height));
+      const k = (y * width + x) * 4, light = data[k] + data[k + 1] + data[k + 2];
+      if (style.getY(i) < .24) { fineLight += light; fineCount++; }
+      else { foregroundLight += light; foregroundCount++; }
+    }
+    expect(fineCount).toBeGreaterThan(6000); expect(foregroundCount).toBeGreaterThan(1000);
+    expect(fineLight / fineCount).toBeGreaterThan(foregroundLight / foregroundCount * 1.12);
+  } finally { sky.dispose(); }
+});
+
+test('the production sky shader resolves fine grain beyond its broad RGB clouds without changing mean brightness', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  await page.route('**/__galactic-grain', route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Galactic grain pixels</title>' }));
+  await page.goto('/__galactic-grain');
+  const result = await page.evaluate(async () => {
+    const THREE = await import('/node_modules/.vite/deps/three.js');
+    const { createEnvironmentSky } = await import('/src/environment-sky.ts');
+    const { calculateCelestial } = await import('/src/celestial-controller.ts');
+    const { sampleWeather } = await import('/src/weather-controller.ts');
+    const { EQUATORIAL_TO_GALACTIC, nightSkyFrame } = await import('/src/night-sky.ts');
+    const at = Date.parse('2026-08-15T19:00:00Z'), celestial = calculateCelestial(at, undefined, 0);
+    const renderer = new THREE.WebGLRenderer({ antialias: false }); renderer.setSize(512, 384); renderer.setPixelRatio(1);
+    const target = new THREE.WebGLRenderTarget(512, 384), scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(18, 4 / 3, .1, 500); camera.position.set(0, -8, 0);
+    const centre = new THREE.Vector3(1, 0, 0).applyMatrix3(new THREE.Matrix3().set(...EQUATORIAL_TO_GALACTIC).transpose())
+      .applyMatrix3(new THREE.Matrix3().fromArray(nightSkyFrame(at, undefined, undefined, true)));
+    camera.lookAt(centre.clone().multiplyScalar(80).add(camera.position)); camera.updateMatrixWorld(true);
+    const sky = createEnvironmentSky(new THREE.Group()); scene.add(sky.group);
+    sky.update(celestial, sampleWeather(at, { kind: 'clear', cloudCover: 0 }), camera, 0, at, false, true);
+    sky.moon.visible = false; sky.group.getObjectByName('quiet-night-stars')!.visible = false;
+    const dome = sky.group.getObjectByName('continuous-day-night-sky') as any;
+    const texture = dome.material.uniforms.galaxyMap.value, data = texture.image.data as Uint8Array;
+    const pixels = () => { renderer.setRenderTarget(target); renderer.render(scene, camera); const out = new Uint8Array(512 * 384 * 4); renderer.readRenderTargetPixels(target, 0, 0, 512, 384, out); return out; };
+    try {
+      const detailed = pixels(), original = data.slice();
+      for (let i = 3; i < data.length; i += 4) data[i] = 64;
+      texture.needsUpdate = true;
+      const smooth = pixels(); data.set(original); texture.needsUpdate = true;
+      const restored = pixels();
+      let changed = 0, energy = 0, signedEnergy = 0, replay = 0;
+      for (let i = 0; i < detailed.length; i += 4) {
+        const d = detailed[i] + detailed[i + 1] + detailed[i + 2] - smooth[i] - smooth[i + 1] - smooth[i + 2];
+        if (Math.abs(d) > 3) changed++; energy += Math.abs(d); signedEnergy += d;
+        replay += Math.abs(restored[i] - detailed[i]) + Math.abs(restored[i + 1] - detailed[i + 1]) + Math.abs(restored[i + 2] - detailed[i + 2]);
+      }
+      return { changed, energy, signedEnergy, replay, altitude: centre.y, gpuError: renderer.getContext().getError() };
+    } finally { sky.dispose(); target.dispose(); renderer.dispose(); }
+  });
+  expect(result.altitude).toBeGreaterThan(.1); expect(result.gpuError).toBe(0);
+  expect(result.changed).toBeGreaterThan(5000); expect(result.energy).toBeGreaterThan(40000);
+  expect(Math.abs(result.signedEnergy)).toBeLessThan(result.energy * .3);
+  expect(result.replay).toBe(0);
+  expect(errors).toEqual([]);
 });
 
 test('the galactic texture keeps an uneven luminous band and dark dust instead of filling the whole sky', () => {

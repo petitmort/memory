@@ -4,7 +4,7 @@ import { greenwichSiderealAngle, type CelestialState, type Direction3 } from "./
 import type { WeatherState } from "./weather-controller";
 
 const RAD = Math.PI / 180, TAU = Math.PI * 2;
-export const STAR_COUNT = 6000, LOW_STAR_COUNT = 2800;
+export const STAR_COUNT = 18000, LOW_STAR_COUNT = 7000;
 /** One gentle visual revolution in 24 minutes, in addition to real sidereal drift. */
 export const SKY_DRIFT_PERIOD_MS = 24 * 60 * 1000;
 /** J2000 equatorial Cartesian basis to IAU galactic Cartesian basis (row-major). */
@@ -67,32 +67,51 @@ function noise(x: number, y: number, z: number) {
     mix(mix(hash(ix, iy, iz + 1), hash(ix + 1, iy, iz + 1), fx), mix(hash(ix, iy + 1, iz + 1), hash(ix + 1, iy + 1, iz + 1), fx), fy), fz);
 }
 
-/** Original, seamless spherical dust/density map; generated once, not per frame. */
+/**
+ * Original spherical star clouds, extinction and unresolved stars. All noise is
+ * sampled in 3D so the longitude seam closes; detail is baked once, keeping the
+ * existing sky draw and shared stellar rotation on every drawn frame.
+ */
 export function createGalacticTexture() {
-  const width = 512, height = 256, pixels = new Uint8Array(width * height * 4);
+  const width = 2048, height = 1024, pixels = new Uint8Array(width * height * 4);
   for (let y = 0; y < height; y++) {
     const b = ((y + .5) / height - .5) * Math.PI, cb = Math.cos(b), sb = Math.sin(b);
     for (let x = 0; x < width; x++) {
+      const index = (y * width + x) * 4;
+      // Alpha is a separate fine-grain tile, sampled at a higher angular
+      // frequency than RGB. Baking bright speckles into RGB would magnify them
+      // into blurry discs when seen through the close room window.
+      pixels[index + 3] = Math.round(255 * Math.pow(hash(x === width - 1 ? 0 : x, y === height - 1 ? 0 : y, 7919), 3));
+      if (Math.abs(b) > .72) continue; // The rounded RGB tail is already black.
       const l = ((x + .5) / width - .5) * TAU;
       const px = cb * Math.cos(l), py = cb * Math.sin(l);
-      const n = noise(px * 6 + 21, py * 6 + 13, sb * 9 + 9);
-      const fine = noise(px * 25 + 11, py * 25 + 30, sb * 41 + 17);
-      const grain = noise(px * 71 + 7, py * 71 + 3, sb * 91 + 41);
-      const offset = b - .018 * Math.sin(l * 4) - .009 * Math.sin(l * 11);
-      const band = Math.exp(-Math.pow(offset / (.07 + .045 * n), 2));
-      const halo = Math.exp(-Math.pow(offset / .25, 2));
-      const core = Math.exp(-Math.pow(Math.atan2(Math.sin(l), Math.cos(l)) / .52, 2) - Math.pow(b / .2, 2));
-      const lane = Math.exp(-Math.pow((offset + .012 * Math.sin(l * 7)) / (.022 + .025 * fine), 2));
-      // A broken secondary dust branch and clumpy star clouds keep the band
-      // from reading as a smooth, uniformly luminous stripe across the sky.
-      const branch = Math.exp(-Math.pow((offset + .054 + .027 * Math.sin(l * 3 + .6)) / (.018 + .018 * n), 2));
-      const dust = (1 - lane * (.54 + .34 * n)) * (1 - branch * (.15 + .3 * fine));
-      const density = Math.min(1, (halo * .055 + band * (.1 + .7 * Math.pow(n, 1.5)
-        + .42 * Math.pow(fine, 1.8) + .17 * Math.pow(grain, 2)) + core * .34) * dust);
-      const index = (y * width + x) * 4, warm = core * .22;
-      pixels[index] = Math.round(density * (140 + warm * 110));
-      pixels[index + 1] = Math.round(density * (174 + warm * 40));
-      pixels[index + 2] = Math.round(density * (216 - warm * 45)); pixels[index + 3] = 255;
+      const broad = noise(px * 6 + 21, py * 6 + 13, sb * 8 + 9);
+      const bend = noise(px * 11 + 9, py * 11 + 37, sb * 13 + 22);
+      // Domain warping gives star banks ragged, non-parallel edges. Their width
+      // changes with longitude instead of being two Gaussian luminous rails.
+      const qx = px * 16 + broad * 3, qy = py * 16 + bend * 3, qz = sb * 24;
+      const cloud = noise(qx + 31, qy + 17, qz + 5);
+      const medium = noise(qx * 2.6 + 8, qy * 2.6 + 29, qz * 2.2 + 11);
+      const fine = noise(px * 117 + 7, py * 117 + 3, sb * 151 + 41);
+      const filament = noise(qx * 4.7 + medium * 2, qy * 4.7 + cloud * 2, qz * 3.9 + 19);
+      const offset = b + (broad - .5) * .12 + (bend - .5) * .07;
+      const band = Math.exp(-Math.pow(offset / (.1 + broad * .12), 2));
+      const halo = Math.exp(-Math.pow(b / .31, 2));
+      const core = Math.exp(-Math.pow(l / .62, 2) - Math.pow((b + .025) / .23, 2));
+      const cloudLight = Math.pow(cloud * .5 + medium * .32 + fine * .18, 2.1);
+      // A branching rift has broad knots, torn edges and holes, not a sine-wave
+      // cut running unbroken around the whole sphere. Small foreground stars
+      // remain in the independent point layer, including in front of dark dust.
+      const rift = Math.exp(-Math.pow((offset + (cloud - .5) * .14) / (.018 + medium * .045), 2));
+      const knots = THREE.MathUtils.smoothstep(bend * .35 + medium * .4 + filament * .25, .38, .76);
+      const veins = Math.exp(-Math.pow((filament - .5) / .105, 2));
+      const opticalDepth = band * (rift * (1.1 + cloud * 1.8) + knots * 2.1 + veins * knots * .9);
+      const glow = halo * .021 + band * (.025 + cloudLight * 1.75) * (.65 + broad * .65) + core * (.14 + cloudLight * .45);
+      // Warm inner star clouds, cooler outskirts; dust reddens transmitted light.
+      const warm = core * .68 + cloud * .12;
+      pixels[index] = Math.round(Math.min(255, glow * (165 + warm * 85) * Math.exp(-opticalDepth * .86)));
+      pixels[index + 1] = Math.round(Math.min(255, glow * (181 + warm * 31) * Math.exp(-opticalDepth)));
+      pixels[index + 2] = Math.round(Math.min(255, glow * (216 - warm * 42) * Math.exp(-opticalDepth * 1.14)));
     }
   }
   const texture = new THREE.DataTexture(pixels, width, height);
@@ -115,6 +134,7 @@ const anchors = [
 
 export function createNightSky(location: CalendarLocation = DEFAULT_LOCATION) {
   const random = createSeededRandom(942031), positions: number[] = [], styles: number[] = [], colors: number[] = [];
+  const galaxyMap = createGalacticTexture(), map = galaxyMap.image;
   const galactic = new THREE.Matrix3().set(...EQUATORIAL_TO_GALACTIC), galacticInverse = galactic.clone().transpose();
   const direction = new THREE.Vector3();
   for (let index = 0; index < STAR_COUNT; index++) {
@@ -124,18 +144,30 @@ export function createNightSky(location: CalendarLocation = DEFAULT_LOCATION) {
       direction.set(Math.cos(dec * RAD) * Math.cos(ra * RAD), Math.cos(dec * RAD) * Math.sin(ra * RAD), Math.sin(dec * RAD));
       brightness = value; size = 2.25 + value * .65;
     } else {
-      const longitude = random() * TAU;
-      if (random() < .6) {
-        const b = (random() + random() + random() - 1.5) * .2;
+      // Interleaving preserves a bright/faint mix in the low-quality prefix.
+      // Fainter distant stars follow the cloudy banks and their extinction;
+      // bright foreground anchors are allowed in front of the dust lanes.
+      const faint = index % 3 !== 0;
+      if (random() < (faint ? .84 : .6)) {
+        let longitude = 0, b = 0;
+        for (let attempt = 0; attempt < (faint ? 5 : 1); attempt++) {
+          longitude = (random() - .5) * TAU;
+          b = (random() + random() + random() - 1.5) * .22;
+          const x = Math.min(map.width - 1, Math.floor((longitude / TAU + .5) * map.width));
+          const y = Math.min(map.height - 1, Math.floor((b / Math.PI + .5) * map.height));
+          const i = (y * map.width + x) * 4;
+          const density = (map.data[i] + map.data[i + 1] + map.data[i + 2]) / 765;
+          if (!faint || random() * .3 < density) break;
+        }
         direction.set(Math.cos(b) * Math.cos(longitude), Math.cos(b) * Math.sin(longitude), Math.sin(b)).applyMatrix3(galacticInverse);
       } else {
-        const z = random() * 2 - 1, r = Math.sqrt(1 - z * z);
+        const longitude = random() * TAU, z = random() * 2 - 1, r = Math.sqrt(1 - z * z);
         direction.set(r * Math.cos(longitude), r * Math.sin(longitude), z);
       }
       // A stable pixel footprint survives the full room view and low-DPR phones;
       // variation comes from both intensity and size, rather than subpixel loss.
-      brightness = .24 + Math.pow(random(), 2.6) * .76;
-      size = 1.55 + Math.pow(random(), 3) * 1.1;
+      brightness = faint ? .09 + Math.pow(random(), 3.6) * .32 : .24 + Math.pow(random(), 2.6) * .76;
+      size = faint ? 1.05 + Math.pow(random(), 3) * .55 : 1.55 + Math.pow(random(), 3) * 1.1;
     }
     positions.push(direction.x * 280, direction.y * 280, direction.z * 280);
     styles.push(size, brightness);
@@ -165,7 +197,7 @@ export function createNightSky(location: CalendarLocation = DEFAULT_LOCATION) {
   const stars = new THREE.Points(geometry, material); stars.name = "quiet-night-stars";
   stars.renderOrder = -9; stars.matrixAutoUpdate = false; stars.frustumCulled = false;
   stars.onBeforeRender = renderer => { material.uniforms.pixelScale.value = Math.min(1.8, renderer.getPixelRatio()); };
-  const galaxyMap = createGalacticTexture(), worldToGalactic = new THREE.Matrix3(), frame = new Float64Array(9), rotation = new THREE.Matrix3(), inverse = new THREE.Matrix3();
+  const worldToGalactic = new THREE.Matrix3(), frame = new Float64Array(9), rotation = new THREE.Matrix3(), inverse = new THREE.Matrix3();
   const galaxyStrength = { value: 0 };
   let disposed = false;
   return {
