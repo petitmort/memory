@@ -60,7 +60,7 @@ export function createSeascape(dynamic = false) {
   corona.scale.set(7.8, 7.8, 1); corona.position.z = -3.5; helios.add(corona);
   helios.lookAt(new THREE.Vector3(1.1, 1.65, .75));
 
-  return { group, sunGroup: helios, vessels, lighthouseCoast, pierSurf, update(t: number, reduced: boolean) {
+  return { group, sunGroup: helios, vessels, coast, lighthouseCoast, pierSurf, update(t: number, reduced: boolean) {
     const a = reduced ? t * .12 : t;
     const waterTime = t * (reduced ? .15 : 1);
     const waterline = sampleWaterHeight(ship.position.x, ship.position.z, waterTime);

@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { createLighthouseSurface } from "./lighthouse-surface";
 
 /** Reef feet are submerged; these footprints can also guide shallow-water shading. */
 export const coastalReefs = [
@@ -17,14 +18,28 @@ function grain(x: number, y: number, z: number) {
     + Math.sin(x * 11.8 + z * 7.13 - y * 4.3) * .09;
 }
 
+// Smooth, non-repeating shrub patches in metres. Geometry and albedo sample
+// the same field, so lighter crowns have real relief instead of a flat decal.
+function canopyField(x: number, z: number, phase: number) {
+  const ix = Math.floor(x), iz = Math.floor(z);
+  const u = smoothstep(0, 1, x - ix), v = smoothstep(0, 1, z - iz);
+  const hash = (a: number, b: number) => {
+    const n = Math.sin(a * 127.1 + b * 311.7 + phase * 74.7) * 43758.5453;
+    return n - Math.floor(n);
+  };
+  return THREE.MathUtils.lerp(THREE.MathUtils.lerp(hash(ix, iz), hash(ix + 1, iz), u),
+    THREE.MathUtils.lerp(hash(ix, iz + 1), hash(ix + 1, iz + 1), u), v);
+}
+
 function islandGeometry(width: number, depth: number, height: number, phase: number, haze = .1, far = false) {
   const segments = far ? 48 : 100, rings = far ? 10 : 28;
   const positions: number[] = [], colors: number[] = [], indices: number[] = [];
-  const stone = new THREE.Color("#8f9285");
-  const scrub = new THREE.Color("#6c7868");
-  const shore = new THREE.Color("#b2a58e");
-  const distantHaze = new THREE.Color("#b8cad0");
+  const stone = new THREE.Color("#757b66");
+  const scrub = new THREE.Color("#315b31"), crown = new THREE.Color("#6f8740");
+  const shore = new THREE.Color("#aaa58c");
+  const distantHaze = new THREE.Color("#8ea99f");
   const rock = new THREE.Color();
+  const foliage = new THREE.Color();
   for (let ring = 0; ring <= rings; ring++) {
     const radial = ring / rings;
     for (let j = 0; j <= segments; j++) {
@@ -48,11 +63,18 @@ function islandGeometry(width: number, depth: number, height: number, phase: num
       y += height * relief * .035 * Math.sin(radial * Math.PI);
       // Last rings slope into the sea rather than ending in a visible flat skirt.
       y -= smoothstep(.84, 1, radial) * 2.1;
-      positions.push(x * width * .5, y, z * depth * .5);
-      const vegetation = smoothstep(.5, 2.4, y) * (1 - smoothstep(height * .5, height * .88, y));
-      const patch = .5 + .5 * grain(x * 10 + phase, y, z * 9);
-      rock.copy(stone).lerp(scrub, vegetation * patch * .65);
-      rock.lerp(shore, (1 - smoothstep(.2, 1.6, y)) * .52);
+      const px = x * width * .5, pz = z * depth * .5;
+      const patch = canopyField(px * .34, pz * .39, phase);
+      const detail = canopyField(px * .92, pz * 1.07, phase + 4);
+      const vegetation = smoothstep(.08, .65, y);
+      // Carve between crowns inside the original ridge envelope: adding to its
+      // height would hide the existing low sunset behind the eastern island.
+      y -= vegetation * (.34 * (1 - detail) + .12 * (1 - patch)) * (far ? .4 : 1);
+      positions.push(px, y, pz);
+      foliage.copy(scrub).lerp(crown, smoothstep(.2, .85, patch * .65 + detail * .35));
+      foliage.multiplyScalar(.82 + .28 * detail);
+      rock.copy(stone).lerp(shore, (1 - smoothstep(.02, .38, y)) * .68);
+      rock.lerp(foliage, vegetation);
       rock.multiplyScalar(1 + relief * .055);
       // These fixed distant islands have less local contrast than nearby reefs.
       rock.lerp(distantHaze, haze);
@@ -196,5 +218,7 @@ export function createCoastalEnvironment() {
 
   // Birds have one owner: the calendar bird controller. The former three
   // permanently hovering gulls bypassed its single-visitor/weather rules.
-  return { group, update(_t: number, _reducedMotion: boolean) {} };
+  const surface = createLighthouseSurface([landMaterial, reefMaterial]);
+  return { group, updateBeacon: surface.update, beaconState: surface.snapshot,
+    update(_t: number, _reducedMotion: boolean) {} };
 }

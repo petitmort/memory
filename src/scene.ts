@@ -325,12 +325,16 @@ export function createScene(
       if (active) {
         surf.update(waterTime, weather, isLow, reduced, daylight);
         const beam = coast.updateBeacon(timestamp, sunAltitude, weather, reduced, isLow);
+        mythology.seascape.coast.updateBeacon(beam);
         if (beam) {
           seaMat.uniforms.beaconPosition.value.set(beam.origin.x, beam.origin.y, beam.origin.z);
           seaMat.uniforms.beaconDirection.value.set(beam.direction.x, beam.direction.y, beam.direction.z);
           seaMat.uniforms.beaconStrength.value = beam.beamStrength;
         }
-      } else seaMat.uniforms.beaconStrength.value = 0;
+      } else {
+        seaMat.uniforms.beaconStrength.value = 0;
+        mythology.seascape.coast.updateBeacon();
+      }
     },
     quality(value) { qualityPolicy.setManual(value); applyQuality(qualityPolicy.low); },
   });

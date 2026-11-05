@@ -2,7 +2,9 @@ import * as THREE from "three";
 import { PIER_SEA_LEVEL, samplePierPath } from "./pier-layout";
 import type { WeatherState } from "./weather-controller";
 
-const TAU = Math.PI * 2, PERIOD = 28000, REACH = 145, RADIUS = 2.8, SLOPE = .068;
+/** Shared dimensions for the visible cone and the land receiving its light. */
+export const LIGHTHOUSE_BEAM = { periodMs: 28000, reach: 145, radius: 2.8, slope: .068 } as const;
+const TAU = Math.PI * 2, { periodMs: PERIOD, reach: REACH, radius: RADIUS, slope: SLOPE } = LIGHTHOUSE_BEAM;
 const radians = Math.PI / 180;
 const clamp = THREE.MathUtils.clamp;
 type Position = Readonly<{ x: number; y: number; z: number }>;
