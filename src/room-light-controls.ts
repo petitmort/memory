@@ -94,11 +94,26 @@ export function createRoomLightControls(
     button.setAttribute("aria-expanded", "false");
     if (restoreFocus && available && !button.disabled) button.focus({ preventScroll: true });
   }
+  function fitPanel() {
+    if (panel.hidden) return;
+    const room = button.closest<HTMLElement>(".room-ui");
+    if (!room) return;
+    const roomBounds = room.getBoundingClientRect(), panelBounds = panel.getBoundingClientRect();
+    // In landscape the settings sit beside the room actions. On narrow
+    // screens reserve the actual wrapped action rows, including cat controls.
+    if (panelBounds.left >= roomBounds.right + 8 || panelBounds.right <= roomBounds.left - 8) {
+      panel.style.maxHeight = ""; return;
+    }
+    const top = parseFloat(getComputedStyle(panel).top);
+    panel.style.maxHeight = `${Math.max(132, roomBounds.top - top - 12)}px`;
+  }
   button.addEventListener("click", () => {
     if (disposed || !available || button.disabled) return;
     if (!panel.hidden) { close(true); return; }
     panel.hidden = false;
     button.setAttribute("aria-expanded", "true");
+    fitPanel();
+    panel.scrollTop = 0;
     toggle.focus({ preventScroll: true });
   }, { signal: events.signal });
   closeButton.addEventListener("click", () => close(true), { signal: events.signal });
@@ -109,10 +124,17 @@ export function createRoomLightControls(
     if (event.key !== "Escape" || panel.hidden) return;
     event.preventDefault(); event.stopPropagation(); close(true);
   }, { signal: events.signal });
-  document.addEventListener("pointerdown", event => {
+  function closeOutside(event: Event) {
     if (panel.hidden || !(event.target instanceof Node) || panel.contains(event.target) || button.contains(event.target)) return;
     close(false);
-  }, { capture: true, signal: events.signal });
+  }
+  // Keyboard and assistive activation dispatch click without pointerdown.
+  for (const type of ["pointerdown", "click"])
+    document.addEventListener(type, closeOutside, { capture: true, signal: events.signal });
+  window.addEventListener("resize", fitPanel, { signal: events.signal });
+  const room = button.closest<HTMLElement>(".room-ui");
+  const roomSize = new ResizeObserver(fitPanel);
+  if (room) roomSize.observe(room);
   // Native controls must not bubble into the room's scene and touch gestures.
   for (const event of ["pointerdown", "pointerup", "click", "dblclick", "wheel", "touchstart", "touchend"])
     panel.addEventListener(event, event => event.stopPropagation(), { signal: events.signal });
@@ -127,7 +149,7 @@ export function createRoomLightControls(
     },
     dispose() {
       if (disposed) return;
-      close(false); disposed = true; events.abort(); panel.remove();
+      close(false); disposed = true; events.abort(); roomSize.disconnect(); panel.remove();
       button.disabled = original.disabled;
       for (const [name, value] of [["aria-controls", original.controls], ["aria-expanded", original.expanded], ["aria-haspopup", original.popup]]) {
         if (value === null) button.removeAttribute(name!);

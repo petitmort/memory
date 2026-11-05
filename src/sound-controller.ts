@@ -347,9 +347,13 @@ export function createSoundController(options: SoundOptions) {
       el("choose-record").focus({ preventScroll: true });
     }
   });
-  listen(document, "pointerdown", event => {
-    if (event.target instanceof Node && !panel.contains(event.target)) panel.classList.add("hidden");
-  });
+  const closeRecordOutside = (event: Event) => {
+    if (event.target instanceof Node && !panel.contains(event.target)
+      && !el("choose-record").contains(event.target) && !el("record-file").contains(event.target))
+      panel.classList.add("hidden");
+  };
+  listen(document, "pointerdown", closeRecordOutside);
+  document.addEventListener("click", closeRecordOutside, { capture: true, signal: events.signal });
   listen(document, "visibilitychange", visibilityChanged);
   listen(window, "pagehide", event => {
     recordMusic.setPageVisible(false); stopCat();

@@ -92,7 +92,9 @@ async function enter(page: Page, query = '') {
 }
 
 for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) test(`real room hides the clock, advances and pauses the free calendar and restores realtime without resource churn ${viewport.width}`, async ({ browser }) => {
-  test.setTimeout(120000); await mkdir(evidence, { recursive: true });
+  // This includes repeated GPU readbacks and the complete reading round trip.
+  // Software WebGL needs a larger wall-clock budget than native desktop GPUs.
+  test.setTimeout(240000); await mkdir(evidence, { recursive: true });
   const context = await browser.newContext({ viewport, reducedMotion: 'reduce', timezoneId: 'Asia/Shanghai' }), page = await context.newPage();
   const errors = await instrument(page);
   try {

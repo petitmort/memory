@@ -85,7 +85,7 @@ export function createTimeFlowControls(button: HTMLButtonElement, onChange: (pat
   button.addEventListener("click", () => {
     if (disposed || !available || button.disabled) return;
     if (!panel.hidden) { close(true); return; }
-    panel.hidden = false; button.setAttribute("aria-expanded", "true"); renderDate(); fitPanel();
+    panel.hidden = false; button.setAttribute("aria-expanded", "true"); renderDate(); fitPanel(); panel.scrollTop = 0;
     (settings.mode === "free" ? free : realtime).focus({ preventScroll: true });
   }, { signal: events.signal });
   find("time-flow-close").addEventListener("click", () => close(true), { signal: events.signal });
@@ -100,11 +100,16 @@ export function createTimeFlowControls(button: HTMLButtonElement, onChange: (pat
     if (panel.hidden || event.key !== "Escape") return;
     event.preventDefault(); event.stopPropagation(); close(true);
   }, { signal: events.signal });
-  document.addEventListener("pointerdown", event => {
+  function closeOutside(event: Event) {
     if (!(event.target instanceof Node) || panel.contains(event.target) || button.contains(event.target)) return;
     close();
-  }, { capture: true, signal: events.signal });
+  }
+  for (const type of ["pointerdown", "click"])
+    document.addEventListener(type, closeOutside, { capture: true, signal: events.signal });
   window.addEventListener("resize", fitPanel, { signal: events.signal });
+  const room = button.closest<HTMLElement>(".room-ui");
+  const roomSize = new ResizeObserver(fitPanel);
+  if (room) roomSize.observe(room);
   for (const type of ["pointerdown", "pointerup", "click", "dblclick", "wheel", "touchstart", "touchend"])
     panel.addEventListener(type, event => event.stopPropagation(), { signal: events.signal });
   render();
@@ -116,6 +121,6 @@ export function createTimeFlowControls(button: HTMLButtonElement, onChange: (pat
       else renderDate();
     },
     setAvailable(value: boolean) { if (!disposed) { available = value; button.disabled = !value; if (!value) close(); } },
-    dispose() { if (!disposed) { close(); disposed = true; events.abort(); panel.remove(); } },
+    dispose() { if (!disposed) { close(); disposed = true; events.abort(); roomSize.disconnect(); panel.remove(); } },
   };
 }
