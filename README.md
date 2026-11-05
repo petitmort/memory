@@ -372,7 +372,9 @@ npm test
 
 - **来源 / 基线**：网页端 Codex（云环境） / `a86e19e`，远端main为`b116a73`。作者明确回复「发布」，仅上线已验收的入室自动音乐与风速窗帘，沿用`main:/docs`，不更换部署设置或推进后续分组。
 - **发布准备**：显式同步远端main并快进至开发提交，`npm run build`通过，JS仍为`index-DLB6JgG-.js`，CSS及Three分包不变，既有Three体积提示保留。使用Python清理旧哈希资源、复制dist并保留`.nojekyll`；全部25份dist / docs文件逐字节一致。`python .work/room-panel-verify.py http://127.0.0.1:4183/memory/ a86e19e-entry-wind-local`确认`/memory/`子路径25文件HTTP / SHA-256一致。
-- **当前步骤 / 验证边界**：发布产物与已验收构建相同，待普通推送main、确认Pages成功并做线上实际交互和资源校验。实现批次27个唯一用例、类型检查与最终构建预览见下条，本轮不重复测试；47项原文 / 编号及完成27项保留。未重测完整历史库、Safari、实体手机、主观试听或新长期性能基准。
+- **上线回执（追加基线`ffca639`）**：普通推送main成功，Pages[任务41976609953](https://github.com/petitmort/memory/actions/runs/41976609953)completed / success，API同一提交built。`python .work/room-panel-verify.py https://petitmort.github.io/memory/ ffca639-entry-wind`确认全部25份线上文件逐字节一致并保存SHA-256；`node .work/entry-wind-preview.mjs https://petitmort.github.io/memory/ ffca639-online`完成960×640桌面推门自动播放、暂停后看猫 / 阅读 / 返回不重播，以及390×844手机继续播放 / 后台暂停。庭院无歌曲请求，推门首播原生激活为true，全程1次默认歌曲请求、1个AudioContext，无页面错误、横向溢出或按钮命中遮挡；两张线上截图已查看。[打开入室音乐与风速纱帘版](https://petitmort.github.io/memory/?v=ffca639-entry-wind)。
+- **普通动态画面补验**：`node .work/entry-wind-live-visual.mjs https://petitmort.github.io/memory/ ffca639-visual`通过；960×540固定晴天普通画质，推门后风20m/s及改为0m/s并等待过渡后的两张真实线上画面已查看，纱帘 / 蕾丝与房间按钮正常显示，DOM环境状态分别为20.0 / 0.0m/s，无页面错误。此项为画面补验，布料幅度 / 静止 / 同帧接线的定量证据仍见实现批次的真实网格和WebGL测试，不据截图推断帧率。
+- **验证边界**：发布产物与已验收构建相同，47项原文 / 编号及完成27项校验通过；实现批次27个唯一用例、类型检查与最终构建预览见下条，本轮不重复测试。回执只补文档，不重建相同产物；未重测完整历史库、Safari、实体手机、主观试听或新长期性能基准。
 
 ### 2026-11-05 · 入室自动音乐与窗帘风速联动完成
 
