@@ -71,7 +71,8 @@ test('rendering sleeps while reading or hidden and resumes without skipping the 
     // Cozy-home B adds exactly three lamp batches, three textile batches and
     // one shared linen texture; the new rounded rug replaces the previous mesh.
     // B1 adds three static rosemary batches and one cork mesh, no textures.
-    expect(entered.resources.geometries).toBeLessThanOrEqual(baseline.room.geometries + 40 + 6 + 4);
+    // B2 merges both books into two batches and reuses linen for one bookmark.
+    expect(entered.resources.geometries).toBeLessThanOrEqual(baseline.room.geometries + 40 + 6 + 4 + 3);
     expect(entered.resources.textures).toBeLessThanOrEqual(baseline.room.textures + 4 + 1);
     const paused=await page.evaluate(()=>{
       Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});

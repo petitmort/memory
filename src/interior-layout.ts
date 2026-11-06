@@ -8,6 +8,10 @@ export const consoleLayout = {
   rotation: Math.PI / 2,
   height: D.console.height,
 };
+export const consoleReadingLayout = {
+  booksX: -.04, booksZ: -.0825,
+  dishX: -.025, dishZ: .063,
+} as const;
 export function consolePoint(x: number, z: number, above = .0003) {
   const c = Math.cos(consoleLayout.rotation), s = Math.sin(consoleLayout.rotation);
   return new THREE.Vector3(consoleLayout.x + c*x + s*z, consoleLayout.height + above, consoleLayout.z - s*x + c*z);

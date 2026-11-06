@@ -19,6 +19,7 @@ import { createCozySeating } from "./cozy-seating";
 import { createCozyLamp } from "./cozy-lamp";
 import { createHomeFabric, createCozyRug, createCozyTextiles } from "./cozy-textiles";
 import { createWindowPlant, createCorkCoaster, windowDetailsLayout } from "./window-details";
+import { createReadingDetails } from "./reading-details";
 import { createSleepingCat } from "./sleeping-cat";
 import { createRecordPlayer } from "./record-player";
 import { createCourtyardFog } from "./courtyard-fog";
@@ -583,6 +584,8 @@ export function createScene(
   (drawer as THREE.Mesh<THREE.BufferGeometry>).geometry=new RoundedBoxGeometry(.68,.059,.012,3,.003);
   const drawerPull = new THREE.Mesh(new THREE.TorusGeometry(.010,.0018,8,24),brass);
   drawerPull.position.set(0,.701,.153); consoleTable.add(drawerPull);
+  const readingDetails = createReadingDetails(homeFabric);
+  room.add(readingDetails);
   const lounge = createCozySeating();
   const textiles = createCozyTextiles(lounge.group, homeFabric);
   // The back follows the left wall, with a slight angle opening into the room.
@@ -748,7 +751,7 @@ export function createScene(
   let fogMotion: { elapsed: number; duration: number; lastDrawAt: number | null; done: () => void } | null = null;
   // These objects sit behind the closed entrance. Reveal them before the door
   // starts moving, rather than drawing their hidden triangles in the courtyard.
-  const shelteredDetails = [ocean, mythology.group, curtains.group, windowPlant, coaster, book, bouquet, lounge.group, textiles.group, cozyLamp.group, recordPlayer.group, deskClock.group];
+  const shelteredDetails = [ocean, mythology.group, curtains.group, windowPlant, coaster, readingDetails, book, bouquet, lounge.group, textiles.group, cozyLamp.group, recordPlayer.group, deskClock.group];
   shelteredDetails.forEach(object => { object.visible = false; });
   let roomRevealed = false;
   let simulationTime = 0;
