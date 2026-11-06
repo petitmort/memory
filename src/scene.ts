@@ -18,6 +18,7 @@ import { consoleLayout } from "./interior-layout";
 import { createCozySeating } from "./cozy-seating";
 import { createCozyLamp } from "./cozy-lamp";
 import { createHomeFabric, createCozyRug, createCozyTextiles } from "./cozy-textiles";
+import { createWindowPlant, createCorkCoaster, windowDetailsLayout } from "./window-details";
 import { createSleepingCat } from "./sleeping-cat";
 import { createRecordPlayer } from "./record-player";
 import { createCourtyardFog } from "./courtyard-fog";
@@ -253,7 +254,7 @@ export function createScene(
     back,
     room,
   ).name = "back-above";
-  box(
+  const windowSill = box(
     D.window.width + 0.1,
     0.035,
     0.2,
@@ -263,6 +264,9 @@ export function createScene(
     back + 0.025,
     room,
   );
+  windowSill.name = "window-sill";
+  const windowPlant = createWindowPlant();
+  room.add(windowPlant);
   for (const x of [-D.window.width / 2, 0, D.window.width / 2])
     box(
       D.window.frame,
@@ -431,7 +435,10 @@ export function createScene(
   // An ordinary ~300 ml mug with a 3 mm wall and a properly sized handle.
   const cup = new THREE.Group();
   cup.name = "cup";
-  cup.position.set(-.49, D.desk.height, .23);
+  const coaster = createCorkCoaster();
+  coaster.position.set(-.49, D.desk.height, .23);
+  table.add(coaster);
+  cup.position.set(-.49, D.desk.height + windowDetailsLayout.coaster.thickness, .23);
   table.add(cup);
   const ceramic = mat("#ded5be");
   const profile = [
@@ -741,7 +748,7 @@ export function createScene(
   let fogMotion: { elapsed: number; duration: number; lastDrawAt: number | null; done: () => void } | null = null;
   // These objects sit behind the closed entrance. Reveal them before the door
   // starts moving, rather than drawing their hidden triangles in the courtyard.
-  const shelteredDetails = [ocean, mythology.group, curtains.group, book, bouquet, lounge.group, textiles.group, cozyLamp.group, recordPlayer.group, deskClock.group];
+  const shelteredDetails = [ocean, mythology.group, curtains.group, windowPlant, coaster, book, bouquet, lounge.group, textiles.group, cozyLamp.group, recordPlayer.group, deskClock.group];
   shelteredDetails.forEach(object => { object.visible = false; });
   let roomRevealed = false;
   let simulationTime = 0;

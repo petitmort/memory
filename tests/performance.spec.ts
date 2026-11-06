@@ -70,7 +70,8 @@ test('rendering sleeps while reading or hidden and resumes without skipping the 
     // weather buffers add a fixed allowance to the preserved pre-environment baseline.
     // Cozy-home B adds exactly three lamp batches, three textile batches and
     // one shared linen texture; the new rounded rug replaces the previous mesh.
-    expect(entered.resources.geometries).toBeLessThanOrEqual(baseline.room.geometries + 40 + 6);
+    // B1 adds three static rosemary batches and one cork mesh, no textures.
+    expect(entered.resources.geometries).toBeLessThanOrEqual(baseline.room.geometries + 40 + 6 + 4);
     expect(entered.resources.textures).toBeLessThanOrEqual(baseline.room.textures + 4 + 1);
     const paused=await page.evaluate(()=>{
       Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
