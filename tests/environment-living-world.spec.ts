@@ -1,3 +1,4 @@
+import { roomComposition } from '../src/room-composition';
 import { test, expect, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -34,8 +35,8 @@ function localDate(timestamp: number) {
 /** Pick visible absolute visits, without adding a force-birds production path. */
 function visibleVisit(kind: BirdKind, mobile = false) {
   const camera = new THREE.PerspectiveCamera(50, mobile ? 390 / 844 : 1000 / 740, .1, 500);
-  camera.position.set(mobile ? .55 : 1.1, 1.65, mobile ? 1.15 : .75);
-  camera.lookAt(mobile ? .15 : -.2, mobile ? 1.05 : .95, mobile ? -1.4 : -1.5);
+  const composition = roomComposition(mobile);
+  camera.position.copy(composition.p); camera.lookAt(composition.t);
   camera.updateMatrixWorld(true);
   const beginning = Math.floor(Date.parse('2026-06-21T08:00:00Z') / BIRD_DEPARTURE_INTERVAL);
   for (let slot = beginning; slot < beginning + 80; slot++) {

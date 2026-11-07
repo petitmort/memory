@@ -4,18 +4,20 @@
 
 ## 当前决定与进度
 
-作者在B2-A完成后明确提出「我需要你总一些整体上的调整和完善，先不要只看细节」。本轮从小件陈设转向整幅画面与空间体验，完成现状诊断和三种整体取向，**推荐方案1「整体协调的幸福小屋」**，等待作者选择后才确定实施范围。此前B的暖灯 / 软装、B1 / B2成果均作为基础，三种方案不是重新选择原A / B / C。
+**2026-11-07最新状态**：作者明确选择1「整体协调」，已授权在该范围内实际调整、测试与本地预览，无需再询问同一方向。实施基线`d91e757`，继续`codex/cozy-home-design`；交付前fetch再次确认开发分支与本地一致、main仍`2574e99`。O00–O05、I00–I06完成本机范围，I07文档 / 开发分支交付中；下方11-06待选文字为研究历史。不改main / docs或部署，不发布。
 
-本轮仅研究及记录；没有修改场景、相机、物件、素材、音效、界面、依赖、构建产物或部署。原[47项体验清单](MODIFICATION-PLAN.md)仍27 / 47，不重置第02组既有完成状态，也不自动实施第06–08组。B3个人卡片仍待真实内容，当前不再沿小件清单自动续做。
+以下11-06研究历史：作者在B2-A完成后明确提出「我需要你总一些整体上的调整和完善，先不要只看细节」。本轮从小件陈设转向整幅画面与空间体验，完成现状诊断和三种整体取向，**推荐方案1「整体协调的幸福小屋」**，等待作者选择后才确定实施范围。此前B的暖灯 / 软装、B1 / B2成果均作为基础，三种方案不是重新选择原A / B / C。
+
+11-06研究批仅研究及记录；没有修改场景、相机、物件、素材、音效、界面、依赖、构建产物或部署。原[47项体验清单](MODIFICATION-PLAN.md)仍27 / 47，不重置第02组既有完成状态，也不自动实施第06–08组。B3个人卡片仍待真实内容，当前不再沿小件清单自动续做。
 
 | 编号 | 是否修改 | 是否完成 | 当前步骤 / 下一步 |
 | --- | --- | --- | --- |
 | O00 整体证据核查 | 否，研究 | 是 | 复看B2同源码的桌面日夜 / 雨暮、手机与看猫成片；核对实际机位、尺度、光照和控件 |
 | O01 问题与整体取向 | 否，研究 | 是 | 六项整体问题、三种完整取向、推荐范围及代价已记录 |
-| O02 作者选择整体方向 | 待决定 | 否 | 方案1整体协调 / 方案2海景优先 / 方案3灯下阅读优先，可明确提出取舍 |
-| O03 选定方案与实施安排 | 待选择后细化 | 否 | 以选定整体取向写具体尺寸 / 机位 / 色光目标与分批验收，不再按小件数量推进 |
-| O04 整体调整实现 | 未授权 | 否 | 未开始；相机 / 家具 / 界面调整只有在选定范围内实施 |
-| O05 本轮功能与画面验收 | 待实现 | 否 | 未开始；不能沿用B2的38项 / 60FPS / 13图作为整体改版验收 |
+| O02 作者选择整体方向 | 方案1已选择 | 是 | 11-07作者明确选择整体协调，2 / 3保留为研究候选 |
+| O03 选定方案与实施安排 | 修改方案1 | 是 | 下方执行清单已记录，先原画面 / 性能，再构图小样、统一光色和设置入口 |
+| O04 整体调整实现 | 修改方案1 | 是 | 统一主机位、光色 / 燕麦织物与设置折叠已实现；原家具 / 手机机位 / 功能与个人偏好保留 |
+| O05 本轮功能与画面验收 | 本机验收完成 | 是 | 跨运行154项、最后13 / 13，类型 / 构建、29张生产画面和14份匹配样本通过；非一次154 / 154，未验Safari / 实体手机 |
 
 ## 证据与判断边界
 
@@ -83,4 +85,58 @@
 
 开始研究时工作区干净，HEAD为`a817a34`，本地比缓存的远端开发分支领先两次提交；首次`git fetch origin`因低速超时以128退出，本地成果保留。交付前再次fetch成功，确认开发分支远端仍`51a9486`、main仍`2574e99`，本地领先2 / 落后0，无远端新增需整合。本批仅新增研究文档，按既有流程连同此前B2本地提交普通推送开发分支，不强推、不改main / docs或部署；研究完成不代表整体实施或发布授权。
 
-当前停点为O00 / O01完成、O02等待作者选择；B3暂停续做，原47项仍27 / 47。作者选择后先收敛具体整体方案，再按上表推进并逐项记录。
+11-06研究停点为O00 / O01完成、O02等待作者选择；B3暂停续做，原47项仍27 / 47。作者选择后先收敛具体整体方案，再按上表推进并逐项记录。
+
+## 11-07方案1执行清单
+
+目标：在既有B小屋上协调完整空间、昼夜光色和界面，让书桌、左侧休息角与右窗海景形成整体。架构沿用单个Three场景 / 渲染循环；镜头参数集中在`src/room-composition.ts`，设置折叠由独立轻量控制器管理，已有灯光 / 时间 / 音乐面板继续处理各自状态和保存。技术栈为现有TypeScript / Three.js / Vite / Playwright，共享Node24.14.0，无新依赖。
+
+- [x] **I00 范围与同步**：作者选择已登记，fetch核对`d91e757` / main`2574e99`、工作区干净，原47项与B3边界保留；执行`project-node --version`及读取现有package / lock，复用5173 / 4173服务。
+- [x] **I01 当前基线**：使用未改动的`measure-performance.mjs`，桌面日 / 夜各3次、390×844省电1次，共7份before；实际走两次点击入室 / 看猫 / 开册返回，固定日夜雨暮生产画面。截图和临时脚本仅存仓库外`~/.codex/visualizations/2026/11/07/room-overall`。
+- [x] **I02 构图小样与落地**：通过测试响应试拍桌面候选机位，保持1.65m眼高 / 原FOV与家具尺度，选择桌面不压迫且猫窝可辨的方案。新增`room-composition.ts`导出`roomComposition(mobile)`统一位置 / 目标，`scene.ts`的roomPose调用该函数；入室 / 看猫 / 返回与响应式继续共用同一终点，避免只改静止镜头。
+- [x] **I03 光色与材质**：改`environment-controller.ts`既有半球 / 补光的日夜强度与冷暖关系，`materials.ts`校准墙石木、`beanbag-fabric.ts` / `cozy-textiles.ts`协调座椅和布；只在实际需要时调整`coastal-environment.ts`原雾化颜色。保留个人灯光设置、原光源数量与预热；不添加阴影灯或后处理。每次对比同一机位的日 / 夜 / 雨暮，白天不染黄、夜间主体不丢失。
+- [x] **I04 收拢次要操作**：`app-view.ts`保留开册、看猫 / 抚摸，新增`#room-settings`按钮和默认隐藏的`#room-settings-menu`，收纳原`choose-record / room-light / time-flow / record-track`。`room-settings.ts`只负责展开 / Escape / 外点 / 阅读与故障关闭及释放；保持原子面板选择器和回调，`main.ts`接入setAvailable / dispose；CSS沿用现有圆角 / 配色、44px触控，关闭态减少操作排数，开态与子面板都可达。
+- [x] **I05 有意义的回归**：新增整体构图 / 真实热点和设置生命周期用例；相关旧用例通过真实「房间设置」入口操作，保持原断言，不用强制click绕过隐藏。检查320×568、390×844、844×390、1280×800、1920×1080，清雾 / 推门 / 看猫 / 读册 / 音乐 / 光 / 时间 / 画质 / 转屏 / 后台与失效兜底。最终`project-pnpm run typecheck`与`project-pnpm run build`通过，扩大136项、修正后42专项及最后13项实际轮次见下方，不写成一次全通过。
+- [x] **I06 成片与匹配性能**：最终dist日夜雨暮 / 各尺寸 / 普通访客主画面25图及后补独立音乐说明3图 / 更新夜景1图，共29图已查看；无页面 / 控制台错误，桌面开册保留本轮before同样4条Chrome复制警告。GPU串行，源码哈希冻结，7份after与7份before完成；`benchmark/room-overall-2026-11-07.json`保存14原样本 / SHA-256 / 轮次 / 资源和局限，不按刷新率宣称提速。
+- [ ] **I07 文档与交付**：每完成一步更新本清单和O04 / O05，README / AGENTS / 幸福小屋方案 / PERFORMANCE同批更新，原README历史与47项逐字保留；文档链接 / `git diff --check`、共享路径 / 磁盘变化检查。提交前再次fetch，普通推送开发分支，打开本地最终预览，停止临时防休眠；不发布。
+
+本轮已应用writing-plans整理上述执行安排，接续当前会话自主实施。Browser plugin not available，前端验证复用既有Playwright与系统Chrome；不安装新环境，不重复要求作者选择已选方向。
+
+
+11-07推进：I01已完成，7份before无页面错误；6种生产场景和桌面 / 手机看猫、开册返回实际截图已查看，桌面开册仍是原4条Chrome纹理复制警告。机位实绘比较8个候选后选G（.85,1.65,1.25 → −.5,1,−1.35），保留眼高 / FOV / 家具位置；主桌水平占幅约减少一成，猫全身进入主画面。I02代码已接入，I03光色初调中，尚待整合后验收。座椅使用既有织纹离线转燕麦色，法线 / 粗糙度不变，无运行时图片处理或新资源。
+
+11-07推进：I04实现与16项界面专项通过（含5尺寸新设置流程、4尺寸原面板 / 阅读布局）；设置默认折叠，曲目收入设置，音乐 / 灯 / 时间原入口和保存逻辑保留。初轮小屏开册超时定位为pointerdown收起栏使目标在pointerup前位移，已改为click目标确定后收起并重跑上述16项通过；不是通过强制点击绕过。主机位与光色生产成片、真实3D回归、匹配after仍待完成。
+
+11-07推进：I02–I04实现与生产画面检查完成。10种最终生产场景共25张截图已查看，覆盖5个尺寸、晴昼 / 雨暮 / 夜间、灯关 / 自定冷色、看猫 / 开册切章返回与设置，另含2种无调试入口的普通访客画面；页面身份、canvas、正文与无错误覆盖层检查通过。没有新增家具 / 灯 / 几何 / 纹理 / 渲染循环，桌面取景选G、手机保持原构图。海窗与右窗灯塔本轮无模型 / 雾色修改，先用机位与室内对比拉开层次，保留绿植 / 天文 / 天气成果。I05正在真实场景回归，I06尚待匹配after样本，O05仍未完成。
+
+11-07回归推进：首次扩大29个spec为125 / 136，11项未通过，不能称整套完成。其中原默认音乐4项仍按旧“不自动播放”验收，入室1项硬编码旧机位、新热点2项把x / y误传成PointerEvent坐标，均修正测试与实际已授权行为对齐；灯塔改为核查连续20m以上进路、右窗实体完整与左窗净空，不用旧机位的采样个数代表构图。发现1项真实问题：手动音乐延迟失败时说明被折叠设置的祖先隐藏，已将说明独立于设置栏，保留错误提示、关栏后的恢复和可见按钮焦点。最终类型 / 构建通过。修正后42项专项38通过、4项待复验（原生媒体进度等待、暂停探针复位、日历任务时序及B1后杯下已有3mm杯垫的旧承托断言）；未动产品入室 / 音乐 / 天文逻辑。临时唤醒后媒体进度恢复，保留原样重验，不用假时钟或改生产逻辑绕过。
+
+11-07推进：I05完成。源文件冻结后最后4个spec共13 / 13通过，覆盖全部默认音乐 / 入室运动 / 环境集成 / 唱片真实点击；原生媒体与暂停探针原样复验通过，日历测试改为等待请求日期 / 月相 / 天光同帧就绪，杯底断言改为真实杯垫上表面 / 杯垫与桌面接触。没有改变产品日历 / 音乐行为。I06继续补独立唱片说明的生产画面并串行采集7份after，I07文档与交付未完成。
+
+## 11-07最终实现与本机验收
+
+I02–I04实际改动为`room-composition.ts` / `scene.ts`的共享房间目的机位、`environment-controller.ts`与`materials.ts` / `beanbag-fabric.ts` / `cozy-textiles.ts`的光色，以及`app-view.ts` / `main.ts` / `room-settings.ts` / CSS和原三个工具控制器的收纳衔接。保持真实家具与猫窝、灯塔位置，不再新增摆件。原1024²棉布颜色图离线调整为燕麦色，文件+41,286B；原法线 / 粗糙度 / 解码尺寸保持，不增加纹理或图像生成依赖。
+
+桌面机位从(1.1,1.65,.75 → −.2,.95,−1.5)变为(.85,1.65,1.25 → −.5,1,−1.35)，保留1.65m眼高 / 50°镜头，入室 / 看猫返回 / 读册返回 / 转屏共用。手机保持(.55,1.65,1.7 → 0,1.05,−1.4)，不强塞全屋。夜间半球 / 补光底值从.65 / .26降为.38 / .14，晴昼端点1.54 / .90保留；原顶灯 / 布罩灯与个人设置继续决定局部暖光。没有改外景模型 / 雾色，也没有增加灯光、阴影或后处理。
+
+原三个工具按钮 / 曲目放入默认折叠的设置，开册 / 看猫和页顶音乐 / 声音保留。点击目标确定后再收栏，避免pointerdown使按钮在pointerup前移动。唱片说明作为独立面板，可在关栏后显示延迟手动失败；关闭时返回可见按钮，随自身class、房间高度与窗口变化重新适配，事件 / 两类Observer均纳入释放，不另建渲染循环。原静默、按需提示、真实热点、个人存储与故障阅读兜底通过相关回归。
+
+实际运行的本轮扩大 / 修正 / 最后复验命令如下（JSON输出在仓库外证据目录，完整统计已纳入本轮benchmark）：
+
+```sh
+~/.local/bin/project-pnpm run typecheck
+~/.local/bin/project-pnpm run build
+~/.local/bin/project-pnpm exec playwright test tests/room-overall.spec.ts tests/cozy-home.spec.ts tests/window-details.spec.ts tests/reading-details.spec.ts tests/room-light.spec.ts tests/time-flow.spec.ts tests/cozy-corner.spec.ts tests/cat-focus.spec.ts tests/interaction-hotspots.spec.ts tests/book-transition.spec.ts tests/reader-duplex.spec.ts tests/reader-reopening.spec.ts tests/entry-motion.spec.ts tests/room-observation.spec.ts tests/onboarding.spec.ts tests/record-interaction.spec.ts tests/default-music.spec.ts tests/room-entry-music.spec.ts tests/environment-controller.spec.ts tests/environment-integration.spec.ts tests/environment-weather.spec.ts tests/environment-window-sky.spec.ts tests/celestial-view.spec.ts tests/lighthouse-coast.spec.ts tests/birds-coast.spec.ts tests/performance.spec.ts tests/preparation.spec.ts tests/desk-clock.spec.ts tests/bouquet.spec.ts --reporter=json
+~/.local/bin/project-pnpm exec playwright test tests/room-settings.spec.ts tests/room-tool-panels.spec.ts tests/layout-matrix.spec.ts tests/onboarding.spec.ts tests/default-music.spec.ts tests/entry-motion.spec.ts tests/room-overall.spec.ts tests/lighthouse-coast.spec.ts tests/environment-integration.spec.ts tests/environment-living-world.spec.ts tests/record-interaction.spec.ts --reporter=line,json
+~/.local/bin/project-pnpm exec playwright test tests/default-music.spec.ts tests/entry-motion.spec.ts tests/environment-integration.spec.ts tests/record-interaction.spec.ts --reporter=line,json
+```
+
+首轮29个spec为125 / 136，修正后11个spec为38 / 42，最后4个spec13 / 13；合并逻辑用例并去除重复后154项全部已有本轮通过记录。最后独立唱片说明修正后并未重新运行全部154项，不把重叠测试累加成一次通过。起始16项界面验证另曾通过，但不再重复累计。首次原生媒体进度等待和暂停探针复位在有时限的唤醒后原样通过；没有将系统等待冒充产品修复，也没有改RAF / 音乐或使用假音轨绕过原生播放。日历与杯垫测试的修正见推进实录。
+
+最终生产构建110模块，app390.05KB / gzip144.55KB、CSS43.58KB / gzip9.69KB，Three585.94KB / gzip150.15KB，原大chunk警告保留。实绘证据在本机`~/.codex/visualizations/2026/11/07/room-overall`；10主场景25张包括5尺寸、正常访客、晴昼 / 雨暮 / 夜间、看猫 / 开册切章返回、关灯与自定义冷灯，后补3种尺寸音乐面板与1张最终夜景共29张均已查看。页面身份、canvas、正文、无错误覆盖层 / 横向溢出通过，未新增页面 / 控制台错误；桌面开册原4条Chrome纹理复制警告与本轮before一致。没有Safari、实体手机或长期温度 / 电池验收。
+
+I06的14份匹配样本使用原脚本，桌面日 / 夜各前后3次5秒、390×844省电夜景各1次5秒；完整原样本和source哈希在[本轮JSON](benchmark/room-overall-2026-11-07.json)，方法与表格在[PERFORMANCE.md](PERFORMANCE.md)。日 / 夜FPS中位60.000→60.015、60.007→60.004；手机单次30.011→29.408FPS，P95 36.2→37.3ms，不隐去单次略降或挑更好样本。资源普通270 / 42 / 63、省电270 / 41 / 56不变；新取景使原物体可见绘制+5 / 三角+532，未添加新模型。日 / 夜加载中位约+20 / −123ms，只作短样本，不声称提速或净GPU成本。
+
+复用`~/.nvm/versions/node/v24.14.0`、`~/.local/bin/project-node`、`project-pnpm`11.7.0与`~/Library/pnpm/store/v11`，文档 / 图像离线处理复用`~/.local/bin/document-python` / `document-tools`。无安装、新环境、vendor目录或需隔离例外，5173 / 4173服务沿用。提交前fetch成功，开发分支与`d91e757`一致、main仍`2574e99`；仅开发分支交付，不改docs / main / 部署，不发布。I07下一步为文档链接 / 历史 / 47项逐字与diff检查、实际磁盘快照、提交及普通推送。
+
+I07文档预检通过：`~/.local/bin/document-python ~/.codex/visualizations/2026/11/07/room-overall/check-docs.py`核对5份根文档175个本地链接、40份本任务文件、O00–O05 / I00–I06完成、原README / 协作历史保留、47项逐字不变、最终源码哈希匹配，以及依赖 / 构建 / 部署配置未变；`git diff --check`通过。实际`du -sk`校验快照：仓库171,568→168,324KiB（−3,244KiB），共享store保持1,445,180KiB，仓库外本轮证据48,668KiB。全仓差值含Playwright重建的`test-results`、`dist`与Git元数据，不代表依赖清理或净源码缩减；没有环境迁移 / 清理或隔离例外，提交后Git元数据会少量增长。文档检查不是新增功能测试，I07继续提交 / 普通推送与本地预览。

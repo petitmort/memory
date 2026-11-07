@@ -1,3 +1,4 @@
+import { openRoomSettings } from './helpers/room-settings';
 import { test, expect, type Page } from '@playwright/test';
 import { mockExperienceScene, enterFixtureRoom, finishSceneStep, openFixtureBook, closeFixtureBook } from './helpers/experience-scene';
 
@@ -15,7 +16,7 @@ async function expectActionsReachable(page: Page, panel: string) {
       const bounds = document.querySelector(selector)!.getBoundingClientRect();
       const intersection = Math.min(room.right, bounds.right) - Math.max(room.left, bounds.left) > .5
         && Math.min(room.bottom, bounds.bottom) - Math.max(room.top, bounds.top) > .5;
-      const missed = ['open-book', 'cozy-view', 'pet-cat', 'choose-record', 'room-light', 'time-flow'].filter(id => {
+      const missed = ['open-book', 'cozy-view', 'pet-cat', 'room-settings', 'choose-record', 'room-light', 'time-flow'].filter(id => {
         const element = document.getElementById(id)!;
         if (!element.checkVisibility()) return false;
         const r = element.getBoundingClientRect();
@@ -36,7 +37,7 @@ for (const [width, height] of [[320, 568], [390, 844], [844, 390], [1280, 800]])
     await mockExperienceScene(page); await page.goto('/'); await enterFixtureRoom(page);
     for (const cat of [false, true]) {
       if (cat) { await page.locator('#cozy-view').click(); await finishSceneStep(page, 'view'); }
-      await page.locator('#room-light').click(); await expectActionsReachable(page, '#room-light-panel');
+      await openRoomSettings(page); await page.locator('#room-light').click(); await expectActionsReachable(page, '#room-light-panel');
       for (const id of ['room-light-toggle', 'room-light-color', 'room-light-brightness', 'room-light-close']) {
         const control = page.locator('#' + id); await control.scrollIntoViewIfNeeded();
         const bounds = await control.boundingBox();
@@ -46,7 +47,7 @@ for (const [width, height] of [[320, 568], [390, 844], [844, 390], [1280, 800]])
         }), id).toBe(true);
       }
       await page.keyboard.press('Escape');
-      await page.locator('#time-flow').click(); await page.locator('#time-flow-free').check();
+      await openRoomSettings(page); await page.locator('#time-flow').click(); await page.locator('#time-flow-free').check();
       await expectActionsReachable(page, '#time-flow-panel');
       // A narrower viewport changes the number of action rows while open.
       await page.setViewportSize({ width: 320, height: 568 });
@@ -54,13 +55,13 @@ for (const [width, height] of [[320, 568], [390, 844], [844, 390], [1280, 800]])
       await page.keyboard.press('Escape'); await page.setViewportSize({ width, height }); await settledLayout(page);
     }
     // Light must also refit when an already-open panel crosses the breakpoint.
-    await page.locator('#room-light').click(); await page.setViewportSize({ width: 390, height: 568 });
+    await openRoomSettings(page); await page.locator('#room-light').click(); await page.setViewportSize({ width: 390, height: 568 });
     await expectActionsReachable(page, '#room-light-panel');
     await page.keyboard.press('Escape');
     await page.locator('#cozy-view').click(); await finishSceneStep(page, 'view');
-    await page.locator('#room-light').click(); await openFixtureBook(page);
+    await openRoomSettings(page); await page.locator('#room-light').click(); await openFixtureBook(page);
     await expect(page.locator('#room-light-panel')).toBeHidden();
-    await closeFixtureBook(page); await page.locator('#time-flow').click();
+    await closeFixtureBook(page); await openRoomSettings(page); await page.locator('#time-flow').click();
     await page.evaluate(() => (window as any).__experience.fail());
     await expect(page.locator('#time-flow-panel')).toBeHidden();
   });
@@ -73,7 +74,7 @@ test('keyboard switching replaces each tool panel and Escape restores only the a
   const tools = [['room-light', 'room-light-panel'], ['time-flow', 'time-flow-panel'], ['choose-record', 'record-panel']] as const;
   for (const [from, fromPanel] of tools) for (const [to, toPanel] of tools) {
     if (from === to) continue;
-    await page.locator('#' + from).focus(); await page.keyboard.press('Enter');
+    await openRoomSettings(page); await page.locator('#' + from).focus(); await page.keyboard.press('Enter');
     await expect(page.locator('#' + fromPanel)).toBeVisible();
     await page.locator('#' + to).focus(); await page.keyboard.press('Space');
     await expect(page.locator('#' + toPanel)).toBeVisible();
@@ -81,7 +82,7 @@ test('keyboard switching replaces each tool panel and Escape restores only the a
     await page.keyboard.press('Escape');
     await expect(page.locator('#' + toPanel)).toBeHidden(); await expect(page.locator('#' + to)).toBeFocused();
   }
-  await page.locator('#room-light').click(); await page.locator('#room-light-brightness').fill('72');
+  await openRoomSettings(page); await page.locator('#room-light').click(); await page.locator('#room-light-brightness').fill('72');
   await expect(page.locator('#room-light-panel')).toBeVisible();
   await page.locator('#time-flow').focus(); await page.keyboard.press('Enter');
   await page.locator('#room-light').focus(); await page.keyboard.press('Enter');
@@ -94,7 +95,7 @@ test('open settings follow action-row reflow without a viewport resize', async (
   await page.setViewportSize({ width: 390, height: 568 }); await page.emulateMedia({ reducedMotion: 'reduce' });
   await mockExperienceScene(page); await page.goto('/'); await enterFixtureRoom(page);
   for (const [trigger, panel] of [['room-light', '#room-light-panel'], ['time-flow', '#time-flow-panel']]) {
-    await page.locator('#' + trigger).click();
+    await openRoomSettings(page); await page.locator('#' + trigger).click();
     // Simulate a longer translated button wrapping onto another real flex row.
     await page.locator('#cozy-view').evaluate(element => { element.style.width = '100%'; });
     await expectActionsReachable(page, panel);

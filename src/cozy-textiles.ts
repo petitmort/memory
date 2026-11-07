@@ -91,9 +91,9 @@ export function createCozyRug(material:THREE.Material) {
 /** Fit static cloth once, in the beanbag's local coordinates before it is placed. */
 export function createCozyTextiles(seating:THREE.Group,fabric:THREE.Texture) {
   const group=new THREE.Group();group.name='soft-home-textiles';
-  const linen=new THREE.MeshStandardMaterial({color:'#eddbbb',map:fabric,bumpMap:fabric,bumpScale:.00055,roughness:1});
-  const pillowMaterial=linen.clone();pillowMaterial.color.set('#c59983');
-  const seamMaterial=new THREE.MeshStandardMaterial({color:'#d1b99a',roughness:1});
+  const linen=new THREE.MeshStandardMaterial({color:'#e4dbca',map:fabric,bumpMap:fabric,bumpScale:.00055,roughness:1});
+  const pillowMaterial=linen.clone();pillowMaterial.color.set('#b69080');
+  const seamMaterial=new THREE.MeshStandardMaterial({color:'#c6b79e',roughness:1});
   const add=(geometry:THREE.BufferGeometry,material:THREE.Material,name:string)=>{
     const mesh=new THREE.Mesh(geometry,material);mesh.name=name;mesh.castShadow=mesh.receiveShadow=true;group.add(mesh);return mesh;
   };

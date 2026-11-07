@@ -1,3 +1,4 @@
+import { roomComposition } from '../src/room-composition';
 import { test, expect } from '@playwright/test';
 import * as THREE from 'three';
 import { timestampFromZonedInput } from '../src/calendar-seed';
@@ -236,8 +237,8 @@ test('a fixed cloud wind speed keeps automatic direction across fronts while a f
 
 function roomCamera(mobile: boolean) {
   const camera = new THREE.PerspectiveCamera(50, mobile ? 390 / 844 : 1000 / 740, .1, 500);
-  camera.position.set(mobile ? .55 : 1.1, 1.65, mobile ? 1.15 : .75);
-  camera.lookAt(mobile ? .15 : -.2, mobile ? 1.05 : .95, mobile ? -1.4 : -1.5);
+  const composition = roomComposition(mobile);
+  camera.position.copy(composition.p); camera.lookAt(composition.t);
   camera.updateMatrixWorld(true);
   return camera;
 }

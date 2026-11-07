@@ -114,6 +114,7 @@ export function createTimeFlowControls(button: HTMLButtonElement, onChange: (pat
     panel.addEventListener(type, event => event.stopPropagation(), { signal: events.signal });
   render();
   return {
+    close: () => close(),
     update(frame: TimeFlowFrame) {
       if (disposed) return;
       latest = frame;

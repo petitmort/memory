@@ -23,7 +23,7 @@ function canvasTexture(
 }
 export function createPalette() {
   const lime = canvasTexture((ctx, r) => {
-    ctx.fillStyle = "#f5efe3";
+    ctx.fillStyle = "#f7f2e8";
     ctx.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 230; i++) {
       ctx.fillStyle = `rgba(166,154,128,${r() * 0.018})`;
@@ -47,7 +47,7 @@ export function createPalette() {
   });
   lime.repeat.set(2, 2);
   const stone = canvasTexture((ctx, r) => {
-    ctx.fillStyle = "#d9ceba";
+    ctx.fillStyle = "#dad3c6";
     ctx.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 1400; i++) {
       ctx.strokeStyle = `rgba(155,140,111,${r() * 0.04})`;
@@ -71,7 +71,7 @@ export function createPalette() {
         r() > 0.5 ? "rgba(245,237,213,.12)" : "rgba(99,90,70,.07)";
       ctx.fillRect(r() * 512, r() * 512, r() * 2 + 0.2, 0.5 + r());
     }
-    ctx.strokeStyle = "#bfb5a3";
+    ctx.strokeStyle = "#c2baad";
     ctx.lineWidth = 2;
     ctx.strokeRect(1, 1, 510, 510);
   });
@@ -84,7 +84,7 @@ export function createPalette() {
   // Both textures share the asynchronously loaded image, including the cloned variant.
   horizontalTimber.center.set(.5,.5);horizontalTimber.rotation = Math.PI/2;
   const painted = canvasTexture((ctx, r) => {
-    ctx.fillStyle = "#276190";
+    ctx.fillStyle = "#386a86";
     ctx.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 1000; i++) {
       const x = r() * 512;
@@ -141,7 +141,7 @@ export function createPalette() {
       map: timber, bumpMap: timber, bumpScale: .00028, roughness: .71,
     }),
     tableWood: new THREE.MeshStandardMaterial({
-      color: '#fff3e0', map: horizontalTimber, bumpMap: horizontalTimber, bumpScale: .00028, roughness: .77,
+      color: '#f8edda', map: horizontalTimber, bumpMap: horizontalTimber, bumpScale: .00028, roughness: .77,
     }),
     blue: new THREE.MeshStandardMaterial({
       map: painted,

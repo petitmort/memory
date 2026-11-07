@@ -1,3 +1,4 @@
+import { openRoomSettings } from './helpers/room-settings';
 import {test, expect, type Page} from '@playwright/test';
 import * as THREE from 'three';
 import {createReadingDetails} from '../src/reading-details';
@@ -86,7 +87,7 @@ for (const width of [1280, 390]) test(`B2 books preserve furniture clearance, fi
     const pixels = width === 1280 ? await page.evaluate(() => (window as any).__readingDetails.pixels()) : null;
     if (width === 1280) {expect(entered.screen.x).toBeGreaterThan(0);expect(pixels).toBeGreaterThan(80);}
     else expect(entered.screen.x).toBeLessThan(0);
-    await page.locator('#room-light').click();await page.locator('#room-light-color').fill('#557dff');
+    await openRoomSettings(page); await page.locator('#room-light').click();await page.locator('#room-light-color').fill('#557dff');
     await page.locator('#room-light-toggle').click();await page.locator('#room-light-toggle').click();await page.keyboard.press('Escape');
     await page.locator('#cozy-view').click();await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed', 'true');
     await page.locator('#cozy-view').click();await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed', 'false');

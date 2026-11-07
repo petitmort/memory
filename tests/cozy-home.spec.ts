@@ -1,3 +1,4 @@
+import { openRoomSettings } from './helpers/room-settings';
 import {test,expect,type Page} from '@playwright/test';
 import * as THREE from 'three';
 import {createCozyLamp} from '../src/cozy-lamp';
@@ -162,7 +163,7 @@ for(const width of [1280,390])test(`cozy furnishing keeps cat, book and controls
       const warm=await page.evaluate(()=>(window as any).__home.difference());
       expect(warm.changed).toBeGreaterThan(500);expect(warm.rgb[0]).toBeGreaterThan(warm.rgb[2]);
     }
-    await page.locator('#room-light').click();await page.locator('#room-light-color').fill('#557dff');
+    await openRoomSettings(page); await page.locator('#room-light').click();await page.locator('#room-light-color').fill('#557dff');
     expect((await snapshot()).color).toBe('557dff');
     await page.locator('#room-light-brightness').fill('25');expect((await snapshot()).light).toBeCloseTo(.35);
     await page.locator('#room-light-toggle').click();const off=await snapshot();expect(off.light).toBe(0);expect(off.shade).toBe(0);

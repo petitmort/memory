@@ -1,3 +1,4 @@
+import { roomComposition } from '../src/room-composition';
 import { test, expect } from "@playwright/test";
 import * as THREE from "three";
 import { createLighthouseCoast, lighthouseSite, LIGHTHOUSE_HEIGHT, sampleLighthousePath } from "../src/lighthouse-coast";
@@ -84,8 +85,8 @@ test("the tower and entire pier stay in the right pane while the approach enters
   expect(Math.max(...towerPoints.map(p => p.y)) - lighthouseSite.y).toBeLessThanOrEqual(LIGHTHOUSE_HEIGHT);
   for (const [width, height] of [[1280, 800], [390, 844], [844, 390]]) {
     const mobile = width < 760, camera = new THREE.PerspectiveCamera(50, width / height, .1, 500);
-    camera.position.set(mobile ? .55 : 1.1, 1.65, mobile ? 1.7 : .75);
-    camera.lookAt(mobile ? 0 : -.2, mobile ? 1.05 : .95, mobile ? -1.4 : -1.5); camera.updateMatrixWorld(true);
+    const composition = roomComposition(mobile);
+    camera.position.copy(composition.p); camera.lookAt(composition.t); camera.updateMatrixWorld(true);
     const portal = (p: THREE.Vector3) => camera.position.clone().lerp(p, (-2.7 - camera.position.z) / (p.z - camera.position.z));
     const paneX: number[] = [], paneY: number[] = [], screenX: number[] = [], screenY: number[] = [];
     for (const p of towerPoints) {
@@ -97,12 +98,19 @@ test("the tower and entire pier stay in the right pane while the approach enters
     expect(Math.min(...paneY), `${width} sill`).toBeGreaterThan(.85);
     expect(Math.max(...paneY), `${width} lintel`).toBeLessThan(2.45);
     expect(Math.max(...screenX)).toBeLessThan(.98); expect(Math.max(...screenY)).toBeLessThan(.98);
-    const roadPanes: { x: number; y: number }[] = [];
+    const roadPanes: { x: number; y: number; progress: number }[] = [];
     for (let i = 0; i <= 100; i++) {
       const p = sampleLighthousePath(i / 100), world = new THREE.Vector3(p.x, p.y + .03, p.z), pane = portal(world), screen = world.clone().project(camera);
-      if (Math.abs(pane.x) < 1.47 && pane.y > .85 && pane.y < 2.45 && Math.abs(screen.x) < .98 && Math.abs(screen.y) < .98) roadPanes.push({ x: pane.x, y: pane.y });
+      if (Math.abs(pane.x) < 1.47 && pane.y > .85 && pane.y < 2.45 && Math.abs(screen.x) < .98 && Math.abs(screen.y) < .98) roadPanes.push({ x: pane.x, y: pane.y, progress: i / 100 });
     }
-    expect(roadPanes.length, `${width} visible approach`).toBeGreaterThan(mobile ? 30 : 55);
+    // Judge the receding approach in metres, rather than the old camera's
+    // incidental sample count. A continuous half-pier remains visible on the
+    // wider room composition; mobile retains its original framing.
+    expect(roadPanes.length).toBeGreaterThan(1);
+    expect((roadPanes.at(-1)!.progress - roadPanes[0].progress) * PIER_LENGTH,
+      `${width} visible approach in metres`).toBeGreaterThan(mobile ? 12 : 20);
+    for (let i = 1; i < roadPanes.length; i++)
+      expect(roadPanes[i].progress - roadPanes[i - 1].progress, `${width} continuous approach`).toBeCloseTo(.01, 8);
     expect(Math.min(...roadPanes.map(p => p.x)), `${width} right-pane approach`).toBeGreaterThan(.20);
     expect(roadPanes[0].x, `${width} approach enters from right`).toBeGreaterThan(roadPanes.at(-1)!.x + .20);
     expect(roadPanes[0].y, `${width} approach enters near sill`).toBeLessThan(1.0);

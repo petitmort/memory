@@ -1,3 +1,4 @@
+import { openRoomSettings } from './helpers/room-settings';
 import { test, expect } from '@playwright/test';
 
 /** A quiet original tone, long enough not to end during a slow software-GPU run. */
@@ -84,7 +85,7 @@ test('the desk record accepts and remembers music, resumes in place and stays in
         return {
           point: { x: (point.x + 1) * innerWidth / 2, y: (1 - point.y) * innerHeight / 2 },
           playing: recordPlayer.group.userData.playing === true,
-          player: bounds(recordPlayer.group), tabletop: bounds(tabletop), cup: bounds(cup), letter: bounds(letter),
+          player: bounds(recordPlayer.group), tabletop: bounds(tabletop), coaster: bounds(coaster), cup: bounds(cup), letter: bounds(letter),
           flower: { min: flower.min.toArray(), max: flower.max.toArray() }, parked: bouquetParked,
         };
       };
@@ -144,7 +145,7 @@ test('the desk record accepts and remembers music, resumes in place and stays in
     expect((await media()).duration).toBeGreaterThan(60);
     await page.mouse.click(initial.point.x, initial.point.y); await paused();
     const choose = page.waitForEvent('filechooser', { timeout: 30000 });
-    await page.locator('#choose-record').click();
+    await openRoomSettings(page); await page.locator('#choose-record').click();
     await (await choose).setFiles({ name: 'test-record.wav', mimeType: 'audio/wav', buffer: testRecord() });
     await playing();
     await expect(page.locator('#record-state')).toHaveText('播放中');
@@ -189,12 +190,15 @@ test('the desk record accepts and remembers music, resumes in place and stays in
     await page.locator('#open-book').click();
     await expect(page.locator('#reader')).toHaveAttribute('data-phase', 'ready', { timeout: 60000 });
     const reading = await media(); expect(reading.paused).toBe(false);
-    await page.waitForFunction(time => (window as any).__recordMedia.currentTime > time + .1, reading.time);
+    try {
+      await page.waitForFunction(time => (window as any).__recordMedia.currentTime > time + .1, reading.time, { timeout: 10000 });
+    } catch (error) { console.log('Reading media state:', await media()); throw error; }
     await page.locator('#close-book').click(); await expect(page.locator('#room-ui')).toBeVisible({ timeout: 60000 });
     const layout = await room(); expect(layout.parked).toBe(true);
     expect(layout.flower.min[2] - layout.player.max[2]).toBeGreaterThan(.01);
     expect(layout.player.min[1]).toBeCloseTo(layout.tabletop.max[1], 3);
-    expect(layout.cup.min[1]).toBeCloseTo(layout.tabletop.max[1], 3);
+    expect(layout.coaster.min[1]).toBeCloseTo(layout.tabletop.max[1], 3);
+    expect(layout.cup.min[1]).toBeCloseTo(layout.coaster.max[1], 5);
     expect(layout.letter.min[1]).toBeGreaterThanOrEqual(layout.tabletop.max[1] - .0001);
     expect(layout.letter.min[1]).toBeLessThan(layout.tabletop.max[1] + .001);
     expect(layout.player.min[2]).toBeGreaterThanOrEqual(layout.tabletop.min[2] - .001);
@@ -229,7 +233,7 @@ test('the desk record accepts and remembers music, resumes in place and stays in
     // releases the prior local URL instead of retaining an old music file.
     await page.locator('#record-toggle').focus(); await page.keyboard.press('Enter'); await playing();
     const beforeReplacement = await media();
-    const replacement = page.waitForEvent('filechooser', { timeout: 30000 }); await page.locator('#choose-record').click();
+    const replacement = page.waitForEvent('filechooser', { timeout: 30000 }); await openRoomSettings(page); await page.locator('#choose-record').click();
     await (await replacement).setFiles({ name: 'replacement-record.wav', mimeType: 'audio/wav', buffer: testRecord() });
     await playing();
     const replaced = await media();

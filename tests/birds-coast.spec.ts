@@ -1,3 +1,4 @@
+import { roomComposition } from '../src/room-composition';
 import { test, expect } from '@playwright/test';
 import * as THREE from 'three';
 import { BIRD_KINDS, createBirdJourney, getBirdSchedule, sampleBirdFlight } from '../src/bird-controller';
@@ -6,8 +7,8 @@ import { coastalReefs, createCoastalEnvironment } from '../src/coastal-environme
 function windowProjection(point: ReturnType<typeof sampleBirdFlight>, mobile: boolean) {
   const width = mobile ? 390 : 1280, height = mobile ? 844 : 800;
   const camera = new THREE.PerspectiveCamera(50, width / height, .1, 500);
-  camera.position.set(mobile ? .55 : 1.1, 1.65, mobile ? 1.15 : .75);
-  camera.lookAt(mobile ? .15 : -.2, mobile ? 1.05 : .95, mobile ? -1.4 : -1.5);
+  const composition = roomComposition(mobile);
+  camera.position.copy(composition.p); camera.lookAt(composition.t);
   camera.updateMatrixWorld(true);
   const world = new THREE.Vector3(point.x, point.y, point.z);
   const portal = camera.position.clone().lerp(world, (-2.7 - camera.position.z) / (point.z - camera.position.z));

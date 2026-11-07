@@ -15,6 +15,7 @@ import { createCurtains } from "./curtains";
 import { createMythology } from "./mythology";
 import { createDecor } from "./decor";
 import { consoleLayout } from "./interior-layout";
+import { roomComposition } from "./room-composition";
 import { createCozySeating } from "./cozy-seating";
 import { createCozyLamp } from "./cozy-lamp";
 import { createHomeFabric, createCozyRug, createCozyTextiles } from "./cozy-textiles";
@@ -728,16 +729,7 @@ export function createScene(
     p: new THREE.Vector3(D.door.centerX, D.eye, front + 3.6),
     t: new THREE.Vector3(mobile() ? D.door.centerX : 0.12, 1.2, front),
   });
-  const roomPose = (): Pose =>
-    mobile()
-      ? {
-          p: new THREE.Vector3(0.55, D.eye, 1.7),
-          t: new THREE.Vector3(0, 1.05, -1.4),
-        }
-      : {
-          p: new THREE.Vector3(1.1, D.eye, 0.75),
-          t: new THREE.Vector3(-0.2, 0.95, -1.5),
-        };
+  const roomPose = (): Pose => roomComposition(mobile());
   // Approach through the clear space in front of the desk and stool. Keep a
   // standing eye, with enough distance to see the whole curled cat on a phone.
   const cozyPose = () => ({

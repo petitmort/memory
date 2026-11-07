@@ -1,3 +1,4 @@
+import { openRoomSettings } from './helpers/room-settings';
 import { test, expect } from '@playwright/test';
 import { mockExperienceScene, enterFixtureRoom, openFixtureBook } from './helpers/experience-scene';
 
@@ -21,7 +22,8 @@ for (const viewport of viewports) {
       await mockExperienceScene(page); await page.goto('/');
       await enterFixtureRoom(page);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      for (const selector of ['#open-book', '#cozy-view', '#choose-record', '#room-light', '#record-toggle', '#sound', '#fullscreen', '#quality']) {
+      await openRoomSettings(page);
+      for (const selector of ['#room-settings', '#time-flow', '#open-book', '#cozy-view', '#choose-record', '#room-light', '#record-toggle', '#sound', '#fullscreen', '#quality']) {
         const button = page.locator(selector);
         await expect(button).toBeVisible();
         const box = await button.boundingBox();
@@ -36,7 +38,7 @@ for (const viewport of viewports) {
         expect(await button.evaluate((element, center) => element.contains(document.elementFromPoint(center.x, center.y)), center), selector).toBe(true);
       }
       await page.screenshot({ path: `test-results/${viewport.label}-room.png` });
-      await page.locator('#room-light').click();
+      await openRoomSettings(page); await page.locator('#room-light').click();
       const lightPanel=await page.locator('#room-light-panel').boundingBox();
       expect(lightPanel!.x).toBeGreaterThanOrEqual(0);expect(lightPanel!.y).toBeGreaterThanOrEqual(0);
       expect(lightPanel!.x+lightPanel!.width).toBeLessThanOrEqual(viewport.width);

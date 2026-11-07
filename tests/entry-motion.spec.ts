@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { roomComposition } from '../src/room-composition';
 
 type EntryFrame = {
   p: number[]; t: number[]; door: number; current: string; wall: boolean;
@@ -98,15 +99,15 @@ test('entry curve keeps eye height and doorway clearance, with continuous speed 
   await page.route('**/__entry-motion', route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Entry motion</title>' }));
   await page.goto('/__entry-motion');
   const evidence = await page.evaluate(async () => {
-    const threePath = '/node_modules/.vite/deps/three.js', entryPath = '/src/entry-motion.ts', motionPath = '/src/reading-motion.ts';
-    const [THREE, { createEntryPath }, { retargetReadingPath }] = await Promise.all([import(threePath), import(entryPath), import(motionPath)]);
+    const threePath = '/node_modules/.vite/deps/three.js', entryPath = '/src/entry-motion.ts', motionPath = '/src/reading-motion.ts', compositionPath = '/src/room-composition.ts';
+    const [THREE, { createEntryPath }, { retargetReadingPath }, { roomComposition }] = await Promise.all([import(threePath), import(entryPath), import(motionPath), import(compositionPath)]);
     const from = { p: new THREE.Vector3(.55,1.65,6.3), t: new THREE.Vector3(.12,1.2,2.7), fov:50 };
-    const to = { p:new THREE.Vector3(1.1,1.65,.75), t:new THREE.Vector3(-.2,.95,-1.5), fov:50 };
+    const to = { ...roomComposition(false), fov:50 };
     const duration = 3800, path = createEntryPath(from,to,{x:.55,y:1.65,z:2.7},duration);
     const samples = Array.from({length:1001},(_,index)=>path.sample(index/1000));
     const joinIndex = samples.findIndex(sample=>sample.p.z<=2.1), progress=joinIndex/1000;
     const initial=path.sample(progress), remaining=duration*(1-progress), step=.1;
-    const destination = { p:new THREE.Vector3(.55,1.65,1.15),t:new THREE.Vector3(.15,1.05,-1.4),fov:50 };
+    const destination = { ...roomComposition(true), fov:50 };
     const redirect = retargetReadingPath(initial,destination,remaining);
     const before = path.sample(progress-step/duration), join=redirect.sample(0), after=redirect.sample(step/remaining);
     const vector=sample=>({p:sample.p.toArray(),t:sample.t.toArray(),fov:sample.fov});
@@ -125,7 +126,7 @@ test('entry curve keeps eye height and doorway clearance, with continuous speed 
   });
   for (let axis=0;axis<3;axis++) {
     expect(evidence.start.p[axis]).toBeCloseTo([.55,1.65,6.3][axis],10);
-    expect(evidence.end.p[axis]).toBeCloseTo([1.1,1.65,.75][axis],10);
+    expect(evidence.end.p[axis]).toBeCloseTo(roomComposition(false).p.toArray()[axis],10);
   }
   expect(evidence.startStep).toBeLessThan(.000001); expect(evidence.endStep).toBeLessThan(.000001);
   for (const velocity of [evidence.startVelocity,evidence.endVelocity]) {
@@ -212,7 +213,7 @@ test('reduced motion draws an open door and an unchanged first walking frame bef
     expect(entry[doorComplete].door).toBeCloseTo(-Math.PI*.58,8); expect(entry[doorComplete].p[2]).toBeCloseTo(6.3,10);
     expect(entry[firstWalk].walk!.elapsed).toBe(0); expect(entry[firstWalk].p[2]).toBeCloseTo(6.3,10);
     const end=entry.find(sample=>sample.walkCompleted)!;
-    for(let axis=0;axis<3;axis++)expect(end.p[axis]).toBeCloseTo([1.1,1.65,.75][axis],10);
+    for(let axis=0;axis<3;axis++)expect(end.p[axis]).toBeCloseTo(roomComposition(false).p.toArray()[axis],10);
     await test.info().attach('reduced-rendered-entry',{body:JSON.stringify(entry,null,2),contentType:'application/json'});
     expect(errors).toEqual([]);
   } finally { await context.close(); }

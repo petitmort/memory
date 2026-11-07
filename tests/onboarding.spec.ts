@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { mockExperienceScene, finishSceneStep, enterFixtureRoom, openFixtureBook, closeFixtureBook } from './helpers/experience-scene';
+import { openRoomSettings } from './helpers/room-settings';
 
 async function expectRoomControlsClear(page: Page) {
   const original = page.viewportSize()!;
@@ -8,7 +9,7 @@ async function expectRoomControlsClear(page: Page) {
     // Measure the settled media-query layout, after resize and its next paint.
     await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve(null)))));
     const result = await page.evaluate(() => {
-      const selectors = ['#open-book', '#cozy-view', '#pet-cat', '#choose-record', '#scene-hint', '#record-track', '#record-state', '.record-empty-note', '#pet-hint', '#cozy-credit', '#quality', '.journey'];
+      const selectors = ['#open-book', '#cozy-view', '#pet-cat', '#room-settings', '#choose-record', '#scene-hint', '#record-track', '#record-state', '.record-empty-note', '#pet-hint', '#cozy-credit', '#quality', '.journey'];
       const boxes = selectors.flatMap(selector => {
         const element = document.querySelector<HTMLElement>(selector)!;
         if (!element.checkVisibility()) return [];
@@ -21,7 +22,7 @@ async function expectRoomControlsClear(page: Page) {
         if (Math.min(x.right,y.right)-Math.max(x.left,y.left)>.5 && Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top)>.5)
           overlaps.push(`${x.selector} / ${y.selector}`);
       }
-      const missed = ['#open-book','#cozy-view','#pet-cat','#choose-record','#quality'].filter(selector => {
+      const missed = ['#open-book','#cozy-view','#pet-cat','#room-settings','#choose-record','#quality'].filter(selector => {
         const button = document.querySelector<HTMLElement>(selector)!;
         if (!button.checkVisibility()) return false;
         const r=button.getBoundingClientRect(), hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
@@ -190,16 +191,25 @@ test('optional audio failure keeps a healthy room usable and music loading error
   wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22);
   wav.writeUInt32LE(8000, 24); wav.writeUInt32LE(16000, 28);
   wav.writeUInt16LE(2, 32); wav.writeUInt16LE(16, 34); wav.write('data', 36); wav.writeUInt32LE(16000, 40);
-  await page.locator('#record-file').setInputFiles({ name: 'test-record.wav', mimeType: 'audio/wav', buffer: wav });
+  await openRoomSettings(page);
+  const chooser = page.waitForEvent('filechooser');
+  await page.locator('#choose-record').click();
+  await (await chooser).setFiles({ name: 'test-record.wav', mimeType: 'audio/wav', buffer: wav });
   await expect(page.locator('#record-state')).toHaveText('加载中');
+  // A delayed manual playback error must remain recoverable after the user
+  // has collapsed the settings. The explanation is independent of that menu.
+  await page.locator('#room-settings').click();
+  await expect(page.locator('#room-settings-menu')).toBeHidden();
   await page.evaluate(() => (window as any).__rejectRecord());
   await expect(page.locator('#record-state')).toHaveText('播放失败');
   await expect(page.locator('#record-panel')).toBeVisible();
   await expect(page.locator('#record-panel .record-storage-note')).toContainText('当前浏览器');
   await expect(page.locator('#record-panel .record-storage-note')).toContainText('清除网站数据');
   await page.locator('#record-panel-close').click();
+  await expect(page.locator('#record-toggle')).toBeFocused();
   await expectRoomControlsClear(page);
   await expect(page.locator('#choose-record')).toHaveText('更换音乐');
+  await openRoomSettings(page);
   await expect(page.locator('#choose-record')).toBeEnabled();
   await expect(page.locator('#room-ui')).toBeVisible();
   await expect(page.locator('#open-book')).toBeEnabled();

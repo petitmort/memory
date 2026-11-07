@@ -141,6 +141,7 @@ export function createRoomLightControls(
   render();
 
   return {
+    close: () => close(false),
     getSettings(): RoomLightSettings { return { ...settings }; },
     setAvailable(value: boolean) {
       if (disposed) return;

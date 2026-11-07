@@ -1,0 +1,3229 @@
+{
+  "schema": 1,
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "baseline": "d91e757",
+  "branch": "codex/cozy-home-design",
+  "scope": "Selected overall option 1: wider coherent desktop room framing, coordinated indoor day/night light and oatmeal/wood palette, disclosure for secondary room settings. Phone camera, furniture positions, existing objects and personal preferences retained. B3 and the original 47-item plan are unchanged. Development only, no publication or deployment changes.",
+  "method": {
+    "runtime": "Shared Node 24.14.0 via project-node/project-pnpm, existing dependencies and pnpm store v11; no installs or isolated environment.",
+    "browser": "System Chrome 156.0.8078.80; actual ANGLE Metal Apple M1 Pro. Browser plugin unavailable; existing Playwright used.",
+    "script": "Unchanged scripts/measure-performance.mjs via local measure.mjs, development server 5173. DPR1, CPU1x, reduced motion, clear simulated weather, no birds/vessels, default warm 50% room light.",
+    "desktop": "1280x800, ordinary quality, scene time 2026-10-31 12:00 and 22:00; three serial five-second samples for each before/after group.",
+    "phone": "390x844, low quality, scene time 2026-10-31 22:00; one five-second sample before and after. Desktop viewport emulation, not a physical phone.",
+    "isolation": "GPU checks and measurements serial. Source frozen within each sample group and after the final panel correction. Temporary caffeinate with a bounded user-active assertion used for final verification; an earlier display-link/media wait and a reset entry probe passed unchanged on recheck.",
+    "limits": "Refresh-limited short samples do not prove speedup or net GPU cost. CPU submission is not GPU completion. No Safari, physical phone, thermal, battery, long-duration or GPU memory validation."
+  },
+  "summary": {
+    "day": {
+      "before": {
+        "measuredFps": 60.00040134069249,
+        "frameIntervalP95Ms": 17.900000005960464,
+        "frameSubmitP95Ms": 3.5,
+        "calls": 157,
+        "triangles": 425459,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "loadingMs": 1513.938333
+      },
+      "after": {
+        "measuredFps": 60.01485317443603,
+        "frameIntervalP95Ms": 18,
+        "frameSubmitP95Ms": 3.0999999940395355,
+        "calls": 162,
+        "triangles": 425991,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "loadingMs": 1533.79275
+      }
+    },
+    "night": {
+      "before": {
+        "measuredFps": 60.007200864389866,
+        "frameIntervalP95Ms": 17.900000005960464,
+        "frameSubmitP95Ms": 2.7999999821186066,
+        "calls": 154,
+        "triangles": 425391,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "loadingMs": 1570.1571249999997
+      },
+      "after": {
+        "measuredFps": 60.00401364639775,
+        "frameIntervalP95Ms": 18,
+        "frameSubmitP95Ms": 2.7000000178813934,
+        "calls": 159,
+        "triangles": 425923,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "loadingMs": 1446.8239590000003
+      }
+    },
+    "phone": {
+      "before": {
+        "measuredFps": 30.01067493820933,
+        "frameIntervalP95Ms": 36.20000001788139,
+        "frameSubmitP95Ms": 4.100000023841858,
+        "calls": 113,
+        "triangles": 309638,
+        "geometries": 270,
+        "textures": 41,
+        "programs": 56,
+        "loadingMs": 1471.469791
+      },
+      "after": {
+        "measuredFps": 29.40821012773945,
+        "frameIntervalP95Ms": 37.30000001192093,
+        "frameSubmitP95Ms": 5.800000011920929,
+        "calls": 113,
+        "triangles": 309638,
+        "geometries": 270,
+        "textures": 41,
+        "programs": 56,
+        "loadingMs": 1417.8814580000003
+      }
+    }
+  },
+  "resourceChanges": {
+    "geometries": 0,
+    "textures": 0,
+    "programs": 0,
+    "lights": 0,
+    "extraRenderLoops": 0,
+    "albedo": {
+      "width": 1024,
+      "height": 1024,
+      "beforeBytes": 363912,
+      "afterBytes": 405198,
+      "deltaBytes": 41286,
+      "note": "Existing cotton albedo recoloured offline to oatmeal, retaining normal/roughness maps. No AI generation or runtime image preprocessing; decoded texture dimensions unchanged."
+    },
+    "camera": {
+      "desktopBefore": {
+        "position": [
+          1.1,
+          1.65,
+          0.75
+        ],
+        "target": [
+          -0.2,
+          0.95,
+          -1.5
+        ]
+      },
+      "desktopAfter": {
+        "position": [
+          0.85,
+          1.65,
+          1.25
+        ],
+        "target": [
+          -0.5,
+          1,
+          -1.35
+        ]
+      },
+      "phone": {
+        "position": [
+          0.55,
+          1.65,
+          1.7
+        ],
+        "target": [
+          0,
+          1.05,
+          -1.4
+        ]
+      },
+      "fov": 50
+    },
+    "description": "Existing scene lights/materials adjusted; no furniture moved or added. Main, entry, cat return, album return and resize share roomComposition. Different framing can change visible draw calls through existing frustum culling. Menu is event-driven with resize/class observers, not an animation loop."
+  },
+  "validation": {
+    "testRuns": [
+      {
+        "file": "regression.json",
+        "stats": {
+          "startTime": "2026-11-07T06:52:27.545Z",
+          "duration": 1176554.969,
+          "expected": 125,
+          "skipped": 0,
+          "unexpected": 11,
+          "flaky": 0
+        },
+        "failures": [
+          {
+            "file": "default-music.spec.ts",
+            "title": "the supplied default stays paused and undownloaded until a trusted playback gesture",
+            "status": "failed"
+          },
+          {
+            "file": "default-music.spec.ts",
+            "title": "a saved personal song wins and restoring the default removes that saved override",
+            "status": "failed"
+          },
+          {
+            "file": "default-music.spec.ts",
+            "title": "blocked browser storage still leaves the supplied default playable",
+            "status": "failed"
+          },
+          {
+            "file": "default-music.spec.ts",
+            "title": "a late browser restore cannot replace a default record the user already started",
+            "status": "failed"
+          },
+          {
+            "file": "entry-motion.spec.ts",
+            "title": "reduced motion draws an open door and an unchanged first walking frame before settling",
+            "status": "failed"
+          },
+          {
+            "file": "environment-integration.spec.ts",
+            "title": "the real room renders four calendar environments, six navigation directions and nonpersistent debug controls",
+            "status": "timedOut"
+          },
+          {
+            "file": "lighthouse-coast.spec.ts",
+            "title": "the tower and entire pier stay in the right pane while the approach enters from its bottom-right",
+            "status": "failed"
+          },
+          {
+            "file": "onboarding.spec.ts",
+            "title": "optional audio failure keeps a healthy room usable and music loading errors visible",
+            "status": "failed"
+          },
+          {
+            "file": "record-interaction.spec.ts",
+            "title": "the desk record accepts and remembers music, resumes in place and stays independent of reading, mute and touch",
+            "status": "timedOut"
+          },
+          {
+            "file": "room-overall.spec.ts",
+            "title": "coherent room framing keeps the cat clickable and returns continuously to the same pose 1280",
+            "status": "failed"
+          },
+          {
+            "file": "room-overall.spec.ts",
+            "title": "coherent room framing keeps the cat clickable and returns continuously to the same pose 1920",
+            "status": "failed"
+          }
+        ]
+      },
+      {
+        "file": "repair-regression.json",
+        "stats": {
+          "startTime": "2026-11-07T07:14:59.002Z",
+          "duration": 299352.304,
+          "expected": 38,
+          "skipped": 0,
+          "unexpected": 4,
+          "flaky": 0
+        },
+        "failures": [
+          {
+            "file": "default-music.spec.ts",
+            "title": "the supplied default stays undownloaded before entry, starts from the door gesture and remains pausable",
+            "status": "timedOut"
+          },
+          {
+            "file": "entry-motion.spec.ts",
+            "title": "door draws before the eye moves, hidden tabs pause entry, and rotation preserves the doorway route",
+            "status": "failed"
+          },
+          {
+            "file": "environment-integration.spec.ts",
+            "title": "the real room renders four calendar environments, six navigation directions and nonpersistent debug controls",
+            "status": "failed"
+          },
+          {
+            "file": "record-interaction.spec.ts",
+            "title": "the desk record accepts and remembers music, resumes in place and stays independent of reading, mute and touch",
+            "status": "failed"
+          }
+        ]
+      },
+      {
+        "file": "final-targeted.json",
+        "stats": {
+          "startTime": "2026-11-07T07:21:03.531Z",
+          "duration": 92116.798,
+          "expected": 13,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "failures": []
+      }
+    ],
+    "uniqueTests": 154,
+    "allLatestResultsExpected": true,
+    "counting": "Unique logical tests across runs; the first default-music title is normalized after correcting its stale no-autoplay expectation. Initial 125/136, correction suite 38/42, final targeted 13/13. Not a single clean 154-test run, and not all 154 were rerun after the isolated music-panel fix.",
+    "finalTests": [
+      {
+        "file": "birds-coast.spec.ts",
+        "title": "gliding visitors cross the real desktop and phone window instead of resting along an eye ray",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "birds-coast.spec.ts",
+        "title": "coast has no permanent birds and uses one submerged low-cost far-island batch behind the reefs",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "book-transition.spec.ts",
+        "title": "paper aligns with projected corners and the closed album retains its real dimensions",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "book-transition.spec.ts",
+        "title": "the same untainted DOM page rasters become both physical paper textures",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "book-transition.spec.ts",
+        "title": "desktop and mobile pages track a moving projection continuously through cleanup",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "bouquet.spec.ts",
+        "title": "refined bouquet has finite shared curved surfaces with a smaller triangle budget and deterministic construction",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "bouquet.spec.ts",
+        "title": "each rose has cup depth and substantial middle and outer petal side walls",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "bouquet.spec.ts",
+        "title": "whole wrapped bouquet stays above the desktop, clear of the record player and inside its front edge throughout the move",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "bouquet.spec.ts",
+        "title": "real wrapped flowers accept direct clicks, survive reading and release each shared resource once 1280",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "bouquet.spec.ts",
+        "title": "real wrapped flowers accept direct clicks, survive reading and release each shared resource once 390",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cat-focus.spec.ts",
+        "title": "a desk cat click approaches once and pets only after arrival; nearby clicks stay nearby",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cat-focus.spec.ts",
+        "title": "the view button still approaches without automatically petting",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cat-focus.spec.ts",
+        "title": "hiding during approach cancels the pending pet even after the page returns",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cat-focus.spec.ts",
+        "title": "WebGL loss during approach cannot trigger a late pet",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cat-focus.spec.ts",
+        "title": "page disposal during approach cannot trigger a late pet",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "celestial-view.spec.ts",
+        "title": "window composition preserves the astronomical calendar and horizon while moving raised bodies through a continuous low arc",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cozy-corner.spec.ts",
+        "title": "the cat can be approached smoothly, framed closely and left without losing the room view",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cozy-corner.spec.ts",
+        "title": "a cat model download interrupted by WebGL loss cannot restart the room",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cozy-corner.spec.ts",
+        "title": "a cotton cloth download interrupted by WebGL loss cannot restart the room",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cozy-home.spec.ts",
+        "title": "indexed static chair support agrees with actual raycasting for height, back contact and face sides",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cozy-home.spec.ts",
+        "title": "small lamp fits the console and shares the existing light control without extra shadows or toggle resources",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cozy-home.spec.ts",
+        "title": "cozy furnishing keeps cat, book and controls usable and releases shared resources once 1280",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "cozy-home.spec.ts",
+        "title": "cozy furnishing keeps cat, book and controls usable and releases shared resources once 390",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "default-music.spec.ts",
+        "title": "the supplied default stays undownloaded before entry, starts from the door gesture and remains pausable",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "default-music.spec.ts",
+        "title": "a saved personal song wins and restoring the default removes that saved override",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "default-music.spec.ts",
+        "title": "blocked browser storage still leaves the supplied default playable",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "default-music.spec.ts",
+        "title": "a late browser restore cannot replace a default record the user already started",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "desk-clock.spec.ts",
+        "title": "device-local clock rolls hours, midnight, leap day and year without using the outdoor calendar",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "desk-clock.spec.ts",
+        "title": "real desk clock is readable on the table, prewarmed and restores actual local time after reading 1280",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "desk-clock.spec.ts",
+        "title": "real desk clock is readable on the table, prewarmed and restores actual local time after reading 390",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "desk-clock.spec.ts",
+        "title": "mechanical cards cross the hinge, clock jumps snap, shared resources remain fixed and dispose once",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "entry-motion.spec.ts",
+        "title": "fog completion survives a rounded clear frame and a background pause (normal motion)",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "entry-motion.spec.ts",
+        "title": "fog completion survives a rounded clear frame and a background pause (reduced motion)",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "entry-motion.spec.ts",
+        "title": "entry curve keeps eye height and doorway clearance, with continuous speed after responsive retargeting",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "entry-motion.spec.ts",
+        "title": "door draws before the eye moves, hidden tabs pause entry, and rotation preserves the doorway route",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "entry-motion.spec.ts",
+        "title": "reduced motion draws an open door and an unchanged first walking frame before settling",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "environment-controller.spec.ts",
+        "title": "the adapter stages clouds before rain over six seconds after date jumps and resumes interruptions from the displayed weather",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-controller.spec.ts",
+        "title": "free time advances astronomy but keeps vessels on their natural schedule and resumes without replaying background frames",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-controller.spec.ts",
+        "title": "the real adapter stays continuous across the old DST cache boundary and restores the same time after pause or refresh",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-controller.spec.ts",
+        "title": "free calendars keep lightning preview, audio and coast on real seconds and the debug reset restores realtime",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-controller.spec.ts",
+        "title": "saved free time reconstructs the same natural vessel journeys after refreshing",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-integration.spec.ts",
+        "title": "the real room renders four calendar environments, six navigation directions and nonpersistent debug controls",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "environment-integration.spec.ts",
+        "title": "reading and background pauses stop environment work and resume the present absolute world",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "environment-integration.spec.ts",
+        "title": "ordinary visitors ignore preview overrides and retain responsive room and WebGL fallback reading",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "simulated coastal weather is deterministic and all ten forced conditions remain explicit",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "summer favours clear skies, winter is cloudier, and default coastal snow stays rare",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "local midnight and ordinary clock samples remain continuous across time zones",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "rain and snow stay outdoors under wind, clock wraps and reduced motion",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "cloud wind integrates hourly vectors continuously with ten samples across backward queries and calendar edges",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "cloud lifetimes fade invisibly, calendar positions repeat and signed wind controls both axes",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "debug wind changes preserve cloud positions, zero wind remains still and pooled low-quality actors recover",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "a fixed cloud wind direction keeps automatic speed across fronts and reanchors continuously every ten seconds",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "a fixed cloud wind speed keeps automatic direction across fronts while a fully fixed zero wind stays still",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "low quality draws selected pooled seeds with their matching styles and restores all normal positions",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "cloudy and snowy windows retain comparable visible clouds in low quality over complete days",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "precipitation reuses its buffers, reduces quality and disposes resources once",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-weather.spec.ts",
+        "title": "the cloud shader and outdoor particle buffers render with fog without new allocations",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-window-sky.spec.ts",
+        "title": "the real west-facing room shows a distinct sunset disc on desktop and phone, with the same sea reflection direction",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-window-sky.spec.ts",
+        "title": "daytime low sky is blue and distinct clouds render through the real window in normal and low quality",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-window-sky.spec.ts",
+        "title": "viewing arcs show noon sun in every season and the real full moon, retain phases and occlusion, and restore through reading",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "interaction-hotspots.spec.ts",
+        "title": "visible room objects share immediate feedback and cancelled gestures never replay after interruption",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "lighthouse-coast.spec.ts",
+        "title": "the level stone pier has continuous paving and submerged structural support across its full width",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "lighthouse-coast.spec.ts",
+        "title": "both wave-impact edges and navigation clearance share the exact oriented pier footprint",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "lighthouse-coast.spec.ts",
+        "title": "all six sailing lanes clear the diagonal pier and lighthouse landing by seven metres",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "lighthouse-coast.spec.ts",
+        "title": "the tower and entire pier stay in the right pane while the approach enters from its bottom-right",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "lighthouse-coast.spec.ts",
+        "title": "six fixed masonry batches include glazed lantern details without textures, lights or duplicate disposal",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "onboarding.spec.ts",
+        "title": "entry has an explicit door state and repeated gestures cannot overlap journeys",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "onboarding.spec.ts",
+        "title": "chapter contents, keyboard and return agree while music stays optional",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "onboarding.spec.ts",
+        "title": "WebGL retry keeps the chosen chapter and still leaves a usable fallback",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "onboarding.spec.ts",
+        "title": "optional audio failure keeps a healthy room usable and music loading errors visible",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "performance.spec.ts",
+        "title": "rendering sleeps while reading or hidden and resumes without skipping the sea",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "preparation.spec.ts",
+        "title": "ambient preparation preserves the original eight-second samples while yielding and cancelling safely",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "preparation.spec.ts",
+        "title": "scene warmup prepares one tiny native-quality draw and restores state on errors or cancellation",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reader-duplex.spec.ts",
+        "title": "forward leaf prints the previous right page and the next left page on opposite faces",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reader-duplex.spec.ts",
+        "title": "reverse leaf keeps the current left artwork and reveals the previous right print without mirroring",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reader-duplex.spec.ts",
+        "title": "the next photograph is ready on the reverse face, and cancellation removes the temporary print",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reader-duplex.spec.ts",
+        "title": "small-screen ordinary motion updates the paired spread without leaving a hidden leaf",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reader-duplex.spec.ts",
+        "title": "desktop reduced motion updates the paired spread without leaving a hidden leaf",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reader-duplex.spec.ts",
+        "title": "an unavailable photograph falls back to printed artwork before the reverse face is shown",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reader-duplex.spec.ts",
+        "title": "a stalled photograph cannot keep chapter navigation locked indefinitely",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reader-duplex.spec.ts",
+        "title": "resizing a moving sheet cancels it safely and permits the next narrow-screen turn",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reader-reopening.spec.ts",
+        "title": "normal: first opening keeps its ceremony and later openings retain the chapter with a continuous shorter approach",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reader-reopening.spec.ts",
+        "title": "reduced: first opening keeps its ceremony and later openings retain the chapter with a continuous shorter approach",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reading-details.spec.ts",
+        "title": "closed books rest on the console and share a supported contact plane throughout the stack",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reading-details.spec.ts",
+        "title": "B2 books preserve furniture clearance, first-use warmth and lifecycle 1280",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "reading-details.spec.ts",
+        "title": "B2 books preserve furniture clearance, first-use warmth and lifecycle 390",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "record-interaction.spec.ts",
+        "title": "the desk record accepts and remembers music, resumes in place and stays independent of reading, mute and touch",
+        "status": "expected",
+        "run": "final-targeted.json"
+      },
+      {
+        "file": "room-entry-music.spec.ts",
+        "title": "the native door gesture starts one record; reading continues it and manual pause survives returning",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-entry-music.spec.ts",
+        "title": "muting before entry leaves music stopped until an explicit record action",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-entry-music.spec.ts",
+        "title": "a saved record is selected before entry and starts without another file picker",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-entry-music.spec.ts",
+        "title": "blocked automatic playback keeps the room usable and one manual retry can play",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-entry-music.spec.ts",
+        "title": "a late automatic error reports failure without covering the open room settings",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-entry-music.spec.ts",
+        "title": "background cancels pending entry playback and a late play result stays paused",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-entry-music.spec.ts",
+        "title": "renderer-loss cancels pending entry playback and a late play result stays paused",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-entry-music.spec.ts",
+        "title": "late storage restoration cannot replace the record already starting at entry",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-light.spec.ts",
+        "title": "new warm-on default ignores the legacy default once, then preserves explicit v2 choices and tolerates blocked storage",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-light.spec.ts",
+        "title": "stored light settings cannot poison the renderer and a zero-intensity switch preserves its light and lifecycle",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-light.spec.ts",
+        "title": "real overhead light changes room pixels and colour, remembers settings and survives reading and quality switches without shader churn",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-light.spec.ts",
+        "title": "unavailable browser storage keeps light controls usable and renderer failure closes the panel",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "settled room has two quiet seconds, controls at two, and one invitation at six",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "normal motion fades the settled-room controls without replaying on return",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "a held pointer keeps its original scene target and opens the book without a late invitation",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "keyboard use cancels the invitation and preserves the focused sound control",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "background time does not consume the remaining quiet observation",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "background time after controls appear pauses the remaining invitation wait",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "blank pointer after controls appear cancels the pending invitation",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "sound click after controls appear cancels the pending invitation",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "keyboard after controls appear cancels the pending invitation",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "the first operation immediately dismisses a displayed invitation permanently",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "hover feedback defers the invitation past six seconds without restarting its wait",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "local feedback hides an already displayed invitation without replaying it",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "a displayed invitation does not return after backgrounding",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "a previously seen invitation stays suppressed on a later visit",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "unavailable storage still allows only one invitation in the current visit",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "a cancelled pointer reveals usable controls and does not resurrect the invitation",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "cat interaction at 0ms approaches immediately and cancels pending hints",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "cat interaction at 3000ms approaches immediately and cancels pending hints",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "scene loss at 750ms cancels all pending room guidance",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "scene loss at 3000ms cancels all pending room guidance",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "page disposal at 750ms cancels all pending room guidance",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "page disposal at 3000ms cancels all pending room guidance",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-observation.spec.ts",
+        "title": "closing a book opened during observation returns immediately without another quiet wait",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "room-overall.spec.ts",
+        "title": "coherent room framing keeps the cat clickable and returns continuously to the same pose 1280",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-overall.spec.ts",
+        "title": "coherent room framing keeps the cat clickable and returns continuously to the same pose 1920",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "time-flow.spec.ts",
+        "title": "free calendar rates, pause and realtime switching share continuous anchors while motion remains at one-times speed",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "time-flow.spec.ts",
+        "title": "saved anchors restore elapsed background or reload time, zero stays fixed and supported calendar bounds do not wrap",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "time-flow.spec.ts",
+        "title": "malformed or blocked storage cannot create a free clock with poisoned anchors",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "time-flow.spec.ts",
+        "title": "free calendar astronomy does not multiply the additional 24-minute stellar presentation phase",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "time-flow.spec.ts",
+        "title": "real room hides the clock, advances and pauses the free calendar and restores realtime without resource churn 1280",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "time-flow.spec.ts",
+        "title": "real room hides the clock, advances and pauses the free calendar and restores realtime without resource churn 390",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "time-flow.spec.ts",
+        "title": "normal visitor preferences survive refresh, debug sessions remain isolated, and renderer failure closes the time panel",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "time-flow.spec.ts",
+        "title": "keyboard, touch targets and blocked storage keep time controls available across reading and failure 320",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "time-flow.spec.ts",
+        "title": "keyboard, touch targets and blocked storage keep time controls available across reading and failure 844",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "window-details.spec.ts",
+        "title": "small rosemary fits its sill and cork supports the mug with outward-facing top and bottom",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "window-details.spec.ts",
+        "title": "B1 is visible, clear of curtains and supported through book, light and quality changes 1280",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "window-details.spec.ts",
+        "title": "B1 is visible, clear of curtains and supported through book, light and quality changes 390",
+        "status": "expected",
+        "run": "regression.json"
+      },
+      {
+        "file": "environment-living-world.spec.ts",
+        "title": "the live desktop world renders storms, sea rain impacts and all bird species with stable prewarmed resources",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "environment-living-world.spec.ts",
+        "title": "mobile rain remains outdoors, reduced motion suppresses flashes and low quality survives rotation and cat interaction",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "layout-matrix.spec.ts",
+        "title": "small-phone: controls stay reachable and reading can scroll without clipping",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "layout-matrix.spec.ts",
+        "title": "portrait-phone: controls stay reachable and reading can scroll without clipping",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "layout-matrix.spec.ts",
+        "title": "landscape-phone: controls stay reachable and reading can scroll without clipping",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "layout-matrix.spec.ts",
+        "title": "desktop-2x: controls stay reachable and reading can scroll without clipping",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-settings.spec.ts",
+        "title": "room disclosure keeps its compact view and nested keyboard tools usable 320×568",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-settings.spec.ts",
+        "title": "room disclosure keeps its compact view and nested keyboard tools usable 390×844",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-settings.spec.ts",
+        "title": "room disclosure keeps its compact view and nested keyboard tools usable 844×390",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-settings.spec.ts",
+        "title": "room disclosure keeps its compact view and nested keyboard tools usable 1280×800",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-settings.spec.ts",
+        "title": "room disclosure keeps its compact view and nested keyboard tools usable 1920×1080",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-settings.spec.ts",
+        "title": "reading, background and renderer failure close the disclosure without resetting controls",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-tool-panels.spec.ts",
+        "title": "light and time panels leave room and cat actions reachable at 320×568",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-tool-panels.spec.ts",
+        "title": "light and time panels leave room and cat actions reachable at 390×844",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-tool-panels.spec.ts",
+        "title": "light and time panels leave room and cat actions reachable at 844×390",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-tool-panels.spec.ts",
+        "title": "light and time panels leave room and cat actions reachable at 1280×800",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-tool-panels.spec.ts",
+        "title": "keyboard switching replaces each tool panel and Escape restores only the active trigger",
+        "status": "expected",
+        "run": "repair-regression.json"
+      },
+      {
+        "file": "room-tool-panels.spec.ts",
+        "title": "open settings follow action-row reflow without a viewport resize",
+        "status": "expected",
+        "run": "repair-regression.json"
+      }
+    ],
+    "fixes": "Outside collapse deferred to click to preserve pointer target. Delayed manual music errors can show independently of collapsed settings, resize safely and return focus to a visible trigger. Old tests updated for authorized entry autoplay, current room composition, actual clientX/clientY picking, a continuous >20m right-pane pier approach, existing cork-coaster support and same-frame calendar readiness. Native media/entry probe repeated without product changes after a temporary wake.",
+    "build": "Final project-pnpm run typecheck and project-pnpm run build passed; 110 modules, app390.05KB/gzip144.55KB, CSS43.58KB/gzip9.69KB, Three585.94KB/gzip150.15KB. Existing large-chunk warning retained.",
+    "productionPreview": [
+      {
+        "scenario": {
+          "name": "day",
+          "width": 1280,
+          "height": 800,
+          "date": "2026-10-31T12:00",
+          "weather": "clear",
+          "read": true,
+          "cat": true
+        },
+        "errors": [],
+        "warnings": [
+          "[.WebGL-0x104000cd200] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x104000cd200] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x104000cd200] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x104000cd200] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions."
+        ],
+        "overflow": false,
+        "url": "http://127.0.0.1:4173/?v=final&debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envDensity=0&envBirds=0&envPhase=0",
+        "title": "潮汐之间 · Between the tides",
+        "hasCanvas": true,
+        "meaningful": true,
+        "frameworkOverlay": false
+      },
+      {
+        "scenario": {
+          "name": "night",
+          "width": 1280,
+          "height": 800,
+          "date": "2026-10-31T22:00",
+          "weather": "clear",
+          "cat": true
+        },
+        "errors": [],
+        "warnings": [],
+        "overflow": false,
+        "url": "http://127.0.0.1:4173/?v=final&debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00&envWeather=clear&envDensity=0&envBirds=0&envPhase=0",
+        "title": "潮汐之间 · Between the tides",
+        "hasCanvas": true,
+        "meaningful": true,
+        "frameworkOverlay": false
+      },
+      {
+        "scenario": {
+          "name": "rain",
+          "width": 1280,
+          "height": 800,
+          "date": "2026-10-31T18:00",
+          "weather": "moderate-rain"
+        },
+        "errors": [],
+        "warnings": [],
+        "overflow": false,
+        "url": "http://127.0.0.1:4173/?v=final&debugEnv=1&envTimeMode=scene&envDate=2026-10-31T18:00&envWeather=moderate-rain&envDensity=0&envBirds=0&envPhase=0",
+        "title": "潮汐之间 · Between the tides",
+        "hasCanvas": true,
+        "meaningful": true,
+        "frameworkOverlay": false
+      },
+      {
+        "scenario": {
+          "name": "phone",
+          "width": 390,
+          "height": 844,
+          "date": "2026-10-31T12:00",
+          "weather": "few-clouds",
+          "low": true,
+          "read": true,
+          "cat": true
+        },
+        "errors": [],
+        "warnings": [],
+        "overflow": false,
+        "url": "http://127.0.0.1:4173/?v=final&debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=few-clouds&envDensity=0&envBirds=0&envPhase=0&envQuality=low",
+        "title": "潮汐之间 · Between the tides",
+        "hasCanvas": true,
+        "meaningful": true,
+        "frameworkOverlay": false
+      },
+      {
+        "scenario": {
+          "name": "phone-night",
+          "width": 390,
+          "height": 844,
+          "date": "2026-10-31T22:00",
+          "weather": "clear",
+          "low": true
+        },
+        "errors": [],
+        "warnings": [],
+        "overflow": false,
+        "url": "http://127.0.0.1:4173/?v=final&debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00&envWeather=clear&envDensity=0&envBirds=0&envPhase=0&envQuality=low",
+        "title": "潮汐之间 · Between the tides",
+        "hasCanvas": true,
+        "meaningful": true,
+        "frameworkOverlay": false
+      },
+      {
+        "scenario": {
+          "name": "landscape",
+          "width": 844,
+          "height": 390,
+          "date": "2026-10-31T18:00",
+          "weather": "overcast",
+          "low": true
+        },
+        "errors": [],
+        "warnings": [],
+        "overflow": false,
+        "url": "http://127.0.0.1:4173/?v=final&debugEnv=1&envTimeMode=scene&envDate=2026-10-31T18:00&envWeather=overcast&envDensity=0&envBirds=0&envPhase=0&envQuality=low",
+        "title": "潮汐之间 · Between the tides",
+        "hasCanvas": true,
+        "meaningful": true,
+        "frameworkOverlay": false
+      },
+      {
+        "scenario": {
+          "name": "small",
+          "width": 320,
+          "height": 568,
+          "date": "2026-10-31T12:00",
+          "weather": "few-clouds",
+          "low": true,
+          "read": true,
+          "cat": true
+        },
+        "errors": [],
+        "warnings": [],
+        "overflow": false,
+        "url": "http://127.0.0.1:4173/?v=final&debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=few-clouds&envDensity=0&envBirds=0&envPhase=0&envQuality=low",
+        "title": "潮汐之间 · Between the tides",
+        "hasCanvas": true,
+        "meaningful": true,
+        "frameworkOverlay": false
+      },
+      {
+        "scenario": {
+          "name": "wide",
+          "width": 1920,
+          "height": 1080,
+          "date": "2026-10-31T22:00",
+          "weather": "few-clouds"
+        },
+        "errors": [],
+        "warnings": [],
+        "overflow": false,
+        "url": "http://127.0.0.1:4173/?v=final&debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00&envWeather=few-clouds&envDensity=0&envBirds=0&envPhase=0",
+        "title": "潮汐之间 · Between the tides",
+        "hasCanvas": true,
+        "meaningful": true,
+        "frameworkOverlay": false
+      },
+      {
+        "scenario": {
+          "name": "visitor",
+          "width": 1280,
+          "height": 800,
+          "normal": true
+        },
+        "errors": [],
+        "warnings": [],
+        "overflow": false,
+        "url": "http://127.0.0.1:4173/?v=final",
+        "title": "潮汐之间 · Between the tides",
+        "hasCanvas": true,
+        "meaningful": true,
+        "frameworkOverlay": false
+      },
+      {
+        "scenario": {
+          "name": "visitor-phone",
+          "width": 390,
+          "height": 844,
+          "normal": true,
+          "low": true
+        },
+        "errors": [],
+        "warnings": [],
+        "overflow": false,
+        "url": "http://127.0.0.1:4173/?v=final",
+        "title": "潮汐之间 · Between the tides",
+        "hasCanvas": true,
+        "meaningful": true,
+        "frameworkOverlay": false
+      }
+    ],
+    "finalMusicPanels": [
+      {
+        "scenario": {
+          "name": "night",
+          "width": 1280,
+          "height": 800,
+          "date": "2026-10-31T22:00"
+        },
+        "layout": {
+          "outside": false,
+          "overlap": false,
+          "overflow": false
+        },
+        "errors": [],
+        "warnings": []
+      },
+      {
+        "scenario": {
+          "name": "small",
+          "width": 320,
+          "height": 568,
+          "date": "2026-10-31T12:00"
+        },
+        "layout": {
+          "outside": false,
+          "overlap": false,
+          "overflow": false
+        },
+        "errors": [],
+        "warnings": []
+      },
+      {
+        "scenario": {
+          "name": "landscape",
+          "width": 844,
+          "height": 390,
+          "date": "2026-10-31T18:00"
+        },
+        "layout": {
+          "outside": false,
+          "overlap": false,
+          "overflow": false
+        },
+        "errors": [],
+        "warnings": []
+      }
+    ],
+    "images": "25 main/interaction production images for 10 scenarios at 320x568, 390x844, 844x390, 1280x800 and 1920x1080. Final independent music-panel fix adds three panel images and an updated closed night view. All reviewed directly; normal visitors, debug controls, day, night, rainy dusk, cat, reading return, light off/custom cold are covered.",
+    "warnings": "The existing four desktop album texture-copy warnings match this turn baseline. No page/console errors in the production scenes or performance samples. Tests use dev-only response interception for probes; production has no new test globals."
+  },
+  "sourceSha256": {
+    "before": {
+      "src/scene.ts": "25cae69686bbef1e4548cbb5dcf4883c9d1c74ebe9b9309bb71a4f6e6df4bcd1",
+      "src/materials.ts": "342425feb6ffa727fbec4eb8c21f12204c630a2ebdbc0e8bdf2d0c929c15f87d",
+      "src/beanbag-fabric.ts": "09454dd06345812e7c4241553d3f12ba80cdd2b66f2a89a31e1acb26481258ee",
+      "src/cozy-textiles.ts": "1e5baa5c259a979085ac3cb100094d9296f5f1ab00cbc30fe1b38436d77a3a20",
+      "src/environment-controller.ts": "547f0f239e5a706ced321aabb4aa54532aa3aaf5fb6736b3e1a36d840f21672f",
+      "src/app-view.ts": "ae1162ebcb028b9e4481513dfa47bdf09dcbbeff1967d15d0d1f292356a78a6a",
+      "src/main.ts": "4bf1613ee284136c6190c32af12db728b92ad75eb91c522db4b995b0d8eb99c9",
+      "src/sound-controller.ts": "78a97ac89f40aec198958f5223be4bd7b22732277f50cf28cf03691445d58a09",
+      "src/time-flow-controls.ts": "3fb93cea1797306dacbeeb250a917f620658a173070fc878b890fdf6ac397b2f",
+      "src/room-light-controls.ts": "9e964125895e9ab221af679d54d3a83f1e06f159c70849dc1e48506b8f4fe6f3",
+      "src/assets/beanbag-cotton-albedo.webp": "86c7c1a8b882646ce622c6684da80e2d681d8eab7ab2b20e1348c9adea1a9131",
+      "scripts/measure-performance.mjs": "a5a54d31bd8a30d766e5b9331e1cf016f539da4e4ff69f5eca897469b1e9e328"
+    },
+    "after": {
+      "src/scene.ts": "a7e83a7fa5e4e5d58853120a6c439d9a0efd6317c97f859b5c1928a3a237653d",
+      "src/room-composition.ts": "042559906a267fbbe7d81eb970824f742f0f8cddca891558e75ee54e30827292",
+      "src/materials.ts": "c130d28443305208eaa4e562d1208c56919c4076eb5c25bffb396a4263a918da",
+      "src/beanbag-fabric.ts": "501c8b91b844cd3c20d2ecf9203e7124fe5da6530207132089c7d1883aaaed3e",
+      "src/cozy-textiles.ts": "5dce38779faf225bef1ef2a0e335aa085001ef47ed410f83227d1fba5532163d",
+      "src/environment-controller.ts": "5245d0403940ac8ceca01cffd4c1fd3d7798d9ae032b4c2544224ce87544afe9",
+      "src/app-view.ts": "1c993312d31806a5fde29644a2d3e72b8faee2cda33902abacbefb580cf067bd",
+      "src/main.ts": "437d05217aca2eeb372af3a4a97417207242059abf16790d9764775ac9dfc482",
+      "src/room-settings.ts": "21571f10f4b316650761d8d7937a24d0f2ed27282cdcd5dfe98d4320aad7bebd",
+      "src/room-settings.css": "0e47efd200117212818868837c75fda628436324b26854af6a98fd5cd972a3d8",
+      "src/sound-controller.ts": "2f6f686f591c27efec79593257032f960eeafd9a25d400835154afdc2cf1f5e6",
+      "src/time-flow-controls.ts": "ecdf76a25531576cc51d5163dc480b7525323b6ba4623eece9e8fe7337f64574",
+      "src/room-light-controls.ts": "acbeb99d13865557e60564c5b375ea6bf007c7dc59b36364859f0ea05aca39fc",
+      "src/assets/beanbag-cotton-albedo.webp": "81191c1a83dab7ff6506d728c4e525ffc2ce7c399cfd4a4e9fe5079470c573e5",
+      "scripts/measure-performance.mjs": "a5a54d31bd8a30d766e5b9331e1cf016f539da4e4ff69f5eca897469b1e9e328"
+    }
+  },
+  "samples": [
+    {
+      "file": "before-day-1.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1789.49525,
+      "entryMs": 2529.286167,
+      "before": {
+        "calls": 157,
+        "triangles": 425459,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 157,
+        "triangles": 425459,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 301,
+        "measuredFps": 59.983204702611765,
+        "frameIntervalMedianMs": 16.69999998807907,
+        "frameIntervalP95Ms": 18.600000023841858,
+        "frameSubmitP95Ms": 3.9000000059604645
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 23.700000017881393,
+            "processingMs": 0.7999999821186066
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 24.80000001192093,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 27.5,
+            "processingMs": 0.7999999821186066
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 13.5,
+            "processingMs": 0.19999998807907104
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 13.699999988079071,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 14.299999982118607,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 16,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 16.5,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 18.099999994039536,
+            "processingMs": 0.4000000059604645
+          }
+        ],
+        "pointerDispatchMs": [
+          24.400000005960464,
+          13.599999994039536,
+          16.30000001192093
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 28612684,
+        "jsHeapTotalBytes": 93700096,
+        "documents": 5,
+        "nodes": 1547,
+        "jsEventListeners": 177
+      }
+    },
+    {
+      "file": "before-day-2.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1497.6324160000001,
+      "entryMs": 2511.002042,
+      "before": {
+        "calls": 157,
+        "triangles": 425459,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 157,
+        "triangles": 425459,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 60.006422091852905,
+        "frameIntervalMedianMs": 16.599999994039536,
+        "frameIntervalP95Ms": 17.900000005960464,
+        "frameSubmitP95Ms": 2.4000000059604645
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 13.199999988079071,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 13.599999994039536,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 14.5,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 13.099999994039536,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 13.400000005960464,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 13.900000005960464,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 16.099999994039536,
+            "processingMs": 0.20000001788139343
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 16.400000005960464,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 17.5,
+            "processingMs": 0.5
+          }
+        ],
+        "pointerDispatchMs": [
+          13.5,
+          13.300000011920929,
+          16.30000001192093
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 28433956,
+        "jsHeapTotalBytes": 97107968,
+        "documents": 5,
+        "nodes": 1549,
+        "jsEventListeners": 177
+      }
+    },
+    {
+      "file": "before-day-3.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1513.938333,
+      "entryMs": 2510.6292499999995,
+      "before": {
+        "calls": 157,
+        "triangles": 425459,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 157,
+        "triangles": 425459,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 60.00040134069249,
+        "frameIntervalMedianMs": 16.69999998807907,
+        "frameIntervalP95Ms": 17.80000001192093,
+        "frameSubmitP95Ms": 3.5
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 18.700000017881393,
+            "processingMs": 0.5
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 19.200000017881393,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 20.400000005960464,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 14.400000005960464,
+            "processingMs": 0.19999998807907104
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 14.699999988079071,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 15.199999988079071,
+            "processingMs": 0.5999999940395355
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 56,
+            "inputDelayMs": 14.100000023841858,
+            "processingMs": 0.29999998211860657
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 56,
+            "inputDelayMs": 14.400000005960464,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 56,
+            "inputDelayMs": 15.600000023841858,
+            "processingMs": 0.3999999761581421
+          }
+        ],
+        "pointerDispatchMs": [
+          19.100000023841858,
+          14.599999994039536,
+          14.200000017881393
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 28452444,
+        "jsHeapTotalBytes": 97107968,
+        "documents": 5,
+        "nodes": 1549,
+        "jsEventListeners": 177
+      }
+    },
+    {
+      "file": "after-day-1.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1533.79275,
+      "entryMs": 2515.7727090000003,
+      "before": {
+        "calls": 162,
+        "triangles": 425991,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 162,
+        "triangles": 425991,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 60.007626387084706,
+        "frameIntervalMedianMs": 16.69999998807907,
+        "frameIntervalP95Ms": 17.80000001192093,
+        "frameSubmitP95Ms": 2.9000000059604645
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 17.400000005960464,
+            "processingMs": 0.3999999761581421
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 17.900000005960464,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 19.400000005960464,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 13.300000011920929,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 13.600000023841858,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 14.300000011920929,
+            "processingMs": 0.5999999940395355
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 15.099999994039536,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.400000005960464,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 16.700000017881393,
+            "processingMs": 0.3999999761581421
+          }
+        ],
+        "pointerDispatchMs": [
+          17.799999982118607,
+          13.5,
+          15.200000017881393
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 29695780,
+        "jsHeapTotalBytes": 95797248,
+        "documents": 5,
+        "nodes": 1556,
+        "jsEventListeners": 182
+      }
+    },
+    {
+      "file": "after-day-2.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1584.560792,
+      "entryMs": 2522.886042,
+      "before": {
+        "calls": 162,
+        "triangles": 425991,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 162,
+        "triangles": 425991,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 60.03051718620973,
+        "frameIntervalMedianMs": 16.69999998807907,
+        "frameIntervalP95Ms": 18.30000001192093,
+        "frameSubmitP95Ms": 3.0999999940395355
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 17.899999976158142,
+            "processingMs": 0.6000000238418579
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 18.5,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 19.400000005960464,
+            "processingMs": 0.3999999761581421
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 13.299999982118607,
+            "processingMs": 0.20000001788139343
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 13.5,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 14.099999994039536,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 15.199999988079071,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.599999994039536,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 16.900000005960464,
+            "processingMs": 0.5
+          }
+        ],
+        "pointerDispatchMs": [
+          18.299999982118607,
+          13.5,
+          15.400000005960464
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 29496380,
+        "jsHeapTotalBytes": 95010816,
+        "documents": 5,
+        "nodes": 1556,
+        "jsEventListeners": 182
+      }
+    },
+    {
+      "file": "after-day-3.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1436.3300840000002,
+      "entryMs": 2506.7809589999997,
+      "before": {
+        "calls": 162,
+        "triangles": 425991,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 162,
+        "triangles": 425991,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 60.01485317443603,
+        "frameIntervalMedianMs": 16.69999998807907,
+        "frameIntervalP95Ms": 18,
+        "frameSubmitP95Ms": 3.5999999940395355
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 13.5,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 13.900000005960464,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 14.900000005960464,
+            "processingMs": 0.3999999761581421
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 13.599999994039536,
+            "processingMs": 0.19999998807907104
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 13.799999982118607,
+            "processingMs": 0.20000001788139343
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 14.5,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 15.299999982118607,
+            "processingMs": 0.20000001788139343
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.599999994039536,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 16.900000005960464,
+            "processingMs": 0.3999999761581421
+          }
+        ],
+        "pointerDispatchMs": [
+          13.799999982118607,
+          13.799999982118607,
+          15.400000005960464
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 29650212,
+        "jsHeapTotalBytes": 96321536,
+        "documents": 5,
+        "nodes": 1556,
+        "jsEventListeners": 182
+      }
+    },
+    {
+      "file": "before-night-1.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1570.1571249999997,
+      "entryMs": 2521.234583,
+      "before": {
+        "calls": 154,
+        "triangles": 425391,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 154,
+        "triangles": 425391,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 301,
+        "measuredFps": 60.007200864389866,
+        "frameIntervalMedianMs": 16.69999998807907,
+        "frameIntervalP95Ms": 18,
+        "frameSubmitP95Ms": 3.199999988079071
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 17.700000017881393,
+            "processingMs": 0.3999999761581421
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 18.099999994039536,
+            "processingMs": 0.10000002384185791
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 19.30000001192093,
+            "processingMs": 0.29999998211860657
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 13,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 13.199999988079071,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 13.599999994039536,
+            "processingMs": 0.5999999940395355
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 15.300000011920929,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.700000017881393,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 17,
+            "processingMs": 0.4000000059604645
+          }
+        ],
+        "pointerDispatchMs": [
+          18,
+          13.099999994039536,
+          15.5
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 26244972,
+        "jsHeapTotalBytes": 98156544,
+        "documents": 5,
+        "nodes": 1549,
+        "jsEventListeners": 177
+      }
+    },
+    {
+      "file": "before-night-2.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1574.533792,
+      "entryMs": 2513.992167,
+      "before": {
+        "calls": 154,
+        "triangles": 425391,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 154,
+        "triangles": 425391,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 60.006422091852905,
+        "frameIntervalMedianMs": 16.69999998807907,
+        "frameIntervalP95Ms": 17.700000017881393,
+        "frameSubmitP95Ms": 2.7000000178813934
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 16.69999998807907,
+            "processingMs": 0.5
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 17.19999998807907,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 18.099999994039536,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 13.800000011920929,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 13.900000005960464,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 14.5,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 15.200000017881393,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.300000011920929,
+            "processingMs": 0.19999998807907104
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 16.600000023841858,
+            "processingMs": 0.5
+          }
+        ],
+        "pointerDispatchMs": [
+          17.099999994039536,
+          13.900000005960464,
+          15.300000011920929
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 26180880,
+        "jsHeapTotalBytes": 96583680,
+        "documents": 5,
+        "nodes": 1549,
+        "jsEventListeners": 177
+      }
+    },
+    {
+      "file": "before-night-3.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1542.445,
+      "entryMs": 2510.591125,
+      "before": {
+        "calls": 154,
+        "triangles": 425391,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 154,
+        "triangles": 425391,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 60.016057808109196,
+        "frameIntervalMedianMs": 16.69999998807907,
+        "frameIntervalP95Ms": 17.900000005960464,
+        "frameSubmitP95Ms": 2.7999999821186066
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 17.5,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 17.80000001192093,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 18.80000001192093,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 14.799999982118607,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 15.099999994039536,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 15.599999994039536,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 14.300000011920929,
+            "processingMs": 0.29999998211860657
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 14.599999994039536,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 15.5,
+            "processingMs": 0.5
+          }
+        ],
+        "pointerDispatchMs": [
+          17.700000017881393,
+          15,
+          14.5
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 26131780,
+        "jsHeapTotalBytes": 96321536,
+        "documents": 5,
+        "nodes": 1550,
+        "jsEventListeners": 177
+      }
+    },
+    {
+      "file": "after-night-1.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1440.1932500000003,
+      "entryMs": 2529.6187919999998,
+      "before": {
+        "calls": 159,
+        "triangles": 425923,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 159,
+        "triangles": 425923,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 60.00883073101547,
+        "frameIntervalMedianMs": 16.599999994039536,
+        "frameIntervalP95Ms": 18,
+        "frameSubmitP95Ms": 2.7000000178813934
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 17.5,
+            "processingMs": 0.5
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 18,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 18.80000001192093,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 14.099999994039536,
+            "processingMs": 0.19999998807907104
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 14.299999982118607,
+            "processingMs": 0.10000002384185791
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 15,
+            "processingMs": 0.5999999940395355
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 14.900000005960464,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.300000011920929,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 16.400000005960464,
+            "processingMs": 0.5
+          }
+        ],
+        "pointerDispatchMs": [
+          17.900000005960464,
+          14.299999982118607,
+          15.099999994039536
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 27720260,
+        "jsHeapTotalBytes": 95797248,
+        "documents": 5,
+        "nodes": 1556,
+        "jsEventListeners": 182
+      }
+    },
+    {
+      "file": "after-night-2.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1446.8239590000003,
+      "entryMs": 2532.544708,
+      "before": {
+        "calls": 159,
+        "triangles": 425923,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 159,
+        "triangles": 425923,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 300,
+        "measuredFps": 60.00401364639775,
+        "frameIntervalMedianMs": 16.69999998807907,
+        "frameIntervalP95Ms": 17.700000017881393,
+        "frameSubmitP95Ms": 2.7000000178813934
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 17.599999994039536,
+            "processingMs": 0.5
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 18.099999994039536,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 19.099999994039536,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 13.5,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 13.800000011920929,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 14.300000011920929,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 15.199999988079071,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.5,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 16.80000001192093,
+            "processingMs": 0.5
+          }
+        ],
+        "pointerDispatchMs": [
+          17.900000005960464,
+          13.700000017881393,
+          15.400000005960464
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 27347224,
+        "jsHeapTotalBytes": 94486528,
+        "documents": 5,
+        "nodes": 1556,
+        "jsEventListeners": 182
+      }
+    },
+    {
+      "file": "after-night-3.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1483.0080829999997,
+      "entryMs": 2514.01825,
+      "before": {
+        "calls": 159,
+        "triangles": 425923,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false
+      },
+      "room": {
+        "calls": 159,
+        "triangles": 425923,
+        "geometries": 270,
+        "textures": 42,
+        "programs": 63,
+        "pixelRatio": 1,
+        "low": false,
+        "drawnFrames": 301,
+        "measuredFps": 59.992800863967844,
+        "frameIntervalMedianMs": 16.600000023841858,
+        "frameIntervalP95Ms": 18.099999994039536,
+        "frameSubmitP95Ms": 2.9000000059604645
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 14.300000011920929,
+            "processingMs": 0.3999999761581421
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 14.800000011920929,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 15.599999994039536,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 14.299999982118607,
+            "processingMs": 0.20000001788139343
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 14.599999994039536,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 15.199999988079071,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 14.800000011920929,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 15.100000023841858,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 16.400000005960464,
+            "processingMs": 0.5
+          }
+        ],
+        "pointerDispatchMs": [
+          14.699999988079071,
+          14.5,
+          15
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 27383792,
+        "jsHeapTotalBytes": 95535104,
+        "documents": 5,
+        "nodes": 1556,
+        "jsEventListeners": 182
+      }
+    },
+    {
+      "file": "before-phone-1.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1471.469791,
+      "entryMs": 2516.675166,
+      "before": {
+        "calls": 113,
+        "triangles": 309638,
+        "geometries": 270,
+        "textures": 41,
+        "programs": 56,
+        "pixelRatio": 1,
+        "low": true
+      },
+      "room": {
+        "calls": 113,
+        "triangles": 309638,
+        "geometries": 270,
+        "textures": 41,
+        "programs": 56,
+        "pixelRatio": 1,
+        "low": true,
+        "drawnFrames": 150,
+        "measuredFps": 30.01067493820933,
+        "frameIntervalMedianMs": 33.29999998211861,
+        "frameIntervalP95Ms": 36.20000001788139,
+        "frameSubmitP95Ms": 4.100000023841858
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 32,
+            "inputDelayMs": 18,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 32,
+            "inputDelayMs": 18.400000005960464,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 32,
+            "inputDelayMs": 19.30000001192093,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 14.099999994039536,
+            "processingMs": 0.30000001192092896
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 14.400000005960464,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 15.099999994039536,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 13,
+            "processingMs": 0.19999998807907104
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 13.199999988079071,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 14.400000005960464,
+            "processingMs": 0.3999999761581421
+          }
+        ],
+        "pointerDispatchMs": [
+          18.30000001192093,
+          14.400000005960464,
+          13.199999988079071
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 41120212,
+        "jsHeapTotalBytes": 97370112,
+        "documents": 5,
+        "nodes": 1549,
+        "jsEventListeners": 177
+      }
+    },
+    {
+      "file": "after-phone-1.json",
+      "schema": 1,
+      "environment": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "deviceScaleFactor": 1,
+        "cpuThrottle": 1,
+        "sampleMs": 5000,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "node": "v24.14.0",
+        "browser": "156.0.8078.80",
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "reducedMotion": true,
+        "note": "Runtime platform and the browser-reported WebGL renderer are recorded for this run; allowing SwiftShader does not prove that it was selected. CPU throttling is a lab stress condition, not a physical phone measurement. JS heap excludes GPU and browser-process memory. Frame submission time is CPU work, not GPU completion.",
+        "device": {
+          "hardwareConcurrency": 10,
+          "deviceMemoryGiB": 16,
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "unmaskedRendererAvailable": true,
+          "softwareRendererDetected": false
+        }
+      },
+      "errors": [],
+      "loadingMs": 1417.8814580000003,
+      "entryMs": 2510.6636249999997,
+      "before": {
+        "calls": 113,
+        "triangles": 309638,
+        "geometries": 270,
+        "textures": 41,
+        "programs": 56,
+        "pixelRatio": 1,
+        "low": true
+      },
+      "room": {
+        "calls": 113,
+        "triangles": 309638,
+        "geometries": 270,
+        "textures": 41,
+        "programs": 56,
+        "pixelRatio": 1,
+        "low": true,
+        "drawnFrames": 147,
+        "measuredFps": 29.40821012773945,
+        "frameIntervalMedianMs": 33.20000001788139,
+        "frameIntervalP95Ms": 37.30000001192093,
+        "frameSubmitP95Ms": 5.800000011920929
+      },
+      "warnings": [],
+      "input": {
+        "events": [
+          {
+            "name": "pointerdown",
+            "durationMs": 32,
+            "inputDelayMs": 14,
+            "processingMs": 0.29999998211860657
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 32,
+            "inputDelayMs": 14.299999982118607,
+            "processingMs": 0.09999999403953552
+          },
+          {
+            "name": "click",
+            "durationMs": 32,
+            "inputDelayMs": 15.299999982118607,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 48,
+            "inputDelayMs": 13.700000017881393,
+            "processingMs": 0.19999998807907104
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 48,
+            "inputDelayMs": 14,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 48,
+            "inputDelayMs": 14.600000023841858,
+            "processingMs": 0.5
+          },
+          {
+            "name": "pointerdown",
+            "durationMs": 40,
+            "inputDelayMs": 12.699999988079071,
+            "processingMs": 0.4000000059604645
+          },
+          {
+            "name": "touchstart",
+            "durationMs": 40,
+            "inputDelayMs": 13.099999994039536,
+            "processingMs": 0
+          },
+          {
+            "name": "click",
+            "durationMs": 40,
+            "inputDelayMs": 14.599999994039536,
+            "processingMs": 0.6000000238418579
+          }
+        ],
+        "pointerDispatchMs": [
+          14.299999982118607,
+          13.900000005960464,
+          12.900000005960464
+        ]
+      },
+      "memory": {
+        "jsHeapUsedBytes": 41125200,
+        "jsHeapTotalBytes": 98156544,
+        "documents": 5,
+        "nodes": 1557,
+        "jsEventListeners": 182
+      }
+    }
+  ]
+}
