@@ -1,3 +1,4 @@
+import { openRoomSettings } from './helpers/room-settings';
 import { test, expect, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import { createTimeFlowClock, loadTimeFlow, normalizeTimeFlow, saveTimeFlow, TIME_FLOW_STORAGE_KEY, MAX_CALENDAR_TIME } from '../src/environment-time';
@@ -101,7 +102,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 
     await enter(page, '?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T18:00&envWeather=few-clouds&envDensity=0&envBirdDensity=0');
     const initial = await snapshot(page); expect(initial.clockVisible).toBe(true);
     expect(await page.evaluate(() => (window as any).__timeReview.clockPixels())).toBeGreaterThan(50);
-    await page.locator('#time-flow').click(); await expect(page.locator('#time-flow-realtime')).toBeChecked();
+    await openRoomSettings(page); await page.locator('#time-flow').click(); await expect(page.locator('#time-flow-realtime')).toBeChecked();
     await page.locator('#time-flow-free').check(); await expect(page.locator('#time-flow-speed-controls')).toBeVisible();
     expect((await snapshot(page)).clockVisible).toBe(false); await expect(page.locator('#desk-clock-status')).toBeEmpty();
     await expect(page.locator('#desk-clock-status')).toHaveAttribute('hidden', '');
@@ -132,7 +133,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 
       await expect.poll(async () => (await snapshot(page)).environment.timestamp - hidden.environment.timestamp).toBeGreaterThan(120000 * 59);
       expect((await snapshot(page)).clockVisible).toBe(false);
     }
-    await page.locator('#time-flow').click(); await page.locator('#time-flow-realtime').check();
+    await openRoomSettings(page); await page.locator('#time-flow').click(); await page.locator('#time-flow-realtime').check();
     await expect.poll(async () => (await snapshot(page)).clockVisible).toBe(true);
     await expect(page.locator('#desk-clock-status')).not.toBeEmpty(); await expect(page.locator('#desk-clock-status')).not.toHaveAttribute('hidden', '');
     await page.keyboard.press('Escape'); await expect(page.locator('#time-flow')).toBeFocused();
@@ -146,20 +147,20 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 
 
 test('normal visitor preferences survive refresh, debug sessions remain isolated, and renderer failure closes the time panel', async ({ page }) => {
   test.setTimeout(120000); await instrument(page); await enter(page);
-  await page.locator('#time-flow').click(); await page.locator('#time-flow-free').check();
+  await openRoomSettings(page); await page.locator('#time-flow').click(); await page.locator('#time-flow-free').check();
   await page.locator('#time-flow-custom').fill('12.5'); await page.locator('#time-flow-custom').press('Tab');
   const saved = await page.evaluate(key => localStorage.getItem(key), TIME_FLOW_STORAGE_KEY);
   const before = await snapshot(page); await page.reload(); await expect(page.locator('#loading')).toBeHidden({ timeout: 90000 });
   const restored = await snapshot(page); expect(restored.environment.timeFlow).toMatchObject({ mode: 'free', speed: 12.5 });
   expect(restored.environment.timeFlow.timestamp).toBeGreaterThan(before.environment.timestamp);
   await enter(page, '?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00');
-  await page.locator('#time-flow').click(); await expect(page.locator('#time-flow-realtime')).toBeChecked();
+  await openRoomSettings(page); await page.locator('#time-flow').click(); await expect(page.locator('#time-flow-realtime')).toBeChecked();
   await page.locator('#time-flow-free').check(); await page.locator('#time-flow-speed').fill('6');
   expect(await page.evaluate(key => localStorage.getItem(key), TIME_FLOW_STORAGE_KEY)).toBe(saved);
   await page.locator('.environment-debug > summary').click(); await page.locator('.environment-debug-reset').click();
   await expect.poll(async () => (await snapshot(page)).clockVisible).toBe(true);
   await expect(page.locator('#desk-clock-status')).not.toBeEmpty();
-  await page.locator('#time-flow').click();
+  await openRoomSettings(page); await page.locator('#time-flow').click();
   await page.evaluate(() => (document.querySelector('#world canvas') as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext());
   await expect(page.locator('#fallback')).toBeVisible(); await expect(page.locator('#time-flow-panel')).toBeHidden();
 });
@@ -168,7 +169,7 @@ for (const viewport of [{ width: 320, height: 568 }, { width: 844, height: 390 }
   await page.setViewportSize(viewport);
   await page.addInitScript(() => { Object.defineProperty(window, 'localStorage', { configurable: true, get() { throw new Error('blocked'); } }); });
   await mockExperienceScene(page); await page.goto('/'); await enterFixtureRoom(page);
-  await page.locator('#time-flow').click(); await page.locator('#time-flow-free').check();
+  await openRoomSettings(page); await page.locator('#time-flow').click(); await page.locator('#time-flow-free').check();
   await page.locator('#time-flow-custom').fill('7.5'); await page.locator('#time-flow-custom').press('Tab');
   await expect(page.locator('#time-flow-rate')).toHaveText('7.5倍');
   for (const id of ['time-flow', 'time-flow-close', 'time-flow-speed', 'time-flow-custom']) {
@@ -180,7 +181,7 @@ for (const viewport of [{ width: 320, height: 568 }, { width: 844, height: 390 }
     && panel!.y < room!.y + room!.height && panel!.y + panel!.height > room!.y).toBe(false);
   await page.keyboard.press('Escape'); await expect(page.locator('#time-flow')).toBeFocused();
   await openFixtureBook(page); await expect(page.locator('#time-flow-panel')).toBeHidden();
-  await closeFixtureBook(page); await page.locator('#time-flow').click();
+  await closeFixtureBook(page); await openRoomSettings(page); await page.locator('#time-flow').click();
   await page.evaluate(() => (window as any).__experience.fail());
   await expect(page.locator('#fallback')).toBeVisible(); await expect(page.locator('#time-flow-panel')).toBeHidden();
 });

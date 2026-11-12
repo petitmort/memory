@@ -87,7 +87,18 @@ test('the real room renders four calendar environments, six navigation direction
       await setSceneDate(page, condition.date);
       await page.locator('#env-weather').selectOption(condition.kind);
       if (condition.sun === 'night') await page.locator('#env-phase').selectOption('0.5');
-      await expect.poll(async () => (await snapshot(page)).weather.kind, { timeout: 10000 }).toBe(condition.kind);
+      // Date, native-select changes and the drawn environment settle on
+      // separate tasks. Read the same requested calendar frame throughout.
+      const expectedTime = timestampFromZonedInput(condition.date, 'Europe/Athens');
+      await expect.poll(async () => {
+        const state = await snapshot(page);
+        return {
+          dateReady: Math.abs(state.timestamp - expectedTime) < 15000,
+          weather: state.weather.kind,
+          skyReady: condition.sun === 'night' ? state.celestial.sun.altitude < -.2 && state.celestial.moonIllumination > .999
+            : condition.sun === 'dusk' ? Math.abs(state.celestial.sun.altitude) < .2 : state.celestial.sun.altitude > .2,
+        };
+      }, { timeout: 10000 }).toEqual({ dateReady: true, weather: condition.kind, skyReady: true });
       const state = await snapshot(page);
       expect(state.weather.simulated).toBe(true);
       if (condition.sun === 'day') expect(state.celestial.sun.altitude).toBeGreaterThan(.2);

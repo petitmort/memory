@@ -23,7 +23,7 @@ function canvasTexture(
 }
 export function createPalette() {
   const lime = canvasTexture((ctx, r) => {
-    ctx.fillStyle = "#f4f1e8";
+    ctx.fillStyle = "#f7f2e8";
     ctx.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 230; i++) {
       ctx.fillStyle = `rgba(166,154,128,${r() * 0.018})`;
@@ -47,7 +47,7 @@ export function createPalette() {
   });
   lime.repeat.set(2, 2);
   const stone = canvasTexture((ctx, r) => {
-    ctx.fillStyle = "#d9ceba";
+    ctx.fillStyle = "#dad3c6";
     ctx.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 1400; i++) {
       ctx.strokeStyle = `rgba(155,140,111,${r() * 0.04})`;
@@ -71,7 +71,7 @@ export function createPalette() {
         r() > 0.5 ? "rgba(245,237,213,.12)" : "rgba(99,90,70,.07)";
       ctx.fillRect(r() * 512, r() * 512, r() * 2 + 0.2, 0.5 + r());
     }
-    ctx.strokeStyle = "#bfb5a3";
+    ctx.strokeStyle = "#c2baad";
     ctx.lineWidth = 2;
     ctx.strokeRect(1, 1, 510, 510);
   });
@@ -84,7 +84,7 @@ export function createPalette() {
   // Both textures share the asynchronously loaded image, including the cloned variant.
   horizontalTimber.center.set(.5,.5);horizontalTimber.rotation = Math.PI/2;
   const painted = canvasTexture((ctx, r) => {
-    ctx.fillStyle = "#276190";
+    ctx.fillStyle = "#386a86";
     ctx.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 1000; i++) {
       const x = r() * 512;
@@ -102,25 +102,25 @@ export function createPalette() {
     }
   });
   const weave = canvasTexture((ctx, r) => {
-    ctx.fillStyle = "#cdbb98";
+    ctx.fillStyle = "#dfd2b8";
     ctx.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 256; i++) {
-      ctx.strokeStyle = i % 2 ? "#c1ac87" : "#e5d8b8";
+      ctx.strokeStyle = i % 2 ? "#d6c8ac" : "#e7dcc6";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(0, i * 2);
       ctx.lineTo(512, i * 2);
       ctx.stroke();
-      ctx.strokeStyle = `rgba(97,78,44,${0.08 + r() * 0.08})`;
+      ctx.strokeStyle = `rgba(117,100,75,${0.04 + r() * 0.04})`;
       ctx.beginPath();
       ctx.moveTo(i * 2, 0);
       ctx.lineTo(i * 2, 512);
       ctx.stroke();
     }
-    ctx.strokeStyle = "#517482";
-    ctx.lineWidth = 8;
+    ctx.strokeStyle = "#c2b397";
+    ctx.lineWidth = 4;
     ctx.strokeRect(18, 18, 476, 476);
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1;
     ctx.strokeRect(30, 30, 452, 452);
   });
   return {
@@ -141,7 +141,7 @@ export function createPalette() {
       map: timber, bumpMap: timber, bumpScale: .00028, roughness: .71,
     }),
     tableWood: new THREE.MeshStandardMaterial({
-      map: horizontalTimber, bumpMap: horizontalTimber, bumpScale: .00028, roughness: .71,
+      color: '#f8edda', map: horizontalTimber, bumpMap: horizontalTimber, bumpScale: .00028, roughness: .77,
     }),
     blue: new THREE.MeshStandardMaterial({
       map: painted,

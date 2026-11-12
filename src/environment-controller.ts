@@ -73,7 +73,7 @@ export function createEnvironmentController(bindings: Bindings) {
   ];
   const ownedGroups = [sky.group, clouds.group, particles.group, vessels.group, birds.group, storm.group];
   const warm = new THREE.Color("#ffd3a2"), daylightColor = new THREE.Color("#fff1db"), moonColor = new THREE.Color("#a8bedc");
-  const dayAmbient = new THREE.Color("#e4edf0"), nightAmbient = new THREE.Color("#adb9ca");
+  const dayAmbient = new THREE.Color("#e4edf0"), nightAmbient = new THREE.Color("#9eafc5");
   const waterDay = new THREE.Color(1, 1, 1), waterNight = new THREE.Color(.19, .28, .4), waterGray = new THREE.Color(.67, .75, .8);
   const tint = new THREE.Color(), weatherTint = new THREE.Color(), lightColor = new THREE.Color();
 
@@ -179,9 +179,11 @@ export function createEnvironmentController(bindings: Bindings) {
     const sunlight = THREE.MathUtils.smoothstep(celestial.sun.altitude, -.02, .23) * (1 - cover * .84);
     const moonlight = celestial.night * celestial.moonIllumination * THREE.MathUtils.smoothstep(celestial.moon.altitude, -.02, .15) * (1 - cover * .86);
     ambient.color.copy(nightAmbient).lerp(dayAmbient, d);
-    ambient.intensity = 1.02 + d * .52 * (1 - cover * .18);
-    ambient.groundColor.setRGB(.28 + .16 * d, .25 + .12 * d, .24 + .08 * d);
-    fill.intensity = .46 + .44 * d * (1 - cover * .22) + stormFrame.flash * (.12+.18*d);
+    // Preserve clear daylight while letting the ceiling and local linen lamp
+    // describe the room at night, instead of uniformly filling every corner.
+    ambient.intensity = .38 + d * 1.16 * (1 - cover * .18);
+    ambient.groundColor.setRGB(.21 + .23 * d, .19 + .18 * d, .18 + .14 * d);
+    fill.intensity = .14 + .76 * d * (1 - cover * .22) + stormFrame.flash * (.12+.18*d);
     fill.color.copy(moonColor).lerp(daylightColor, d);
     const warmAmount = 1 - THREE.MathUtils.smoothstep(celestial.sun.altitude, .03, .6);
     lightColor.copy(daylightColor).lerp(warm, warmAmount);

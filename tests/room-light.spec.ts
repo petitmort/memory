@@ -1,3 +1,4 @@
+import { openRoomSettings } from './helpers/room-settings';
 import {test,expect,type Page} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import * as THREE from 'three';
@@ -86,8 +87,8 @@ test('real overhead light changes room pixels and colour, remembers settings and
   const errors=await instrument(page);
   try{
     await enter(page);const initial=await page.evaluate(()=>(window as any).__lamp.snapshot());
-    expect(initial.intensity).toBe(15);expect(initial.lights).toBe(1);
-    await page.locator('#room-light').click();await expect(page.locator('#room-light-toggle')).toHaveAttribute('aria-checked','true');
+    expect(initial.intensity).toBe(15);expect(initial.lights).toBe(2);
+    await openRoomSettings(page); await page.locator('#room-light').click();await expect(page.locator('#room-light-toggle')).toHaveAttribute('aria-checked','true');
     const warm=await page.evaluate(()=>(window as any).__lamp.difference());expect(warm.changed).toBeGreaterThan(5000);
     expect(warm.rgb[0]).toBeGreaterThan(warm.rgb[2]);
     await page.screenshot({path:evidence+'/night-warm-panel.png'});
@@ -107,12 +108,12 @@ test('real overhead light changes room pixels and colour, remembers settings and
     expect(restoredEntry.settings).toEqual({enabled:true,color:'#557dff',brightness:25});expect(restoredEntry.intensity).toBe(0);
     await page.locator('#enter').click();await expect(page.locator('#enter')).toBeEnabled();await page.locator('#enter').click();
     await expect(page.locator('#room-light')).toBeEnabled({timeout:45000});
-    await page.locator('#room-light').click();await expect(page.locator('#room-light-color')).toHaveValue('#557dff');
+    await openRoomSettings(page); await page.locator('#room-light').click();await expect(page.locator('#room-light-color')).toHaveValue('#557dff');
     await page.locator('#open-book').click();await expect(page.locator('#reader')).toHaveAttribute('data-phase','ready',{timeout:45000});
     await expect(page.locator('#room-light-panel')).toBeHidden();expect(await page.locator('#reader').evaluate(el=>el.contains(document.activeElement))).toBe(true);
     await page.locator('#close-book').click();await expect(page.locator('#room-light')).toBeEnabled({timeout:45000});
     expect((await page.evaluate(()=>(window as any).__lamp.snapshot())).intensity).toBe(7.5);
-    await page.locator('#quality').click();await page.locator('#room-light').click();await page.locator('#room-light-toggle').click();await page.locator('#room-light-toggle').click();
+    await page.locator('#quality').click();await openRoomSettings(page); await page.locator('#room-light').click();await page.locator('#room-light-toggle').click();await page.locator('#room-light-toggle').click();
     expect((await page.evaluate(()=>(window as any).__lamp.snapshot())).intensity).toBe(7.5);
     expect(errors).toEqual([]);await expect(page.locator('#fallback')).toBeHidden();
   }finally{await context.close();}
@@ -121,7 +122,7 @@ test('real overhead light changes room pixels and colour, remembers settings and
 test('unavailable browser storage keeps light controls usable and renderer failure closes the panel',async({page})=>{
   await page.addInitScript(()=>{Object.defineProperty(window,'localStorage',{configurable:true,get(){throw new Error('Storage blocked');}});});
   await mockExperienceScene(page);await page.goto('/');await enterFixtureRoom(page);
-  await page.locator('#room-light').click();await page.locator('#room-light-toggle').click();
+  await openRoomSettings(page); await page.locator('#room-light').click();await page.locator('#room-light-toggle').click();
   await page.locator('#room-light-brightness').fill('80');await expect(page.locator('#room-light-percentage')).toHaveText('80%');
   await page.evaluate(()=>(window as any).__experience.fail());
   await expect(page.locator('#fallback')).toBeVisible();await expect(page.locator('#room-light-panel')).toBeHidden();

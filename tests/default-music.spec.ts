@@ -1,5 +1,6 @@
+import { openRoomSettings } from './helpers/room-settings';
 import { test, expect, type Page } from '@playwright/test';
-import { mockExperienceScene, enterFixtureRoom } from './helpers/experience-scene';
+import { mockExperienceScene, enterFixtureRoom, finishSceneStep } from './helpers/experience-scene';
 
 const title = 'Merry Christmas Mr. Lawrence — 坂本龍一';
 
@@ -40,19 +41,20 @@ async function media(page: Page) {
   });
 }
 
-test('the supplied default stays paused and undownloaded until a trusted playback gesture', async ({ page }) => {
+test('the supplied default stays undownloaded before entry, starts from the door gesture and remains pausable', async ({ page }) => {
   const requests: string[] = [], errors: string[] = [];
   page.on('request', request => { if (request.resourceType() === 'media') requests.push(request.url()); });
   page.on('pageerror', error => errors.push(error.message));
   await trackMedia(page); await mockExperienceScene(page);
-  await page.goto('/'); await enterFixtureRoom(page);
+  await page.goto('/'); await expect(page.locator('#loading')).toBeHidden();
   await expect(page.locator('#record-track')).toHaveText(title);
   await expect(page.locator('#record-state')).toHaveText('已暂停');
-  await expect(page.locator('#record-toggle')).toHaveAttribute('aria-label', '播放唱片');
   expect(await media(page)).toMatchObject({ source: '', paused: true, plays: 0, preload: 'none' });
   expect(requests).toEqual([]);
-
-  await page.locator('#record-toggle').focus(); await page.keyboard.press('Enter');
+  await page.locator('#enter').click(); await finishSceneStep(page,'clearing');
+  expect(await media(page)).toMatchObject({source:'',paused:true,plays:0});expect(requests).toEqual([]);
+  await page.locator('#enter').click(); await finishSceneStep(page,'entering');
+  await expect(page.locator('#room-ui')).toBeVisible();
   await expect(page.locator('#record-state')).toHaveText('播放中', { timeout: 30000 });
   await page.waitForFunction(() => (window as any).__defaultMedia.currentTime > .05);
   const playing = await media(page);
@@ -63,6 +65,8 @@ test('the supplied default stays paused and undownloaded until a trusted playbac
   await page.locator('#record-toggle').click();
   await expect(page.locator('#record-state')).toHaveText('已暂停');
   expect((await media(page)).source).toBe(playing.source);
+  await page.locator('#record-toggle').focus(); await page.keyboard.press('Enter');
+  await expect(page.locator('#record-state')).toHaveText('播放中');expect((await media(page)).plays).toBe(2);
   expect(errors).toEqual([]);
 });
 
@@ -78,11 +82,13 @@ test('a saved personal song wins and restoring the default removes that saved ov
   page.on('filechooser', () => {});
   await page.goto('/'); await enterFixtureRoom(page);
   await expect(page.locator('#record-track')).toHaveText('私の音楽');
-  expect(await media(page)).toMatchObject({ paused: true, plays: 0 });
+  // This short saved sample may already have ended during the two-second
+  // room observation; entry must still have attempted it exactly once.
+  expect((await media(page)).plays).toBe(1);
   expect((await media(page)).source).toMatch(/^blob:/);
 
   const choose = page.waitForEvent('filechooser', { timeout: 30000 });
-  await page.locator('#choose-record').click();
+  await openRoomSettings(page); await page.locator('#choose-record').click();
   await (await choose).setFiles([]);
   await expect(page.locator('#restore-record')).toBeVisible();
   await page.locator('#restore-record').click();
@@ -95,7 +101,8 @@ test('a saved personal song wins and restoring the default removes that saved ov
   })).toBe(null);
   await page.reload(); await enterFixtureRoom(page);
   await expect(page.locator('#record-track')).toHaveText(title);
-  expect(await media(page)).toMatchObject({ paused: true, plays: 0 });
+  await expect(page.locator('#record-state')).toHaveText('播放中');
+  expect(await media(page)).toMatchObject({ paused: false, plays: 1 });
 });
 
 test('blocked browser storage still leaves the supplied default playable', async ({ page }) => {
@@ -105,8 +112,9 @@ test('blocked browser storage still leaves the supplied default playable', async
   });
   await page.goto('/'); await enterFixtureRoom(page);
   await expect(page.locator('#record-track')).toHaveText(title);
-  await page.locator('#record-toggle').click();
   await expect(page.locator('#record-state')).toHaveText('播放中', { timeout: 30000 });
+  await page.locator('#record-toggle').click();await expect(page.locator('#record-state')).toHaveText('已暂停');
+  await page.locator('#record-toggle').click();await expect(page.locator('#record-state')).toHaveText('播放中');
   expect((await media(page)).source).toMatch(/default-record.*\.mp3/);
 });
 
@@ -120,7 +128,6 @@ test('a late browser restore cannot replace a default record the user already st
     }; }`,
   }));
   await page.goto('/'); await enterFixtureRoom(page);
-  await page.locator('#record-toggle').click();
   await expect(page.locator('#record-state')).toHaveText('播放中', { timeout: 30000 });
   const playing = await media(page);
   await page.evaluate(() => (window as any).__releaseSavedRecord());

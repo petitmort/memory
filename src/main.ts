@@ -11,6 +11,7 @@ import { captureBookPages } from "./page-raster";
 import { createRoomLightControls } from "./room-light-controls";
 import { loadRoomLightSettings } from "./room-light";
 import { createTimeFlowControls } from "./time-flow-controls";
+import { createRoomSettings } from "./room-settings";
 
 
 mountAppView();
@@ -153,6 +154,9 @@ const roomLightControls = createRoomLightControls(el<HTMLButtonElement>("room-li
 const timeFlowControls = createTimeFlowControls(el<HTMLButtonElement>("time-flow"), patch => {
   scene?.setTimeFlow?.(patch);
 });
+const roomSettings = createRoomSettings(el<HTMLButtonElement>("room-settings"), el("room-settings-menu"), () => {
+  roomLightControls.close(); timeFlowControls.close(); sound.closeRecordPanel();
+});
 function viewingCat() {
   return cozyViewRequested || (sceneAvailable && (scene?.isCozyFocused?.() ?? false));
 }
@@ -161,6 +165,7 @@ function syncControls() {
   const catContext = viewingCat();
   roomLightControls.setAvailable(inRoom && sceneAvailable);
   timeFlowControls.setAvailable(inRoom && sceneAvailable);
+  roomSettings.setAvailable(inRoom && sceneAvailable);
   for (const id of ["open-book", "cozy-view", "pet-cat", "choose-record", "record-toggle"])
     el<HTMLButtonElement>(id).disabled = !inRoom || (id === "open-book" && catContext) || (id === "pet-cat" && el(id).dataset.busy === "true");
   el("open-book").classList.toggle("hidden", catContext);
@@ -187,6 +192,7 @@ flow.own(() => readerController.dispose());
 flow.own(() => sound.dispose());
 flow.own(() => roomLightControls.dispose());
 flow.own(() => timeFlowControls.dispose());
+flow.own(() => roomSettings.dispose());
 flow.own(() => scene?.dispose());
 flow.own(() => window.clearTimeout(toastTimer));
 flow.own(cancelRoomObservation);

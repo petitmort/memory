@@ -284,7 +284,7 @@ test("physical scene: enter through doorway, approach and open the album, then r
     album: [0.32, 0.0351, 0.26],
     cup: [0.085, 0.095, 0.085],
     stool: [0.36, 0.45, 0.36],
-    rug: [2, 0.008, 1.4],
+    rug: [2.4, 0.008, 1.75],
     console: [0.9, 0.025, 0.32],
     room: [4.6, 2.7, 5.4],
     window: [3, 1.6, 0.85],

@@ -33,19 +33,37 @@ const windModes = Array.from({ length: WIND_DIRECTIONS }, (_, i) => {
   };
 });
 
+// Every contact, droplet and vessel samples the same blended wind many times
+// in a frame. Reuse only its direction weights and strength, never heights or
+// phases; mutable weather objects and interleaved callers still use their values.
+const windWeights = new Float64Array(WIND_DIRECTIONS);
+let weightedDirection = NaN, weightedSpeed = NaN, weightSum = 0, strength = 0;
+function prepareWind(wind: WaterWind) {
+  const speed = Number.isFinite(wind.windSpeed) ? wind.windSpeed : 0;
+  if (speed !== weightedSpeed) { strength = windStrength(speed); weightedSpeed = speed; }
+  const direction = Number.isFinite(wind.windDirection) ? wind.windDirection : 0;
+  if (direction === weightedDirection) return;
+  weightedDirection = direction;
+  const wx = Math.cos(direction), wz = Math.sin(direction);
+  weightSum = 0;
+  for (let i = 0; i < windModes.length; i++) {
+    const mode = windModes[i], aligned = Math.max(0, wx * mode.dx + wz * mode.dz);
+    const weight = aligned ** 6;
+    windWeights[i] = weight < .000001 ? 0 : weight;
+    weightSum += windWeights[i];
+  }
+}
+
 /** Maximum before the existing weather multiplier; 1.011×1.6 < 1.8 m. */
 export const WIND_WATER_HEIGHT_BOUND = 1.011;
 
 export function sampleWaterHeight(x: number, z: number, time: number, wind?: WaterWind) {
   if (wind) {
-    const strength = windStrength(wind.windSpeed);
-    const direction = Number.isFinite(wind.windDirection) ? wind.windDirection : 0;
-    const wx = Math.cos(direction), wz = Math.sin(direction);
-    let height = 0, weightSum = 0;
-    for (const mode of windModes) {
-      const aligned = Math.max(0, wx * mode.dx + wz * mode.dz);
-      const weight = aligned ** 6;
-      if (weight < .000001) continue;
+    prepareWind(wind);
+    let height = 0;
+    for (let i = 0; i < windModes.length; i++) {
+      const mode = windModes[i], weight = windWeights[i];
+      if (weight === 0) continue;
       const distance = x * mode.dx + z * mode.dz;
       // Negative temporal phase makes crests travel in +direction.
       const slow = Math.sin(distance * mode.slowK - time * mode.slowSpeed + mode.phase)
@@ -55,7 +73,6 @@ export function sampleWaterHeight(x: number, z: number, time: number, wind?: Wat
       const ripple = Math.sin(distance * mode.rippleK - time * mode.rippleSpeed + mode.phase * 2.3)
         * (.006 + .045 * strength);
       height += (slow + long + ripple) * weight;
-      weightSum += weight;
     }
     return height / Math.max(.000001, weightSum);
   }

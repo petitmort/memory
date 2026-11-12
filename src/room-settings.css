@@ -1,0 +1,56 @@
+/* One quiet action row leaves the room visible; tools expand on demand. */
+.room-ui .primary-button { font-size: 13px; letter-spacing: 1px; }
+.room-ui .cozy-actions { gap: 8px; }
+.room-ui .cozy-actions .cozy-view { font-size: 13px; letter-spacing: .5px; }
+.room-ui .room-settings-trigger { background: #294b50bd; box-shadow: none; }
+.room-settings-trigger::after { content: "+"; margin-left: 7px; }
+.room-settings-trigger[aria-expanded="true"]::after { content: "−"; }
+.room-settings-menu {
+  margin-top: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--room-border);
+  border-radius: var(--room-radius);
+  background: var(--room-surface);
+  box-shadow: var(--room-shadow);
+  pointer-events: auto;
+}
+.room-settings-menu[hidden] { display: none; }
+.room-settings-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 2px 8px; }
+.room-ui .room-settings-menu .cozy-view {
+  margin: 0;
+  padding: 8px 10px;
+  min-height: 44px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+.room-ui .room-settings-menu .cozy-view:hover:not(:disabled) { background: #fff2; }
+.room-ui .room-settings-menu .record-music-row { margin-top: 2px; font-size: 12px; text-shadow: none; }
+.room-ui > .record-panel {
+  position: fixed;
+  z-index: 24;
+  top: max(96px, calc(env(safe-area-inset-top) + 76px));
+  right: max(4.5%, env(safe-area-inset-right));
+  bottom: auto;
+  width: min(290px, calc(100vw - 24px));
+  transform: none;
+}
+.room-ui .record-panel-content { overscroll-behavior: contain; scroll-padding-top: 50px; }
+body[data-stage="room"] .journey { color: #e8e5d2a6; }
+body[data-stage="room"] .journey span.active { color: #eee8d1c7; }
+body[data-stage="room"] .footer-note { opacity: .55; }
+@media (max-width: 759px) {
+  .room-ui .primary-button { padding: 12px 16px; }
+  .room-ui .cozy-actions .cozy-view { padding: 8px 10px; }
+  .room-settings-menu { max-width: 350px; margin-inline: auto; }
+  .room-settings-actions { justify-content: center; }
+  .room-ui > .record-panel { top: max(84px, calc(env(safe-area-inset-top) + 64px)); right: max(12px, env(safe-area-inset-right)); }
+}
+@media (max-height: 500px) and (min-width: 600px) {
+  .room-ui .primary-button { font-size: 12px; padding: 10px 12px; }
+  .room-ui .cozy-actions .cozy-view { font-size: 12px; padding-inline: 8px; }
+  .room-settings-actions { justify-content: flex-start; }
+  .room-ui > .record-panel { top: max(64px, calc(env(safe-area-inset-top) + 48px)); }
+}

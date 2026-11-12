@@ -215,22 +215,21 @@ function particleSeed(index: number, snow: boolean): ParticleSeed {
   const random = createSeededRandom((index + 1) * 91648253 + (snow ? 7531 : 1987));
   return { x: random() * 108, z: random() * 74, phase: random(), cycles: snow ? 50 + Math.floor(random() * 46) : 1200 + Math.floor(random() * 601), sway: random() * Math.PI * 2 };
 }
-function writeParticle(seed: ParticleSeed, timestampMs: number, snow: boolean, windSpeed: number, windDirection: number, reduced: boolean, out: Float32Array | number[], offset: number) {
-  const time = positiveModulo(timestampMs / 1000, 4096) / 4096;
+function writeParticle(seed: ParticleSeed, time: number, snow: boolean, windSpeed: number, windCos: number, windSin: number, reduced: boolean, out: Float32Array | number[], offset: number) {
   // Integer cycles make this long clock wrap continuous, including after sleep.
   const cycles = reduced ? Math.max(1, Math.round(seed.cycles * .35)) : seed.cycles;
   const fall = positiveModulo(time * cycles + seed.phase, 1);
   const sway = snow ? Math.sin(fall * 8 + seed.sway) * .7 : 0;
   const drift = windSpeed * (snow ? 1.15 : .48) * fall;
-  out[offset] = positiveModulo(seed.x + Math.cos(windDirection) * drift + sway, 108) - 54;
+  out[offset] = positiveModulo(seed.x + windCos * drift + sway, 108) - 54;
   out[offset + 1] = 20 - fall * 28.3;
-  out[offset + 2] = -8.5 - positiveModulo(seed.z + Math.sin(windDirection) * drift + sway * .4, 74);
+  out[offset + 2] = -8.5 - positiveModulo(seed.z + windSin * drift + sway * .4, 74);
 }
 
 /** The renderer and bounds tests use this same physical outdoor position model. */
 export function samplePrecipitation(index: number, timestampMs: number, snow: boolean, windSpeed = 4, windDirection = .7, reduced = false): [number, number, number] {
   const position: [number, number, number] = [0, 0, 0];
-  writeParticle(particleSeed(index, snow), timestampMs, snow, windSpeed, windDirection, reduced, position, 0);
+  writeParticle(particleSeed(index, snow), positiveModulo(timestampMs / 1000, 4096) / 4096, snow, windSpeed, Math.cos(windDirection), Math.sin(windDirection), reduced, position, 0);
   return position;
 }
 
@@ -267,17 +266,21 @@ export function createWeatherController() {
       const rainAmount = state.precipitation * (1 - state.snow), snowAmount = state.precipitation * state.snow;
       const rainCount = Math.max(1, Math.round((low ? 430 : RAIN_CAPACITY) * rainAmount));
       const snowCount = Math.max(1, Math.round((low ? 140 : SNOW_CAPACITY) * snowAmount));
-      const windX = Math.cos(state.windDirection) * state.windSpeed * .48;
-      const windZ = Math.sin(state.windDirection) * state.windSpeed * .48;
+      // All drops share this clock and wind. Preserve each particle's exact
+      // arithmetic and phase while calculating these invariants once per frame.
+      const time = positiveModulo(timestampMs / 1000, 4096) / 4096;
+      const windCos = Math.cos(state.windDirection), windSin = Math.sin(state.windDirection);
+      const windX = windCos * state.windSpeed * .48;
+      const windZ = windSin * state.windSpeed * .48;
       for (let i = 0; i < rainCount; i++) {
         const offset = i * 6;
-        writeParticle(rainSeeds[i], timestampMs, false, state.windSpeed, state.windDirection, reduced, rainPositions, offset);
+        writeParticle(rainSeeds[i], time, false, state.windSpeed, windCos, windSin, reduced, rainPositions, offset);
         const length = .75 + (i % 7) * .13;
         rainPositions[offset + 3] = rainPositions[offset] - windX / 28.3 * length;
         rainPositions[offset + 4] = Math.min(22, rainPositions[offset + 1] + length);
         rainPositions[offset + 5] = Math.min(-8.2, rainPositions[offset + 2] - windZ / 28.3 * length);
       }
-      for (let i = 0; i < snowCount; i++) writeParticle(snowSeeds[i], timestampMs, true, state.windSpeed, state.windDirection, reduced, snowPositions, i * 3);
+      for (let i = 0; i < snowCount; i++) writeParticle(snowSeeds[i], time, true, state.windSpeed, windCos, windSin, reduced, snowPositions, i * 3);
       rainGeometry.setDrawRange(0, rainCount * 2); snowGeometry.setDrawRange(0, snowCount);
       rainAttribute.clearUpdateRanges(); rainAttribute.addUpdateRange(0, rainCount * 6); rainAttribute.needsUpdate = true;
       snowAttribute.clearUpdateRanges(); snowAttribute.addUpdateRange(0, snowCount * 3); snowAttribute.needsUpdate = true;

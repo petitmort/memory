@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { createClassicalPainting } from "./classical-gallery";
-import { consolePoint } from "./interior-layout";
+import { consolePoint, consoleReadingLayout } from "./interior-layout";
 
 /** Curated, full-size furnishings; every length is expressed in metres. */
 export function createDecor(): THREE.Group {
@@ -299,7 +299,7 @@ export function createDecor(): THREE.Group {
   }
 
   const tray = new THREE.Group();tray.name="vintage-console-serving-tray";
-  tray.position.copy(consolePoint(-.25,0));decor.add(tray);
+  tray.position.copy(consolePoint(consoleReadingLayout.dishX,consoleReadingLayout.dishZ));decor.add(tray);
   const dish = new THREE.Mesh(new THREE.LatheGeometry([
     new THREE.Vector2(0,0),new THREE.Vector2(.047,0),new THREE.Vector2(.071,.006),
     new THREE.Vector2(.073,.011),new THREE.Vector2(.069,.013),new THREE.Vector2(.045,.006),new THREE.Vector2(0,.006),

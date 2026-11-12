@@ -1,3 +1,4 @@
+import { openRoomSettings } from './helpers/room-settings';
 import { test, expect, type Page } from '@playwright/test';
 import { mockExperienceScene, finishSceneStep, openFixtureBook, closeFixtureBook } from './helpers/experience-scene';
 
@@ -108,7 +109,7 @@ test('a late automatic error reports failure without covering the open room sett
   await installMedia(page); await fixture(page);
   await page.evaluate(() => { (window as any).__entryMusicHold = true; });
   await startEntry(page); await finishSceneStep(page, 'entering'); await expect(page.locator('#room-ui')).toBeVisible();
-  await page.locator('#room-light').click();
+  await openRoomSettings(page); await page.locator('#room-light').click();
   await page.evaluate(() => (window as any).__rejectEntryMusic());
   await expect(page.locator('#record-state')).toHaveText('播放失败');
   await expect(page.locator('#room-light-panel')).toBeVisible();

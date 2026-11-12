@@ -69,7 +69,9 @@ export function createSoundController(options: SoundOptions) {
   panel.setAttribute("role", "group");
   panel.setAttribute("aria-label", "唱片机");
   panel.innerHTML = `<div class="record-panel-content"><span class="record-panel-heading">桌上的唱片机</span><button type="button" class="record-panel-close" id="record-panel-close" aria-label="收起唱片机说明">×</button><span class="record-description" id="record-description">也可以只听海浪。</span><button type="button" class="record-panel-action" id="record-panel-toggle">播放唱片</button><button type="button" class="record-panel-action hidden" id="restore-record">恢复默认唱片</button><span class="record-storage-note">默认唱片随房间提供；你更换的音乐仅保存在当前浏览器。清除网站数据后会恢复默认唱片。</span></div>`;
-  row.append(panel);
+  // Recovery can be opened from the header or arrive after settings collapse.
+  // Keep the explanation outside the disclosure that holds the track row.
+  el("room-ui").append(panel);
   const recordMusic = createRecordMusic(onRecordState);
   recordMusic.load(defaultRecord.source, defaultRecord.title, { deferSource: true });
   updateSoundControl();
@@ -348,7 +350,11 @@ export function createSoundController(options: SoundOptions) {
     sources.length = nodes.length = 0;
     if (audio && audio.state !== "closed") void audio.close().catch(() => {});
     row.before(el("record-track"));
-    row.remove();
+    row.remove(); panel.remove();
+  }
+  function restoreRecordFocus() {
+    const chooser = el("choose-record");
+    (chooser.checkVisibility() ? chooser : el("record-toggle")).focus({ preventScroll: true });
   }
   listen(el("record-toggle"), "click", onRecord);
   listen(el("choose-record"), "click", chooseRecord);
@@ -357,14 +363,14 @@ export function createSoundController(options: SoundOptions) {
   listen(el("restore-record"), "click", restoreDefaultRecord);
   listen(el("record-panel-close"), "click", () => {
     panel.classList.add("hidden");
-    el("choose-record").focus({ preventScroll: true });
+    restoreRecordFocus();
   });
   listen(el("sound"), "click", () => { void toggleSound(); });
   listen(document, "keydown", event => {
     if ((event as KeyboardEvent).key === "Escape" && !panel.classList.contains("hidden")) {
       event.preventDefault(); event.stopPropagation();
       panel.classList.add("hidden");
-      el("choose-record").focus({ preventScroll: true });
+      restoreRecordFocus();
     }
   });
   const closeRecordOutside = (event: Event) => {
@@ -387,5 +393,6 @@ export function createSoundController(options: SoundOptions) {
     catch { weatherAudio?.dispose(); weatherAudio = undefined; }
   }
   return { prepare, unlock, updateContext, updateEnvironment, onCatPet, stopCat, onRecord, onRoomEntry, dispose,
+    closeRecordPanel: () => panel.classList.add("hidden"),
     environmentSnapshot: () => weatherAudio?.snapshot() };
 }
