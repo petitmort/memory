@@ -12,7 +12,21 @@ import { createRoomLightControls } from "./room-light-controls";
 import { loadRoomLightSettings } from "./room-light";
 import { createTimeFlowControls } from "./time-flow-controls";
 import { createRoomSettings } from "./room-settings";
+import publishedAlbum from './album/published.json';
+import type { ReaderContent } from './reader-controller';
 
+let customAlbum: ReaderContent | undefined;
+const albumPreview = new URLSearchParams(location.search).get('albumPreview');
+if (publishedAlbum || albumPreview) {
+  try { customAlbum = await (await import('./album/runtime')).loadAlbumContent(publishedAlbum, albumPreview); }
+  catch (error) {
+    // Failed private previews must not silently open the unrelated sample book.
+    const message = error instanceof Error ? error.message : '无法读取纪念册';
+    customAlbum = { revision: 'error', items: [{ title: '纪念册暂不可用', date: '' }], async paint(scope) {
+      scope.querySelectorAll('.page').forEach(page => { const p = document.createElement('p'); p.textContent = message; page.replaceChildren(p); });
+    } };
+  }
+}
 
 mountAppView();
 
@@ -112,6 +126,7 @@ async function prepareScenePaper(reader: HTMLElement, activeScene: NonNullable<t
   ]);
   const valid = sceneAvailable && !flow.sceneInvalidated && generation === flow.sceneVersion && operation === flow.transitionVersion;
   if (pages && valid) activeScene.setBookPageCanvases(pages);
+  if (!pages && valid && customAlbum) throw new SceneUnavailableError();
   return valid;
 }
 
@@ -146,6 +161,7 @@ const readerController = createReaderController({
   reducedMotion: reduceMotion,
   initialChapter: retryChapter,
   onClose: () => void closeBook(),
+  content: customAlbum,
 });
 const exploration = createExplorationGuide();
 const roomLightControls = createRoomLightControls(el<HTMLButtonElement>("room-light"), loadRoomLightSettings(), settings => {
@@ -333,7 +349,7 @@ async function openBook() {
   try {
     if (readingScene) {
       const activeScene = readingScene;
-      activeScene.setBookChapter(readerController.getChapter());
+      if (!customAlbum) activeScene.setBookChapter(readerController.getChapter());
       const paperReady = (async () => {
         if (!await prepareScenePaper(reader,activeScene,generation,operation)) return;
         if (!sceneAvailable || generation !== flow.sceneVersion || operation !== flow.transitionVersion) return;
@@ -380,7 +396,7 @@ async function closeBook() {
   let journey: ReturnType<typeof createReaderJourney> | undefined;
   try {
     if (activeScene) {
-      activeScene.setBookChapter(readerController.getChapter());
+      if (!customAlbum) activeScene.setBookChapter(readerController.getChapter());
       if (!await prepareScenePaper(reader,activeScene,generation,operation)) throw new SceneUnavailableError();
       if (!sceneAvailable || generation !== flow.sceneVersion || operation !== flow.transitionVersion) throw new SceneUnavailableError();
       journey = createReaderJourney(reader, false);

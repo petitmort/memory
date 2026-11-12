@@ -1,11 +1,18 @@
 import "./reader.css";
 import { chapters, artwork } from "./content";
 
+export type ReaderContent = {
+  revision: string;
+  items: { title: string; date: string }[];
+  paint(scope: ParentNode, index: number): Promise<void>;
+  dispose?(): void;
+};
 type ReaderOptions = {
   canRead: () => boolean;
   reducedMotion: boolean;
   initialChapter?: number;
   onClose?: () => void;
+  content?: ReaderContent;
 };
 
 /** Own the album's chapter content and controls, independently of the camera. */
@@ -14,8 +21,10 @@ export function createReaderController(options: ReaderOptions) {
   const reader = el("reader"), book = el("book");
   const previous = el<HTMLButtonElement>("prev"), next = el<HTMLButtonElement>("next");
   const dots = el("chapter-dots"), top = reader.querySelector<HTMLElement>(".reader-top")!;
+  const items = () => options.content?.items ?? chapters;
+  book.classList.toggle('album-custom', !!options.content);
   let chapter = Number.isInteger(options.initialChapter)
-    ? Math.max(0, Math.min(chapters.length - 1, options.initialChapter!)) : 0;
+    ? Math.max(0, Math.min(items().length - 1, options.initialChapter!)) : 0;
   let turning = false, version = 0, disposed = false, renderedContent = "";
   let swipe: { identifier: number; x: number; y: number } | undefined;
   const timers = new Map<number, () => void>();
@@ -24,7 +33,7 @@ export function createReaderController(options: ReaderOptions) {
   contentsToggle.type = "button";
   contentsToggle.id = "chapter-contents-toggle";
   contentsToggle.className = "text-button chapter-contents-toggle";
-  contentsToggle.textContent = "章节目录";
+  contentsToggle.textContent = options.content ? "章节与跨页" : "章节目录";
   contentsToggle.setAttribute("aria-expanded", "false");
   contentsToggle.setAttribute("aria-controls", "chapter-contents");
   const contents = document.createElement("nav");
@@ -41,8 +50,9 @@ export function createReaderController(options: ReaderOptions) {
   el("chapter-count").setAttribute("aria-atomic", "true");
   previous.title = "切换到上一章（←）";
   next.title = "切换到下一章（→）";
+  if (options.content) { previous.setAttribute('aria-label', '上一跨页'); next.setAttribute('aria-label', '下一跨页'); previous.title = '上一跨页（←）'; next.title = '下一跨页（→）'; }
   const keyboardHint = reader.querySelector<HTMLElement>(".keyboard-hint");
-  if (keyboardHint) keyboardHint.textContent = "← → 切换章节 · ESC 返回";
+  if (keyboardHint) keyboardHint.textContent = options.content ? "← → 切换跨页 · ESC 返回" : "← → 切换章节 · ESC 返回";
 
   function visible(element: HTMLElement) {
     return !element.closest("[hidden],.hidden,[inert]") && element.getClientRects().length > 0;
@@ -61,7 +71,7 @@ export function createReaderController(options: ReaderOptions) {
   }
   function updateControls() {
     previous.disabled = turning || chapter === 0;
-    next.disabled = turning || chapter === chapters.length - 1;
+    next.disabled = turning || chapter === items().length - 1;
     contentsToggle.disabled = turning;
     dots.querySelectorAll<HTMLButtonElement>("button").forEach((button, index) => {
       button.disabled = turning;
@@ -75,8 +85,8 @@ export function createReaderController(options: ReaderOptions) {
     });
   }
   function makeControls() {
-    if (dots.childElementCount !== chapters.length) {
-      dots.replaceChildren(...chapters.map((item, index) => {
+    if (dots.childElementCount !== items().length) {
+      dots.replaceChildren(...items().map((item, index) => {
         const button = document.createElement("button");
         button.type = "button";
         button.dataset.page = String(index);
@@ -86,8 +96,8 @@ export function createReaderController(options: ReaderOptions) {
         return button;
       }));
     }
-    if (list.childElementCount !== chapters.length) {
-      list.replaceChildren(...chapters.map((item, index) => {
+    if (list.childElementCount !== items().length) {
+      list.replaceChildren(...items().map((item, index) => {
         const entry = document.createElement("li"), button = document.createElement("button");
         button.type = "button";
         button.dataset.chapter = String(index);
@@ -106,7 +116,8 @@ export function createReaderController(options: ReaderOptions) {
     }
   }
   /** Paint live and detached spreads through the same content path. */
-  function paintPages(scope: ParentNode, index: number, artworkOnly = false) {
+  function paintPages(scope: ParentNode, index: number, artworkOnly = false): { ready?: Promise<void>; photograph?: HTMLImageElement; useArtwork?: () => void } {
+    if (options.content) return { ready: options.content.paint(scope, index) };
     const field = <T extends HTMLElement = HTMLElement>(id: string) => scope.querySelector<T>(`#${id}`)!;
     const item = chapters[index], holder = field("art-holder");
     field("chapter-date").textContent = item.date;
@@ -139,13 +150,13 @@ export function createReaderController(options: ReaderOptions) {
   }
   function render(artworkOnly = false) {
     if (disposed) return;
-    const item = chapters[chapter];
-    const contentKey = JSON.stringify([chapter, chapters.length, item.date, item.subtitle, item.title,
-      item.text, item.note, item.caption, item.scene, item.image]);
+    const item = items()[chapter];
+    const contentKey = options.content ? `${chapter}:${options.content.revision}` : JSON.stringify([chapter, chapters.length, ...Object.values(chapters[chapter])]);
     if (renderedContent !== contentKey) {
       paintPages(book, chapter, artworkOnly);
-      el("chapter-count").textContent = `${String(chapter + 1).padStart(2, "0")} / ${String(chapters.length).padStart(2, "0")} 章`;
-      el("chapter-count").setAttribute("aria-label", `${item.date}，${item.title}。第 ${chapter + 1} 章，共 ${chapters.length} 章。`);
+      const unit = options.content ? '跨页' : '章';
+      el("chapter-count").textContent = `${String(chapter + 1).padStart(2, "0")} / ${String(items().length).padStart(2, "0")} ${unit}`;
+      el("chapter-count").setAttribute("aria-label", `${item.date}，${item.title}。第 ${chapter + 1} ${unit}，共 ${items().length} ${unit}。`);
       renderedContent = contentKey;
     }
     makeControls();
@@ -173,7 +184,7 @@ export function createReaderController(options: ReaderOptions) {
     closeContents();
   }
   async function turn(target: number) {
-    if (disposed || !options.canRead() || turning || target < 0 || target >= chapters.length || target === chapter) return;
+    if (disposed || !options.canRead() || turning || target < 0 || target >= items().length || target === chapter) return;
     const focused = document.activeElement instanceof HTMLElement && reader.contains(document.activeElement)
       ? document.activeElement : null;
     closeContents();
@@ -191,8 +202,9 @@ export function createReaderController(options: ReaderOptions) {
       const source = forward ? right : left;
       const destination = document.createElement("div");
       destination.append(left.cloneNode(true), right.cloneNode(true));
-      const { photograph, useArtwork } = paintPages(destination, target);
+      const { photograph, useArtwork, ready: customReady } = paintPages(destination, target);
       let artworkOnly = false;
+      if (customReady) await Promise.race([customReady, wait(2000)]);
       if (photograph) {
         // A slow or failed photo must not hold chapter navigation indefinitely.
         // Reuse cancellation's timer cleanup and paint a real local image before
@@ -347,6 +359,7 @@ export function createReaderController(options: ReaderOptions) {
       dots.querySelectorAll<HTMLButtonElement>("button").forEach(button => { button.onclick = null; });
       contentsToggle.remove();
       contents.remove();
+      options.content?.dispose?.();
     },
   };
 }

@@ -1,0 +1,53 @@
+/*! Long Cang, Copyright 2018 The Long Cang Project Authors. SIL OFL 1.1, distributed at fonts/LongCang-OFL.txt. */
+@font-face { font-family: 'Tides Hand'; src: url('./assets/LongCang-Regular.ttf') format('truetype'); font-weight: 400 700; font-display: swap; }
+.album-page, .reader .page.album-page { box-sizing: border-box; position: relative; isolation: isolate; padding: var(--page-margin,32px); color: #405248; background: var(--paper-tint,#f8f2e5); overflow: hidden; min-height: 520px; }
+.album-page:before, .album-page:after { display: none !important; }
+.album-paper-texture, .album-grid, .album-watermark { position: absolute; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+.album-paper-texture { opacity: var(--paper-texture,.3); mix-blend-mode: multiply; }
+.album-paper-white { background: linear-gradient(115deg,#ffffff22,#e1ddd92a); }
+.album-paper-cotton { background: repeating-linear-gradient(0deg,transparent 0 2px,#96857018 2px 3px),repeating-linear-gradient(93deg,transparent 0 4px,#a28a6d20 4px 5px); }
+.album-paper-watercolor { background: radial-gradient(ellipse at 10% 13%,#aaad983b,transparent 42%),radial-gradient(ellipse at 90% 95%,#bbae8a55,transparent 50%),repeating-linear-gradient(175deg,#ffffff1a 0 2px,#978c7c16 3px 4px); }
+.album-paper-aged { background: radial-gradient(ellipse at center,transparent 50%,#9b693d88),repeating-linear-gradient(4deg,#b9985c18 0 2px,transparent 2px 7px); }
+.album-paper-kraft { background: repeating-linear-gradient(18deg,transparent 0 3px,#603e1e26 3px 4px),repeating-linear-gradient(92deg,transparent 0 2px,#a37b4d1a 2px 5px); }
+.album-paper-pastel { background: radial-gradient(ellipse at 0 0,#d6a5af77,transparent 55%),radial-gradient(ellipse at 100% 100%,#99c4ba77,transparent 60%); }
+.album-grid-ruled { background-image: linear-gradient(to bottom,var(--grid-color) 0 var(--grid-weight),transparent var(--grid-weight)); }
+.album-grid-square { background-image: linear-gradient(to bottom,var(--grid-color) 0 var(--grid-weight),transparent var(--grid-weight)),linear-gradient(to right,var(--grid-color) 0 var(--grid-weight),transparent var(--grid-weight)); }
+.album-grid-dotted { background-image: radial-gradient(circle at 1px 1px,var(--grid-color) 0 var(--grid-weight),transparent calc(var(--grid-weight) + .5px)); }
+.album-watermark-tile { position: absolute; }
+.album-watermark-tile img, .album-watermark-tile svg { width: 100%; height: 100%; object-fit: contain; }
+.album-content { position: relative; display: grid; gap: var(--content-gap,20px); z-index: 1; min-width: 0; padding-bottom: 24px; }
+.album-copy { column-count: var(--content-columns,1); column-gap: var(--content-gap,20px); min-width: 0; }
+.album-element { min-width: 0; }
+.album-text { break-inside: auto; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 20px; }
+.album-text h2, .album-text p { font: inherit; line-height: inherit; letter-spacing: inherit; color: inherit; margin: 0; min-height: 1.5em; }
+.album-text-title { column-span: all; margin-bottom: 24px; }
+.album-photos { display: grid; gap: var(--content-gap,20px); grid-template-columns: 1fr; align-items: start; min-width: 0; }
+.album-photo figure, figure.album-photo { margin: 0; }
+figure.album-photo { padding: var(--frame-width,10px); background: var(--frame-color,#fff); box-shadow: var(--frame-shadow); position: relative; }
+.album-photo-view { aspect-ratio: 4 / 3; overflow: hidden; position: relative; background: #e2dfd2; }
+.album-photo-view img { width: 100%; height: 100%; object-fit: cover; display: block; max-width: none; }
+.album-photo-view[data-missing]:after { content: attr(data-missing); position: absolute; inset: 0; display: grid; place-content: center; font: 14px/1.8 sans-serif; padding: 16px; }
+.album-photo-empty { display: grid; place-items: center; color: #7c887d; font: 14px/1.5 sans-serif; border: 1px dashed #9aa798; }
+.album-photo figcaption { font: 14px/1.9 'Songti SC',serif; color: #62695c; text-align: center; overflow-wrap: anywhere; white-space: pre-wrap; margin: 12px 2px 2px; }
+.album-photo figcaption:empty { display: none; }
+.album-frame-polaroid { padding-bottom: max(28px,var(--frame-width)) !important; }
+.album-frame-rounded, .album-frame-rounded .album-photo-view { border-radius: 18px; }
+.album-frame-film { border-inline: 10px dotted #d6cfbc; background: #343a34 !important; }
+.album-frame-film figcaption { color: #eee8da; }
+.album-frame-stamp { outline: 3px dashed var(--frame-color); outline-offset: 1px; }
+.album-frame-tape:after { content: ''; position: absolute; width: 68px; height: 23px; background: #b4bea2aa; top: -10px; left: calc(50% - 34px); transform: rotate(-6deg); }
+.album-page[data-template='double'] .album-photos, .album-page[data-template='collage'] .album-photos { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.album-page[data-template='photo'] .album-photo-view { aspect-ratio: 3 / 4; }
+.album-page[data-template='diary'] .album-copy { order: -1; }
+.album-sticker { position: absolute; aspect-ratio: 1; z-index: 2; }
+.album-sticker svg, .album-sticker img { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.album-page-number { position: absolute; bottom: 12px; right: 20px; font: 12px/1.5 sans-serif; color: #7e8374; }
+.reader .book.album-custom { grid-auto-rows: minmax(max-content,1fr); }
+.album-blank-hint { color: #8c8f80; text-align: center; font: 16px/2 'Songti SC',serif; padding: 80px 0; }
+@media (max-width:759px) {
+  .reader .page.album-page { min-height: 420px; padding: clamp(18px,6vw,var(--page-margin)); }
+  .reader .album-copy { column-count: 1; }
+  .reader .album-page .album-text { font-size: max(16px,1em); }
+  .reader .album-page[data-template='double'] .album-photos, .reader .album-page[data-template='collage'] .album-photos { grid-template-columns: 1fr; }
+  .reader .album-page .album-sticker { opacity: .18 !important; z-index: -1; }
+}

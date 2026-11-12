@@ -75,6 +75,10 @@ async function capturePage(page: HTMLElement): Promise<HTMLCanvasElement> {
   const height = parseFloat(computed.height) + (borderBox ? 0 : extra(['padding-top','padding-bottom','border-top-width','border-bottom-width']));
   if (!width || !height || computed.display === 'none') throw new Error('The reading page must be laid out before capture');
   const rules: string[] = [];
+  if (page.classList.contains('album-page')) {
+    const { albumFontRule } = await import('./album/font-raster');
+    const font = await albumFontRule(page); if (font) rules.push(font);
+  }
   const clone = await clonePageNode(page, rules) as HTMLElement;
   Object.assign(clone.style, {
     position: 'relative', inset: 'auto', left: '0px', top: '0px', margin: '0px',
