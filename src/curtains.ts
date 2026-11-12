@@ -139,12 +139,37 @@ export function createCurtains({ width, height, sill, back }: CurtainWindow) {
         );
       }
       positions.needsUpdate = true;
-      mesh.geometry.computeVertexNormals();
+      const normals = mesh.geometry.attributes.normal;
+      updateClothNormals(positions.array as Float32Array, mesh.geometry.index!.array, normals.array as Float32Array);
+      normals.needsUpdate = true;
     }
     initialized = true;
   }
   update(0, false, 0);
   return { group, update };
+}
+
+/**
+ * Same area-weighted triangles, order and Float32 rounding as Three's indexed
+ * computeVertexNormals, specialized for these nondegenerate cloth buffers.
+ * Avoid repeated BufferAttribute accessors and temporary vectors per update.
+ */
+function updateClothNormals(positions: Float32Array, indices: ArrayLike<number>, normals: Float32Array) {
+  normals.fill(0);
+  for (let i = 0; i < indices.length; i += 3) {
+    const a = indices[i] * 3, b = indices[i + 1] * 3, c = indices[i + 2] * 3;
+    const cbx = positions[c] - positions[b], cby = positions[c + 1] - positions[b + 1], cbz = positions[c + 2] - positions[b + 2];
+    const abx = positions[a] - positions[b], aby = positions[a + 1] - positions[b + 1], abz = positions[a + 2] - positions[b + 2];
+    const x = cby * abz - cbz * aby, y = cbz * abx - cbx * abz, z = cbx * aby - cby * abx;
+    normals[a] += x; normals[a + 1] += y; normals[a + 2] += z;
+    normals[b] += x; normals[b + 1] += y; normals[b + 2] += z;
+    normals[c] += x; normals[c + 1] += y; normals[c + 2] += z;
+  }
+  for (let i = 0; i < normals.length; i += 3) {
+    const x = normals[i], y = normals[i + 1], z = normals[i + 2];
+    const inverseLength = 1 / (Math.sqrt(x * x + y * y + z * z) || 1);
+    normals[i] = x * inverseLength; normals[i + 1] = y * inverseLength; normals[i + 2] = z * inverseLength;
+  }
 }
 
 /** Color and alpha are painted together so the lace is genuine openwork, not a solid decal. */

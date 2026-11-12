@@ -120,3 +120,26 @@ test('reduced motion stays restrained and wind inputs remain finite and capped o
     for (const curtain of [normal, reduced, capped, invalid]) expect(curtain.panels.every(panel => Array.from(panel.geometry.getAttribute('position').array).every(Number.isFinite))).toBe(true);
   } finally { [normal, reduced, capped, invalid].forEach(curtain => curtain.dispose()); }
 });
+
+test('animated cloth normals match Three area-weighted normals byte for byte through wind and motion changes', () => {
+  const curtain = cloth();
+  const references = curtain.panels.map(panel => panel.geometry.clone());
+  try {
+    for (let frame = 1; frame <= 240; frame++) {
+      curtain.update(frame / 30, frame >= 180, frame < 60 ? 2 : frame < 120 ? 20 : frame < 180 ? 0 : 9);
+      curtain.panels.forEach((panel, index) => {
+        const reference = references[index];
+        (reference.getAttribute('position').array as Float32Array).set(panel.geometry.getAttribute('position').array);
+        reference.computeVertexNormals();
+        const actual = panel.geometry.getAttribute('normal').array;
+        const expected = reference.getAttribute('normal').array;
+        // Buffer equality catches Float32 accumulation and normalization changes
+        // that a loose angular tolerance could hide in grazing cloth light.
+        expect(Buffer.from(actual.buffer).equals(Buffer.from(expected.buffer)), `frame ${frame}, panel ${index}`).toBe(true);
+      });
+    }
+  } finally {
+    references.forEach(geometry => geometry.dispose());
+    curtain.dispose();
+  }
+});
