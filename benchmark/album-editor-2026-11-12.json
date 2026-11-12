@@ -693,7 +693,9 @@
     "storeBeforeKiB": 1445180,
     "storeAfterKiB": 1445180,
     "diskSnapshotBeforeDeliveryKiB": 203396,
-    "diskNote": "Snapshot before documentation/benchmark and Git delivery; final measured disk delta is recorded in implementation receipt. Output/font/Git bytes are not runtime installations."
+    "diskNote": "Measured after implementation commit / first push, before small documentation receipt. Net disk also includes Git / temporary test output changes; not a standalone asset cost. Shared store delta is zero; no new runtime or isolation.",
+    "diskAfterImplementationDeliveryKiB": 186340,
+    "diskNetChangeAtImplementationDeliveryKiB": 12384
   },
   "preserved": {
     "publishedJSON": null,
@@ -702,5 +704,14 @@
     "deployment": "unchanged",
     "docs": "unchanged"
   },
-  "completedLocalDate": "2026-11-13"
+  "completedLocalDate": "2026-11-13",
+  "delivery": {
+    "implementationCommit": "1875f7443e96b9553a16e50ea19d61460480604a",
+    "remoteImplementationVerified": true,
+    "branch": "codex/album-editor",
+    "mainUnchanged": "d9a4d3c998488467cfc65cd0c814a955425b5dd2",
+    "published": false,
+    "preview": "http://127.0.0.1:4174/editor.html",
+    "openInCodex": "queued"
+  }
 }
