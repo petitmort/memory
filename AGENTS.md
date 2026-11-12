@@ -4,9 +4,10 @@
 
 ## 当前追加：保持画质与内容的性能优化（2026-11-12）
 
-- 作者明确要求「不改变画质内容提升性能」，以`03fa58b`为基线，独立分支`codex/render-performance`；步骤见[PERFORMANCE-OPTIMIZATION-PLAN.md](PERFORMANCE-OPTIMIZATION-PLAN.md)。F00–F04本机范围完成、F05交付准备中：25个spec单次112 / 112、类型 / 构建、生产9场景20图与32份匹配性能通过；包含首轮7项，不相加为119项。CPU4×三次中位全帧CPU下降约16–20%，不是FPS翻倍或GPU / 电池结论。
+- 作者明确要求「不改变画质内容提升性能」，以`03fa58b`为基线，独立分支`codex/render-performance`；步骤见[PERFORMANCE-OPTIMIZATION-PLAN.md](PERFORMANCE-OPTIMIZATION-PLAN.md)。F00–F05本机范围与开发分支交付完成，实现 / 验收9c2b654已普通推送并核对远端，main仍2574e99。25个spec单次112 / 112、类型 / 构建、生产9场景20图与32份匹配性能通过；包含首轮7项，不相加为119项。CPU4×三次中位全帧CPU下降约16–20%，不是FPS翻倍或GPU / 电池结论。
 - 仅`curtains.ts`同序Float32数组法线、`weather-controller.ts`同帧时间 / 风向三角函数、`water-surface.ts`8个Float64风权重复用；不能缓存高度 / 相位或改变数值累计顺序。原24布料 / 20雨雪 / 4200海浪样本哈希、240帧原Three法线与桌面 / 手机同帧零像素差门槛保留，不重写fixture隐藏差异。普通270 / 42 / 63、省电270 / 41 / 56与DPR / 绘制 / 三角数保持；无新增渲染循环、依赖、素材或GPU资源。首次生产脚本5秒等待不足仅修外部脚本，原入室动画和静默时间保留；生产4条Chrome开册复制警告与原分包提示、未测Safari / 实体手机等边界在方案，不据旧记录冒充本轮原版对照。
 - 构图、物件、模型 / 纹理、光照 / 阴影、天气 / 航行动作及现有画质策略保留；不以降低DPR、细节、粒子数或更新频率换取性能。先证明等效，再使用本轮同条件数据判断收益；保持预热、阅读 / 后台暂停、恢复与单次释放。不推进B3或第06–08组，原47项仍27 / 47，不改main / docs / 部署，不发布。
+- 回执只改本方案 / README / AGENTS三份文档，使用`document-python .../render-performance/check-docs.py --delivered`与`git diff --check`；不重复已通过的应用验收。原连接HTTP/2 / 低速失败，已用命令级GitHub解析覆盖与HTTP/1.1完成普通交付，不更改全局设置。4173本地预览HTTP200、打开请求queued，临时防休眠已停止；共享路径 / 实测磁盘+3,632KiB与store不变见方案。下一步由作者指定新范围，不自动发布或推进其他组。
 
 ## 当前追加：整体协调方案1实施（2026-11-07）
 

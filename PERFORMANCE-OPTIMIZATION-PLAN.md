@@ -2,6 +2,8 @@
 
 2026-11-12（北京时间） · 来源：本地Codex · 基线`03fa58b` · 分支`codex/render-performance`。
 
+**交付回执**：F00–F05本机范围与开发分支交付完成。实现 / 验收`9c2b654`已普通推送，`ls-remote`核对远端完整哈希`9c2b654d32103eb2cf5c1f18fcca0c7d6913c8d3`，main仍`2574e99`；[本地预览](http://127.0.0.1:4173/?v=9c2b654)返回HTTP200，Codex打开请求返回queued。回执只更新本方案 / README / AGENTS三份文档，不重复已通过的类型 / 构建 / 112项测试或32份性能测量。下一步等待作者指定新范围；不发布、不自动续做其他体验组。
+
 ## 当前决定与范围
 
 作者明确要求「不改变画质内容提升性能」，已授权测量、针对瓶颈修改、测试与本地预览。保留构图、场景物件、模型与纹理细节、灯光 / 阴影、天气 / 航行 / 猫动作及现有画质策略。优化重复计算、无效上传与资源准备，不通过降低分辨率、粒子数、动画更新频率或减少内容达成数字改善。不发布、不改main / docs或部署；原47项仍27 / 47且文件保持不变。
@@ -13,7 +15,7 @@
 | F02 等效优化 | 修改三处重复数学运算 | 是 | 7 / 7专项通过；240帧法线与Three逐字节一致，原24布料 / 20雨雪 / 4200海浪样本哈希一致；桌面 / 手机同帧法线替换零像素差 |
 | F03 回归与成片 | 本轮验收 | 是 | 25个spec共112 / 112单次通过（包含首轮7项），无跳过 / flaky；类型 / 构建及生产9场景20图、原交互与暂停恢复通过 |
 | F04 前后性能 | 匹配测量 | 是 | 原脚本14份加完整动态18份均完成；同机CPU4×三次中位更新CPU下降约48–54%，含渲染提交的总CPU下降约16–20%，资源 / DPR / 档位不变 |
-| F05 文档与交付 | 开发分支 | 进行中 | README / AGENTS / 性能记录与32份样本已汇总；待链接 / 历史 / diff检查、普通推送及打开本地预览 |
+| F05 文档与交付 | 开发分支 | 是 | 实现 / 验收9c2b654普通推送并核对远端，main保持；文档 / 历史 / 172个本地链接与范围检查通过，本地4173可访问，打开请求queued |
 
 ## 验证流程与边界
 
@@ -68,6 +70,8 @@ F01实录：原测量脚本只调整外部副本的Playwright导入路径，晴�
 
 ## F05 交付准备
 
-完成验收后及提交前已再次`git fetch origin`成功，远端原开发分支仍`03fa58b` / main仍`2574e99`，没有另一端新增需整合。原47项、其他方案、package / 锁文件、构建 / 测试配置与docs逐字保持。当前仅三处运行时代码、三份测试 / 基准fixture、四份维护文档与一份性能JSON；`document-python ~/.codex/visualizations/2026/11/12/render-performance/check-docs.py`已核对172个本地链接、全部应用哈希 / 历史、112项 / 32份样本和精确11文件范围，`git diff --check`通过。接着普通推送新开发分支，不发布。
+完成验收后及交付前再次fetch，确认远端原开发分支仍`03fa58b` / main仍`2574e99`，没有另一端新增需整合。原47项、其他方案、package / 锁文件、构建 / 测试配置与docs逐字保持。当前仅三处运行时代码、三份测试 / 基准fixture、四份维护文档与一份性能JSON；`document-python ~/.codex/visualizations/2026/11/12/render-performance/check-docs.py`已核对172个本地链接、全部应用哈希 / 历史、112项 / 32份样本和精确11文件范围，`git diff --check`通过。
 
-环境没有安装、迁移或清理：实际Node24.14.0 / pnpm11.7.0，使用`~/.local/bin/project-node` / `project-pnpm`及`~/Library/pnpm/store/v11`，文档 / 拼图检查用`document-python`与共享document-tools。提交前磁盘快照仓库172,608KiB（相对开始169,272KiB为+3,336KiB，含可再生dist / test-results与新增验收数据），共享store仍1,445,180KiB（变化0）；没有新增隔离环境或例外，不把磁盘波动当作运行时收益。提交 / 推送后的快照与交付哈希待回执补充，临时防休眠交付时停止，两个本地服务保留。
+交付时最后一轮默认连接fetch遇HTTP/2 framing错误，HTTP/1.1重试又遇30秒低速超时；后续ls-remote已读到原分支不变。用GitHub另一个HTTPS地址做本次命令的解析覆盖、保留域名证书校验后，fetch、普通push和ls-remote均成功：仅命令级`-c http.curloptResolve=github.com:443:140.82.114.4 -c http.version=HTTP/1.1`，没有写系统DNS / Git全局配置，没有关闭TLS、force push或修改凭据。实现已上传为9c2b654，不把连接失败写成代码验收失败，也不把此前失败隐去。回执提交后使用`document-python ~/.codex/visualizations/2026/11/12/render-performance/check-docs.py --delivered`核对最终远端 / 历史 / source，文档变更无需重建应用。
+
+环境没有安装、迁移或清理：实际Node24.14.0 / pnpm11.7.0，使用`~/.local/bin/project-node` / `project-pnpm`及`~/Library/pnpm/store/v11`，文档 / 拼图检查用`document-python`与共享document-tools。提交前磁盘快照仓库172,608KiB（相对开始169,272KiB为+3,336KiB，含可再生dist / test-results与新增验收数据），实现推送后172,904KiB（总变化+3,632KiB，约3.55MiB）；共享store始终1,445,180KiB（变化0）。没有新增隔离环境或例外，不把磁盘波动当作运行时收益；临时防休眠进程已停止（exit130），5173 / 4173服务保留。
