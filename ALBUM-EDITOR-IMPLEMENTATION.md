@@ -23,7 +23,7 @@
 | P00 复现 / 同条件基线 | 是，诊断记录 | 是 | 独立测试稿 / 12跨页 / 2400×1800图、CPU4×三次：单次设置主线程中位26.1 / 25.4 / 23.6ms；每轮移除11,532节点 / 25图像 / 825控件。按住滑块23–84时水印始终停在0.12，直到松手 |
 | P01 按需更新与连续预览 | 是 | 是，实现完成，待扩大验收 | 共享页面按层 / 稳定元素更新，保留照片 / 水印图片 / 控件与焦点；输入按需合并一帧预览，松手 / 失焦 / 隐藏 / 预览 / 备份结算一次历史。目录只在结构变化时重建，无常驻帧循环 |
 | P02 回归 / 性能 / 成片 | 是 | 是，本机范围 | 最终8个spec单次47 / 47、类型 / 双构建、匹配前三次 / 后三次、20张生产图复看通过；纸张 / 字体控件保留、滑块即时预览 / 单次撤销、四尺寸阅读及实体页返回通过，边界与证据见下 |
-| P03 文档 / 开发分支交付 | 是 | 进行中 | README / AGENTS / 使用说明与本记录更新，本地4174已是修正版；再次fetch未发现其他端新增，待文档检查、普通推送与远端哈希核对，不写main / docs |
+| P03 文档 / 开发分支交付 | 是 | 是，本机与开发分支交付 | 实现 / 验收6fdcb13已普通推送codex/album-editor-smoothness并逐字核对远端，main仍d9a4d3c；文档 / 使用说明 / 153链接与历史边界通过，4174已更新，最后只补本次交付回执，不重复应用测试 |
 
 验证使用frontend-testing-debugging技能；Browser plugin not available，采用现有Playwright与系统Chrome、共享Node / pnpm / document-python，不安装库或新环境。原始脚本 / 截图 / 性能留本机`~/.codex/visualizations/2026/11/13/album-editor-smoothness`。当前历史A验收不作为本轮新结果，尚未完成的步骤继续保持未完成。
 
@@ -77,6 +77,17 @@
 原始`before-cpu4.json` / `after-cpu4.json`、`measure.mjs`、`production-qa.mjs` / JSON及全部截图留本机`~/.codex/visualizations/2026/11/13/album-editor-smoothness`，不进入源码 / docs。复用`~/.nvm/versions/node/v24.14.0`、`~/.local/bin/project-node`、`~/.local/bin/project-pnpm`、`~/Library/pnpm/store/v11`、`~/.local/bin/document-python`与原node_modules / Playwright / 系统Chrome；没有安装库 / 运行时 / 浏览器，锁文件不变，无新增隔离环境或例外。实现 / 双构建后、最终文档与Git提交前仓库185,824→189,188KiB（净+3,364KiB，约3.29MiB）；共享store1,445,180KiB不变。此为含本地构建 / 测试输出的阶段性实测，不等于源码或图片的单独增量；后续少量文档 / Git元数据另计。
 
 原5173 / 4173与生产编辑器4174服务保留，4174已重新构建为修正版。没有操作作者实际浏览器 / 草稿，也不自动重载未保存输入；作者等待「已保存到本机」后刷新原[4174工作台](http://127.0.0.1:4174/editor.html)即可使用。原四章、公开成稿null、47项27 / 47、依赖和main / docs / 部署边界保持；当前只交付开发分支，后续由作者指定范围。
+
+
+### P03 开发分支交付回执（2026-11-13，北京时间）
+
+实现与本轮验收`6fdcb13d067bbda70d02cf7c97688d7919b699db`已普通推送[开发分支](https://github.com/petitmort/memory/tree/codex/album-editor-smoothness)，`git ls-remote`逐字核对一致；main仍`d9a4d3c998488467cfc65cd0c814a955425b5dd2`。首次沿旧GitHub解析覆盖推送低速30秒超时退出128，直接查询确认当时未建分支；重取DNS并验证HTTPS后，用当前解析的命令级覆盖 / HTTP1.1普通重试成功，没有改全局网络 / Git设置。交付后fetch再次成功，无另一端新增需整合，不强推 / 合main / 改docs或部署。
+
+最后回执以`6fdcb13`为基线只补本记录 / README / AGENTS三份文档，已验收的三个源码与新增专项SHA-256保持，不重复47项、构建或20生产图。`document-python .../album-editor-smoothness/check-docs.py --delivered`与`git diff --check`检查四份相关文档 / 153个本地链接、旧日志、原四章 / 47项 / 字库 / 依赖 / 部署逐字保持。5173 / 4173 / 4174最终HTTP200，测试浏览器上下文全部关闭，原作者草稿没有被测试写入，原服务保留。
+
+首推后、回执提交前仓库实测189,344KiB，较本轮开始185,824KiB净+3,520KiB（约3.44MiB）；共享store仍1,445,180KiB（变化0），后续回执的少量Git元数据另计。
+
+下一步是作者在原4174地址保存后刷新并继续编排自己的纪念册；不自动代填回忆、推进其他组或发布。没有新增环境 / 依赖或隔离例外，共享路径与实际磁盘阶段快照见上。
 
 ## 分步记录
 
