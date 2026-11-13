@@ -6,15 +6,16 @@ import { createProperties, refreshProperties } from './properties';
 import { AlbumHistory } from './history';
 import { readDraft, saveDraft, savePreview, watchDraft, AlbumConflictError, type AssetBlobs } from './storage';
 import { contentHash, exportPackage, importPackage, importImage, optimizeAssets, download } from './packages';
-import { loadWatermark, imageHash, type WatermarkPreset } from './watermark-library';
+import { loadWatermark, imageHash, type WatermarkPreset, type WatermarkFilter } from './watermark-library';
+import { applyStyleKit, STYLE_KITS } from './style-kits';
 
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const app = $('#editor-app');
 app.innerHTML = `<header class="editor-header"><a class="editor-brand" href="./"><span>BETWEEN THE TIDES</span><strong>纪念手帐</strong></a><label class="editor-book-title"><span class="sr-only">纪念册名称</span><input id="document-title" maxlength="150" aria-label="纪念册名称"></label><div class="editor-save"><span id="save-status" role="status" aria-live="polite">读取本机草稿…</span><button id="retry-save" hidden>重试保存</button><button id="reload-draft" hidden>读取最新草稿</button></div><div class="editor-actions"><button id="undo" title="撤销（⌘Z）">↶ 撤销</button><button id="redo" title="重做（⌘⇧Z）">↷ 重做</button><details class="editor-export"><summary>项目与备份</summary><div><button id="export-backup">下载可编辑备份</button><button id="import-backup">导入可编辑备份</button><button id="export-content">生成网站内容包</button><p>本机保存和下载不会公开发布。</p></div></details><button class="editor-primary" id="preview">阅读预览 ↗</button></div></header>
 <div class="editor-narrow-note">电脑适合精细排版；小屏可以查看、备份和阅读预览，完整创作请使用电脑。</div>
 <main class="editor-workspace"><aside class="editor-library" aria-label="章节与跨页"><div class="editor-section-heading"><span>我的纪念册</span><button id="add-chapter" aria-label="添加章节">＋ 章</button></div><div id="chapter-list"></div><button id="add-spread" class="editor-wide-button">＋ 新增跨页</button><details class="editor-help"><summary>从哪里开始？</summary><p>先选模板，点击纸上的文字直接输入。选中照片后替换、裁切、换框；贴纸可以拖动、缩放和旋转。</p><p>草稿仅保存在这个浏览器，请定期下载可编辑备份。公开更新需另行应用内容包。</p><button id="copy-samples">复制现有示例到草稿</button><button id="new-project">新建空白项目</button></details></aside>
-<section class="editor-center" aria-label="双页编辑画布"><div class="editor-canvas-top"><div><span class="editor-overline">慢慢写，留住那些小事</span><h1 id="spread-name">新章节</h1></div><span id="page-label" class="editor-page-label">当前编辑：左页</span></div><div class="editor-insertbar"><button id="add-title">＋ 标题</button><button id="add-text">＋ 文字</button><button id="add-photo">＋ 照片</button><button id="add-sticker">✿ 贴纸</button><button id="select-page">纸张与版式</button><label class="editor-guide-toggle"><input type="checkbox" id="guides" checked>参考边距</label></div><div id="canvas-stage" class="editor-stage"><div id="paper-frame"><div id="paper-spread" class="editor-paper"><article class="album-page editor-page" data-side="0" aria-label="左页"></article><article class="album-page editor-page" data-side="1" aria-label="右页"></article></div></div></div><footer class="editor-canvas-bottom"><span id="canvas-note">图文随模板排列 · 贴纸可自由拼贴</span><label>缩放 <input id="zoom" type="range" aria-label="画布缩放" min="50" max="120" step="5" value="90"></label><button id="fit-canvas">适合窗口</button></footer></section>
-<aside class="editor-inspector" aria-label="属性设置"><div class="editor-section-heading"><span id="inspector-title">页面与元素</span><button id="other-page">切换到右页</button></div><div id="properties"></div></aside></main>
+<section class="editor-center" aria-label="双页编辑画布"><div class="editor-canvas-top"><div><span class="editor-overline">慢慢写，留住那些小事</span><h1 id="spread-name">新章节</h1></div><span id="page-label" class="editor-page-label">当前编辑：左页</span></div><div class="editor-insertbar"><button id="add-title">＋ 标题</button><button id="add-text">＋ 文字</button><button id="add-photo">＋ 照片</button><button id="add-sticker">✿ 贴纸</button><button id="select-page">纸张与版式</button><button id="open-watermarks">✿ 水印</button><label class="editor-guide-toggle"><input type="checkbox" id="guides" checked>参考边距</label></div><div id="canvas-stage" class="editor-stage"><div id="paper-frame"><div id="paper-spread" class="editor-paper"><article class="album-page editor-page" data-side="0" aria-label="左页"></article><article class="album-page editor-page" data-side="1" aria-label="右页"></article></div></div></div><footer class="editor-canvas-bottom"><span id="canvas-note">图文随模板排列 · 贴纸可自由拼贴</span><label>缩放 <input id="zoom" type="range" aria-label="画布缩放" min="30" max="120" step="5" value="90"></label><button id="fit-canvas">适合窗口</button></footer></section>
+<aside class="editor-inspector" aria-label="属性设置"><div class="editor-inspector-heading"><div class="editor-section-heading"><span id="inspector-title">左页 · 页面设置</span><button id="other-page">切换到右页</button></div><nav class="editor-property-nav" aria-label="设置直达"><button data-section-target="layout">版式</button><button data-section-target="paper">纸张</button><button data-section-target="grid">格线</button><button data-section-target="watermark">水印</button><button data-section-target="kits">搭配</button></nav></div><div id="properties"></div></aside></main>
 <div class="editor-notice" id="editor-notice" role="status" aria-live="polite" hidden></div><input type="file" id="image-input" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden><input type="file" id="project-input" accept=".json,application/json" hidden>
 <dialog id="preview-dialog" class="editor-preview-dialog"><div class="editor-preview-toolbar"><strong>阅读预览</strong><button id="preview-desktop">电脑</button><button id="preview-mobile">手机</button><button id="preview-room">进入房间预览</button><button id="close-preview">关闭预览</button></div><div class="editor-preview-stage"><iframe title="纪念册阅读预览" id="preview-frame"></iframe></div><p>这是本机快照；继续编辑后重新打开预览即可更新。</p></dialog>`;
 
@@ -24,6 +25,7 @@ let continuousBefore: AlbumDocument | undefined, previewFrame = 0;
 let inspector: { document: AlbumDocument; page: AlbumPage; selected?: AlbumElement; key: string; host: HTMLElement } | undefined;
 let libraryDocument: AlbumDocument | undefined, libraryKey = '';
 let watermarkRequest = 0, loadingWatermark = '';
+const watermarkFilter: WatermarkFilter = { category: 'all', query: '' };
 let composing = false, textBefore: AlbumDocument | undefined, textDirty = false, previewToken = '', initialized = false;
 const history = new AlbumHistory(), urls = new Map<string, string>(), viewport = $('#canvas-stage');
 const exportImage = document.createElement('button'); exportImage.textContent = '导出当前单页 PNG'; exportImage.id = 'export-page-image'; $('#export-content').after(exportImage);
@@ -104,7 +106,14 @@ function renderProperties() {
         for (const p of pages) { const template = p.layout.template; (p as any)[key] = copy(value); if (key === 'layout' && template !== p.layout.template) applyTemplate(p, p.layout.template); }
       };
       if (preview) previewChange(update); else commit(update);
-    }, upload: chooseImages, chooseWatermark, loadingWatermark: () => loadingWatermark, resolveAsset,
+    }, applyKit(key) {
+      watermarkRequest++; loadingWatermark = '';
+      commit(() => {
+        const pages = scope === 'book' ? flatten(doc).flatMap(v => v.spread.pages) : scope === 'spread' ? doc.chapters[chapterIndex].spreads[spreadIndex].pages : [currentPage];
+        pages.forEach(p => applyStyleKit(p, key));
+      });
+      notify(`已套用「${STYLE_KITS[key].name}」到${scope === 'book' ? '整本纪念册' : scope === 'spread' ? '当前跨页' : '当前单页'}，可一次撤销。`);
+    }, watermarkFilter, upload: chooseImages, chooseWatermark, loadingWatermark: () => loadingWatermark, resolveAsset,
   });
   properties.querySelectorAll('details').forEach(details => { const value = expanded.get(details.querySelector('summary')!.textContent); if (value !== undefined) details.open = value; });
   $('#properties').replaceChildren(properties); inspector = { document: doc, page: currentPage, selected: currentElement, key, host: properties };
@@ -114,6 +123,8 @@ function selectElement(host: HTMLElement | null) {
   selectedId = host?.dataset.element ?? '';
   $('#page-label').textContent = `当前编辑：${side === 0 ? '左' : '右'}页`;
   $('#other-page').textContent = `切换到${side === 0 ? '右' : '左'}页`;
+  const object = selected();
+  $('#inspector-title').textContent = `${side === 0 ? '左' : '右'}页 · ${object?.type === 'text' ? '文字设置' : object?.type === 'photo' ? '照片设置' : object?.type === 'sticker' ? '贴纸设置' : '页面设置'}`;
   markSelection(); renderProperties();
 }
 function markSelection() {
@@ -156,11 +167,15 @@ function renderLibrary() {
     }); list.append(group);
   });
   const actions = document.createElement('div'); actions.className = 'editor-page-actions';
-  const button = (label: string, action: () => void) => { const b = document.createElement('button'); b.textContent = label; b.onclick = action; actions.append(b); };
+  let actionGroup = document.createElement('div'); actionGroup.className = 'editor-management-group';
+  const heading = document.createElement('span'); heading.textContent = '当前跨页'; actionGroup.append(heading); actions.append(actionGroup);
+  const button = (label: string, action: () => void) => { const b = document.createElement('button'); b.textContent = label; b.onclick = action; if (label.startsWith('删除')) b.className = 'editor-delete'; actionGroup.append(b); };
   button('复制跨页', () => commit(() => { const spreads = doc.chapters[chapterIndex].spreads; spreads.splice(spreadIndex + 1, 0, duplicateSpread(spreads[spreadIndex])); spreadIndex++; }));
   button('上移跨页', () => commit(() => { if (!spreadIndex) return; const spreads = doc.chapters[chapterIndex].spreads; [spreads[spreadIndex - 1], spreads[spreadIndex]] = [spreads[spreadIndex], spreads[spreadIndex - 1]]; spreadIndex--; }));
   button('下移跨页', () => commit(() => { const spreads = doc.chapters[chapterIndex].spreads; if (spreadIndex >= spreads.length - 1) return; [spreads[spreadIndex + 1], spreads[spreadIndex]] = [spreads[spreadIndex], spreads[spreadIndex + 1]]; spreadIndex++; }));
   button('删除跨页', () => commit(() => { const spreads = doc.chapters[chapterIndex].spreads; if (spreads.length === 1) { notify('每章至少保留一个跨页。'); return; } spreads.splice(spreadIndex, 1); spreadIndex = Math.max(0, spreadIndex - 1); selectedId = ''; }));
+  actionGroup = document.createElement('div'); actionGroup.className = 'editor-management-group';
+  const chapterHeading = document.createElement('span'); chapterHeading.textContent = '当前章节'; actionGroup.append(chapterHeading); actions.append(actionGroup);
   button('上移章节', () => commit(() => { if (chapterIndex > 0) { [doc.chapters[chapterIndex - 1], doc.chapters[chapterIndex]] = [doc.chapters[chapterIndex], doc.chapters[chapterIndex - 1]]; chapterIndex--; } }));
   button('下移章节', () => commit(() => { if (chapterIndex < doc.chapters.length - 1) { [doc.chapters[chapterIndex + 1], doc.chapters[chapterIndex]] = [doc.chapters[chapterIndex], doc.chapters[chapterIndex + 1]]; chapterIndex++; } }));
   button('删除章节', () => commit(() => { if (doc.chapters.length === 1) { notify('纪念册至少保留一章。'); return; } doc.chapters.splice(chapterIndex, 1); chapterIndex = Math.max(0, chapterIndex - 1); spreadIndex = 0; selectedId = ''; }));
@@ -186,7 +201,14 @@ function fitHeight() {
   const scale = Number($<HTMLInputElement>('#zoom').value) / 100, paper = $('#paper-spread');
   paper.style.transform = `scale(${scale})`; $('#paper-frame').style.width = `${720 * scale}px`; $('#paper-frame').style.height = `${paper.offsetHeight * scale}px`;
 }
-function fitCanvas() { const zoom = $<HTMLInputElement>('#zoom'); zoom.value = String(Math.max(50, Math.min(100, Math.floor((viewport.clientWidth - 52) / 720 * 100 / 5) * 5))); fitHeight(); }
+function fitCanvas() {
+  const zoom = $<HTMLInputElement>('#zoom'), style = getComputedStyle(viewport);
+  const width = viewport.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+  const height = viewport.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+  // Fit a normal sheet. Long writing remains readable and scrolls vertically.
+  zoom.value = String(Math.max(30, Math.min(100, Math.floor(Math.min(width / 720, height / 535) * 100 / 5) * 5)));
+  fitHeight();
+}
 const paperObserver = new ResizeObserver(fitHeight), viewportObserver = new ResizeObserver(fitCanvas);
 paperObserver.observe($('#paper-spread')); viewportObserver.observe(viewport);
 function addElement(element: AlbumElement) { commit(() => { page().elements.push(element); selectedId = element.id; }); }
@@ -194,7 +216,15 @@ $('#add-title').onclick = () => addElement(textElement('title'));
 $('#add-text').onclick = () => addElement(textElement());
 $('#add-sticker').onclick = () => addElement(stickerElement());
 $('#add-photo').onclick = () => chooseImages('photo');
-$('#select-page').onclick = () => { finishContinuous(); selectedId = ''; selectElement(null); };
+function showSettings(section: string) {
+  finishContinuous(); finishText(); selectedId = ''; selectElement(null);
+  const details = $<HTMLDetailsElement>(`#properties [data-section="${section}"]`); details.open = true;
+  details.querySelector('summary')!.focus({ preventScroll: true }); details.scrollIntoView({ block: 'start' });
+  document.querySelectorAll<HTMLButtonElement>('[data-section-target]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.sectionTarget === section)));
+}
+$('#select-page').onclick = () => showSettings('layout');
+$('#open-watermarks').onclick = () => showSettings('watermark');
+document.querySelectorAll<HTMLButtonElement>('[data-section-target]').forEach(button => { button.onclick = () => showSettings(button.dataset.sectionTarget!); });
 $('#other-page').onclick = () => { finishContinuous(); side = side ? 0 : 1; selectedId = ''; render(); };
 $('#add-spread').onclick = () => commit(() => { doc.chapters[chapterIndex].spreads.push(makeSpread()); spreadIndex = doc.chapters[chapterIndex].spreads.length - 1; selectedId = ''; });
 $('#add-chapter').onclick = () => commit(() => { doc.chapters.push({ id: id(), title: '新章节', date: '', spreads: [makeSpread()] }); chapterIndex = doc.chapters.length - 1; spreadIndex = 0; selectedId = ''; });

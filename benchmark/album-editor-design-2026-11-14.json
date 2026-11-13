@@ -1,0 +1,1368 @@
+{
+  "schema": 1,
+  "date": "2026-11-14",
+  "baseline": "500fbd3c11d02f3706bbb753fbfb19fd4c6b3cd4",
+  "branch": "codex/album-editor-design",
+  "environment": "Existing system Chrome / shared Node24.14.0 and pnpm11.7.0. Browser plugin not available; isolated drafts; no physical device conclusion.",
+  "workload": "1440x1000, CPU4x, 12 spreads, 2400x1800 PNG plus actual generated paw repeated on BOTH before/after pages; hand font preloaded; 24 native paper/font changes with double-RAF observation and eight held-mouse opacity samples. Three sequential runs on each side, no concurrent browser tests/builds.",
+  "summary": {
+    "before": {
+      "handlerMedianMs": 6.7,
+      "handlerP95Ms": 8.2,
+      "paintMedianMs": 33.2,
+      "paintP95Ms": 34.7
+    },
+    "after": {
+      "handlerMedianMs": 6.2,
+      "handlerP95Ms": 7.7,
+      "paintMedianMs": 33.2,
+      "paintP95Ms": 34.2
+    }
+  },
+  "series": {
+    "before": {
+      "stage": "before",
+      "cpu": 4,
+      "repetitions": 3,
+      "url": "http://127.0.0.1:5173/editor.html",
+      "browser": "157.0.8103.51",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "runs": [
+        {
+          "run": 1,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 7.700000002980232,
+              "toNextPaintMs": 26.200000002980232
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.700000002980232,
+              "toNextPaintMs": 27.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 32.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.299999997019768,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.4000000059604645,
+              "toNextPaintMs": 34.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 49.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.5,
+              "toNextPaintMs": 33.19999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.600000008940697,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.9000000059604645,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.9000000059604645,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.200000002980232,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.399999991059303,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.800000011920929,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.600000008940697,
+              "toNextPaintMs": 34.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5,
+              "toNextPaintMs": 33.80000001192093
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.299999997019768,
+              "toNextPaintMs": 32.599999994039536
+            }
+          ],
+          "handlerMedianMs": 5.600000008940697,
+          "handlerP95Ms": 7.700000002980232,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34.20000000298023,
+          "sliderStates": [
+            {
+              "value": "23",
+              "opacity": "0.23",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "32",
+              "opacity": "0.32",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "40",
+              "opacity": "0.4",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "58",
+              "opacity": "0.58",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "66",
+              "opacity": "0.66",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "75",
+              "opacity": "0.75",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "84",
+              "opacity": "0.84",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 2,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 7.600000008940697,
+              "toNextPaintMs": 17.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 10,
+              "toNextPaintMs": 27.600000008940697
+            },
+            {
+              "label": "纸张",
+              "jsMs": 8.400000005960464,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 8.800000011920929,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 7.200000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 9.299999997019768,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.799999997019768,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 7.100000008940697,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.5,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 7,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.699999988079071,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5,
+              "toNextPaintMs": 32
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 50.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.9000000059604645,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.399999991059303,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 49.8999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.700000002980232,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.300000011920929,
+              "toNextPaintMs": 49.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 8.099999994039536,
+              "toNextPaintMs": 34.20000000298023
+            }
+          ],
+          "handlerMedianMs": 6.9000000059604645,
+          "handlerP95Ms": 9.299999997019768,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 49.8999999910593,
+          "sliderStates": [
+            {
+              "value": "23",
+              "opacity": "0.23",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "32",
+              "opacity": "0.32",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "40",
+              "opacity": "0.4",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "58",
+              "opacity": "0.58",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "66",
+              "opacity": "0.66",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "75",
+              "opacity": "0.75",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "84",
+              "opacity": "0.84",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 3,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 16.700000002980232
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 7.200000002980232,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 8.199999988079071,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.299999997019768,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.5,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.5999999940395355,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 8.099999994039536,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.700000002980232,
+              "toNextPaintMs": 32.80000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.699999988079071,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 7,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.699999988079071,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 8.599999994039536,
+              "toNextPaintMs": 34.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 7.399999991059303,
+              "toNextPaintMs": 32.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.300000011920929,
+              "toNextPaintMs": 32.80000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.299999997019768,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.4000000059604645,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.0999999940395355,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 50.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 32.5
+            }
+          ],
+          "handlerMedianMs": 6.699999988079071,
+          "handlerP95Ms": 8.199999988079071,
+          "paintMedianMs": 33.29999999701977,
+          "paintP95Ms": 34.70000000298023,
+          "sliderStates": [
+            {
+              "value": "23",
+              "opacity": "0.23",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "32",
+              "opacity": "0.32",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "40",
+              "opacity": "0.4",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "58",
+              "opacity": "0.58",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "66",
+              "opacity": "0.66",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "75",
+              "opacity": "0.75",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "84",
+              "opacity": "0.84",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        }
+      ],
+      "note": "Isolated drafts; CPU throttle is laboratory stress, not physical hardware. Repeated native DOM change dispatch and double-RAF observation; pointer slider is actual held mouse."
+    },
+    "after": {
+      "stage": "after",
+      "cpu": 4,
+      "repetitions": 3,
+      "url": "http://127.0.0.1:5173/editor.html",
+      "browser": "157.0.8103.51",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "runs": [
+        {
+          "run": 1,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 8.100000008940697,
+              "toNextPaintMs": 21.30000001192093
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.5999999940395355,
+              "toNextPaintMs": 34.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 32.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 7,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.600000008940697,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.399999991059303,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.299999997019768,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.299999997019768,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.199999988079071,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.100000008940697,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.100000008940697,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 34.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 34.19999998807907
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 49.80000001192093
+            },
+            {
+              "label": "字体",
+              "jsMs": 10.299999997019768,
+              "toNextPaintMs": 32.79999999701977
+            }
+          ],
+          "handlerMedianMs": 6.200000002980232,
+          "handlerP95Ms": 8.100000008940697,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34.19999998807907,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 2,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 6.799999997019768,
+              "toNextPaintMs": 22.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.5999999940395355,
+              "toNextPaintMs": 34.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.5999999940395355,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.5999999940395355,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.699999988079071,
+              "toNextPaintMs": 33.19999998807907
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.5,
+              "toNextPaintMs": 32
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.5999999940395355,
+              "toNextPaintMs": 34.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 6,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.4000000059604645,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 32.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 8.399999991059303,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.4000000059604645,
+              "toNextPaintMs": 33.30000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 7.299999997019768,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 7,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.100000008940697,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.600000008940697,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.700000002980232,
+              "toNextPaintMs": 32.70000000298023
+            }
+          ],
+          "handlerMedianMs": 6.700000002980232,
+          "handlerP95Ms": 7.700000002980232,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34.099999994039536,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 3,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 13.200000002980232
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 27.799999997019768
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.799999997019768,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 32.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 34.3999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.5999999940395355,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.4000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 48.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 49.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 32.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 35
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 32
+            },
+            {
+              "label": "字体",
+              "jsMs": 7,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5,
+              "toNextPaintMs": 32.19999998807907
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.600000008940697,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.399999991059303,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.099999994039536
+            }
+          ],
+          "handlerMedianMs": 5.799999997019768,
+          "handlerP95Ms": 7,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 48.79999999701977,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        }
+      ],
+      "note": "Isolated drafts; CPU throttle is laboratory stress, not physical hardware. Repeated native DOM change dispatch and double-RAF observation; pointer slider is actual held mouse."
+    }
+  },
+  "notes": [
+    "Explicit user choice C authorizes workbench and custom page visuals; no draft read or modified in the author browser. Three style kits are explicit actions, one undo, preserve content/template/columns/crops/watermark/stickers.",
+    "Final ten specs single run 71/71, including fourteen new design tests. Earlier fourteen passed are a subset, not an extra fourteen unique cases.",
+    "All measured interactions have zero removed Elements/images/controls and zero long tasks; slider endpoints differ with the changed native control width but each observed value paints and retains nodes.",
+    "Handler median changes 6.7 to 6.2ms and P95 median 8.2 to 7.7ms; double-RAF median 33.2ms on each side. Small laboratory variation is not an FPS, device or cold-network speedup claim.",
+    "Initial typecheck found the existing tsconfig lacks DOM.Iterable; replaced NodeList for-of with forEach and subsequent typecheck and both builds passed.",
+    "Three.js chunk-size notice remains. Production page errors, console.error and failed requests zero. Default room has two known Chrome texture-copy warnings and custom room three captures six warnings of the same type; no 3D warning baseline remeasurement in this task.",
+    "Safari, physical phone, cold network, long-lived devices and full historical test suite not tested. No deployment, dependency, schema, published content or scene changes."
+  ],
+  "production": {
+    "checks": {
+      "defaultNoEditorOrFont": true,
+      "defaultNoWatermarkAssets": true,
+      "workbenchSizes": [
+        {
+          "size": {
+            "width": 1440,
+            "height": 1000
+          },
+          "paperBottom": 752.796875,
+          "stageBottom": 935,
+          "paperRight": 1025,
+          "stageRight": 1140,
+          "overflow": false
+        },
+        {
+          "size": {
+            "width": 1280,
+            "height": 800
+          },
+          "paperBottom": 699.296875,
+          "stageBottom": 735,
+          "paperRight": 909,
+          "stageRight": 980,
+          "overflow": false
+        },
+        {
+          "size": {
+            "width": 1024,
+            "height": 768
+          },
+          "paperBottom": 592.296875,
+          "stageBottom": 703,
+          "paperRight": 707,
+          "stageRight": 744,
+          "overflow": false
+        },
+        {
+          "size": {
+            "width": 390,
+            "height": 844
+          },
+          "paperBottom": 901.375,
+          "stageBottom": 1134.46875,
+          "paperRight": 375,
+          "stageRight": 390,
+          "overflow": false
+        }
+      ],
+      "pageIdentity": {
+        "url": "http://127.0.0.1:4174/editor.html",
+        "title": "纪念手帐工作台 · 潮汐之间",
+        "nonblank": true,
+        "noFrameworkOverlay": true
+      },
+      "liveSlider": {
+        "states": [
+          {
+            "value": 26,
+            "opacity": 0.26,
+            "retained": true
+          },
+          {
+            "value": 44,
+            "opacity": 0.44,
+            "retained": true
+          },
+          {
+            "value": 68,
+            "opacity": 0.68,
+            "retained": true
+          },
+          {
+            "value": 87,
+            "opacity": 0.87,
+            "retained": true
+          }
+        ],
+        "oneUndo": true,
+        "nativeFontFocus": true
+      },
+      "studioIdle": {
+        "seconds": 5,
+        "webglContexts": 0,
+        "rafCalls": 0,
+        "taskDurationMs": 8.140999999999998,
+        "canvasElements": 0
+      },
+      "roomReopenRetainsSpread": true,
+      "actualFont": true,
+      "noPageErrors": true
+    },
+    "pages": [
+      {
+        "name": "default visitor, original four chapters",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [
+          "[.WebGL-0x12c00577200] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x12c00577200] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions."
+        ],
+        "failedRequests": []
+      },
+      {
+        "name": "author studio with isolated sample copy",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [],
+        "failedRequests": []
+      },
+      {
+        "name": "standalone custom preview, four viewports",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [],
+        "failedRequests": []
+      },
+      {
+        "name": "physical room custom private preview",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [
+          "[.WebGL-0x1340050c000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x1340050c000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x1340050c000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x1340050c000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x1340050c000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x1340050c000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions."
+        ],
+        "failedRequests": []
+      }
+    ],
+    "screenshots": [
+      "production-default-reading.png",
+      "production-editor-blank.png",
+      "production-kit-coast.png",
+      "production-kit-coast-studio.png",
+      "production-kit-warm.png",
+      "production-kit-warm-studio.png",
+      "production-kit-garden.png",
+      "production-kit-garden-studio.png",
+      "production-workbench-1440x1000.png",
+      "production-workbench-1280x800.png",
+      "production-workbench-1024x768.png",
+      "production-workbench-390x844.png",
+      "production-gallery-cats.png",
+      "production-gallery-empty.png",
+      "production-editor-styled.png",
+      "production-paper-white.png",
+      "production-paper-cotton.png",
+      "production-paper-watercolor.png",
+      "production-paper-aged.png",
+      "production-paper-kraft.png",
+      "production-paper-pastel.png",
+      "production-layout-single.png",
+      "production-layout-corner.png",
+      "production-layout-border.png",
+      "production-layout-repeat.png",
+      "production-generated-page.png",
+      "production-watermark-0.png",
+      "production-watermark-100.png",
+      "production-watermark-28.png",
+      "production-frame-white.png",
+      "production-frame-polaroid.png",
+      "production-frame-rounded.png",
+      "production-frame-film.png",
+      "production-frame-stamp.png",
+      "production-frame-tape.png",
+      "production-desktop-preview.png",
+      "production-phone-preview-dialog.png",
+      "production-reading-320x568.png",
+      "production-reading-390x844.png",
+      "production-reading-844x390.png",
+      "production-reading-1440x1000.png",
+      "production-room-private.png",
+      "production-room-reading.png"
+    ],
+    "screenshotCount": 43,
+    "allScreenshotsReviewed": true,
+    "evidenceDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/11/14/album-editor-design"
+  },
+  "sourceSha256": {
+    "src/editor/main.ts": "92af89b393de5fc8461c955c7ca38ee3e4b2240bd60d470b599caa235f4dfcd1",
+    "src/editor/properties.ts": "b210421695d5bcf5952aef793f73f5e196d6f4273769a70fafe81cb2549a115b",
+    "src/editor/style-kits.ts": "2aff6935c76a4edc1dd0e5126f3f8e1437b1f17209307e7c4e1351c59e4d5b95",
+    "src/editor/workbench.css": "e84ad7f8c80e35d710527c68348c3cbbcbd57ba00e72752de367ff1f00da3a5f",
+    "src/editor/watermark-library.ts": "640b45746af278d51ba12741e7e1e8299aea90f7cff00703d8898d304b40138d",
+    "src/album/page.css": "e11e307f21d478ff93fc4d35dd55f9d803900b0424602bf4be20098a7a5e7d0f",
+    "tests/album-editor-design.spec.ts": "f75a5519aadcc366943bd3971ebc5eb5ddea07cfd8352794462fc7e23ef07d5a"
+  }
+}

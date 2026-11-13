@@ -5,6 +5,17 @@ export type WatermarkPreset = { key: string; name: string; file: string; sha256:
 // document's ordinary embedded assets, with no dependency on this catalog.
 const urls = import.meta.glob('./watermarks/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 export const WATERMARK_PRESETS: WatermarkPreset[] = (catalog as Omit<WatermarkPreset, 'url' | 'assetId'>[]).map(item => ({ ...item, url: urls[`./watermarks/${item.file}`], assetId: `wm-${item.sha256}` }));
+export const WATERMARK_CATEGORIES = { all: '全部图案', cats: '猫咪', flowers: '花朵', seaside: '海边', stars: '星星', leaves: '枝叶', sentiments: '心意' };
+const categories: Record<string, string[]> = {
+  cats: ['paw', 'stitched-paw', 'cat'],
+  flowers: ['blossom', 'blue-flower', 'peach-flower', 'purple-flower', 'round-flower', 'pink-flower'],
+  seaside: ['lilac-shell', 'pink-shell', 'blue-shell'],
+  stars: ['soft-star', 'stitched-star', 'gold-star', 'little-star'],
+  leaves: ['paired-leaves', 'leaf', 'wide-leaves', 'twig', 'tall-leaf', 'sprout'],
+  sentiments: ['pink-bow', 'blue-bow', 'small-heart', 'blue-heart', 'large-heart'],
+};
+export const watermarkCategory = (key: string) => Object.keys(categories).find(category => categories[category].includes(key)) ?? 'all';
+export type WatermarkFilter = { category: string; query: string };
 const loaded = new Map<string, Promise<File>>();
 export async function imageHash(blob: Blob) {
   return [...new Uint8Array(await crypto.subtle.digest('SHA-256', await blob.arrayBuffer()))].map(n => n.toString(16).padStart(2, '0')).join('');
