@@ -18,67 +18,95 @@ export function motifSvg(motif: Motif, color: string): SVGSVGElement {
   const path = svgNode('path'); path.setAttribute('d', paths[motif]); path.setAttribute('fill', motif === 'shell' || motif === 'leaf' ? 'none' : color);
   path.setAttribute('stroke', color); path.setAttribute('stroke-width', '1.6'); path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round'); svg.append(path); return svg;
 }
-function watermarks(page: AlbumPage, resolve: AssetResolver) {
-  const w = page.watermark, layer = document.createElement('div'); layer.className = 'album-watermark'; layer.setAttribute('aria-hidden', 'true');
+const watermarkContents = new WeakMap<HTMLElement, string>();
+function watermarks(page: AlbumPage, resolve: AssetResolver, layer: HTMLElement = document.createElement('div')) {
+  const w = page.watermark; layer.className = 'album-watermark'; layer.setAttribute('aria-hidden', 'true');
   layer.style.opacity = String(w.opacity);
-  if (!w.opacity) return layer;
+  if (!w.opacity) { layer.replaceChildren(); return layer; }
   const positions: [number, number][] = [];
   if (w.mode === 'single') positions.push([w.x, w.y]);
   if (w.mode === 'corner') positions.push([10, 9], [90, 91]);
   if (w.mode === 'border') for (let i = 0; i <= w.density * 2; i++) { const a = 8 + 84 * i / (w.density * 2); positions.push([a, 6], [a, 94]); if (i > 0 && i < w.density * 2) positions.push([6, a], [94, a]); }
   if (w.mode === 'repeat') for (let y = 0; y < w.density * 2; y++) for (let x = 0; x < w.density; x++) positions.push([(x + .5 + (y % 2 ? .25 : 0)) * 100 / w.density, (y + .5) * 100 / (w.density * 2)]);
-  for (const [x, y] of positions) {
-    const tile = document.createElement('div'); tile.className = 'album-watermark-tile';
-    Object.assign(tile.style, { width: `${w.size}px`, height: `${w.size}px`, left: `${x}%`, top: `${y}%`, transform: `translate(-50%,-50%) rotate(${w.rotation}deg)` });
-    const src = w.assetId && resolve(w.assetId);
-    if (src) { const img = new Image(); img.src = src; img.alt = ''; tile.append(img); } else tile.append(motifSvg(w.motif, w.color));
-    layer.append(tile);
-  }
+  const src = w.assetId && resolve(w.assetId), identity = src || `${w.motif}:${w.color}`, sameContent = watermarkContents.get(layer) === identity;
+  while (layer.children.length > positions.length) layer.lastElementChild!.remove();
+  positions.forEach(([x, y], i) => {
+    let tile = layer.children[i] as HTMLElement | undefined;
+    if (!tile) { tile = document.createElement('div'); tile.className = 'album-watermark-tile'; layer.append(tile); }
+    const styles = { width: `${w.size}px`, height: `${w.size}px`, left: `${x}%`, top: `${y}%`, transform: `translate(-50%,-50%) rotate(${w.rotation}deg)` };
+    for (const [key, value] of Object.entries(styles)) if (tile.style.getPropertyValue(key) !== value) tile.style.setProperty(key, value);
+    if (!sameContent || !tile.firstElementChild) {
+      if (src) { const img = new Image(); img.src = src; img.alt = ''; tile.replaceChildren(img); }
+      else tile.replaceChildren(motifSvg(w.motif, w.color));
+    }
+  });
+  watermarkContents.set(layer, identity);
   return layer;
 }
-function photoContent(photo: PhotoElement, resolve: AssetResolver) {
-  const figure = document.createElement('figure'); figure.className = `album-photo album-frame-${photo.frame}`;
+function photoContent(photo: PhotoElement, resolve: AssetResolver, figure = document.createElement('figure')) {
+  figure.className = `album-photo album-frame-${photo.frame}`;
   figure.style.setProperty('--frame-color', photo.color); figure.style.setProperty('--frame-width', `${photo.border}px`); figure.style.setProperty('--frame-shadow', `0 4px 12px rgb(48 35 20 / ${photo.shadow})`);
-  const view = document.createElement('div'); view.className = 'album-photo-view';
+  let view = figure.querySelector<HTMLDivElement>('.album-photo-view');
+  if (!view) { view = document.createElement('div'); view.className = 'album-photo-view'; figure.append(view); }
   const src = photo.assetId && resolve(photo.assetId);
   if (src) {
-    const img = new Image(); img.src = src; img.alt = photo.alt || photo.caption || '纪念册照片'; img.decoding = 'async';
+    let img = view.querySelector('img');
+    if (!img) { img = new Image(); img.decoding = 'async'; view.replaceChildren(img); }
+    if (img.getAttribute('src') !== src) { img.src = src; img.hidden = false; delete view.dataset.missing; }
+    img.alt = photo.alt || photo.caption || '纪念册照片'; view.classList.remove('album-photo-empty');
     img.style.objectPosition = `${photo.crop.x}% ${photo.crop.y}%`;
     const a = photo.crop.rotation * Math.PI / 180;
     const scale = photo.crop.zoom * (Math.abs(Math.cos(a)) + 4 / 3 * Math.abs(Math.sin(a)));
     img.style.transform = `translate(${(50 - photo.crop.x) * (photo.crop.zoom - 1) / photo.crop.zoom}%,${(50 - photo.crop.y) * (photo.crop.zoom - 1) / photo.crop.zoom}%) rotate(${photo.crop.rotation}deg) scale(${scale})`;
-    img.onerror = () => { img.hidden = true; view.dataset.missing = '照片未能加载，请检查素材'; };
-    view.append(img);
-  } else { view.classList.add('album-photo-empty'); view.textContent = '＋ 选择照片'; }
-  const caption = document.createElement('figcaption'); caption.textContent = photo.caption;
-  figure.append(view, caption); return figure;
+    const image = img, frame = view;
+    img.onerror = () => { image.hidden = true; frame.dataset.missing = '照片未能加载，请检查素材'; };
+  } else { view.classList.add('album-photo-empty'); view.textContent = '＋ 选择照片'; delete view.dataset.missing; }
+  let caption = figure.querySelector('figcaption');
+  if (!caption) { caption = document.createElement('figcaption'); figure.append(caption); }
+  if (caption.textContent !== photo.caption) caption.textContent = photo.caption;
+  return figure;
 }
-export function renderElement(element: AlbumElement, resolve: AssetResolver, editable = false) {
-  const host = document.createElement('div'); host.className = `album-element album-${element.type}`; host.dataset.element = element.id;
+function updateElement(host: HTMLElement, element: AlbumElement, resolve: AssetResolver, editable: boolean) {
   if (element.type === 'text') {
     host.classList.add(`album-text-${element.role}`); host.dataset.font = element.font;
     Object.assign(host.style, { fontFamily: FONT[element.font], fontSize: `${element.size}px`, fontWeight: String(element.weight), color: element.color, lineHeight: String(element.lineHeight), letterSpacing: `${element.letterSpacing}px`, textAlign: element.align });
-    const text = document.createElement(element.role === 'title' ? 'h2' : 'p'); text.textContent = element.text;
+    let text = host.firstElementChild as HTMLElement | null;
+    if (!text) { text = document.createElement(element.role === 'title' ? 'h2' : 'p'); host.append(text); }
+    // Preserve the native Chinese IME selection when the model already matches.
+    if (text.textContent !== element.text && (!editable || text.innerText !== element.text)) text.textContent = element.text;
     if (editable) { text.contentEditable = 'plaintext-only'; text.dataset.text = element.id; text.dataset.placeholder = element.role === 'title' ? '点击写下标题' : '点击写下你的回忆…'; text.setAttribute('aria-label', element.role === 'title' ? '页面标题' : '页面正文'); text.setAttribute('role', 'textbox'); text.setAttribute('aria-multiline', 'true'); text.spellcheck = false; }
-    host.append(text);
-  } else if (element.type === 'photo') host.append(photoContent(element, resolve));
-  else {
+  } else if (element.type === 'photo') {
+    const figure = host.querySelector('figure');
+    const updated = photoContent(element, resolve, figure ?? undefined); if (!figure) host.append(updated);
+  } else {
     Object.assign(host.style, { left: `${element.x}%`, top: `${element.y}%`, width: `${element.width}%`, transform: `translate(-50%,-50%) rotate(${element.rotation}deg)`, opacity: String(element.opacity) });
     host.dataset.locked = String(element.locked); host.setAttribute('aria-hidden', 'true');
-    const src = element.assetId && resolve(element.assetId);
-    if (src) { const img = new Image(); img.src = src; img.alt = ''; host.append(img); } else host.append(motifSvg(element.motif, element.color));
+    const previous = host.querySelector('svg,img'), src = element.assetId && resolve(element.assetId);
+    if (src) {
+      if (previous instanceof HTMLImageElement) { if (previous.getAttribute('src') !== src) previous.src = src; }
+      else { const img = new Image(); img.src = src; img.alt = ''; if (previous) previous.replaceWith(img); else host.prepend(img); }
+    } else { const svg = motifSvg(element.motif, element.color); if (previous) previous.replaceWith(svg); else host.prepend(svg); }
   }
-  return host;
+}
+export function renderElement(element: AlbumElement, resolve: AssetResolver, editable = false) {
+  const host = document.createElement('div'); host.className = `album-element album-${element.type}`; host.dataset.element = element.id;
+  updateElement(host, element, resolve, editable); return host;
+}
+function pageStyle(host: HTMLElement, page: AlbumPage) {
+  host.classList.add('album-page'); host.dataset.albumPage = page.id; host.dataset.template = page.layout.template; host.dataset.paper = page.paper.kind;
+  const vars: Record<string, string> = { '--paper-tint': page.paper.tint, '--paper-texture': String(page.paper.texture), '--page-margin': `${page.layout.margin}px`, '--content-columns': String(page.layout.columns), '--content-gap': `${page.layout.gap}px` };
+  for (const [key, value] of Object.entries(vars)) if (host.style.getPropertyValue(key) !== value) host.style.setProperty(key, value);
+}
+function gridStyle(grid: HTMLElement, page: AlbumPage) {
+  grid.className = `album-grid album-grid-${page.grid.kind}`;
+  Object.assign(grid.style, { opacity: String(page.grid.opacity), backgroundSize: `${page.grid.spacing}px ${page.grid.spacing}px`, backgroundPosition: `${page.grid.offset}px ${page.grid.offset}px` });
+  grid.style.setProperty('--grid-color', page.grid.color); grid.style.setProperty('--grid-weight', `${page.grid.weight}px`);
 }
 /** One renderer for authoring, reader pages, leaf faces and paper capture. */
 export function renderAlbumPage(host: HTMLElement, page: AlbumPage, options: PageRenderOptions) {
-  host.classList.add('album-page'); host.dataset.albumPage = page.id; host.dataset.template = page.layout.template; host.dataset.paper = page.paper.kind;
-  const vars: Record<string, string> = { '--paper-tint': page.paper.tint, '--paper-texture': String(page.paper.texture), '--page-margin': `${page.layout.margin}px`, '--content-columns': String(page.layout.columns), '--content-gap': `${page.layout.gap}px` };
-  for (const [key, value] of Object.entries(vars)) host.style.setProperty(key, value);
+  pageStyle(host, page);
   const texture = document.createElement('div'); texture.className = `album-paper-texture album-paper-${page.paper.kind}`; texture.setAttribute('aria-hidden', 'true');
-  const grid = document.createElement('div'); grid.className = `album-grid album-grid-${page.grid.kind}`; grid.setAttribute('aria-hidden', 'true');
-  Object.assign(grid.style, { opacity: String(page.grid.opacity), backgroundSize: `${page.grid.spacing}px ${page.grid.spacing}px`, backgroundPosition: `${page.grid.offset}px ${page.grid.offset}px` });
-  grid.style.setProperty('--grid-color', page.grid.color); grid.style.setProperty('--grid-weight', `${page.grid.weight}px`);
+  const grid = document.createElement('div'); grid.setAttribute('aria-hidden', 'true'); gridStyle(grid, page);
   const content = document.createElement('div'); content.className = 'album-content';
   const photos = document.createElement('div'); photos.className = 'album-photos';
   const text = document.createElement('div'); text.className = 'album-copy';
@@ -92,6 +120,51 @@ export function renderAlbumPage(host: HTMLElement, page: AlbumPage, options: Pag
   host.replaceChildren(texture, grid, watermarks(page, options.resolveAsset), content);
   for (const e of page.elements) if (e.type === 'sticker') host.append(renderElement(e, options.resolveAsset, options.editable));
   if (options.number) { const number = document.createElement('span'); number.className = 'album-page-number'; number.textContent = String(options.number).padStart(2, '0'); host.append(number); }
+}
+type PageStamp = { source: AlbumPage; id: string; editable: boolean; paper: string; grid: string; watermark: string; elements: Map<string, string> };
+const pageStamps = new WeakMap<HTMLElement, PageStamp>();
+/** Authoring reuses the same renderer, updating only changed layers / keyed elements. */
+export function updateAlbumPage(host: HTMLElement, page: AlbumPage, options: PageRenderOptions) {
+  const { opacity, ...pattern } = page.watermark;
+  const stamp: PageStamp = { source: page, id: page.id, editable: !!options.editable, paper: JSON.stringify(page.paper), grid: JSON.stringify(page.grid), watermark: JSON.stringify([pattern, !!opacity]), elements: new Map(page.elements.map(e => [e.id, JSON.stringify(e)])) };
+  const previous = pageStamps.get(host);
+  if (!previous || previous.source !== page || previous.id !== page.id || previous.editable !== stamp.editable) {
+    renderAlbumPage(host, page, options); pageStamps.set(host, stamp); return;
+  }
+  pageStyle(host, page);
+  if (previous.paper !== stamp.paper) host.querySelector('.album-paper-texture')!.className = `album-paper-texture album-paper-${page.paper.kind}`;
+  if (previous.grid !== stamp.grid) gridStyle(host.querySelector<HTMLElement>('.album-grid')!, page);
+  const watermark = host.querySelector<HTMLElement>('.album-watermark')!;
+  if (previous.watermark !== stamp.watermark) watermarks(page, options.resolveAsset, watermark);
+  else if (watermark.style.opacity !== String(opacity)) watermark.style.opacity = String(opacity);
+  const content = host.querySelector<HTMLElement>('.album-content')!;
+  const sync = (parent: HTMLElement, elements: AlbumElement[], direct = false) => {
+    const nodes = new Map(Array.from(parent.children).filter(e => e.classList.contains('album-element')).map(e => [(e as HTMLElement).dataset.element, e as HTMLElement]));
+    const wanted = new Set(elements.map(e => e.id));
+    for (const [key, node] of nodes) if (!wanted.has(key!)) node.remove();
+    let cursor: Element | null = direct ? Array.from(parent.children).find(e => e.classList.contains('album-sticker') || e.classList.contains('album-page-number') || e.classList.contains('editor-page-guide')) ?? null : parent.firstElementChild;
+    for (const element of elements) {
+      let node = nodes.get(element.id);
+      if (!node) node = renderElement(element, options.resolveAsset, options.editable);
+      else if (previous.elements.get(element.id) !== stamp.elements.get(element.id)) updateElement(node, element, options.resolveAsset, !!options.editable);
+      if (node !== cursor) parent.insertBefore(node, cursor);
+      cursor = node.nextElementSibling;
+    }
+  };
+  for (const [type, className] of [['photo', 'album-photos'], ['text', 'album-copy']] as const) {
+    const elements = page.elements.filter(e => e.type === type);
+    let group = content.querySelector<HTMLElement>(`.${className}`);
+    if (elements.length) {
+      content.querySelector('.album-blank-hint')?.remove();
+      if (!group) { group = document.createElement('div'); group.className = className; if (type === 'photo') content.prepend(group); else content.append(group); }
+      sync(group, elements);
+    } else group?.remove();
+  }
+  if (!content.childElementCount && options.editable) { const hint = document.createElement('p'); hint.className = 'album-blank-hint'; hint.textContent = '一张空白纸，等你慢慢写。'; content.append(hint); }
+  sync(host, page.elements.filter(e => e.type === 'sticker'), true);
+  const number = host.querySelector<HTMLElement>('.album-page-number');
+  if (number && options.number) { const text = String(options.number).padStart(2, '0'); if (number.textContent !== text) number.textContent = text; }
+  pageStamps.set(host, stamp);
 }
 export async function waitForAlbumImages(scope: ParentNode) {
   const images = Array.from(scope.querySelectorAll('img'));

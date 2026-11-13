@@ -1,8 +1,8 @@
 import './workbench.css';
 import published from '../album/published.json';
 import { copy, id, newDocument, makeSpread, duplicateSpread, textElement, photoElement, stickerElement, applyTemplate, flatten, validateDocument, type AlbumDocument, type AlbumPage, type AlbumElement, type PageStyle, type StickerElement } from '../album/document';
-import { renderAlbumPage } from '../album/renderer';
-import { createProperties } from './properties';
+import { updateAlbumPage } from '../album/renderer';
+import { createProperties, refreshProperties } from './properties';
 import { AlbumHistory } from './history';
 import { readDraft, saveDraft, savePreview, watchDraft, AlbumConflictError, type AssetBlobs } from './storage';
 import { contentHash, exportPackage, importPackage, importImage, optimizeAssets, download } from './packages';
@@ -19,11 +19,14 @@ app.innerHTML = `<header class="editor-header"><a class="editor-brand" href="./"
 
 let doc = newDocument(), blobs: AssetBlobs = new Map(), chapterIndex = 0, spreadIndex = 0, side = 0, selectedId = '', scope = 'page';
 let storageVersion = 0, sequence = 0, savedSequence = 0, saveError: Error | undefined, saveTask: Promise<void> | undefined, saveTimer = 0, noticeTimer = 0;
+let continuousBefore: AlbumDocument | undefined, previewFrame = 0;
+let inspector: { document: AlbumDocument; page: AlbumPage; selected?: AlbumElement; key: string; host: HTMLElement } | undefined;
+let libraryDocument: AlbumDocument | undefined, libraryKey = '';
 let composing = false, textBefore: AlbumDocument | undefined, textDirty = false, previewToken = '', initialized = false;
 const history = new AlbumHistory(), urls = new Map<string, string>(), viewport = $('#canvas-stage');
 const exportImage = document.createElement('button'); exportImage.textContent = '导出当前单页 PNG'; exportImage.id = 'export-page-image'; $('#export-content').after(exportImage);
 exportImage.onclick = async () => {
-  finishText(); const spread = doc.chapters[chapterIndex].spreads[spreadIndex], number = flatten(doc).findIndex(v => v.spread.id === spread.id) * 2 + 1;
+  finishContinuous(); finishText(); const spread = doc.chapters[chapterIndex].spreads[spreadIndex], number = flatten(doc).findIndex(v => v.spread.id === spread.id) * 2 + 1;
   try { const { pageImage } = await import('./page-image'); download(await pageImage(copy(spread), side, resolveAsset, number), `memory-page-${number + side}.png`); notify('单页图片已下载；如需继续编辑，请另存可编辑备份。'); }
   catch (error) { notify((error as Error).message); }
 };
@@ -37,8 +40,8 @@ const releaseUrls = () => { for (const url of urls.values()) URL.revokeObjectURL
 function notify(message: string) { window.clearTimeout(noticeTimer); $('#editor-notice').textContent = message; $('#editor-notice').hidden = false; noticeTimer = window.setTimeout(() => { $('#editor-notice').hidden = true; }, 7000); }
 function saveStatus() {
   const status = $('#save-status');
-  status.textContent = saveError ? `保存失败 · ${saveError.message}` : saveTask ? '正在保存…' : sequence !== savedSequence ? '待保存…' : '✓ 已保存到本机';
-  status.dataset.state = saveError ? 'error' : saveTask || sequence !== savedSequence ? 'pending' : 'saved';
+  status.textContent = saveError ? `保存失败 · ${saveError.message}` : saveTask ? '正在保存…' : sequence !== savedSequence || continuousBefore ? '待保存…' : '✓ 已保存到本机';
+  status.dataset.state = saveError ? 'error' : saveTask || sequence !== savedSequence || continuousBefore ? 'pending' : 'saved';
   $('#retry-save').hidden = !saveError || saveError instanceof AlbumConflictError;
   $('#reload-draft').hidden = !saveError;
   $<HTMLButtonElement>('#undo').disabled = !history.canUndo;
@@ -52,7 +55,7 @@ function dirty() {
   saveStatus();
 }
 async function flushSave() {
-  window.clearTimeout(saveTimer);
+  finishContinuous(); window.clearTimeout(saveTimer);
   if (saveTask) { await saveTask; return; }
   if (sequence === savedSequence || composing || saveError instanceof AlbumConflictError) return;
   const savingSequence = sequence, snapshot = copy(doc), assets = new Map(blobs);
@@ -69,25 +72,39 @@ function finishText() {
   if (textDirty) history.remember(textBefore);
   textBefore = undefined; textDirty = false; composing = false; saveStatus();
 }
+function cancelPreviewFrame() { if (previewFrame) cancelAnimationFrame(previewFrame); previewFrame = 0; }
+function previewChange(action: () => void) {
+  finishText();
+  if (!continuousBefore) { continuousBefore = copy(doc); window.clearTimeout(saveTimer); saveStatus(); }
+  action();
+  if (!previewFrame) previewFrame = requestAnimationFrame(() => { previewFrame = 0; render(); });
+}
+function finishContinuous() { if (continuousBefore) commit(() => {}); }
 function commit(action: () => void) {
-  finishText(); const before = copy(doc);
+  finishText(); cancelPreviewFrame(); const before = continuousBefore ?? copy(doc); continuousBefore = undefined;
   try { action(); validateDocument(doc); }
   catch (error) { doc = before; notify((error as Error).message); render(); return; }
   if (JSON.stringify(before) !== JSON.stringify(doc)) { history.remember(before); dirty(); }
   render();
 }
 function renderProperties() {
-  const currentPage = page();
+  const currentPage = page(), currentElement = selected();
+  const key = JSON.stringify([scope, doc.assets.map(a => [a.id, a.name]), currentPage.watermark.assetId]);
+  if (inspector?.document === doc && inspector.page === currentPage && inspector.selected === currentElement && inspector.key === key) { refreshProperties(inspector.host); return; }
   const expanded = new Map(Array.from($('#properties').querySelectorAll('details')).map(details => [details.querySelector('summary')!.textContent, details.open]));
-  const properties = createProperties({ document: doc, page: currentPage, selected: selected(), scope,
-    onScope(value) { scope = value; renderProperties(); }, change: commit,
-    style(key, value) { commit(() => {
-      const pages = scope === 'book' ? flatten(doc).flatMap(v => v.spread.pages) : scope === 'spread' ? doc.chapters[chapterIndex].spreads[spreadIndex].pages : [currentPage];
-      for (const p of pages) { const template = p.layout.template; (p as any)[key] = copy(value); if (key === 'layout' && template !== p.layout.template) applyTemplate(p, p.layout.template); }
-    }); }, upload: chooseImages,
+  const properties = createProperties({ document: doc, page: currentPage, selected: currentElement, scope,
+    onScope(value) { finishContinuous(); scope = value; renderProperties(); },
+    change(action, preview) { if (preview) previewChange(action); else commit(action); },
+    style(key, value, preview) {
+      const update = () => {
+        const pages = scope === 'book' ? flatten(doc).flatMap(v => v.spread.pages) : scope === 'spread' ? doc.chapters[chapterIndex].spreads[spreadIndex].pages : [currentPage];
+        for (const p of pages) { const template = p.layout.template; (p as any)[key] = copy(value); if (key === 'layout' && template !== p.layout.template) applyTemplate(p, p.layout.template); }
+      };
+      if (preview) previewChange(update); else commit(update);
+    }, upload: chooseImages,
   });
   properties.querySelectorAll('details').forEach(details => { const value = expanded.get(details.querySelector('summary')!.textContent); if (value !== undefined) details.open = value; });
-  $('#properties').replaceChildren(properties);
+  $('#properties').replaceChildren(properties); inspector = { document: doc, page: currentPage, selected: currentElement, key, host: properties };
 }
 function selectElement(host: HTMLElement | null) {
   const article = host?.closest<HTMLElement>('[data-side]'); if (article) side = Number(article.dataset.side);
@@ -99,8 +116,10 @@ function selectElement(host: HTMLElement | null) {
 function markSelection() {
   $('#paper-spread').querySelectorAll<HTMLElement>('.album-element').forEach(element => {
     const active = element.dataset.element === selectedId; element.classList.toggle('editor-selected', active);
-    element.querySelectorAll('.editor-transform-handle').forEach(handle => handle.remove());
-    if (active && selected()?.type === 'sticker' && !(selected() as StickerElement).locked) {
+    const handles = element.querySelectorAll('.editor-transform-handle');
+    const transform = active && selected()?.type === 'sticker' && !(selected() as StickerElement).locked;
+    if (!transform) handles.forEach(handle => handle.remove());
+    if (transform && !handles.length) {
       for (const [operation, label, glyph] of [['resize', '缩放贴纸', '↗'], ['rotate', '旋转贴纸', '↻']]) {
         const handle = document.createElement('button'); handle.className = `editor-transform-handle editor-${operation}`; handle.dataset.operation = operation; handle.setAttribute('aria-label', label); handle.textContent = glyph; element.append(handle);
       }
@@ -109,7 +128,16 @@ function markSelection() {
   document.querySelectorAll<HTMLElement>('.editor-page').forEach((element, index) => element.classList.toggle('editor-active-page', index === side));
 }
 function renderLibrary() {
-  const list = $('#chapter-list'); list.replaceChildren();
+  const list = $('#chapter-list');
+  const key = JSON.stringify([chapterIndex, spreadIndex, doc.chapters.map(c => [c.id, c.title, c.date, c.spreads.map(s => s.id)])]);
+  if (libraryDocument === doc && libraryKey === key) {
+    const pages = flatten(doc).flatMap(v => v.spread.pages);
+    list.querySelectorAll<HTMLElement>('.editor-spread-thumb span').forEach((leaf, i) => {
+      const p = pages[i], signature = `${p.paper.tint}:${p.elements.some(e => e.type === 'photo' && e.assetId)}`;
+      if (leaf.dataset.preview !== signature) { leaf.style.background = p.paper.tint; leaf.textContent = signature.endsWith('true') ? '▧' : '≋'; leaf.dataset.preview = signature; }
+    }); return;
+  }
+  libraryDocument = doc; libraryKey = key; list.replaceChildren();
   doc.chapters.forEach((chapter, ci) => {
     const group = document.createElement('section'); group.className = 'editor-chapter';
     const title = document.createElement('input'); title.value = chapter.title; title.maxLength = 150; title.setAttribute('aria-label', `第${ci + 1}章标题`); title.onchange = () => commit(() => { chapter.title = title.value; });
@@ -120,7 +148,7 @@ function renderLibrary() {
       const thumbnail = document.createElement('span'); thumbnail.className = 'editor-spread-thumb';
       for (const p of spread.pages) { const leaf = document.createElement('span'); leaf.style.background = p.paper.tint; leaf.textContent = p.elements.some(e => e.type === 'photo' && e.assetId) ? '▧' : '≋'; thumbnail.append(leaf); }
       button.append(thumbnail, document.createTextNode(`跨页 ${si + 1}`));
-      button.onclick = () => { finishText(); chapterIndex = ci; spreadIndex = si; selectedId = ''; render(); };
+      button.onclick = () => { finishContinuous(); finishText(); chapterIndex = ci; spreadIndex = si; selectedId = ''; render(); };
       group.append(button);
     }); list.append(group);
   });
@@ -143,11 +171,11 @@ function render() {
   $('#spread-name').textContent = doc.chapters[chapterIndex].title || '未命名章节';
   const offset = flatten(doc).findIndex(v => v.spread.id === doc.chapters[chapterIndex].spreads[spreadIndex].id) * 2;
   document.querySelectorAll<HTMLElement>('.editor-page').forEach((host, i) => {
-    renderAlbumPage(host, doc.chapters[chapterIndex].spreads[spreadIndex].pages[i], { resolveAsset, editable: true, number: offset + i + 1 });
+    updateAlbumPage(host, doc.chapters[chapterIndex].spreads[spreadIndex].pages[i], { resolveAsset, editable: true, number: offset + i + 1 });
     host.querySelectorAll<HTMLElement>('.album-element').forEach(element => { if (!element.classList.contains('album-text')) { element.tabIndex = 0; element.removeAttribute('aria-hidden'); element.setAttribute('aria-label', element.classList.contains('album-sticker') ? '装饰贴纸，方向键微调位置' : '照片，点击编辑'); } });
-    const guide = document.createElement('div'); guide.className = 'editor-page-guide'; guide.setAttribute('aria-hidden', 'true'); host.append(guide);
+    if (!host.querySelector('.editor-page-guide')) { const guide = document.createElement('div'); guide.className = 'editor-page-guide'; guide.setAttribute('aria-hidden', 'true'); host.append(guide); }
   });
-  renderLibrary(); selectElement(selectedId ? $('#paper-spread').querySelector<HTMLElement>(`[data-element="${selectedId}"]`) : null); saveStatus(); fitHeight();
+  renderLibrary(); selectElement(selectedId ? $('#paper-spread').querySelector<HTMLElement>(`[data-element="${selectedId}"]`) : null); saveStatus();
   const length = page().elements.filter(e => e.type === 'text').reduce((n, e) => n + e.text.length, 0);
   $('#canvas-note').textContent = length > 650 ? '本页文字较长，页面会延展；建议拆分跨页，阅读时可纵向滚动。' : '图文随模板排列 · 贴纸可自由拼贴';
 }
@@ -163,8 +191,8 @@ $('#add-title').onclick = () => addElement(textElement('title'));
 $('#add-text').onclick = () => addElement(textElement());
 $('#add-sticker').onclick = () => addElement(stickerElement());
 $('#add-photo').onclick = () => chooseImages('photo');
-$('#select-page').onclick = () => { selectedId = ''; selectElement(null); };
-$('#other-page').onclick = () => { side = side ? 0 : 1; selectedId = ''; render(); };
+$('#select-page').onclick = () => { finishContinuous(); selectedId = ''; selectElement(null); };
+$('#other-page').onclick = () => { finishContinuous(); side = side ? 0 : 1; selectedId = ''; render(); };
 $('#add-spread').onclick = () => commit(() => { doc.chapters[chapterIndex].spreads.push(makeSpread()); spreadIndex = doc.chapters[chapterIndex].spreads.length - 1; selectedId = ''; });
 $('#add-chapter').onclick = () => commit(() => { doc.chapters.push({ id: id(), title: '新章节', date: '', spreads: [makeSpread()] }); chapterIndex = doc.chapters.length - 1; spreadIndex = 0; selectedId = ''; });
 $<HTMLInputElement>('#document-title').onchange = event => commit(() => { doc.title = (event.target as HTMLInputElement).value; });
@@ -173,7 +201,7 @@ $<HTMLInputElement>('#guides').onchange = event => $('#paper-spread').classList.
 $('#paper-spread').addEventListener('click', event => { const target = event.target as HTMLElement; if (!target.closest('[data-operation]')) { selectElement(target.closest<HTMLElement>('[data-element]') ?? target.closest<HTMLElement>('[data-side]')); if (target.closest('.album-photo-empty')) chooseImages('photo'); } });
 $('#paper-spread').addEventListener('focusin', event => {
   const target = event.target as HTMLElement;
-  if (target.matches('[data-text]')) { finishText(); textBefore = copy(doc); selectElement(target.closest('[data-element]')); }
+  if (target.matches('[data-text]')) { finishContinuous(); finishText(); textBefore = copy(doc); selectElement(target.closest('[data-element]')); }
 });
 $('#paper-spread').addEventListener('input', event => {
   const target = event.target as HTMLElement; if (!target.matches('[data-text]')) return;
@@ -184,7 +212,7 @@ $('#paper-spread').addEventListener('compositionstart', () => { composing = true
 $('#paper-spread').addEventListener('compositionend', () => { composing = false; window.clearTimeout(saveTimer); saveTimer = window.setTimeout(() => { void flushSave(); }, 550); });
 $('#paper-spread').addEventListener('focusout', event => { if ((event.target as HTMLElement).matches('[data-text]')) finishText(); });
 
-function goHistory(redo: boolean) { finishText(); const previous = redo ? history.redo(doc) : history.undo(doc); if (previous) { previous.revision = doc.revision; doc = previous; selectedId = ''; dirty(); render(); } }
+function goHistory(redo: boolean) { finishContinuous(); finishText(); const previous = redo ? history.redo(doc) : history.undo(doc); if (previous) { previous.revision = doc.revision; doc = previous; selectedId = ''; dirty(); render(); } }
 $('#undo').onclick = () => goHistory(false); $('#redo').onclick = () => goHistory(true);
 window.addEventListener('keydown', event => {
   const typing = (event.target as HTMLElement).closest('input,textarea,[contenteditable]');
@@ -198,7 +226,7 @@ window.addEventListener('keydown', event => {
 $('#paper-spread').addEventListener('pointerdown', event => {
   const target = event.target as HTMLElement, element = target.closest<HTMLElement>('.album-sticker'), article = element?.closest<HTMLElement>('[data-side]');
   if (!element || !article || event.button !== 0) return;
-  finishText(); selectElement(element); const e = selected(); if (e?.type !== 'sticker' || e.locked) return;
+  finishContinuous(); finishText(); selectElement(element); const e = selected(); if (e?.type !== 'sticker' || e.locked) return;
   event.preventDefault(); const before = copy(doc), start = copy(e), rect = article.getBoundingClientRect(), initial = { x: event.clientX, y: event.clientY }, operation = target.dataset.operation;
   const cx = rect.left + rect.width * e.x / 100, cy = rect.top + rect.height * e.y / 100;
   const angle = Math.atan2(initial.y - cy, initial.x - cx), distance = Math.max(1, Math.hypot(initial.x - cx, initial.y - cy));
@@ -219,7 +247,7 @@ $('#paper-spread').addEventListener('pointerdown', event => {
 });
 
 let uploadTarget: { kind: 'photo' | 'watermark' | 'sticker'; pageId: string; elementId: string };
-function chooseImages(kind: 'photo' | 'watermark' | 'sticker') { uploadTarget = { kind, pageId: page().id, elementId: selectedId }; const input = $<HTMLInputElement>('#image-input'); input.value = ''; input.multiple = kind === 'photo'; input.click(); }
+function chooseImages(kind: 'photo' | 'watermark' | 'sticker') { finishContinuous(); uploadTarget = { kind, pageId: page().id, elementId: selectedId }; const input = $<HTMLInputElement>('#image-input'); input.value = ''; input.multiple = kind === 'photo'; input.click(); }
 $<HTMLInputElement>('#image-input').onchange = async event => {
   const files = Array.from((event.target as HTMLInputElement).files ?? []), target = uploadTarget; if (!files.length) return;
   try {
@@ -241,7 +269,7 @@ $<HTMLInputElement>('#image-input').onchange = async event => {
   } catch (error) { notify((error as Error).message); }
 };
 async function output(publish: boolean) {
-  finishText(); notify(publish ? '正在优化照片并生成内容包…' : '正在生成可继续编辑的备份…');
+  finishContinuous(); finishText(); notify(publish ? '正在优化照片并生成内容包…' : '正在生成可继续编辑的备份…');
   try { const blob = await exportPackage(copy(doc), new Map(blobs), publish, await contentHash(published)); download(blob, publish ? 'album-content.json' : 'memory.tides.json'); notify(publish ? '内容包已下载；它不会自动发布。应用方法见使用说明。' : '备份已下载，包含页面和原始素材。'); }
   catch (error) { notify((error as Error).message); }
 }
@@ -271,7 +299,7 @@ $('#reload-draft').onclick = async () => {
   catch (error) { notify((error as Error).message); }
 };
 $('#preview').onclick = async () => {
-  finishText(); try { const preview = await optimizeAssets(copy(doc), new Map(blobs)); previewToken = await savePreview(preview.document, preview.assets); $('#preview-frame').setAttribute('src', `./album-preview.html?albumPreview=${previewToken}`); $('#preview-frame').style.width = '100%'; $<HTMLDialogElement>('#preview-dialog').showModal(); }
+  finishContinuous(); finishText(); try { const preview = await optimizeAssets(copy(doc), new Map(blobs)); previewToken = await savePreview(preview.document, preview.assets); $('#preview-frame').setAttribute('src', `./album-preview.html?albumPreview=${previewToken}`); $('#preview-frame').style.width = '100%'; $<HTMLDialogElement>('#preview-dialog').showModal(); }
   catch (error) { notify(`无法建立预览：${(error as Error).message}`); }
 };
 $('#preview-desktop').onclick = () => { $('#preview-frame').style.width = '100%'; };
@@ -280,8 +308,10 @@ $('#preview-room').onclick = () => { if (previewToken) window.open(`./?albumPrev
 $('#close-preview').onclick = () => $<HTMLDialogElement>('#preview-dialog').close();
 $('#preview-dialog').addEventListener('close', () => $('#preview-frame').setAttribute('src', 'about:blank'));
 window.addEventListener('message', event => { if (event.origin === location.origin && event.source === $<HTMLIFrameElement>('#preview-frame').contentWindow && event.data?.type === 'tides-close-preview') $<HTMLDialogElement>('#preview-dialog').close(); });
-window.addEventListener('beforeunload', event => { if (sequence !== savedSequence || saveTask) { event.preventDefault(); event.returnValue = ''; } });
-window.addEventListener('pagehide', event => { if (!event.persisted) { channel.close(); releaseUrls(); paperObserver.disconnect(); viewportObserver.disconnect(); } });
+window.addEventListener('beforeunload', event => { if (sequence !== savedSequence || saveTask || continuousBefore) { event.preventDefault(); event.returnValue = ''; } });
+window.addEventListener('pagehide', event => { if (!event.persisted) { cancelPreviewFrame(); channel.close(); releaseUrls(); paperObserver.disconnect(); viewportObserver.disconnect(); } });
+document.addEventListener('focusout', event => { if ((event.target as HTMLElement).matches('input[type=range],input[type=color]')) finishContinuous(); });
+window.addEventListener('blur', finishContinuous);
 document.addEventListener('visibilitychange', () => { if (document.hidden) { finishText(); void flushSave(); } });
 try {
   const stored = await readDraft();
