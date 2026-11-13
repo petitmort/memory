@@ -24,7 +24,7 @@
 | W01 Image生成 / 透明素材 | 是 | 是 | 已通过既有本机系统代理调用project-image / gpt-image-2成功；原1024px图拆出27张透明无损WebP、合计444,780B，外部白底 / 相邻碎片已去除并复看，源图与裁切脚本 / 哈希保留。首次启动与75秒直连超时为历史，未改全局网络或复制凭据 |
 | W02 水印图库 / 渲染 / 保存 | 是 | 是 | 27款图库 / SHA校验 / 普通素材去重、选择启用与开关已接入。实际图案像素 / 透明背景、保存重载 / 一次撤销 / 失败重试 / 迟到请求不覆盖 / 备份恢复 / 内容包 / PNG捕获 / 四阅读尺寸通过，无模型迁移 |
 | W03 类型 / 功能 / 生产与性能 | 是 | 是，本机范围 | 最终9个spec单次57 / 57（10新增）、类型 / 最终双构建、31生产图复看 / 四阅读尺寸及匹配CPU4×前后三次＋实际图片三次通过；失败与边界实录如下，不累计重叠测试 |
-| W04 文档 / 开发分支交付 | 是 | 进行中 | README / AGENTS / 使用说明及素材 / benchmark同批维护，最终校验后普通推送并核对；4174已更新但不重载用户草稿，不改main / docs / 部署 |
+| W04 文档 / 开发分支交付 | 是 | 是，本机与开发分支交付 | 实现 / 验收506966c已普通推送codex/album-watermark-library并核对远端；README / AGENTS / 使用说明 / 素材 / benchmark已同批交付，4174已更新，最后仅补三文档回执，不改main / docs / 部署 |
 
 共享Node24.14.0 / pnpm11.7.0 / store与document-python / Pillow、已有Playwright和系统Chrome均复用，无安装或新环境。开始仓库189,472KiB、共享store1,445,180KiB；原图保留output/imagegen，开发证据留`~/.codex/visualizations/2026/11/13/album-watermarks`。图像技能配置不读取到项目 / 文档 / 对话，产品只保存生成素材。
 
@@ -38,6 +38,14 @@
 - 保留Three.js超过500kB分包提示；生产原四章开册两条、自定义三次捕获六条同类型Chrome纹理复制警告。页面仍成功捕获 / 可读，不把它们写为零警告；没有重测Safari、实体手机、冷网络或长期运行。
 - 共享路径：`~/.nvm/versions/node/v24.14.0`、`~/.local/bin/project-node` / `project-pnpm`、`~/Library/pnpm/store/v11`、`~/.local/bin/document-python` / `~/.local/share/project-envs/document-tools`、`~/.local/bin/project-image`。依赖 / 锁 / 原服务均复用，无新增环境、安装、隔离例外或系统设置修改；磁盘 / 普通交付回执在W04补记。不改main / docs / 部署，不发布；作者已保存后自行刷新原4174地址，后续范围仍由作者指定。
 - W04交付前校验：本批`document-python .../album-watermarks/check-docs.py`通过5文档 / 157本地链接 / 41变更文件 / 27图哈希与alpha、历史及原内容 / 渲染器 / 锁 / 47项 / docs / main边界；`git diff --check`通过。`project-node --version` / `project-pnpm --version`实为v24.14.0 / 11.7.0。实现 / 构建与文档阶段`du -sk`仓库189,472→191,732KiB（净+2,260KiB，不含后续Git对象入库），store仍1,445,180KiB（变化0）；无待清理环境 / 缓存或隔离例外。普通推送完成后再补W04最终回执，不重复已通过的应用验收。
+
+### W04 最终交付回执
+
+2026-11-13北京时间 · 本地Codex · 回执基线`506966c`。实现与全部验收证据已普通推送新开发分支`codex/album-watermark-library`；`ls-remote`实际分支为`506966cae687a66913bd3597c274271dd2d6f0d9`，main仍`d9a4d3c998488467cfc65cd0c814a955425b5dd2`，无另一端新增需整合。推送直接成功，复用本机已有系统代理，仅命令级设置，不改全局网络。
+
+本次只补本文件 / README / AGENTS三份文档的状态和交付回执，源码 / 素材 / 测试 / benchmark / 构建身份保持，故只运行本批`document-python .../album-watermarks/check-docs.py --delivered`、三文件范围与`git diff --check`，不重复57项、构建、31图和性能。实现提交后`du -sk`仓库193,524KiB（相对开始189,472KiB净+4,052KiB，含Git对象，回执对象少量增长另计），共享store仍1,445,180KiB / 变化0；无安装或隔离例外。
+
+原5173 / 4173 / 4174服务保留；本机生产编辑器已为27图库版本，作者等「已保存到本机」后在原4174地址刷新即可，未自动重载或修改作者标签页 / 草稿。main / docs / 部署未改、未发布。W00–W04本机与开发分支交付完成；后续扩充或其他范围由作者指定。
 
 ## 交互流畅度修正（2026-11-13，当前批）
 
