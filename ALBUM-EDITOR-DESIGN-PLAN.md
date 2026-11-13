@@ -36,7 +36,7 @@
 | U02 图库 / 管理 | 是 | 是，本机范围 | 六分类 / 名称搜索 / 当前图案设置、章节管理分组；首轮筛选保留节点、不写草稿 / 历史与异步重建保持筛选通过 |
 | U02b 书页 / 搭配 | 是，作者明确选C | 是，本机范围 | 共享CSS纸感 / 相框精修与三套主动套用搭配；首轮三范围 / 一次撤销 / 重载 / 保留内容与原图取景 / 预览备份通过 |
 | U03 验证 / 性能 | 是 | 是，本机范围 | 最终10spec单次71 / 71、类型 / 双构建、43生产图及前后各3次CPU4×匹配通过；设备边界见下文 |
-| U04 文档 / 交付 | 是 | 进行中 | README / AGENTS / 使用说明与逐步记录同批，准备文档 / 范围校验、普通开发分支推送核对，不发布 |
+| U04 文档 / 交付 | 是 | 是，本机与开发分支交付 | 实现 / 验收5b05b2d已普通推送codex/album-editor-design，远端逐字核对；四文档 / 161链接、范围 / 历史与diff检查通过，不发布 |
 
 验证使用frontend-testing-debugging技能；Browser plugin not available，使用已有Playwright / 系统Chrome，测试只在隔离上下文，不读取或重载作者草稿。证据留`~/.codex/visualizations/2026/11/14/album-editor-design`；研究截图不当作改后验收。
 
@@ -81,3 +81,11 @@ project-pnpm exec playwright test tests/album-editor-design.spec.ts tests/album-
 复用`~/.nvm/versions/node/v24.14.0` / `~/.local/bin/project-node`、`~/.local/bin/project-pnpm`11.7.0及`~/Library/pnpm/store/v11`，Python / Pillow用`~/.local/bin/document-python`共享文档环境；复用原node_modules和5173 / 4173 / 4174，不安装包 / 新运行时或项目vendor，没有隔离例外。package / package-lock逐字保持，未调用AI或新增图像素材。
 
 开始仓库193,656KiB，验收与benchmark落盘后193,768KiB（+112KiB，尚未计本批Git提交对象）；共享store均1,445,180KiB、变化0。后续交付快照单独记录，不以可视化证据目录或历史项目缓存冒充依赖安装成本。原四章 / 成稿null / 47项 / public / output / 水印素材 / main / docs / 部署及既有模型、渲染器TS均保持。当前只交付开发分支，不发布；下一步由作者保存原稿后刷新原4174预览，选择搭配或指定新的优化范围。
+
+## 开发分支交付回执
+
+实现 / 验收提交`5b05b2d2b433c2ab7daabb64597033253cb3e513`已普通推送`codex/album-editor-design`，`ls-remote`逐字确认同一哈希；main仍`d9a4d3c998488467cfc65cd0c814a955425b5dd2`。交付前fetch成功，水印来源分支仍500fbd3，无新增需整合；未合main、未改docs或部署，未发布。
+
+本回执以5b05b2d为基线只补方案 / README / AGENTS / 使用说明四文档；文档校验`document-python ~/.codex/visualizations/2026/11/14/album-editor-design/check-docs.py --delivered`核查本批文件白名单、四文档链接、旧历史、模型 / renderer TS / 47项 / 锁 / 公开素材 / main / 部署与原始验收数据，并运行`git diff --check`。四文档验收不等于重复应用测试；本回执未重新运行已通过的71项、构建或生产检查，七份源码 / 测试SHA-256与验收数据一致。
+
+实现提交后的磁盘快照：仓库193,996KiB，相对开始193,656KiB为+340KiB（包含本批代码 / 文档 / benchmark与Git对象，未含最后回执提交对象）；共享store仍1,445,180KiB、变化0。可视化证据与截图留在本机可视化目录，无依赖 / 新环境 / 隔离例外。原5173 / 4173 / 4174保留，4174指向已验收的dist-editor；没有打开、读取或重载作者原有草稿标签页。下一步由作者确认已保存后自行刷新原4174地址，体验工作台与三套搭配；不自动续做其他组、改写回忆或发布。
