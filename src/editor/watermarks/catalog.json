@@ -1,0 +1,218 @@
+[
+  {
+    "key": "paw",
+    "name": "软软猫爪",
+    "file": "paw.webp",
+    "sha256": "cc358414580ee969520eb87daf360d54b41e1acea166f85ded17fbae71105ecd",
+    "width": 232,
+    "height": 215
+  },
+  {
+    "key": "blossom",
+    "name": "樱粉小花",
+    "file": "blossom.webp",
+    "sha256": "f108228a80355b2b28ca56449c84da08294945b9542b04a87eae3327a14ed3cf",
+    "width": 139,
+    "height": 139
+  },
+  {
+    "key": "blue-flower",
+    "name": "蓝色小花",
+    "file": "blue-flower.webp",
+    "sha256": "25433b3d6105a6d443c0777c757babc2e4fff861e32bf13239680e11dd5d74dc",
+    "width": 93,
+    "height": 92
+  },
+  {
+    "key": "lilac-shell",
+    "name": "紫色贝壳",
+    "file": "lilac-shell.webp",
+    "sha256": "76e6f1400ab81289a916ffa7311505484731630ae76c19c108415a2dd10e7207",
+    "width": 205,
+    "height": 176
+  },
+  {
+    "key": "soft-star",
+    "name": "奶油星星",
+    "file": "soft-star.webp",
+    "sha256": "e76f3679584654b2267f74ca127854f22e5e03d703f31b13e395df441d81dae4",
+    "width": 100,
+    "height": 96
+  },
+  {
+    "key": "paired-leaves",
+    "name": "一对绿叶",
+    "file": "paired-leaves.webp",
+    "sha256": "3cff84bce29a3b5677385e7b93c7d0c361ce47bfe9a81bf6a2e2f66bd9c30252",
+    "width": 180,
+    "height": 147
+  },
+  {
+    "key": "leaf",
+    "name": "清新叶片",
+    "file": "leaf.webp",
+    "sha256": "bb093c66f093f4def1ed856b986189f54fb462fd99b6e682e8b7687dccf80855",
+    "width": 105,
+    "height": 145
+  },
+  {
+    "key": "peach-flower",
+    "name": "蜜桃花朵",
+    "file": "peach-flower.webp",
+    "sha256": "b4333d6fe74e473a0ba1e4fe88456cab3d281771c7bfd7af4f56be714d1e64a3",
+    "width": 183,
+    "height": 173
+  },
+  {
+    "key": "small-heart",
+    "name": "粉色爱心",
+    "file": "small-heart.webp",
+    "sha256": "c8814ce498dc66e8c8ebf15a71221870a90046fe6aff1e8c109721e46b7121cd",
+    "width": 94,
+    "height": 84
+  },
+  {
+    "key": "pink-bow",
+    "name": "粉色蝴蝶结",
+    "file": "pink-bow.webp",
+    "sha256": "ce79c616f073d954a8984e029a1d8ce4e4a0e8b9029b8f7ac4600ea42a2f1b8d",
+    "width": 229,
+    "height": 162
+  },
+  {
+    "key": "stitched-star",
+    "name": "缝线星星",
+    "file": "stitched-star.webp",
+    "sha256": "a7c4145e57d25382676678a96e74fa15f7dd30a9aaab95209a95ac27bbdf7029",
+    "width": 180,
+    "height": 176
+  },
+  {
+    "key": "gold-star",
+    "name": "金色大星星",
+    "file": "gold-star.webp",
+    "sha256": "9556f6ffab9191c14ea7982cfe88f183f8a77a242e6697f2a255ae5ca579549b",
+    "width": 224,
+    "height": 223
+  },
+  {
+    "key": "stitched-paw",
+    "name": "虚线猫爪",
+    "file": "stitched-paw.webp",
+    "sha256": "51d7af14a6c79bef867d32863636aaf25a4f74ce094df90d927a2a8aef5c00de",
+    "width": 239,
+    "height": 213
+  },
+  {
+    "key": "purple-flower",
+    "name": "紫色小花",
+    "file": "purple-flower.webp",
+    "sha256": "1c6009c9685db7542097b9e340b3665b042f5797a5e4caef00e165ad22912a26",
+    "width": 88,
+    "height": 88
+  },
+  {
+    "key": "round-flower",
+    "name": "圆瓣小花",
+    "file": "round-flower.webp",
+    "sha256": "3658eba191f028290ec2339fee9ad3df00275fb5192051e58b816c7945a3961c",
+    "width": 130,
+    "height": 123
+  },
+  {
+    "key": "pink-flower",
+    "name": "五瓣小花",
+    "file": "pink-flower.webp",
+    "sha256": "a5fa22760db70a17c1a5b56174e83acf71136e83c5961b9b1e2e5cc20a3994ee",
+    "width": 141,
+    "height": 141
+  },
+  {
+    "key": "wide-leaves",
+    "name": "嫩绿双叶",
+    "file": "wide-leaves.webp",
+    "sha256": "32124b38d33f3ff730be867c913a1b2454555c28f8f7d46d5cd350b523b33038",
+    "width": 173,
+    "height": 127
+  },
+  {
+    "key": "twig",
+    "name": "轻轻枝叶",
+    "file": "twig.webp",
+    "sha256": "f069692373a4201f7fac6cf7b49b363a1d387346a4da3540ca58993a8ad6c662",
+    "width": 125,
+    "height": 198
+  },
+  {
+    "key": "pink-shell",
+    "name": "粉色贝壳",
+    "file": "pink-shell.webp",
+    "sha256": "e19359502de045a93b0501a4b071869f716308d5d06442e6c3f95d5b5921a723",
+    "width": 216,
+    "height": 187
+  },
+  {
+    "key": "blue-bow",
+    "name": "格纹蝴蝶结",
+    "file": "blue-bow.webp",
+    "sha256": "283499c2cfd55cb5e876b2c07cbe8b19fa3c9421f5f413536ad1bd74a07bf208",
+    "width": 178,
+    "height": 129
+  },
+  {
+    "key": "blue-shell",
+    "name": "蓝色贝壳",
+    "file": "blue-shell.webp",
+    "sha256": "1ca364153638e88a443c5c5fc46feb7f6adbf46067ea906bbc91181212bba529",
+    "width": 116,
+    "height": 101
+  },
+  {
+    "key": "blue-heart",
+    "name": "蓝色爱心",
+    "file": "blue-heart.webp",
+    "sha256": "9edbad320568f0dbf026c759d8b42e65eee490ed4a93b2a3d83e4f3a48ab75bc",
+    "width": 96,
+    "height": 86
+  },
+  {
+    "key": "cat",
+    "name": "微笑小猫",
+    "file": "cat.webp",
+    "sha256": "feb1d35d12ee8b20cdaef47783dba6fc2f74467b967a792ca13f1f63a8a03aa4",
+    "width": 252,
+    "height": 186
+  },
+  {
+    "key": "large-heart",
+    "name": "暖暖爱心",
+    "file": "large-heart.webp",
+    "sha256": "3be957c94e740106c37e10823f2dfa3d4280d9e456254dc048eae7a94769229e",
+    "width": 116,
+    "height": 111
+  },
+  {
+    "key": "tall-leaf",
+    "name": "一片新绿",
+    "file": "tall-leaf.webp",
+    "sha256": "973cbc23e8b98249e604f1d848c7881bfd196114552b76297e9c710d4ee0a938",
+    "width": 95,
+    "height": 147
+  },
+  {
+    "key": "sprout",
+    "name": "小小嫩芽",
+    "file": "sprout.webp",
+    "sha256": "d1ae91d2567e1043b90b065b951aa67922d4683f63c660dee8b95c0bc07c2695",
+    "width": 131,
+    "height": 76
+  },
+  {
+    "key": "little-star",
+    "name": "小金星",
+    "file": "little-star.webp",
+    "sha256": "838c2ba3338766bd9e216ac5d05535da6658a9b44042468e60ac35e24968c98e",
+    "width": 108,
+    "height": 109
+  }
+]

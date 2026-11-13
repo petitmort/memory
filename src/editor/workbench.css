@@ -90,6 +90,14 @@ input[type=checkbox] { width: 20px; height: 20px; accent-color: #788f76; }
 .editor-range { display: flex; align-items: center; gap: 7px; }
 .editor-range input { flex: 1; width: 100%; }
 .editor-range output { min-width: 30px; text-align: right; font-size: 11px; }
+.editor-watermark-current { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 7px; background: #ecefe3; color: #52684f; }
+.editor-watermark-swatch { flex: 0 0 52px; width: 52px; height: 52px; background: #fffdf6; border-radius: 5px; }
+.editor-watermark-swatch img,.editor-watermark-swatch svg { display: block; width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+.editor-watermark-gallery { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); align-content: start; gap: 6px; margin: 12px 0; padding: 2px; max-height: 310px; overflow-y: auto; overscroll-behavior: contain; }
+.editor-watermark-choice { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 0; min-height: 90px; padding: 6px 3px; font-size: 11px; line-height: 1.6; white-space: normal; }
+.editor-watermark-choice img { display: block; width: 100%; height: 58px; object-fit: contain; }
+.editor-watermark-choice[aria-pressed=true] { border-color: #758f6c; background: #e1ead5; box-shadow: inset 0 0 0 1px #8ba37e; }
+.editor-watermark-choice[aria-busy=true] { opacity: .6; }
 .editor-muted,.editor-properties p { font-size: 11px; color: #919980; line-height: 1.8; }
 .editor-properties details > button { margin: 8px 0; width: 100%; }
 .editor-element-settings { background: #e9eedf80; padding: 0 9px 10px !important; margin: 0 -9px 14px; border: 1px solid #cad7bb; border-radius: 6px; }

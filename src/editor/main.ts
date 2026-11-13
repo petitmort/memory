@@ -6,6 +6,7 @@ import { createProperties, refreshProperties } from './properties';
 import { AlbumHistory } from './history';
 import { readDraft, saveDraft, savePreview, watchDraft, AlbumConflictError, type AssetBlobs } from './storage';
 import { contentHash, exportPackage, importPackage, importImage, optimizeAssets, download } from './packages';
+import { loadWatermark, imageHash, type WatermarkPreset } from './watermark-library';
 
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const app = $('#editor-app');
@@ -22,6 +23,7 @@ let storageVersion = 0, sequence = 0, savedSequence = 0, saveError: Error | unde
 let continuousBefore: AlbumDocument | undefined, previewFrame = 0;
 let inspector: { document: AlbumDocument; page: AlbumPage; selected?: AlbumElement; key: string; host: HTMLElement } | undefined;
 let libraryDocument: AlbumDocument | undefined, libraryKey = '';
+let watermarkRequest = 0, loadingWatermark = '';
 let composing = false, textBefore: AlbumDocument | undefined, textDirty = false, previewToken = '', initialized = false;
 const history = new AlbumHistory(), urls = new Map<string, string>(), viewport = $('#canvas-stage');
 const exportImage = document.createElement('button'); exportImage.textContent = '导出当前单页 PNG'; exportImage.id = 'export-page-image'; $('#export-content').after(exportImage);
@@ -96,12 +98,13 @@ function renderProperties() {
     onScope(value) { finishContinuous(); scope = value; renderProperties(); },
     change(action, preview) { if (preview) previewChange(action); else commit(action); },
     style(key, value, preview) {
+      watermarkRequest++; loadingWatermark = '';
       const update = () => {
         const pages = scope === 'book' ? flatten(doc).flatMap(v => v.spread.pages) : scope === 'spread' ? doc.chapters[chapterIndex].spreads[spreadIndex].pages : [currentPage];
         for (const p of pages) { const template = p.layout.template; (p as any)[key] = copy(value); if (key === 'layout' && template !== p.layout.template) applyTemplate(p, p.layout.template); }
       };
       if (preview) previewChange(update); else commit(update);
-    }, upload: chooseImages,
+    }, upload: chooseImages, chooseWatermark, loadingWatermark: () => loadingWatermark, resolveAsset,
   });
   properties.querySelectorAll('details').forEach(details => { const value = expanded.get(details.querySelector('summary')!.textContent); if (value !== undefined) details.open = value; });
   $('#properties').replaceChildren(properties); inspector = { document: doc, page: currentPage, selected: currentElement, key, host: properties };
@@ -247,7 +250,35 @@ $('#paper-spread').addEventListener('pointerdown', event => {
 });
 
 let uploadTarget: { kind: 'photo' | 'watermark' | 'sticker'; pageId: string; elementId: string };
-function chooseImages(kind: 'photo' | 'watermark' | 'sticker') { finishContinuous(); uploadTarget = { kind, pageId: page().id, elementId: selectedId }; const input = $<HTMLInputElement>('#image-input'); input.value = ''; input.multiple = kind === 'photo'; input.click(); }
+async function chooseWatermark(preset: WatermarkPreset) {
+  finishContinuous(); finishText();
+  const request = ++watermarkRequest, source = doc;
+  const pages = scope === 'book' ? flatten(doc).flatMap(v => v.spread.pages) : scope === 'spread' ? doc.chapters[chapterIndex].spreads[spreadIndex].pages : [page()];
+  loadingWatermark = preset.key; renderProperties();
+  try {
+    const imported = await importImage(await loadWatermark(preset));
+    imported.asset.id = preset.assetId;
+    const existing = doc.assets.find(asset => asset.id === preset.assetId), previous = blobs.get(preset.assetId);
+    // A restored backup may have reused the deterministic ID with other bytes.
+    // Keep that original and give the catalog image a fresh ID instead.
+    if ((existing && !previous) || (previous && await imageHash(previous) !== preset.sha256)) imported.asset.id = id();
+    if (request !== watermarkRequest || doc !== source) return;
+    const targets = pages.filter(p => flatten(doc).some(v => v.spread.pages.includes(p)));
+    if (!targets.length) return;
+    const reuse = doc.assets.some(asset => asset.id === imported.asset.id);
+    if (!reuse && (doc.assets.length >= 300 || doc.assets.reduce((total, a) => total + (blobs.get(a.id)?.size ?? 0), 0) + imported.blob.size > 120 * 1024 * 1024)) throw new Error('本册素材已达上限，请先备份或另建分册。');
+    commit(() => {
+      if (!reuse) { doc.assets.push(imported.asset); blobs.set(imported.asset.id, imported.blob); }
+      for (const p of targets) {
+        p.watermark.assetId = imported.asset.id;
+        if (!p.watermark.opacity) p.watermark.opacity = .28;
+        p.watermark.size = Math.max(88, p.watermark.size);
+      }
+    });
+  } catch (error) { if (request === watermarkRequest) notify((error as Error).message); }
+  finally { if (request === watermarkRequest) { loadingWatermark = ''; renderProperties(); } }
+}
+function chooseImages(kind: 'photo' | 'watermark' | 'sticker') { finishContinuous(); watermarkRequest++; loadingWatermark = ''; uploadTarget = { kind, pageId: page().id, elementId: selectedId }; const input = $<HTMLInputElement>('#image-input'); input.value = ''; input.multiple = kind === 'photo'; input.click(); }
 $<HTMLInputElement>('#image-input').onchange = async event => {
   const files = Array.from((event.target as HTMLInputElement).files ?? []), target = uploadTarget; if (!files.length) return;
   try {

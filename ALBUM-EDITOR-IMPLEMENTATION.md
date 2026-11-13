@@ -14,6 +14,31 @@
 
 不替作者写真实回忆、不默认替换四章、不改变场景或 `MODIFICATION-PLAN.md`（仍27 / 47、05.08待真实内容）。不改 main / docs / 部署，不发布。
 
+## 生成水印素材与可见性修正（2026-11-13，当前批）
+
+来源：本地Codex；作者反馈「水印没效果」，明确要求调用Image生成现有及更多水印并实际加入。基线`f37ab13`，开发分支`codex/album-watermark-library`。本批授权生成并接入图案，覆盖首版AI功能另行选择的待授权边界；只作开发期素材生成，不增加公开AI服务 / 凭据或自动发布。保留现有草稿、单次拖动撤销、备份 / 预览及原内容，47项仍27 / 47。
+
+| 步骤 | 是否修改 | 是否完成 | 当前步骤 / 下一步 |
+| --- | --- | --- | --- |
+| W00 复现 / 接入设计 | 是，诊断与记录 | 是 | 真实4174隔离新稿轮换五主题都为opacity0 / 0图案；显示层本身保留有效。选择后自动开启，显式开关 / 状态与图片缩略图库按原素材模型接入，无旧稿迁移 |
+| W01 Image生成 / 透明素材 | 是 | 是 | 已通过既有本机系统代理调用project-image / gpt-image-2成功；原1024px图拆出27张透明无损WebP、合计444,780B，外部白底 / 相邻碎片已去除并复看，源图与裁切脚本 / 哈希保留。首次启动与75秒直连超时为历史，未改全局网络或复制凭据 |
+| W02 水印图库 / 渲染 / 保存 | 是 | 是 | 27款图库 / SHA校验 / 普通素材去重、选择启用与开关已接入。实际图案像素 / 透明背景、保存重载 / 一次撤销 / 失败重试 / 迟到请求不覆盖 / 备份恢复 / 内容包 / PNG捕获 / 四阅读尺寸通过，无模型迁移 |
+| W03 类型 / 功能 / 生产与性能 | 是 | 是，本机范围 | 最终9个spec单次57 / 57（10新增）、类型 / 最终双构建、31生产图复看 / 四阅读尺寸及匹配CPU4×前后三次＋实际图片三次通过；失败与边界实录如下，不累计重叠测试 |
+| W04 文档 / 开发分支交付 | 是 | 进行中 | README / AGENTS / 使用说明及素材 / benchmark同批维护，最终校验后普通推送并核对；4174已更新但不重载用户草稿，不改main / docs / 部署 |
+
+共享Node24.14.0 / pnpm11.7.0 / store与document-python / Pillow、已有Playwright和系统Chrome均复用，无安装或新环境。开始仓库189,472KiB、共享store1,445,180KiB；原图保留output/imagegen，开发证据留`~/.codex/visualizations/2026/11/13/album-watermarks`。图像技能配置不读取到项目 / 文档 / 对话，产品只保存生成素材。
+
+### W01–W03 实现与实际验证
+
+- 生成使用技能`~/.codex/skills/juapi-gpt-image-2/SKILL.md`，原提示词「生成这些还有更多水印：猫爪、小花、贝壳、星星、叶片。类似手帐本，可爱图案。」；`project-image generate --prompt ... --background transparent --out output/imagegen/album-watermarks.png --force`。首个后台启动失败，直连重试75秒连接超时；发现既有系统代理未被CLI继承后，仅生成进程复用它，63秒成功，无全局配置变化。返回1024×1024 RGB，实际外部去白底 / 分离相邻碎片后27款均有透明边缘和实质图案；深色 / 米白联系表已查看。原图 / 裁切与alpha脚本`scripts/prepare-watermarks.py`、逐张哈希 / 尺寸与来源说明保留，不读取其他图像通道。
+- `watermark-library.ts`只从作者入口引用27张图，SHA-256验证 / Promise重用；`main.ts`按原资产模型将原色图片Blob加入当前页 / 跨页 / 整本，重复款复用ID，异步响应有文档 / 序号保护。与已有备份同ID但字节不同（包括只在撤销历史内）时用新ID，不替换旧原图。没有改模型 / 共享渲染器、原四章或编造回忆。`properties.ts`当前图案 / 启用开关和图库三列缩略图，常用透明度 / 尺寸放图库前；最多310px滚动图库，避免27图把控件推到极长页面。
+- `project-pnpm typecheck`通过；最终`build` / `build:editor`均包含类型检查并通过。`project-pnpm exec playwright test tests/album-watermarks.spec.ts tests/album-editor-smoothness.spec.ts tests/album-editor.spec.ts tests/album-document.spec.ts tests/album-storage.spec.ts tests/album-reading.spec.ts tests/album-content-package.spec.ts tests/reader-duplex.spec.ts tests/book-transition.spec.ts`最终9个spec单次57 / 57；前置20项、首轮8 / 9和中间56 / 56不累计。新用例检查27图有实际像素 / 透明角、选择启用 / 开关 / 文本不变 / 保存重载、范围与去重 / 单次撤销、失败重试 / 迟到选择、备份恢复 / 原图历史、捕获像素变化 / PNG和优化包 / 四阅读尺寸。首次最后一个新用例过早取异步预览src（null）失败，改为等真实src后最终通过，无生产绕行。
+- Browser plugin not available，采用已有Playwright / 系统Chrome、隔离上下文；未读取或重载作者草稿。最终生产脚本`production-qa.mjs`31图全部复看：六纸张、四排布、0 / 28 / 100%、六相框、四阅读尺寸320×568 / 390×844 / 844×390 / 1440×1000，导出PNG、原四章与自定义房间开册 / 续读 / 返回通过。工作台URL / 标题 / 非空 / 无错误覆盖正确；pageerror / console.error / 失败请求均0。默认访客未请求图库、编辑器或手写字体，工作台闲置5秒0RAF / 0WebGL。初次外部脚本对关闭面板内全部懒加载图等待decode而停滞，已中断并把就绪范围改为书页图像，最终完整通过，不改应用的按需加载策略。
+- CPU4× / 1440×1000 / 12跨页 / 2400×1800测试图、手写字库预载：原五主题匹配前后三次，纸张 / 字体24次操作主线程中位4.8→5.1ms（+0.3ms）、P95中位5.7→6.2ms、双RAF观察中位均约33.2ms；实际生成猫爪重复铺底补测三次中位4.8ms / P95中位6.4ms。三个after与三个实际图片轮次均零Element / 图像 / 控件移除、零记录长任务，按住滑块八值23–84逐值显示，原图片 / 控件保留。实际图片补测不同于原五主题基线，不作相同画面的提速比较；不是FPS / INP / 冷网络或实机结论。原始9轮和生产结果保存为`benchmark/album-watermarks-2026-11-13.json`，本机脚本 / 31图 / 联系表留上述证据目录。
+- 保留Three.js超过500kB分包提示；生产原四章开册两条、自定义三次捕获六条同类型Chrome纹理复制警告。页面仍成功捕获 / 可读，不把它们写为零警告；没有重测Safari、实体手机、冷网络或长期运行。
+- 共享路径：`~/.nvm/versions/node/v24.14.0`、`~/.local/bin/project-node` / `project-pnpm`、`~/Library/pnpm/store/v11`、`~/.local/bin/document-python` / `~/.local/share/project-envs/document-tools`、`~/.local/bin/project-image`。依赖 / 锁 / 原服务均复用，无新增环境、安装、隔离例外或系统设置修改；磁盘 / 普通交付回执在W04补记。不改main / docs / 部署，不发布；作者已保存后自行刷新原4174地址，后续范围仍由作者指定。
+- W04交付前校验：本批`document-python .../album-watermarks/check-docs.py`通过5文档 / 157本地链接 / 41变更文件 / 27图哈希与alpha、历史及原内容 / 渲染器 / 锁 / 47项 / docs / main边界；`git diff --check`通过。`project-node --version` / `project-pnpm --version`实为v24.14.0 / 11.7.0。实现 / 构建与文档阶段`du -sk`仓库189,472→191,732KiB（净+2,260KiB，不含后续Git对象入库），store仍1,445,180KiB（变化0）；无待清理环境 / 缓存或隔离例外。普通推送完成后再补W04最终回执，不重复已通过的应用验收。
+
 ## 交互流畅度修正（2026-11-13，当前批）
 
 来源：本地Codex；作者反馈「有点卡、不顺畅」，并确认主要在切换纸张、字体、拖动滑块。基线`1f5b797`，独立分支`codex/album-editor-smoothness`。授权修复本编辑器，不重新选择A或请求逐步许可；保留现有纸纹 / 字体 / 相框、草稿与原图、撤销 / 保存 / 预览和访客边界，不发布。
