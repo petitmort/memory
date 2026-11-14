@@ -1,4 +1,4 @@
-"""Append recorded, previously unused Image motifs without rewriting old art.
+"""Append recorded Image motifs without rewriting previously delivered art.
 
 Run with shared document-python. No network, image-provider config or credentials.
 --check verifies deterministic output without modifying images or the catalog.
@@ -25,12 +25,13 @@ module.loader.exec_module(helpers)
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
+    parser.add_argument('--spec', type=Path, default=SPEC, help='Recorded batch to rebuild; defaults to the delivered 60 motifs')
     parser.add_argument('--sheet', type=Path)
     args = parser.parse_args()
-    spec = json.loads(SPEC.read_text())
+    spec = json.loads(args.spec.read_text())
     catalog = json.loads((DEST / 'catalog.json').read_text())
     old = [p for p in catalog if p['key'] not in {c['key'] for c in spec['crops']}]
-    # Preserve all metadata, file bytes and order for the delivered 109 motifs.
+    # Preserve metadata, file bytes and order for all previously delivered art.
     baseline = json.dumps(old[:spec['preservedCount']], ensure_ascii=False, sort_keys=True)
     assert hashlib.sha256(baseline.encode()).hexdigest() == spec['preservedCatalogSha256'], 'Changed delivered catalog'
     for p in old:
@@ -43,15 +44,26 @@ def main():
         assert sources[key].size == (1024, 1024)
     new, images = [], []
     for item in spec['crops']:
-        crop = sources[item['sheet']].crop(item['bounds']).convert('RGB')
+        source = sources[item['sheet']]
+        native_alpha = 'A' in source.getbands() and source.getchannel('A').getextrema()[0] < 255
+        crop = source.crop(item['bounds']).convert('RGBA' if native_alpha else 'RGB')
         # Explicit source-space masks only remove neighbouring decorations.
         for bounds in item.get('exclude', []):
             x, y = item['bounds'][:2]
-            ImageDraw.Draw(crop).rectangle([bounds[0] - x, bounds[1] - y, bounds[2] - x, bounds[3] - y], fill='white')
-        padded = Image.new('RGB', (crop.width + 24, crop.height + 24), 'white')
-        padded.paste(crop, (12, 12))
-        image = helpers.original.transparent_crop(padded, item['key'], (0, 0, padded.width, padded.height))
-        if item.get('whiteInterior'):
+            ImageDraw.Draw(crop).rectangle([bounds[0] - x, bounds[1] - y, bounds[2] - x, bounds[3] - y], fill=(0, 0, 0, 0) if native_alpha else 'white')
+        if native_alpha:
+            # A real alpha channel already distinguishes white fur from the
+            # exterior. Keep its opacity and colors; discard near-zero noise.
+            crop.putalpha(crop.getchannel('A').point(lambda a: 0 if a < 8 else a))
+            crop = crop.crop(crop.getchannel('A').getbbox())
+            crop.thumbnail((240, 240), Image.Resampling.LANCZOS)
+            image = Image.new('RGBA', (crop.width + 12, crop.height + 12))
+            image.paste(crop, (6, 6))
+        else:
+            padded = Image.new('RGB', (crop.width + 24, crop.height + 24), 'white')
+            padded.paste(crop, (12, 12))
+            image = helpers.original.transparent_crop(padded, item['key'], (0, 0, padded.width, padded.height))
+        if item.get('whiteInterior') and not native_alpha:
             image = helpers.retain_white_fur(image)
         if item.get('parts') != 'all':
             image = helpers.principal_motif(image, keep_parts=item.get('parts') == 'inner')

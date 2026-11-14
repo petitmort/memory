@@ -1,0 +1,5787 @@
+{
+  "date": "2026-11-14",
+  "baseline": "d3cc00d37b433586e13f81f139c2838287e5742d",
+  "branch": "codex/watermark-variants",
+  "scope": "192 independent motifs from 8 newly returned gpt-image-2 source sheets; prior169 bytes/metadata/order preserved; no runtime TS changes or publishing",
+  "assets": {
+    "count": 361,
+    "bytes": 8838388,
+    "added": 192,
+    "addedBytes": 4896720,
+    "categories": {
+      "cats": 82,
+      "flowers": 53,
+      "seaside": 35,
+      "stars": 48,
+      "leaves": 58,
+      "sentiments": 85
+    },
+    "addedCategories": {
+      "cats": 53,
+      "flowers": 20,
+      "seaside": 16,
+      "stars": 24,
+      "leaves": 29,
+      "sentiments": 50
+    },
+    "prior169ExactMetadataAndBytes": true,
+    "sources": [
+      {
+        "key": "cats-a",
+        "file": "output/imagegen/watermark-expansion-cats-a.png",
+        "sha256": "51912b128b7751c82833484e11f8ba5a7e7f0b3b181663c9303b41b177d91912",
+        "bytes": 1330628,
+        "mode": "RGB",
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "key": "cats-b",
+        "file": "output/imagegen/watermark-expansion-cats-b.png",
+        "sha256": "270da9e3440cf5684537b5419cf8ea5db2e34dcca346dd74a6a55d113de4f15e",
+        "bytes": 1783825,
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "key": "flowers",
+        "file": "output/imagegen/watermark-expansion-flowers.png",
+        "sha256": "b53f8f06aa5a29d4c4e6ec11fad89787bb36874a94e0646f9e61a44cdcf208d7",
+        "bytes": 1388219,
+        "mode": "RGB",
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "key": "seaside",
+        "file": "output/imagegen/watermark-expansion-seaside.png",
+        "sha256": "9ec73e136294d1f94bbd21ee56642bb6529399cebfe6fee782c76551aa943140",
+        "bytes": 1271830,
+        "mode": "RGB",
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "key": "stars",
+        "file": "output/imagegen/watermark-expansion-stars.png",
+        "sha256": "b9a61c946ba069203fdf5be3bb75dbee1063299a1b9416923ec55b13e0ed7ec1",
+        "bytes": 1118022,
+        "mode": "RGB",
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "key": "leaves",
+        "file": "output/imagegen/watermark-expansion-leaves.png",
+        "sha256": "70c58a690259b8941eda4eba9a30e9032b554cc2afc3961f372b2cf4ce1658ec",
+        "bytes": 1246222,
+        "mode": "RGB",
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "key": "bows",
+        "file": "output/imagegen/watermark-expansion-bows.png",
+        "sha256": "27c1f6460bbb6b54450e3d1d700664097aa61d93451085f2810bf4c5be0df064",
+        "bytes": 1382281,
+        "mode": "RGB",
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "key": "hearts",
+        "file": "output/imagegen/watermark-expansion-hearts.png",
+        "sha256": "0ca32c09254ac99e4a996ab7e0e6bf9f4f4bb4856ed7962893624fcf223eb0eb",
+        "bytes": 1169180,
+        "mode": "RGB",
+        "size": [
+          1024,
+          1024
+        ]
+      }
+    ],
+    "details": [
+      {
+        "key": "paw",
+        "width": 232,
+        "height": 215,
+        "bytes": 34772,
+        "alphaBounds": [
+          6,
+          6,
+          226,
+          209
+        ]
+      },
+      {
+        "key": "blossom",
+        "width": 139,
+        "height": 139,
+        "bytes": 14822,
+        "alphaBounds": [
+          6,
+          6,
+          133,
+          133
+        ]
+      },
+      {
+        "key": "blue-flower",
+        "width": 93,
+        "height": 92,
+        "bytes": 6778,
+        "alphaBounds": [
+          6,
+          6,
+          87,
+          86
+        ]
+      },
+      {
+        "key": "lilac-shell",
+        "width": 205,
+        "height": 176,
+        "bytes": 26864,
+        "alphaBounds": [
+          6,
+          6,
+          199,
+          170
+        ]
+      },
+      {
+        "key": "soft-star",
+        "width": 100,
+        "height": 96,
+        "bytes": 8050,
+        "alphaBounds": [
+          6,
+          6,
+          94,
+          90
+        ]
+      },
+      {
+        "key": "paired-leaves",
+        "width": 180,
+        "height": 147,
+        "bytes": 14378,
+        "alphaBounds": [
+          6,
+          6,
+          174,
+          141
+        ]
+      },
+      {
+        "key": "leaf",
+        "width": 105,
+        "height": 145,
+        "bytes": 10550,
+        "alphaBounds": [
+          6,
+          6,
+          99,
+          139
+        ]
+      },
+      {
+        "key": "peach-flower",
+        "width": 183,
+        "height": 173,
+        "bytes": 23696,
+        "alphaBounds": [
+          6,
+          6,
+          177,
+          167
+        ]
+      },
+      {
+        "key": "small-heart",
+        "width": 94,
+        "height": 84,
+        "bytes": 5798,
+        "alphaBounds": [
+          6,
+          6,
+          88,
+          78
+        ]
+      },
+      {
+        "key": "pink-bow",
+        "width": 229,
+        "height": 162,
+        "bytes": 22314,
+        "alphaBounds": [
+          6,
+          6,
+          223,
+          156
+        ]
+      },
+      {
+        "key": "stitched-star",
+        "width": 180,
+        "height": 176,
+        "bytes": 22294,
+        "alphaBounds": [
+          6,
+          6,
+          174,
+          170
+        ]
+      },
+      {
+        "key": "gold-star",
+        "width": 224,
+        "height": 223,
+        "bytes": 34432,
+        "alphaBounds": [
+          6,
+          6,
+          218,
+          217
+        ]
+      },
+      {
+        "key": "stitched-paw",
+        "width": 239,
+        "height": 213,
+        "bytes": 25142,
+        "alphaBounds": [
+          6,
+          6,
+          233,
+          207
+        ]
+      },
+      {
+        "key": "purple-flower",
+        "width": 88,
+        "height": 88,
+        "bytes": 6062,
+        "alphaBounds": [
+          6,
+          6,
+          82,
+          82
+        ]
+      },
+      {
+        "key": "round-flower",
+        "width": 130,
+        "height": 123,
+        "bytes": 11788,
+        "alphaBounds": [
+          6,
+          6,
+          124,
+          117
+        ]
+      },
+      {
+        "key": "pink-flower",
+        "width": 141,
+        "height": 141,
+        "bytes": 15382,
+        "alphaBounds": [
+          6,
+          6,
+          135,
+          135
+        ]
+      },
+      {
+        "key": "wide-leaves",
+        "width": 173,
+        "height": 127,
+        "bytes": 13994,
+        "alphaBounds": [
+          6,
+          6,
+          167,
+          121
+        ]
+      },
+      {
+        "key": "twig",
+        "width": 125,
+        "height": 198,
+        "bytes": 13176,
+        "alphaBounds": [
+          6,
+          6,
+          119,
+          192
+        ]
+      },
+      {
+        "key": "pink-shell",
+        "width": 216,
+        "height": 187,
+        "bytes": 30134,
+        "alphaBounds": [
+          6,
+          6,
+          210,
+          181
+        ]
+      },
+      {
+        "key": "blue-bow",
+        "width": 178,
+        "height": 129,
+        "bytes": 18798,
+        "alphaBounds": [
+          6,
+          6,
+          172,
+          123
+        ]
+      },
+      {
+        "key": "blue-shell",
+        "width": 116,
+        "height": 101,
+        "bytes": 8278,
+        "alphaBounds": [
+          6,
+          6,
+          110,
+          95
+        ]
+      },
+      {
+        "key": "blue-heart",
+        "width": 96,
+        "height": 86,
+        "bytes": 6374,
+        "alphaBounds": [
+          6,
+          6,
+          90,
+          80
+        ]
+      },
+      {
+        "key": "cat",
+        "width": 252,
+        "height": 186,
+        "bytes": 34774,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          180
+        ]
+      },
+      {
+        "key": "large-heart",
+        "width": 116,
+        "height": 111,
+        "bytes": 9954,
+        "alphaBounds": [
+          6,
+          6,
+          110,
+          105
+        ]
+      },
+      {
+        "key": "tall-leaf",
+        "width": 95,
+        "height": 147,
+        "bytes": 10496,
+        "alphaBounds": [
+          6,
+          6,
+          89,
+          141
+        ]
+      },
+      {
+        "key": "sprout",
+        "width": 131,
+        "height": 76,
+        "bytes": 6522,
+        "alphaBounds": [
+          6,
+          6,
+          125,
+          70
+        ]
+      },
+      {
+        "key": "little-star",
+        "width": 108,
+        "height": 109,
+        "bytes": 9158,
+        "alphaBounds": [
+          6,
+          6,
+          102,
+          103
+        ]
+      },
+      {
+        "key": "variant-cat-tabby-look",
+        "width": 231,
+        "height": 248,
+        "bytes": 55186,
+        "alphaBounds": [
+          6,
+          6,
+          225,
+          242
+        ]
+      },
+      {
+        "key": "variant-cat-ginger-sleep",
+        "width": 252,
+        "height": 160,
+        "bytes": 47622,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          154
+        ]
+      },
+      {
+        "key": "variant-cat-tuxedo-look",
+        "width": 193,
+        "height": 245,
+        "bytes": 47192,
+        "alphaBounds": [
+          6,
+          6,
+          187,
+          239
+        ]
+      },
+      {
+        "key": "variant-cat-tabby-yawn",
+        "width": 250,
+        "height": 174,
+        "bytes": 38554,
+        "alphaBounds": [
+          6,
+          6,
+          244,
+          168
+        ]
+      },
+      {
+        "key": "variant-cat-tabby-smile",
+        "width": 213,
+        "height": 241,
+        "bytes": 48514,
+        "alphaBounds": [
+          6,
+          6,
+          207,
+          235
+        ]
+      },
+      {
+        "key": "variant-cat-white-peek",
+        "width": 229,
+        "height": 171,
+        "bytes": 35276,
+        "alphaBounds": [
+          6,
+          6,
+          223,
+          165
+        ]
+      },
+      {
+        "key": "variant-cat-ginger-look",
+        "width": 196,
+        "height": 251,
+        "bytes": 51612,
+        "alphaBounds": [
+          6,
+          6,
+          190,
+          245
+        ]
+      },
+      {
+        "key": "variant-cat-tabby-sleep",
+        "width": 239,
+        "height": 157,
+        "bytes": 41024,
+        "alphaBounds": [
+          6,
+          6,
+          233,
+          151
+        ]
+      },
+      {
+        "key": "variant-cat-calico-back",
+        "width": 194,
+        "height": 252,
+        "bytes": 46960,
+        "alphaBounds": [
+          6,
+          6,
+          188,
+          246
+        ]
+      },
+      {
+        "key": "variant-cat-tabby-wave",
+        "width": 175,
+        "height": 243,
+        "bytes": 40470,
+        "alphaBounds": [
+          6,
+          6,
+          169,
+          237
+        ]
+      },
+      {
+        "key": "variant-paw-white",
+        "width": 196,
+        "height": 199,
+        "bytes": 26432,
+        "alphaBounds": [
+          6,
+          6,
+          190,
+          193
+        ]
+      },
+      {
+        "key": "variant-paw-calico",
+        "width": 193,
+        "height": 207,
+        "bytes": 31180,
+        "alphaBounds": [
+          6,
+          6,
+          187,
+          201
+        ]
+      },
+      {
+        "key": "variant-paw-tabby",
+        "width": 191,
+        "height": 209,
+        "bytes": 30554,
+        "alphaBounds": [
+          6,
+          6,
+          185,
+          203
+        ]
+      },
+      {
+        "key": "variant-paw-ink",
+        "width": 197,
+        "height": 198,
+        "bytes": 29452,
+        "alphaBounds": [
+          6,
+          6,
+          191,
+          192
+        ]
+      },
+      {
+        "key": "variant-paw-orange",
+        "width": 195,
+        "height": 215,
+        "bytes": 31050,
+        "alphaBounds": [
+          6,
+          6,
+          189,
+          209
+        ]
+      },
+      {
+        "key": "variant-paw-fluffy",
+        "width": 203,
+        "height": 209,
+        "bytes": 27714,
+        "alphaBounds": [
+          6,
+          6,
+          197,
+          203
+        ]
+      },
+      {
+        "key": "variant-paw-black",
+        "width": 195,
+        "height": 210,
+        "bytes": 30166,
+        "alphaBounds": [
+          6,
+          6,
+          189,
+          204
+        ]
+      },
+      {
+        "key": "variant-paw-bow",
+        "width": 193,
+        "height": 220,
+        "bytes": 27762,
+        "alphaBounds": [
+          6,
+          6,
+          187,
+          214
+        ]
+      },
+      {
+        "key": "variant-flower-blue-round",
+        "width": 123,
+        "height": 118,
+        "bytes": 11916,
+        "alphaBounds": [
+          6,
+          6,
+          117,
+          112
+        ]
+      },
+      {
+        "key": "variant-flower-pink-five",
+        "width": 171,
+        "height": 161,
+        "bytes": 23462,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          155
+        ]
+      },
+      {
+        "key": "variant-flower-purple-five",
+        "width": 143,
+        "height": 136,
+        "bytes": 16930,
+        "alphaBounds": [
+          6,
+          6,
+          137,
+          130
+        ]
+      },
+      {
+        "key": "variant-flower-tulip-check",
+        "width": 137,
+        "height": 164,
+        "bytes": 19478,
+        "alphaBounds": [
+          6,
+          6,
+          131,
+          158
+        ]
+      },
+      {
+        "key": "variant-flower-yellow-loose",
+        "width": 139,
+        "height": 133,
+        "bytes": 14680,
+        "alphaBounds": [
+          6,
+          6,
+          133,
+          127
+        ]
+      },
+      {
+        "key": "variant-flower-coral-check",
+        "width": 129,
+        "height": 168,
+        "bytes": 17496,
+        "alphaBounds": [
+          6,
+          6,
+          123,
+          162
+        ]
+      },
+      {
+        "key": "variant-flower-tulip-coral",
+        "width": 153,
+        "height": 217,
+        "bytes": 25006,
+        "alphaBounds": [
+          6,
+          6,
+          147,
+          211
+        ]
+      },
+      {
+        "key": "variant-flower-blue-small",
+        "width": 101,
+        "height": 95,
+        "bytes": 7530,
+        "alphaBounds": [
+          6,
+          6,
+          95,
+          89
+        ]
+      },
+      {
+        "key": "variant-flower-purple-round",
+        "width": 171,
+        "height": 161,
+        "bytes": 24672,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          155
+        ]
+      },
+      {
+        "key": "variant-flower-pink-small",
+        "width": 131,
+        "height": 124,
+        "bytes": 12852,
+        "alphaBounds": [
+          6,
+          6,
+          125,
+          118
+        ]
+      },
+      {
+        "key": "variant-flower-yellow-round",
+        "width": 168,
+        "height": 166,
+        "bytes": 21860,
+        "alphaBounds": [
+          6,
+          6,
+          162,
+          160
+        ]
+      },
+      {
+        "key": "variant-flower-tulip-side",
+        "width": 163,
+        "height": 192,
+        "bytes": 24506,
+        "alphaBounds": [
+          6,
+          6,
+          157,
+          186
+        ]
+      },
+      {
+        "key": "variant-shell-pink-fan",
+        "width": 252,
+        "height": 228,
+        "bytes": 53338,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          222
+        ]
+      },
+      {
+        "key": "variant-shell-peach-spiral",
+        "width": 169,
+        "height": 227,
+        "bytes": 27064,
+        "alphaBounds": [
+          6,
+          6,
+          163,
+          221
+        ]
+      },
+      {
+        "key": "variant-shell-blue-round",
+        "width": 240,
+        "height": 189,
+        "bytes": 39376,
+        "alphaBounds": [
+          6,
+          6,
+          234,
+          183
+        ]
+      },
+      {
+        "key": "variant-shell-gold-spike",
+        "width": 214,
+        "height": 214,
+        "bytes": 29012,
+        "alphaBounds": [
+          6,
+          6,
+          208,
+          208
+        ]
+      },
+      {
+        "key": "variant-shell-starfish",
+        "width": 226,
+        "height": 221,
+        "bytes": 28840,
+        "alphaBounds": [
+          6,
+          6,
+          220,
+          215
+        ]
+      },
+      {
+        "key": "variant-shell-speckled",
+        "width": 198,
+        "height": 209,
+        "bytes": 35190,
+        "alphaBounds": [
+          6,
+          6,
+          192,
+          203
+        ]
+      },
+      {
+        "key": "variant-shell-lilac-fan",
+        "width": 234,
+        "height": 210,
+        "bytes": 38182,
+        "alphaBounds": [
+          6,
+          6,
+          228,
+          204
+        ]
+      },
+      {
+        "key": "variant-shell-aqua-spiral",
+        "width": 181,
+        "height": 226,
+        "bytes": 24554,
+        "alphaBounds": [
+          6,
+          6,
+          175,
+          220
+        ]
+      },
+      {
+        "key": "variant-shell-cream-fan",
+        "width": 245,
+        "height": 223,
+        "bytes": 41362,
+        "alphaBounds": [
+          6,
+          6,
+          239,
+          217
+        ]
+      },
+      {
+        "key": "variant-shell-pearl",
+        "width": 244,
+        "height": 223,
+        "bytes": 43990,
+        "alphaBounds": [
+          6,
+          6,
+          238,
+          217
+        ]
+      },
+      {
+        "key": "variant-shell-aqua-fan",
+        "width": 226,
+        "height": 206,
+        "bytes": 37818,
+        "alphaBounds": [
+          6,
+          6,
+          220,
+          200
+        ]
+      },
+      {
+        "key": "variant-shell-purple-spiral",
+        "width": 210,
+        "height": 230,
+        "bytes": 24474,
+        "alphaBounds": [
+          6,
+          6,
+          204,
+          224
+        ]
+      },
+      {
+        "key": "variant-star-gold-smile",
+        "width": 192,
+        "height": 181,
+        "bytes": 26622,
+        "alphaBounds": [
+          6,
+          6,
+          186,
+          175
+        ]
+      },
+      {
+        "key": "variant-star-blue-wink",
+        "width": 192,
+        "height": 179,
+        "bytes": 25422,
+        "alphaBounds": [
+          6,
+          6,
+          186,
+          173
+        ]
+      },
+      {
+        "key": "variant-star-purple-smile",
+        "width": 192,
+        "height": 180,
+        "bytes": 27676,
+        "alphaBounds": [
+          6,
+          6,
+          186,
+          174
+        ]
+      },
+      {
+        "key": "variant-star-pink-blush",
+        "width": 194,
+        "height": 187,
+        "bytes": 26402,
+        "alphaBounds": [
+          6,
+          6,
+          188,
+          181
+        ]
+      },
+      {
+        "key": "variant-star-gold-cutout",
+        "width": 177,
+        "height": 176,
+        "bytes": 22914,
+        "alphaBounds": [
+          6,
+          6,
+          171,
+          170
+        ]
+      },
+      {
+        "key": "variant-star-blue-dots",
+        "width": 198,
+        "height": 184,
+        "bytes": 26596,
+        "alphaBounds": [
+          6,
+          6,
+          192,
+          178
+        ]
+      },
+      {
+        "key": "variant-star-green-smile",
+        "width": 192,
+        "height": 182,
+        "bytes": 25778,
+        "alphaBounds": [
+          6,
+          6,
+          186,
+          176
+        ]
+      },
+      {
+        "key": "variant-star-purple-sleep",
+        "width": 205,
+        "height": 186,
+        "bytes": 27696,
+        "alphaBounds": [
+          6,
+          6,
+          199,
+          180
+        ]
+      },
+      {
+        "key": "variant-star-gold-shy",
+        "width": 210,
+        "height": 195,
+        "bytes": 30920,
+        "alphaBounds": [
+          6,
+          6,
+          204,
+          189
+        ]
+      },
+      {
+        "key": "variant-star-pink-stitch",
+        "width": 198,
+        "height": 185,
+        "bytes": 26530,
+        "alphaBounds": [
+          6,
+          6,
+          192,
+          179
+        ]
+      },
+      {
+        "key": "variant-star-blue-orbit",
+        "width": 212,
+        "height": 178,
+        "bytes": 28848,
+        "alphaBounds": [
+          6,
+          6,
+          206,
+          172
+        ]
+      },
+      {
+        "key": "variant-star-cream-bow",
+        "width": 196,
+        "height": 176,
+        "bytes": 25154,
+        "alphaBounds": [
+          6,
+          6,
+          190,
+          170
+        ]
+      },
+      {
+        "key": "variant-leaf-heart-dark",
+        "width": 153,
+        "height": 168,
+        "bytes": 24214,
+        "alphaBounds": [
+          6,
+          6,
+          147,
+          162
+        ]
+      },
+      {
+        "key": "variant-leaf-sprig-olive",
+        "width": 138,
+        "height": 137,
+        "bytes": 12750,
+        "alphaBounds": [
+          6,
+          6,
+          132,
+          131
+        ]
+      },
+      {
+        "key": "variant-leaf-monstera-dark",
+        "width": 252,
+        "height": 217,
+        "bytes": 64662,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          211
+        ]
+      },
+      {
+        "key": "variant-leaf-eucalyptus",
+        "width": 158,
+        "height": 193,
+        "bytes": 21120,
+        "alphaBounds": [
+          6,
+          6,
+          152,
+          187
+        ]
+      },
+      {
+        "key": "variant-leaf-heart-light",
+        "width": 194,
+        "height": 228,
+        "bytes": 42188,
+        "alphaBounds": [
+          6,
+          6,
+          188,
+          222
+        ]
+      },
+      {
+        "key": "variant-leaf-sprig-wide",
+        "width": 229,
+        "height": 222,
+        "bytes": 28662,
+        "alphaBounds": [
+          6,
+          6,
+          223,
+          216
+        ]
+      },
+      {
+        "key": "variant-leaf-curly-vine",
+        "width": 232,
+        "height": 154,
+        "bytes": 19614,
+        "alphaBounds": [
+          6,
+          6,
+          226,
+          148
+        ]
+      },
+      {
+        "key": "variant-leaf-branch-long",
+        "width": 188,
+        "height": 224,
+        "bytes": 26726,
+        "alphaBounds": [
+          6,
+          6,
+          182,
+          218
+        ]
+      },
+      {
+        "key": "variant-leaf-yellow-buds",
+        "width": 120,
+        "height": 127,
+        "bytes": 10608,
+        "alphaBounds": [
+          6,
+          6,
+          114,
+          121
+        ]
+      },
+      {
+        "key": "variant-leaf-heart-bright",
+        "width": 158,
+        "height": 175,
+        "bytes": 24918,
+        "alphaBounds": [
+          6,
+          6,
+          152,
+          169
+        ]
+      },
+      {
+        "key": "variant-leaf-single",
+        "width": 116,
+        "height": 148,
+        "bytes": 12546,
+        "alphaBounds": [
+          6,
+          6,
+          110,
+          142
+        ]
+      },
+      {
+        "key": "variant-leaf-small-sprig",
+        "width": 106,
+        "height": 124,
+        "bytes": 9184,
+        "alphaBounds": [
+          6,
+          6,
+          100,
+          118
+        ]
+      },
+      {
+        "key": "variant-bow-pink-gingham",
+        "width": 252,
+        "height": 199,
+        "bytes": 47828,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          193
+        ]
+      },
+      {
+        "key": "variant-bow-cream-heart",
+        "width": 227,
+        "height": 207,
+        "bytes": 38302,
+        "alphaBounds": [
+          6,
+          6,
+          221,
+          201
+        ]
+      },
+      {
+        "key": "variant-bow-pink-soft",
+        "width": 241,
+        "height": 228,
+        "bytes": 42718,
+        "alphaBounds": [
+          6,
+          6,
+          235,
+          222
+        ]
+      },
+      {
+        "key": "variant-bow-blue-lace",
+        "width": 220,
+        "height": 203,
+        "bytes": 41496,
+        "alphaBounds": [
+          6,
+          6,
+          214,
+          197
+        ]
+      },
+      {
+        "key": "variant-bow-pink-satin",
+        "width": 250,
+        "height": 209,
+        "bytes": 41180,
+        "alphaBounds": [
+          6,
+          6,
+          244,
+          203
+        ]
+      },
+      {
+        "key": "variant-bow-blue-ribbon",
+        "width": 190,
+        "height": 198,
+        "bytes": 21888,
+        "alphaBounds": [
+          6,
+          6,
+          184,
+          192
+        ]
+      },
+      {
+        "key": "variant-bow-pink-dots",
+        "width": 219,
+        "height": 175,
+        "bytes": 31910,
+        "alphaBounds": [
+          6,
+          6,
+          213,
+          169
+        ]
+      },
+      {
+        "key": "variant-bow-cream-small",
+        "width": 204,
+        "height": 203,
+        "bytes": 24128,
+        "alphaBounds": [
+          6,
+          6,
+          198,
+          197
+        ]
+      },
+      {
+        "key": "variant-heart-floral",
+        "width": 191,
+        "height": 150,
+        "bytes": 30268,
+        "alphaBounds": [
+          6,
+          6,
+          185,
+          144
+        ]
+      },
+      {
+        "key": "variant-heart-pink-dots",
+        "width": 119,
+        "height": 107,
+        "bytes": 11314,
+        "alphaBounds": [
+          6,
+          6,
+          113,
+          101
+        ]
+      },
+      {
+        "key": "variant-heart-lace-bow",
+        "width": 187,
+        "height": 147,
+        "bytes": 28800,
+        "alphaBounds": [
+          6,
+          6,
+          181,
+          141
+        ]
+      },
+      {
+        "key": "variant-heart-pink-soft",
+        "width": 119,
+        "height": 109,
+        "bytes": 11948,
+        "alphaBounds": [
+          6,
+          6,
+          113,
+          103
+        ]
+      },
+      {
+        "key": "variant-heart-blue-gingham",
+        "width": 154,
+        "height": 134,
+        "bytes": 20888,
+        "alphaBounds": [
+          6,
+          6,
+          148,
+          128
+        ]
+      },
+      {
+        "key": "variant-heart-pink-gingham",
+        "width": 134,
+        "height": 115,
+        "bytes": 14500,
+        "alphaBounds": [
+          6,
+          6,
+          128,
+          109
+        ]
+      },
+      {
+        "key": "variant-heart-pink-stitch",
+        "width": 112,
+        "height": 97,
+        "bytes": 11536,
+        "alphaBounds": [
+          6,
+          6,
+          106,
+          91
+        ]
+      },
+      {
+        "key": "variant-heart-wings",
+        "width": 181,
+        "height": 89,
+        "bytes": 11830,
+        "alphaBounds": [
+          6,
+          6,
+          175,
+          83
+        ]
+      },
+      {
+        "key": "extra-paw-calico-tilt",
+        "width": 198,
+        "height": 205,
+        "bytes": 29116,
+        "alphaBounds": [
+          6,
+          6,
+          192,
+          199
+        ]
+      },
+      {
+        "key": "extra-paw-gray-tilt",
+        "width": 200,
+        "height": 215,
+        "bytes": 31044,
+        "alphaBounds": [
+          6,
+          6,
+          194,
+          209
+        ]
+      },
+      {
+        "key": "extra-paw-cream-wave",
+        "width": 182,
+        "height": 219,
+        "bytes": 27576,
+        "alphaBounds": [
+          6,
+          6,
+          176,
+          213
+        ]
+      },
+      {
+        "key": "extra-paw-ginger-cream",
+        "width": 197,
+        "height": 213,
+        "bytes": 31354,
+        "alphaBounds": [
+          6,
+          6,
+          191,
+          207
+        ]
+      },
+      {
+        "key": "extra-paw-dark-cream",
+        "width": 195,
+        "height": 208,
+        "bytes": 29294,
+        "alphaBounds": [
+          6,
+          6,
+          189,
+          202
+        ]
+      },
+      {
+        "key": "extra-paw-tabby-white",
+        "width": 194,
+        "height": 205,
+        "bytes": 35144,
+        "alphaBounds": [
+          6,
+          6,
+          188,
+          199
+        ]
+      },
+      {
+        "key": "extra-paw-cream-patches",
+        "width": 204,
+        "height": 206,
+        "bytes": 28966,
+        "alphaBounds": [
+          6,
+          6,
+          198,
+          200
+        ]
+      },
+      {
+        "key": "extra-paw-blue-white",
+        "width": 198,
+        "height": 203,
+        "bytes": 28158,
+        "alphaBounds": [
+          6,
+          6,
+          192,
+          197
+        ]
+      },
+      {
+        "key": "extra-flower-check-wide",
+        "width": 174,
+        "height": 161,
+        "bytes": 24810,
+        "alphaBounds": [
+          6,
+          6,
+          168,
+          155
+        ]
+      },
+      {
+        "key": "extra-flower-blue-wide",
+        "width": 137,
+        "height": 133,
+        "bytes": 14024,
+        "alphaBounds": [
+          6,
+          6,
+          131,
+          127
+        ]
+      },
+      {
+        "key": "extra-flower-purple-check",
+        "width": 147,
+        "height": 139,
+        "bytes": 18856,
+        "alphaBounds": [
+          6,
+          6,
+          141,
+          133
+        ]
+      },
+      {
+        "key": "extra-flower-red-tulip",
+        "width": 109,
+        "height": 155,
+        "bytes": 13626,
+        "alphaBounds": [
+          6,
+          6,
+          103,
+          149
+        ]
+      },
+      {
+        "key": "extra-flower-pink-check-small",
+        "width": 133,
+        "height": 130,
+        "bytes": 15946,
+        "alphaBounds": [
+          6,
+          6,
+          127,
+          124
+        ]
+      },
+      {
+        "key": "extra-flower-daisy-pair",
+        "width": 113,
+        "height": 91,
+        "bytes": 8350,
+        "alphaBounds": [
+          6,
+          6,
+          107,
+          85
+        ]
+      },
+      {
+        "key": "extra-flower-daisy-cluster",
+        "width": 92,
+        "height": 96,
+        "bytes": 7230,
+        "alphaBounds": [
+          6,
+          6,
+          86,
+          90
+        ]
+      },
+      {
+        "key": "extra-flower-pink-daisy",
+        "width": 75,
+        "height": 72,
+        "bytes": 4466,
+        "alphaBounds": [
+          6,
+          6,
+          69,
+          66
+        ]
+      },
+      {
+        "key": "extra-flower-cream-daisy",
+        "width": 64,
+        "height": 70,
+        "bytes": 3972,
+        "alphaBounds": [
+          6,
+          6,
+          58,
+          64
+        ]
+      },
+      {
+        "key": "extra-flower-gray-daisy",
+        "width": 94,
+        "height": 90,
+        "bytes": 6548,
+        "alphaBounds": [
+          6,
+          6,
+          88,
+          84
+        ]
+      },
+      {
+        "key": "extra-flower-green-cream",
+        "width": 85,
+        "height": 80,
+        "bytes": 5758,
+        "alphaBounds": [
+          6,
+          6,
+          79,
+          74
+        ]
+      },
+      {
+        "key": "extra-flower-cream-round",
+        "width": 86,
+        "height": 82,
+        "bytes": 5804,
+        "alphaBounds": [
+          6,
+          6,
+          80,
+          76
+        ]
+      },
+      {
+        "key": "extra-flower-gold-cream",
+        "width": 85,
+        "height": 78,
+        "bytes": 5888,
+        "alphaBounds": [
+          6,
+          6,
+          79,
+          72
+        ]
+      },
+      {
+        "key": "extra-flower-cream-side",
+        "width": 74,
+        "height": 73,
+        "bytes": 4684,
+        "alphaBounds": [
+          6,
+          6,
+          68,
+          67
+        ]
+      },
+      {
+        "key": "extra-flower-tiny-cream",
+        "width": 80,
+        "height": 68,
+        "bytes": 4808,
+        "alphaBounds": [
+          6,
+          6,
+          74,
+          62
+        ]
+      },
+      {
+        "key": "extra-shell-pink-spiral",
+        "width": 203,
+        "height": 205,
+        "bytes": 34494,
+        "alphaBounds": [
+          6,
+          6,
+          197,
+          199
+        ]
+      },
+      {
+        "key": "extra-shell-blue-ridge",
+        "width": 221,
+        "height": 196,
+        "bytes": 33360,
+        "alphaBounds": [
+          6,
+          6,
+          215,
+          190
+        ]
+      },
+      {
+        "key": "extra-shell-nautilus",
+        "width": 201,
+        "height": 213,
+        "bytes": 33580,
+        "alphaBounds": [
+          6,
+          6,
+          195,
+          207
+        ]
+      },
+      {
+        "key": "extra-shell-lilac-round",
+        "width": 220,
+        "height": 207,
+        "bytes": 35014,
+        "alphaBounds": [
+          6,
+          6,
+          214,
+          201
+        ]
+      },
+      {
+        "key": "extra-star-shooting",
+        "width": 251,
+        "height": 149,
+        "bytes": 31946,
+        "alphaBounds": [
+          6,
+          6,
+          245,
+          143
+        ]
+      },
+      {
+        "key": "extra-star-gold-stripes",
+        "width": 190,
+        "height": 180,
+        "bytes": 28352,
+        "alphaBounds": [
+          6,
+          6,
+          184,
+          174
+        ]
+      },
+      {
+        "key": "extra-star-blue-cutout",
+        "width": 184,
+        "height": 166,
+        "bytes": 22510,
+        "alphaBounds": [
+          6,
+          6,
+          178,
+          160
+        ]
+      },
+      {
+        "key": "extra-star-purple-orbit",
+        "width": 231,
+        "height": 171,
+        "bytes": 34700,
+        "alphaBounds": [
+          6,
+          6,
+          225,
+          165
+        ]
+      },
+      {
+        "key": "extra-star-gold-happy",
+        "width": 203,
+        "height": 189,
+        "bytes": 28222,
+        "alphaBounds": [
+          6,
+          6,
+          197,
+          183
+        ]
+      },
+      {
+        "key": "extra-star-purple-heart",
+        "width": 190,
+        "height": 186,
+        "bytes": 25072,
+        "alphaBounds": [
+          6,
+          6,
+          184,
+          180
+        ]
+      },
+      {
+        "key": "extra-star-green-wink",
+        "width": 205,
+        "height": 186,
+        "bytes": 27900,
+        "alphaBounds": [
+          6,
+          6,
+          199,
+          180
+        ]
+      },
+      {
+        "key": "extra-star-gold-shine",
+        "width": 197,
+        "height": 186,
+        "bytes": 30254,
+        "alphaBounds": [
+          6,
+          6,
+          191,
+          180
+        ]
+      },
+      {
+        "key": "extra-leaf-long-sprig",
+        "width": 130,
+        "height": 214,
+        "bytes": 21762,
+        "alphaBounds": [
+          6,
+          6,
+          124,
+          208
+        ]
+      },
+      {
+        "key": "extra-leaf-gold-bud",
+        "width": 131,
+        "height": 118,
+        "bytes": 10768,
+        "alphaBounds": [
+          6,
+          6,
+          125,
+          112
+        ]
+      },
+      {
+        "key": "extra-leaf-olive-oval",
+        "width": 74,
+        "height": 89,
+        "bytes": 6172,
+        "alphaBounds": [
+          6,
+          6,
+          68,
+          83
+        ]
+      },
+      {
+        "key": "extra-leaf-light-point",
+        "width": 90,
+        "height": 91,
+        "bytes": 7662,
+        "alphaBounds": [
+          6,
+          6,
+          84,
+          85
+        ]
+      },
+      {
+        "key": "extra-leaf-diagonal-sprig",
+        "width": 151,
+        "height": 175,
+        "bytes": 15108,
+        "alphaBounds": [
+          6,
+          6,
+          145,
+          169
+        ]
+      },
+      {
+        "key": "extra-leaf-soft-vine",
+        "width": 223,
+        "height": 158,
+        "bytes": 28156,
+        "alphaBounds": [
+          6,
+          6,
+          217,
+          152
+        ]
+      },
+      {
+        "key": "extra-leaf-lime-stripes",
+        "width": 111,
+        "height": 76,
+        "bytes": 7734,
+        "alphaBounds": [
+          6,
+          6,
+          105,
+          70
+        ]
+      },
+      {
+        "key": "extra-leaf-three-olive",
+        "width": 112,
+        "height": 78,
+        "bytes": 6362,
+        "alphaBounds": [
+          6,
+          6,
+          106,
+          72
+        ]
+      },
+      {
+        "key": "extra-leaf-little-point",
+        "width": 75,
+        "height": 63,
+        "bytes": 3860,
+        "alphaBounds": [
+          6,
+          6,
+          69,
+          57
+        ]
+      },
+      {
+        "key": "extra-leaf-green-small",
+        "width": 75,
+        "height": 65,
+        "bytes": 3918,
+        "alphaBounds": [
+          6,
+          6,
+          69,
+          59
+        ]
+      },
+      {
+        "key": "extra-leaf-young-sprout",
+        "width": 85,
+        "height": 84,
+        "bytes": 4370,
+        "alphaBounds": [
+          6,
+          6,
+          79,
+          78
+        ]
+      },
+      {
+        "key": "extra-bow-check-small",
+        "width": 179,
+        "height": 166,
+        "bytes": 26770,
+        "alphaBounds": [
+          6,
+          6,
+          173,
+          160
+        ]
+      },
+      {
+        "key": "extra-heart-linked",
+        "width": 122,
+        "height": 86,
+        "bytes": 7654,
+        "alphaBounds": [
+          6,
+          6,
+          116,
+          80
+        ]
+      },
+      {
+        "key": "extra-heart-pink-shiny",
+        "width": 109,
+        "height": 98,
+        "bytes": 9544,
+        "alphaBounds": [
+          6,
+          6,
+          103,
+          92
+        ]
+      },
+      {
+        "key": "extra-heart-small-doily",
+        "width": 146,
+        "height": 129,
+        "bytes": 20764,
+        "alphaBounds": [
+          6,
+          6,
+          140,
+          123
+        ]
+      },
+      {
+        "key": "extra-bow-heart-flowing",
+        "width": 225,
+        "height": 236,
+        "bytes": 29720,
+        "alphaBounds": [
+          6,
+          6,
+          219,
+          230
+        ]
+      },
+      {
+        "key": "extra-bow-lace-wide",
+        "width": 218,
+        "height": 189,
+        "bytes": 38984,
+        "alphaBounds": [
+          6,
+          6,
+          212,
+          183
+        ]
+      },
+      {
+        "key": "extra-bow-ribbon-flowing",
+        "width": 201,
+        "height": 252,
+        "bytes": 36802,
+        "alphaBounds": [
+          6,
+          6,
+          195,
+          246
+        ]
+      },
+      {
+        "key": "extra-bow-blue-flower",
+        "width": 181,
+        "height": 186,
+        "bytes": 27894,
+        "alphaBounds": [
+          6,
+          6,
+          175,
+          180
+        ]
+      },
+      {
+        "key": "extra-bow-pink-double",
+        "width": 157,
+        "height": 201,
+        "bytes": 26340,
+        "alphaBounds": [
+          6,
+          6,
+          151,
+          195
+        ]
+      },
+      {
+        "key": "extra-bow-little-tilt",
+        "width": 136,
+        "height": 95,
+        "bytes": 9154,
+        "alphaBounds": [
+          6,
+          6,
+          130,
+          89
+        ]
+      },
+      {
+        "key": "extra-bow-tiny-ribbon",
+        "width": 104,
+        "height": 68,
+        "bytes": 5938,
+        "alphaBounds": [
+          6,
+          6,
+          98,
+          62
+        ]
+      },
+      {
+        "key": "extra-heart-dotted-trail",
+        "width": 171,
+        "height": 60,
+        "bytes": 3948,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          54
+        ]
+      },
+      {
+        "key": "extra-heart-plain-pink",
+        "width": 75,
+        "height": 68,
+        "bytes": 4166,
+        "alphaBounds": [
+          6,
+          6,
+          69,
+          62
+        ]
+      },
+      {
+        "key": "extra-heart-outline-tall",
+        "width": 73,
+        "height": 78,
+        "bytes": 3920,
+        "alphaBounds": [
+          6,
+          6,
+          67,
+          72
+        ]
+      },
+      {
+        "key": "fresh-cat-ginger-smile",
+        "width": 158,
+        "height": 178,
+        "bytes": 25476,
+        "alphaBounds": [
+          6,
+          6,
+          152,
+          172
+        ]
+      },
+      {
+        "key": "fresh-cat-gray-bow",
+        "width": 158,
+        "height": 180,
+        "bytes": 26676,
+        "alphaBounds": [
+          6,
+          6,
+          152,
+          174
+        ]
+      },
+      {
+        "key": "fresh-cat-white-crown",
+        "width": 159,
+        "height": 178,
+        "bytes": 22910,
+        "alphaBounds": [
+          6,
+          6,
+          153,
+          172
+        ]
+      },
+      {
+        "key": "fresh-cat-black-red-bow",
+        "width": 157,
+        "height": 180,
+        "bytes": 25664,
+        "alphaBounds": [
+          6,
+          6,
+          151,
+          174
+        ]
+      },
+      {
+        "key": "fresh-cat-tabby-side",
+        "width": 146,
+        "height": 181,
+        "bytes": 23660,
+        "alphaBounds": [
+          6,
+          6,
+          140,
+          175
+        ]
+      },
+      {
+        "key": "fresh-cat-calico-back",
+        "width": 121,
+        "height": 181,
+        "bytes": 20392,
+        "alphaBounds": [
+          6,
+          6,
+          115,
+          175
+        ]
+      },
+      {
+        "key": "fresh-cat-gray-stretch",
+        "width": 174,
+        "height": 169,
+        "bytes": 23248,
+        "alphaBounds": [
+          6,
+          6,
+          168,
+          163
+        ]
+      },
+      {
+        "key": "fresh-cat-ginger-nap",
+        "width": 185,
+        "height": 109,
+        "bytes": 20364,
+        "alphaBounds": [
+          6,
+          6,
+          179,
+          103
+        ]
+      },
+      {
+        "key": "fresh-cat-white-belly",
+        "width": 164,
+        "height": 149,
+        "bytes": 17038,
+        "alphaBounds": [
+          6,
+          6,
+          158,
+          143
+        ]
+      },
+      {
+        "key": "fresh-cat-tabby-peek",
+        "width": 177,
+        "height": 109,
+        "bytes": 18866,
+        "alphaBounds": [
+          6,
+          6,
+          171,
+          103
+        ]
+      },
+      {
+        "key": "fresh-cat-tuxedo-nap",
+        "width": 190,
+        "height": 126,
+        "bytes": 23208,
+        "alphaBounds": [
+          6,
+          6,
+          184,
+          120
+        ]
+      },
+      {
+        "key": "fresh-cat-gray-yarn",
+        "width": 172,
+        "height": 155,
+        "bytes": 24474,
+        "alphaBounds": [
+          6,
+          6,
+          166,
+          149
+        ]
+      },
+      {
+        "key": "fresh-cat-colorpoint-look",
+        "width": 144,
+        "height": 179,
+        "bytes": 22206,
+        "alphaBounds": [
+          6,
+          6,
+          138,
+          173
+        ]
+      },
+      {
+        "key": "fresh-cat-ginger-leap",
+        "width": 185,
+        "height": 148,
+        "bytes": 19626,
+        "alphaBounds": [
+          6,
+          6,
+          179,
+          142
+        ]
+      },
+      {
+        "key": "fresh-cat-black-scarf",
+        "width": 131,
+        "height": 169,
+        "bytes": 22004,
+        "alphaBounds": [
+          6,
+          6,
+          125,
+          163
+        ]
+      },
+      {
+        "key": "fresh-cat-white-blue-bow",
+        "width": 141,
+        "height": 171,
+        "bytes": 18376,
+        "alphaBounds": [
+          6,
+          6,
+          135,
+          165
+        ]
+      },
+      {
+        "key": "fresh-cat-calico-box",
+        "width": 148,
+        "height": 156,
+        "bytes": 25252,
+        "alphaBounds": [
+          6,
+          6,
+          142,
+          150
+        ]
+      },
+      {
+        "key": "fresh-cat-tabby-curious",
+        "width": 172,
+        "height": 102,
+        "bytes": 17426,
+        "alphaBounds": [
+          6,
+          6,
+          166,
+          96
+        ]
+      },
+      {
+        "key": "fresh-cat-ginger-pout",
+        "width": 161,
+        "height": 99,
+        "bytes": 15194,
+        "alphaBounds": [
+          6,
+          6,
+          155,
+          93
+        ]
+      },
+      {
+        "key": "fresh-cat-black-curious",
+        "width": 159,
+        "height": 100,
+        "bytes": 15408,
+        "alphaBounds": [
+          6,
+          6,
+          153,
+          94
+        ]
+      },
+      {
+        "key": "fresh-cat-white-laugh",
+        "width": 159,
+        "height": 109,
+        "bytes": 13842,
+        "alphaBounds": [
+          6,
+          6,
+          153,
+          103
+        ]
+      },
+      {
+        "key": "fresh-cat-gray-grumpy",
+        "width": 142,
+        "height": 94,
+        "bytes": 12372,
+        "alphaBounds": [
+          6,
+          6,
+          136,
+          88
+        ]
+      },
+      {
+        "key": "fresh-cat-calico-pout",
+        "width": 152,
+        "height": 93,
+        "bytes": 12306,
+        "alphaBounds": [
+          6,
+          6,
+          146,
+          87
+        ]
+      },
+      {
+        "key": "fresh-cat-frog-hat",
+        "width": 156,
+        "height": 130,
+        "bytes": 22152,
+        "alphaBounds": [
+          6,
+          6,
+          150,
+          124
+        ]
+      },
+      {
+        "key": "fresh-cat-bunny-hat",
+        "width": 160,
+        "height": 145,
+        "bytes": 22510,
+        "alphaBounds": [
+          6,
+          6,
+          154,
+          139
+        ]
+      },
+      {
+        "key": "fresh-cat-bear-hat",
+        "width": 156,
+        "height": 128,
+        "bytes": 22358,
+        "alphaBounds": [
+          6,
+          6,
+          150,
+          122
+        ]
+      },
+      {
+        "key": "fresh-cat-gray-check-bed",
+        "width": 193,
+        "height": 116,
+        "bytes": 19982,
+        "alphaBounds": [
+          6,
+          6,
+          187,
+          110
+        ]
+      },
+      {
+        "key": "fresh-cat-calico-chick",
+        "width": 139,
+        "height": 146,
+        "bytes": 18426,
+        "alphaBounds": [
+          6,
+          6,
+          133,
+          140
+        ]
+      },
+      {
+        "key": "fresh-cat-calico-hug-fish",
+        "width": 133,
+        "height": 147,
+        "bytes": 20018,
+        "alphaBounds": [
+          6,
+          6,
+          127,
+          141
+        ]
+      },
+      {
+        "key": "fresh-cat-moon-back",
+        "width": 185,
+        "height": 178,
+        "bytes": 26612,
+        "alphaBounds": [
+          6,
+          6,
+          179,
+          172
+        ]
+      },
+      {
+        "key": "fresh-cat-black-back",
+        "width": 109,
+        "height": 160,
+        "bytes": 18282,
+        "alphaBounds": [
+          6,
+          6,
+          103,
+          154
+        ]
+      },
+      {
+        "key": "fresh-cat-paper-boat",
+        "width": 191,
+        "height": 166,
+        "bytes": 27412,
+        "alphaBounds": [
+          6,
+          6,
+          185,
+          160
+        ]
+      },
+      {
+        "key": "fresh-cat-pair-bed",
+        "width": 216,
+        "height": 148,
+        "bytes": 32540,
+        "alphaBounds": [
+          6,
+          6,
+          210,
+          142
+        ]
+      },
+      {
+        "key": "fresh-cat-b-tabby-red-collar",
+        "width": 225,
+        "height": 209,
+        "bytes": 45800,
+        "alphaBounds": [
+          6,
+          6,
+          219,
+          203
+        ]
+      },
+      {
+        "key": "fresh-cat-b-ginger-blue-bed",
+        "width": 244,
+        "height": 166,
+        "bytes": 46828,
+        "alphaBounds": [
+          6,
+          6,
+          238,
+          160
+        ]
+      },
+      {
+        "key": "fresh-cat-b-black-paws-peek",
+        "width": 233,
+        "height": 134,
+        "bytes": 30660,
+        "alphaBounds": [
+          6,
+          6,
+          227,
+          128
+        ]
+      },
+      {
+        "key": "fresh-cat-b-white-curled-tail",
+        "width": 232,
+        "height": 203,
+        "bytes": 44724,
+        "alphaBounds": [
+          6,
+          6,
+          226,
+          197
+        ]
+      },
+      {
+        "key": "fresh-cat-b-ginger-reaching",
+        "width": 210,
+        "height": 189,
+        "bytes": 39578,
+        "alphaBounds": [
+          6,
+          6,
+          204,
+          183
+        ]
+      },
+      {
+        "key": "fresh-cat-b-gray-pink-yarn",
+        "width": 234,
+        "height": 191,
+        "bytes": 49600,
+        "alphaBounds": [
+          6,
+          6,
+          228,
+          185
+        ]
+      },
+      {
+        "key": "fresh-cat-b-gray-open-box",
+        "width": 240,
+        "height": 214,
+        "bytes": 50034,
+        "alphaBounds": [
+          6,
+          6,
+          234,
+          208
+        ]
+      },
+      {
+        "key": "fresh-cat-b-black-deep-stretch",
+        "width": 216,
+        "height": 203,
+        "bytes": 36050,
+        "alphaBounds": [
+          6,
+          6,
+          210,
+          197
+        ]
+      },
+      {
+        "key": "fresh-cat-b-white-fluffy-blue-eyes",
+        "width": 207,
+        "height": 207,
+        "bytes": 43980,
+        "alphaBounds": [
+          6,
+          6,
+          201,
+          201
+        ]
+      },
+      {
+        "key": "fresh-cat-b-calico-side-look",
+        "width": 212,
+        "height": 212,
+        "bytes": 42736,
+        "alphaBounds": [
+          6,
+          6,
+          206,
+          206
+        ]
+      },
+      {
+        "key": "fresh-cat-b-gray-tail-sleep",
+        "width": 222,
+        "height": 150,
+        "bytes": 32920,
+        "alphaBounds": [
+          6,
+          6,
+          216,
+          144
+        ]
+      },
+      {
+        "key": "fresh-cat-b-ginger-back-tail",
+        "width": 154,
+        "height": 206,
+        "bytes": 35952,
+        "alphaBounds": [
+          6,
+          6,
+          148,
+          200
+        ]
+      },
+      {
+        "key": "fresh-cat-b-tuxedo-pink-bed",
+        "width": 240,
+        "height": 157,
+        "bytes": 44472,
+        "alphaBounds": [
+          6,
+          6,
+          234,
+          151
+        ]
+      },
+      {
+        "key": "fresh-cat-b-white-red-wink",
+        "width": 210,
+        "height": 138,
+        "bytes": 30282,
+        "alphaBounds": [
+          6,
+          6,
+          204,
+          132
+        ]
+      },
+      {
+        "key": "fresh-cat-b-tabby-running",
+        "width": 229,
+        "height": 166,
+        "bytes": 39160,
+        "alphaBounds": [
+          6,
+          6,
+          223,
+          160
+        ]
+      },
+      {
+        "key": "fresh-cat-b-white-fish-hug",
+        "width": 220,
+        "height": 190,
+        "bytes": 40548,
+        "alphaBounds": [
+          6,
+          6,
+          214,
+          184
+        ]
+      },
+      {
+        "key": "fresh-cat-b-gray-greeting",
+        "width": 215,
+        "height": 179,
+        "bytes": 38142,
+        "alphaBounds": [
+          6,
+          6,
+          209,
+          173
+        ]
+      },
+      {
+        "key": "fresh-cat-b-ginger-blue-cup",
+        "width": 209,
+        "height": 199,
+        "bytes": 43332,
+        "alphaBounds": [
+          6,
+          6,
+          203,
+          193
+        ]
+      },
+      {
+        "key": "fresh-cat-b-black-yellow-cushion",
+        "width": 230,
+        "height": 149,
+        "bytes": 38534,
+        "alphaBounds": [
+          6,
+          6,
+          224,
+          143
+        ]
+      },
+      {
+        "key": "fresh-cat-b-gray-looking-up",
+        "width": 219,
+        "height": 178,
+        "bytes": 37498,
+        "alphaBounds": [
+          6,
+          6,
+          213,
+          172
+        ]
+      },
+      {
+        "key": "fresh-flower-tulip-bouquet-pink",
+        "width": 159,
+        "height": 241,
+        "bytes": 31772,
+        "alphaBounds": [
+          6,
+          6,
+          153,
+          235
+        ]
+      },
+      {
+        "key": "fresh-flower-daisy-blue-bow",
+        "width": 162,
+        "height": 247,
+        "bytes": 29382,
+        "alphaBounds": [
+          6,
+          6,
+          156,
+          241
+        ]
+      },
+      {
+        "key": "fresh-flower-purple-two",
+        "width": 166,
+        "height": 199,
+        "bytes": 23026,
+        "alphaBounds": [
+          6,
+          6,
+          160,
+          193
+        ]
+      },
+      {
+        "key": "fresh-flower-pink-bud",
+        "width": 164,
+        "height": 218,
+        "bytes": 29558,
+        "alphaBounds": [
+          6,
+          6,
+          158,
+          212
+        ]
+      },
+      {
+        "key": "fresh-flower-sunflower-pair",
+        "width": 156,
+        "height": 232,
+        "bytes": 27206,
+        "alphaBounds": [
+          6,
+          6,
+          150,
+          226
+        ]
+      },
+      {
+        "key": "fresh-flower-forget-me-not",
+        "width": 157,
+        "height": 215,
+        "bytes": 26694,
+        "alphaBounds": [
+          6,
+          6,
+          151,
+          209
+        ]
+      },
+      {
+        "key": "fresh-flower-rose-branch",
+        "width": 144,
+        "height": 198,
+        "bytes": 24784,
+        "alphaBounds": [
+          6,
+          6,
+          138,
+          192
+        ]
+      },
+      {
+        "key": "fresh-flower-purple-tape-bouquet",
+        "width": 161,
+        "height": 213,
+        "bytes": 31776,
+        "alphaBounds": [
+          6,
+          6,
+          155,
+          207
+        ]
+      },
+      {
+        "key": "fresh-flower-daisy-pair-new",
+        "width": 166,
+        "height": 166,
+        "bytes": 21468,
+        "alphaBounds": [
+          6,
+          6,
+          160,
+          160
+        ]
+      },
+      {
+        "key": "fresh-flower-sakura-trio",
+        "width": 171,
+        "height": 178,
+        "bytes": 21338,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          172
+        ]
+      },
+      {
+        "key": "fresh-flower-purple-cosmos",
+        "width": 173,
+        "height": 162,
+        "bytes": 21402,
+        "alphaBounds": [
+          6,
+          6,
+          167,
+          156
+        ]
+      },
+      {
+        "key": "fresh-flower-lily-bells",
+        "width": 165,
+        "height": 233,
+        "bytes": 30730,
+        "alphaBounds": [
+          6,
+          6,
+          159,
+          227
+        ]
+      },
+      {
+        "key": "fresh-flower-sakura-leaf",
+        "width": 153,
+        "height": 138,
+        "bytes": 17546,
+        "alphaBounds": [
+          6,
+          6,
+          147,
+          132
+        ]
+      },
+      {
+        "key": "fresh-flower-hydrangea-blue",
+        "width": 180,
+        "height": 202,
+        "bytes": 31964,
+        "alphaBounds": [
+          6,
+          6,
+          174,
+          196
+        ]
+      },
+      {
+        "key": "fresh-flower-tulip-pale-three",
+        "width": 172,
+        "height": 221,
+        "bytes": 26878,
+        "alphaBounds": [
+          6,
+          6,
+          166,
+          215
+        ]
+      },
+      {
+        "key": "fresh-flower-yellow-bouquet",
+        "width": 178,
+        "height": 252,
+        "bytes": 40002,
+        "alphaBounds": [
+          6,
+          6,
+          172,
+          246
+        ]
+      },
+      {
+        "key": "fresh-flower-sakura-petals",
+        "width": 145,
+        "height": 208,
+        "bytes": 17120,
+        "alphaBounds": [
+          6,
+          6,
+          139,
+          202
+        ]
+      },
+      {
+        "key": "fresh-flower-tulip-yellow",
+        "width": 162,
+        "height": 212,
+        "bytes": 29604,
+        "alphaBounds": [
+          6,
+          6,
+          156,
+          206
+        ]
+      },
+      {
+        "key": "fresh-flower-purple-stems",
+        "width": 194,
+        "height": 189,
+        "bytes": 19238,
+        "alphaBounds": [
+          6,
+          6,
+          188,
+          183
+        ]
+      },
+      {
+        "key": "fresh-flower-blue-round-stem",
+        "width": 193,
+        "height": 241,
+        "bytes": 27640,
+        "alphaBounds": [
+          6,
+          6,
+          187,
+          235
+        ]
+      },
+      {
+        "key": "fresh-sea-pink-fan",
+        "width": 246,
+        "height": 199,
+        "bytes": 42780,
+        "alphaBounds": [
+          6,
+          6,
+          240,
+          193
+        ]
+      },
+      {
+        "key": "fresh-sea-purple-conch",
+        "width": 213,
+        "height": 193,
+        "bytes": 36024,
+        "alphaBounds": [
+          6,
+          6,
+          207,
+          187
+        ]
+      },
+      {
+        "key": "fresh-sea-gold-starfish",
+        "width": 218,
+        "height": 213,
+        "bytes": 30330,
+        "alphaBounds": [
+          6,
+          6,
+          212,
+          207
+        ]
+      },
+      {
+        "key": "fresh-sea-blue-fan",
+        "width": 214,
+        "height": 210,
+        "bytes": 34854,
+        "alphaBounds": [
+          6,
+          6,
+          208,
+          204
+        ]
+      },
+      {
+        "key": "fresh-sea-blue-spiral-weed",
+        "width": 252,
+        "height": 207,
+        "bytes": 53852,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          201
+        ]
+      },
+      {
+        "key": "fresh-sea-pink-starfish",
+        "width": 205,
+        "height": 218,
+        "bytes": 29122,
+        "alphaBounds": [
+          6,
+          6,
+          199,
+          212
+        ]
+      },
+      {
+        "key": "fresh-sea-purple-fan",
+        "width": 230,
+        "height": 219,
+        "bytes": 40146,
+        "alphaBounds": [
+          6,
+          6,
+          224,
+          213
+        ]
+      },
+      {
+        "key": "fresh-sea-cream-conch",
+        "width": 204,
+        "height": 225,
+        "bytes": 32778,
+        "alphaBounds": [
+          6,
+          6,
+          198,
+          219
+        ]
+      },
+      {
+        "key": "fresh-sea-blue-starfish",
+        "width": 241,
+        "height": 211,
+        "bytes": 30926,
+        "alphaBounds": [
+          6,
+          6,
+          235,
+          205
+        ]
+      },
+      {
+        "key": "fresh-sea-peach-fan",
+        "width": 242,
+        "height": 205,
+        "bytes": 39178,
+        "alphaBounds": [
+          6,
+          6,
+          236,
+          199
+        ]
+      },
+      {
+        "key": "fresh-sea-mint-starfish",
+        "width": 239,
+        "height": 199,
+        "bytes": 26384,
+        "alphaBounds": [
+          6,
+          6,
+          233,
+          193
+        ]
+      },
+      {
+        "key": "fresh-sea-pink-spiral-path",
+        "width": 207,
+        "height": 243,
+        "bytes": 31746,
+        "alphaBounds": [
+          6,
+          6,
+          201,
+          237
+        ]
+      },
+      {
+        "key": "fresh-sea-blue-fan-weed",
+        "width": 252,
+        "height": 239,
+        "bytes": 45018,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          233
+        ]
+      },
+      {
+        "key": "fresh-sea-purple-spike",
+        "width": 225,
+        "height": 210,
+        "bytes": 36628,
+        "alphaBounds": [
+          6,
+          6,
+          219,
+          204
+        ]
+      },
+      {
+        "key": "fresh-sea-sand-starfish",
+        "width": 217,
+        "height": 213,
+        "bytes": 27186,
+        "alphaBounds": [
+          6,
+          6,
+          211,
+          207
+        ]
+      },
+      {
+        "key": "fresh-sea-rainbow-fan",
+        "width": 229,
+        "height": 214,
+        "bytes": 42436,
+        "alphaBounds": [
+          6,
+          6,
+          223,
+          208
+        ]
+      },
+      {
+        "key": "fresh-star-scribble-hole",
+        "width": 197,
+        "height": 188,
+        "bytes": 29362,
+        "alphaBounds": [
+          6,
+          6,
+          191,
+          182
+        ]
+      },
+      {
+        "key": "fresh-star-rainbow-tail",
+        "width": 252,
+        "height": 141,
+        "bytes": 28816,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          135
+        ]
+      },
+      {
+        "key": "fresh-star-smiling-pair",
+        "width": 221,
+        "height": 174,
+        "bytes": 23776,
+        "alphaBounds": [
+          6,
+          6,
+          215,
+          168
+        ]
+      },
+      {
+        "key": "fresh-star-purple-orbit-long",
+        "width": 217,
+        "height": 166,
+        "bytes": 28640,
+        "alphaBounds": [
+          6,
+          6,
+          211,
+          160
+        ]
+      },
+      {
+        "key": "fresh-star-double-outline",
+        "width": 206,
+        "height": 172,
+        "bytes": 24458,
+        "alphaBounds": [
+          6,
+          6,
+          200,
+          166
+        ]
+      },
+      {
+        "key": "fresh-star-cream-purple-bow",
+        "width": 202,
+        "height": 159,
+        "bytes": 20478,
+        "alphaBounds": [
+          6,
+          6,
+          196,
+          153
+        ]
+      },
+      {
+        "key": "fresh-star-twinkle-pink-blue",
+        "width": 153,
+        "height": 147,
+        "bytes": 11434,
+        "alphaBounds": [
+          6,
+          6,
+          147,
+          141
+        ]
+      },
+      {
+        "key": "fresh-star-gingham-stitch",
+        "width": 171,
+        "height": 166,
+        "bytes": 17414,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          160
+        ]
+      },
+      {
+        "key": "fresh-star-trio-trails",
+        "width": 183,
+        "height": 150,
+        "bytes": 15038,
+        "alphaBounds": [
+          6,
+          6,
+          177,
+          144
+        ]
+      },
+      {
+        "key": "fresh-star-purple-round-shine",
+        "width": 206,
+        "height": 171,
+        "bytes": 23680,
+        "alphaBounds": [
+          6,
+          6,
+          200,
+          165
+        ]
+      },
+      {
+        "key": "fresh-star-stitched-center",
+        "width": 171,
+        "height": 166,
+        "bytes": 9986,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          160
+        ]
+      },
+      {
+        "key": "fresh-star-violet-silver-ring",
+        "width": 185,
+        "height": 176,
+        "bytes": 19920,
+        "alphaBounds": [
+          6,
+          6,
+          179,
+          170
+        ]
+      },
+      {
+        "key": "fresh-star-lilac-stripes",
+        "width": 190,
+        "height": 171,
+        "bytes": 19658,
+        "alphaBounds": [
+          6,
+          6,
+          184,
+          165
+        ]
+      },
+      {
+        "key": "fresh-star-bow-outline",
+        "width": 173,
+        "height": 186,
+        "bytes": 21396,
+        "alphaBounds": [
+          6,
+          6,
+          167,
+          180
+        ]
+      },
+      {
+        "key": "fresh-star-multicolor-little",
+        "width": 217,
+        "height": 163,
+        "bytes": 12320,
+        "alphaBounds": [
+          6,
+          6,
+          211,
+          157
+        ]
+      },
+      {
+        "key": "fresh-star-stacked-gold",
+        "width": 191,
+        "height": 155,
+        "bytes": 21050,
+        "alphaBounds": [
+          6,
+          6,
+          185,
+          149
+        ]
+      },
+      {
+        "key": "fresh-star-racing-pair",
+        "width": 171,
+        "height": 159,
+        "bytes": 10558,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          153
+        ]
+      },
+      {
+        "key": "fresh-star-blue-watercolor",
+        "width": 199,
+        "height": 170,
+        "bytes": 19592,
+        "alphaBounds": [
+          6,
+          6,
+          193,
+          164
+        ]
+      },
+      {
+        "key": "fresh-star-purple-pencil",
+        "width": 157,
+        "height": 163,
+        "bytes": 19068,
+        "alphaBounds": [
+          6,
+          6,
+          151,
+          157
+        ]
+      },
+      {
+        "key": "fresh-star-lavender-wide-orbit",
+        "width": 205,
+        "height": 160,
+        "bytes": 23904,
+        "alphaBounds": [
+          6,
+          6,
+          199,
+          154
+        ]
+      },
+      {
+        "key": "fresh-star-gold-purple-outlines",
+        "width": 185,
+        "height": 168,
+        "bytes": 21460,
+        "alphaBounds": [
+          6,
+          6,
+          179,
+          162
+        ]
+      },
+      {
+        "key": "fresh-star-party-cream",
+        "width": 175,
+        "height": 196,
+        "bytes": 22352,
+        "alphaBounds": [
+          6,
+          6,
+          169,
+          190
+        ]
+      },
+      {
+        "key": "fresh-star-twinkle-four",
+        "width": 152,
+        "height": 146,
+        "bytes": 8768,
+        "alphaBounds": [
+          6,
+          6,
+          146,
+          140
+        ]
+      },
+      {
+        "key": "fresh-star-pink-rainbow-tail",
+        "width": 180,
+        "height": 164,
+        "bytes": 16826,
+        "alphaBounds": [
+          6,
+          6,
+          174,
+          158
+        ]
+      },
+      {
+        "key": "fresh-leaf-round-blue",
+        "width": 128,
+        "height": 208,
+        "bytes": 19772,
+        "alphaBounds": [
+          6,
+          6,
+          122,
+          202
+        ]
+      },
+      {
+        "key": "fresh-leaf-olive-light",
+        "width": 141,
+        "height": 208,
+        "bytes": 14844,
+        "alphaBounds": [
+          6,
+          6,
+          135,
+          202
+        ]
+      },
+      {
+        "key": "fresh-leaf-pink-buds",
+        "width": 138,
+        "height": 206,
+        "bytes": 16560,
+        "alphaBounds": [
+          6,
+          6,
+          132,
+          200
+        ]
+      },
+      {
+        "key": "fresh-leaf-round-mottled",
+        "width": 150,
+        "height": 187,
+        "bytes": 22196,
+        "alphaBounds": [
+          6,
+          6,
+          144,
+          181
+        ]
+      },
+      {
+        "key": "fresh-leaf-gold-buds",
+        "width": 137,
+        "height": 204,
+        "bytes": 15038,
+        "alphaBounds": [
+          6,
+          6,
+          131,
+          198
+        ]
+      },
+      {
+        "key": "fresh-leaf-monstera-new",
+        "width": 152,
+        "height": 189,
+        "bytes": 25778,
+        "alphaBounds": [
+          6,
+          6,
+          146,
+          183
+        ]
+      },
+      {
+        "key": "fresh-leaf-narrow-left",
+        "width": 159,
+        "height": 169,
+        "bytes": 14288,
+        "alphaBounds": [
+          6,
+          6,
+          153,
+          163
+        ]
+      },
+      {
+        "key": "fresh-leaf-red-berries",
+        "width": 157,
+        "height": 183,
+        "bytes": 18834,
+        "alphaBounds": [
+          6,
+          6,
+          151,
+          177
+        ]
+      },
+      {
+        "key": "fresh-leaf-maple",
+        "width": 151,
+        "height": 150,
+        "bytes": 17636,
+        "alphaBounds": [
+          6,
+          6,
+          145,
+          144
+        ]
+      },
+      {
+        "key": "fresh-leaf-baby-buds",
+        "width": 143,
+        "height": 193,
+        "bytes": 12416,
+        "alphaBounds": [
+          6,
+          6,
+          137,
+          187
+        ]
+      },
+      {
+        "key": "fresh-leaf-blue-berries",
+        "width": 136,
+        "height": 184,
+        "bytes": 16314,
+        "alphaBounds": [
+          6,
+          6,
+          130,
+          178
+        ]
+      },
+      {
+        "key": "fresh-leaf-pink-leaves",
+        "width": 144,
+        "height": 175,
+        "bytes": 13298,
+        "alphaBounds": [
+          6,
+          6,
+          138,
+          169
+        ]
+      },
+      {
+        "key": "fresh-leaf-eucalyptus-new",
+        "width": 168,
+        "height": 206,
+        "bytes": 23258,
+        "alphaBounds": [
+          6,
+          6,
+          162,
+          200
+        ]
+      },
+      {
+        "key": "fresh-leaf-white-blossom",
+        "width": 157,
+        "height": 178,
+        "bytes": 18944,
+        "alphaBounds": [
+          6,
+          6,
+          151,
+          172
+        ]
+      },
+      {
+        "key": "fresh-leaf-single-vein",
+        "width": 124,
+        "height": 182,
+        "bytes": 17764,
+        "alphaBounds": [
+          6,
+          6,
+          118,
+          176
+        ]
+      },
+      {
+        "key": "fresh-leaf-green-many",
+        "width": 167,
+        "height": 175,
+        "bytes": 18768,
+        "alphaBounds": [
+          6,
+          6,
+          161,
+          169
+        ]
+      },
+      {
+        "key": "fresh-leaf-gold-berries",
+        "width": 128,
+        "height": 162,
+        "bytes": 15498,
+        "alphaBounds": [
+          6,
+          6,
+          122,
+          156
+        ]
+      },
+      {
+        "key": "fresh-leaf-tiny-white",
+        "width": 127,
+        "height": 186,
+        "bytes": 14266,
+        "alphaBounds": [
+          6,
+          6,
+          121,
+          180
+        ]
+      },
+      {
+        "key": "fresh-leaf-olive-long",
+        "width": 174,
+        "height": 131,
+        "bytes": 13846,
+        "alphaBounds": [
+          6,
+          6,
+          168,
+          125
+        ]
+      },
+      {
+        "key": "fresh-leaf-pink-flowering",
+        "width": 199,
+        "height": 116,
+        "bytes": 15306,
+        "alphaBounds": [
+          6,
+          6,
+          193,
+          110
+        ]
+      },
+      {
+        "key": "fresh-leaf-ribbon-wreath",
+        "width": 201,
+        "height": 177,
+        "bytes": 18796,
+        "alphaBounds": [
+          6,
+          6,
+          195,
+          171
+        ]
+      },
+      {
+        "key": "fresh-leaf-hanging-olive",
+        "width": 177,
+        "height": 127,
+        "bytes": 13066,
+        "alphaBounds": [
+          6,
+          6,
+          171,
+          121
+        ]
+      },
+      {
+        "key": "fresh-leaf-steel-blue",
+        "width": 163,
+        "height": 146,
+        "bytes": 11620,
+        "alphaBounds": [
+          6,
+          6,
+          157,
+          140
+        ]
+      },
+      {
+        "key": "fresh-leaf-dark-cluster",
+        "width": 180,
+        "height": 196,
+        "bytes": 25374,
+        "alphaBounds": [
+          6,
+          6,
+          174,
+          190
+        ]
+      },
+      {
+        "key": "fresh-leaf-blue-pointed",
+        "width": 156,
+        "height": 208,
+        "bytes": 22834,
+        "alphaBounds": [
+          6,
+          6,
+          150,
+          202
+        ]
+      },
+      {
+        "key": "fresh-leaf-oak",
+        "width": 135,
+        "height": 184,
+        "bytes": 16980,
+        "alphaBounds": [
+          6,
+          6,
+          129,
+          178
+        ]
+      },
+      {
+        "key": "fresh-leaf-round-red-buds",
+        "width": 163,
+        "height": 182,
+        "bytes": 18848,
+        "alphaBounds": [
+          6,
+          6,
+          157,
+          176
+        ]
+      },
+      {
+        "key": "fresh-leaf-narrow-sprig",
+        "width": 130,
+        "height": 190,
+        "bytes": 14164,
+        "alphaBounds": [
+          6,
+          6,
+          124,
+          184
+        ]
+      },
+      {
+        "key": "fresh-leaf-clover",
+        "width": 128,
+        "height": 190,
+        "bytes": 14350,
+        "alphaBounds": [
+          6,
+          6,
+          122,
+          184
+        ]
+      },
+      {
+        "key": "fresh-bow-pink-check",
+        "width": 250,
+        "height": 205,
+        "bytes": 40378,
+        "alphaBounds": [
+          6,
+          6,
+          244,
+          199
+        ]
+      },
+      {
+        "key": "fresh-bow-purple-lace-heart",
+        "width": 245,
+        "height": 197,
+        "bytes": 43912,
+        "alphaBounds": [
+          6,
+          6,
+          239,
+          191
+        ]
+      },
+      {
+        "key": "fresh-bow-blue-sheer",
+        "width": 244,
+        "height": 216,
+        "bytes": 31242,
+        "alphaBounds": [
+          6,
+          6,
+          238,
+          210
+        ]
+      },
+      {
+        "key": "fresh-bow-cherry",
+        "width": 226,
+        "height": 197,
+        "bytes": 35106,
+        "alphaBounds": [
+          6,
+          6,
+          220,
+          191
+        ]
+      },
+      {
+        "key": "fresh-bow-bear",
+        "width": 252,
+        "height": 192,
+        "bytes": 42944,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          186
+        ]
+      },
+      {
+        "key": "fresh-bow-pink-heart",
+        "width": 252,
+        "height": 203,
+        "bytes": 40862,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          197
+        ]
+      },
+      {
+        "key": "fresh-bow-blue-daisy",
+        "width": 245,
+        "height": 186,
+        "bytes": 36668,
+        "alphaBounds": [
+          6,
+          6,
+          239,
+          180
+        ]
+      },
+      {
+        "key": "fresh-bow-purple-star",
+        "width": 228,
+        "height": 221,
+        "bytes": 33450,
+        "alphaBounds": [
+          6,
+          6,
+          222,
+          215
+        ]
+      },
+      {
+        "key": "fresh-bow-pink-double-heart",
+        "width": 235,
+        "height": 211,
+        "bytes": 28034,
+        "alphaBounds": [
+          6,
+          6,
+          229,
+          205
+        ]
+      },
+      {
+        "key": "fresh-bow-blue-doily",
+        "width": 252,
+        "height": 190,
+        "bytes": 49622,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          184
+        ]
+      },
+      {
+        "key": "fresh-bow-gold-pendant",
+        "width": 251,
+        "height": 209,
+        "bytes": 35352,
+        "alphaBounds": [
+          6,
+          6,
+          245,
+          203
+        ]
+      },
+      {
+        "key": "fresh-bow-pink-lace-gingham",
+        "width": 220,
+        "height": 181,
+        "bytes": 38694,
+        "alphaBounds": [
+          6,
+          6,
+          214,
+          175
+        ]
+      },
+      {
+        "key": "fresh-bow-purple-stripe",
+        "width": 252,
+        "height": 190,
+        "bytes": 39562,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          184
+        ]
+      },
+      {
+        "key": "fresh-bow-pink-flower-ribbon",
+        "width": 252,
+        "height": 172,
+        "bytes": 33544,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          166
+        ]
+      },
+      {
+        "key": "fresh-bow-blue-crown",
+        "width": 234,
+        "height": 186,
+        "bytes": 30070,
+        "alphaBounds": [
+          6,
+          6,
+          228,
+          180
+        ]
+      },
+      {
+        "key": "fresh-bow-floral-cream",
+        "width": 212,
+        "height": 169,
+        "bytes": 29702,
+        "alphaBounds": [
+          6,
+          6,
+          206,
+          163
+        ]
+      },
+      {
+        "key": "fresh-bow-pink-satin-wide",
+        "width": 252,
+        "height": 200,
+        "bytes": 47490,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          194
+        ]
+      },
+      {
+        "key": "fresh-bow-purple-gingham",
+        "width": 225,
+        "height": 186,
+        "bytes": 37056,
+        "alphaBounds": [
+          6,
+          6,
+          219,
+          180
+        ]
+      },
+      {
+        "key": "fresh-bow-blue-pearl",
+        "width": 244,
+        "height": 197,
+        "bytes": 34042,
+        "alphaBounds": [
+          6,
+          6,
+          238,
+          191
+        ]
+      },
+      {
+        "key": "fresh-bow-pink-polka",
+        "width": 217,
+        "height": 207,
+        "bytes": 37852,
+        "alphaBounds": [
+          6,
+          6,
+          211,
+          201
+        ]
+      },
+      {
+        "key": "fresh-heart-ribbon-pink",
+        "width": 218,
+        "height": 172,
+        "bytes": 30220,
+        "alphaBounds": [
+          6,
+          6,
+          212,
+          166
+        ]
+      },
+      {
+        "key": "fresh-heart-double-pink-outline",
+        "width": 175,
+        "height": 159,
+        "bytes": 15596,
+        "alphaBounds": [
+          6,
+          6,
+          169,
+          153
+        ]
+      },
+      {
+        "key": "fresh-heart-rose-gloss",
+        "width": 186,
+        "height": 154,
+        "bytes": 21376,
+        "alphaBounds": [
+          6,
+          6,
+          180,
+          148
+        ]
+      },
+      {
+        "key": "fresh-heart-angel-halo",
+        "width": 211,
+        "height": 148,
+        "bytes": 20492,
+        "alphaBounds": [
+          6,
+          6,
+          205,
+          142
+        ]
+      },
+      {
+        "key": "fresh-heart-gingham-coral",
+        "width": 184,
+        "height": 146,
+        "bytes": 24368,
+        "alphaBounds": [
+          6,
+          6,
+          178,
+          140
+        ]
+      },
+      {
+        "key": "fresh-heart-purple-pink-pair",
+        "width": 200,
+        "height": 153,
+        "bytes": 19672,
+        "alphaBounds": [
+          6,
+          6,
+          194,
+          147
+        ]
+      },
+      {
+        "key": "fresh-heart-stripe-pink",
+        "width": 176,
+        "height": 151,
+        "bytes": 23010,
+        "alphaBounds": [
+          6,
+          6,
+          170,
+          145
+        ]
+      },
+      {
+        "key": "fresh-heart-arrow",
+        "width": 209,
+        "height": 144,
+        "bytes": 17734,
+        "alphaBounds": [
+          6,
+          6,
+          203,
+          138
+        ]
+      },
+      {
+        "key": "fresh-heart-nested-purple",
+        "width": 168,
+        "height": 142,
+        "bytes": 18242,
+        "alphaBounds": [
+          6,
+          6,
+          162,
+          136
+        ]
+      },
+      {
+        "key": "fresh-heart-feather-pink",
+        "width": 184,
+        "height": 161,
+        "bytes": 21582,
+        "alphaBounds": [
+          6,
+          6,
+          178,
+          155
+        ]
+      },
+      {
+        "key": "fresh-heart-gift-pink",
+        "width": 209,
+        "height": 149,
+        "bytes": 22662,
+        "alphaBounds": [
+          6,
+          6,
+          203,
+          143
+        ]
+      },
+      {
+        "key": "fresh-heart-ring-pink",
+        "width": 186,
+        "height": 161,
+        "bytes": 11256,
+        "alphaBounds": [
+          6,
+          6,
+          180,
+          155
+        ]
+      },
+      {
+        "key": "fresh-heart-gradient-purple",
+        "width": 188,
+        "height": 164,
+        "bytes": 19438,
+        "alphaBounds": [
+          6,
+          6,
+          182,
+          158
+        ]
+      },
+      {
+        "key": "fresh-heart-large-small-pink",
+        "width": 190,
+        "height": 148,
+        "bytes": 22806,
+        "alphaBounds": [
+          6,
+          6,
+          184,
+          142
+        ]
+      },
+      {
+        "key": "fresh-heart-brush-purple",
+        "width": 173,
+        "height": 142,
+        "bytes": 14566,
+        "alphaBounds": [
+          6,
+          6,
+          167,
+          136
+        ]
+      },
+      {
+        "key": "fresh-heart-gingham-light",
+        "width": 164,
+        "height": 138,
+        "bytes": 18734,
+        "alphaBounds": [
+          6,
+          6,
+          158,
+          132
+        ]
+      },
+      {
+        "key": "fresh-heart-red-gloss",
+        "width": 184,
+        "height": 151,
+        "bytes": 21738,
+        "alphaBounds": [
+          6,
+          6,
+          178,
+          145
+        ]
+      },
+      {
+        "key": "fresh-heart-interlocked-pink",
+        "width": 161,
+        "height": 130,
+        "bytes": 15498,
+        "alphaBounds": [
+          6,
+          6,
+          155,
+          124
+        ]
+      },
+      {
+        "key": "fresh-heart-polka-pink",
+        "width": 178,
+        "height": 145,
+        "bytes": 19412,
+        "alphaBounds": [
+          6,
+          6,
+          172,
+          139
+        ]
+      },
+      {
+        "key": "fresh-heart-stitch-small-heart",
+        "width": 171,
+        "height": 152,
+        "bytes": 19898,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          146
+        ]
+      },
+      {
+        "key": "fresh-heart-peach-gloss",
+        "width": 175,
+        "height": 153,
+        "bytes": 21214,
+        "alphaBounds": [
+          6,
+          6,
+          169,
+          147
+        ]
+      },
+      {
+        "key": "fresh-heart-heart-in-heart",
+        "width": 180,
+        "height": 132,
+        "bytes": 14592,
+        "alphaBounds": [
+          6,
+          6,
+          174,
+          126
+        ]
+      },
+      {
+        "key": "fresh-heart-gingham-purple",
+        "width": 144,
+        "height": 125,
+        "bytes": 15750,
+        "alphaBounds": [
+          6,
+          6,
+          138,
+          119
+        ]
+      },
+      {
+        "key": "fresh-heart-planet-heart",
+        "width": 199,
+        "height": 125,
+        "bytes": 17790,
+        "alphaBounds": [
+          6,
+          6,
+          193,
+          119
+        ]
+      },
+      {
+        "key": "fresh-heart-little-three",
+        "width": 159,
+        "height": 121,
+        "bytes": 9026,
+        "alphaBounds": [
+          6,
+          6,
+          153,
+          115
+        ]
+      },
+      {
+        "key": "fresh-heart-scribble-red",
+        "width": 174,
+        "height": 140,
+        "bytes": 23568,
+        "alphaBounds": [
+          6,
+          6,
+          168,
+          134
+        ]
+      },
+      {
+        "key": "fresh-heart-ring-purple",
+        "width": 173,
+        "height": 155,
+        "bytes": 10646,
+        "alphaBounds": [
+          6,
+          6,
+          167,
+          149
+        ]
+      },
+      {
+        "key": "fresh-heart-white-wings",
+        "width": 219,
+        "height": 135,
+        "bytes": 18988,
+        "alphaBounds": [
+          6,
+          6,
+          213,
+          129
+        ]
+      },
+      {
+        "key": "fresh-heart-double-satin",
+        "width": 160,
+        "height": 155,
+        "bytes": 17514,
+        "alphaBounds": [
+          6,
+          6,
+          154,
+          149
+        ]
+      },
+      {
+        "key": "fresh-heart-pale-pair",
+        "width": 176,
+        "height": 146,
+        "bytes": 17514,
+        "alphaBounds": [
+          6,
+          6,
+          170,
+          140
+        ]
+      }
+    ]
+  },
+  "reproducibility": {
+    "new192Check": true,
+    "previous60Check": true,
+    "previous82RebuildAll362FilesIdentical": true,
+    "sourceSpec": "scripts/watermark-newsource-crops.json"
+  },
+  "validation": {
+    "typecheck": "passed",
+    "build": "passed",
+    "buildEditor": "passed",
+    "tests": {
+      "command": "project-pnpm test tests/album-watermarks.spec.ts tests/album-watermark-variants.spec.ts tests/album-editor-design.spec.ts",
+      "passed": 37,
+      "total": 37,
+      "singleRun": true,
+      "log": "/Users/jiangyuhan/.codex/visualizations/2026/11/14/watermark-newsource/tests.log"
+    },
+    "production": {
+      "browserPath": "Browser plugin not available; existing Playwright / system Chrome",
+      "checks": {
+        "identity": {
+          "url": "http://127.0.0.1:4174/editor.html",
+          "title": "纪念手帐工作台 · 潮汐之间",
+          "nonblank": true,
+          "frameworkOverlay": 0
+        },
+        "responsive": [
+          {
+            "size": {
+              "width": 320,
+              "height": 568
+            },
+            "overflow": false
+          },
+          {
+            "size": {
+              "width": 390,
+              "height": 844
+            },
+            "overflow": false
+          },
+          {
+            "size": {
+              "width": 844,
+              "height": 390
+            },
+            "overflow": false
+          }
+        ],
+        "idle": {
+          "seconds": 5,
+          "raf": 0,
+          "webgl": 0
+        },
+        "reload": true,
+        "roomReopen": true,
+        "defaultNoAuthorAssets": true,
+        "console": true
+      },
+      "screenshots": [
+        "production-editor.png",
+        "production-gallery-cats.png",
+        "production-page-cats.png",
+        "production-gallery-flowers.png",
+        "production-page-flowers.png",
+        "production-gallery-seaside.png",
+        "production-page-seaside.png",
+        "production-gallery-stars.png",
+        "production-page-stars.png",
+        "production-gallery-leaves.png",
+        "production-page-leaves.png",
+        "production-gallery-sentiments.png",
+        "production-page-sentiments.png",
+        "production-combined-filters.png",
+        "production-original-variant.png",
+        "production-adjusted-variant.png",
+        "production-adjustment-controls.png",
+        "production-adjusted-export.png",
+        "production-controls-320x568.png",
+        "production-controls-390x844.png",
+        "production-controls-844x390.png",
+        "production-preview-dialog.png",
+        "production-reading-320x568.png",
+        "production-reading-390x844.png",
+        "production-reading-844x390.png",
+        "production-reading-1440x1000.png",
+        "production-room-reading.png",
+        "production-room-return.png",
+        "production-default-reading.png"
+      ],
+      "pages": [
+        {
+          "name": "author, isolated production draft",
+          "errors": [],
+          "consoleErrors": [],
+          "warnings": [],
+          "failedRequests": []
+        },
+        {
+          "name": "custom reading, four sizes",
+          "errors": [],
+          "consoleErrors": [],
+          "warnings": [],
+          "failedRequests": []
+        },
+        {
+          "name": "custom room / physical-page handoff",
+          "errors": [],
+          "consoleErrors": [],
+          "warnings": [
+            "[.WebGL-0x13c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+            "[.WebGL-0x13c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+            "[.WebGL-0x13c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+            "[.WebGL-0x13c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+            "[.WebGL-0x13c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+            "[.WebGL-0x13c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions."
+          ],
+          "failedRequests": []
+        },
+        {
+          "name": "default visitor, no private gallery",
+          "errors": [],
+          "consoleErrors": [],
+          "warnings": [
+            "[.WebGL-0x12400577800] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+            "[.WebGL-0x12400577800] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions."
+          ],
+          "failedRequests": []
+        }
+      ]
+    },
+    "evidenceDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/11/14/watermark-newsource"
+  },
+  "performance": {
+    "summary": {
+      "handlerMedianMs": {
+        "beforeMedianOf3": 5.7,
+        "afterMedianOf3": 5.7
+      },
+      "handlerP95Ms": {
+        "beforeMedianOf3": 6.7,
+        "afterMedianOf3": 8
+      },
+      "paintMedianMs": {
+        "beforeMedianOf3": 33.3,
+        "afterMedianOf3": 33.2
+      }
+    },
+    "before": {
+      "stage": "before",
+      "cpu": 4,
+      "repetitions": 3,
+      "url": "http://127.0.0.1:5173/editor.html",
+      "browser": "157.0.8103.51",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "runs": [
+        {
+          "run": 1,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 11,
+              "toNextPaintMs": 21.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 27.899999991059303
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 32.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.699999988079071,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 34.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.299999997019768,
+              "toNextPaintMs": 32.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.299999997019768,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 34.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.899999991059303,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.699999988079071,
+              "toNextPaintMs": 33.5
+            }
+          ],
+          "handlerMedianMs": 5.5,
+          "handlerP95Ms": 6.700000002980232,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34.099999994039536,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 2,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 19.299999997019768
+            },
+            {
+              "label": "字体",
+              "jsMs": 6,
+              "toNextPaintMs": 33.80000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.4000000059604645,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 32.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 34.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.399999991059303,
+              "toNextPaintMs": 32.3999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.300000011920929,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.699999988079071,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.9000000059604645,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.300000011920929,
+              "toNextPaintMs": 34.6000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.699999988079071,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 50
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 32.80000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 7,
+              "toNextPaintMs": 33.29999999701977
+            }
+          ],
+          "handlerMedianMs": 5.9000000059604645,
+          "handlerP95Ms": 7,
+          "paintMedianMs": 33.29999999701977,
+          "paintP95Ms": 34.6000000089407,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 3,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 19.799999997019768
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.5999999940395355,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.799999997019768,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.699999988079071,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.899999991059303,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 6,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.30000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.5,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 33.29999999701977
+            }
+          ],
+          "handlerMedianMs": 5.700000002980232,
+          "handlerP95Ms": 6.700000002980232,
+          "paintMedianMs": 33.29999999701977,
+          "paintP95Ms": 33.79999999701977,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        }
+      ],
+      "note": "Isolated drafts; CPU throttle is laboratory stress, not physical hardware. Repeated native DOM change dispatch and double-RAF observation; pointer slider is actual held mouse."
+    },
+    "after": {
+      "stage": "after",
+      "cpu": 4,
+      "repetitions": 3,
+      "url": "http://127.0.0.1:5173/editor.html",
+      "browser": "157.0.8103.51",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "runs": [
+        {
+          "run": 1,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 8.099999994039536,
+              "toNextPaintMs": 19.899999991059303
+            },
+            {
+              "label": "字体",
+              "jsMs": 8,
+              "toNextPaintMs": 20.100000008940697
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.4000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.299999997019768,
+              "toNextPaintMs": 32.3999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.799999997019768,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 36.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 7.799999997019768,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 30.19999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.699999988079071,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 33.099999994039536
+            }
+          ],
+          "handlerMedianMs": 5.699999988079071,
+          "handlerP95Ms": 8,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 2,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 9.800000011920929,
+              "toNextPaintMs": 19.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 9.200000002980232,
+              "toNextPaintMs": 21.299999997019768
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.199999988079071,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.300000011920929,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 6,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 34.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.9000000059604645,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.800000011920929,
+              "toNextPaintMs": 33.80000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.899999991059303,
+              "toNextPaintMs": 32.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.399999991059303,
+              "toNextPaintMs": 40.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 7.100000008940697,
+              "toNextPaintMs": 27.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 32.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 32.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 33.19999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 33.30000001192093
+            }
+          ],
+          "handlerMedianMs": 5.899999991059303,
+          "handlerP95Ms": 9.200000002980232,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34.20000000298023,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 3,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 7.5999999940395355,
+              "toNextPaintMs": 17.700000002980232
+            },
+            {
+              "label": "字体",
+              "jsMs": 8,
+              "toNextPaintMs": 25.700000002980232
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.600000008940697,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.399999991059303,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.600000008940697,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.4000000059604645,
+              "toNextPaintMs": 35.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 34.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 29.200000002980232
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 32.80000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.699999988079071,
+              "toNextPaintMs": 32.69999998807907
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 32.70000000298023
+            }
+          ],
+          "handlerMedianMs": 5.700000002980232,
+          "handlerP95Ms": 7.5999999940395355,
+          "paintMedianMs": 33,
+          "paintP95Ms": 34.599999994039536,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        }
+      ],
+      "note": "Isolated drafts; CPU throttle is laboratory stress, not physical hardware. Repeated native DOM change dispatch and double-RAF observation; pointer slider is actual held mouse."
+    },
+    "interpretation": "Matched CPU4x stress, before and after 3 serial runs; no tests or builds in parallel. Handler median unchanged near5.7ms, P95 +1.3ms; no FPS, cold-network, physical-device or speedup claim. Zero removed Element/image/control nodes and long tasks; all8 held-pointer values rendered."
+  },
+  "preserved": {
+    "count": 158,
+    "sha256OfFileRecords": "d655aac08510a8486cec105d4fa73ee8353497d8b2aff3ef3d4f8aa239ef3a8b",
+    "includes": "all tracked src outside watermark library, docs, deployment, original47plan, package/lock, Vite and TypeScript config"
+  },
+  "limits": [
+    "System Chrome and emulated mobile viewport only; Safari and physical phones not tested",
+    "Existing GL texture-copy warnings: custom room6/default room2; no page/console errors or failed requests",
+    "Generated illustration kind labels describe appearance; no pedigree identification or arbitrary variant-combination guarantee"
+  ],
+  "environment": {
+    "node": "/Users/jiangyuhan/.nvm/versions/node/v24.14.0",
+    "nodeEntry": "/Users/jiangyuhan/.local/bin/project-node",
+    "pnpmEntry": "/Users/jiangyuhan/.local/bin/project-pnpm",
+    "pnpmVersion": "11.7.0",
+    "store": "/Users/jiangyuhan/Library/pnpm/store/v11",
+    "python": "/Users/jiangyuhan/.local/share/project-envs/document-tools",
+    "pythonEntry": "/Users/jiangyuhan/.local/bin/document-python",
+    "imageEntry": "/Users/jiangyuhan/.local/bin/project-image",
+    "model": "gpt-image-2",
+    "newInstalls": 0,
+    "isolatedExceptions": []
+  },
+  "diskKiB": {
+    "startRepo": 220088,
+    "startStore": 1445180,
+    "validatedRepo": 241216,
+    "validatedStore": 1445180
+  },
+  "delivery": {
+    "status": "local validation complete; final fetch confirms origin branch at baseline and main unchanged; normal development-branch push pending",
+    "published": false
+  },
+  "documentation": {
+    "files": 6,
+    "localLinksChecked": 191,
+    "diffCheck": true,
+    "credentialPatternScan": "clean",
+    "initialDocCheck": "variant-plan continuation note omitted current total; added361 and reran successfully"
+  }
+}

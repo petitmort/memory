@@ -1,6 +1,6 @@
 # Image 水印素材
 
-本目录当前169张透明WebP，共3,941,668B；保留原109张，本次补充60张独立变体，均从实际生成的图中裁切，不是SVG替代或第三方贴图。只由作者工作台引用；选中后以普通素材Blob保存，阅读 / 备份 / 内容包不依赖本目录或生成服务。
+本目录当前361张透明WebP，共8,838,388B；保留原169张，本次从八组新源图补充192张独立变体，均从实际生成的图中裁切，不是SVG替代或第三方贴图。只由作者工作台引用；选中后以普通素材Blob保存，阅读 / 备份 / 内容包不依赖本目录或生成服务。
 
 ## 首批27张（历史）
 
@@ -50,3 +50,20 @@
 ```
 
 如从全部源图完整重建，依次执行`prepare-watermarks.py`、`prepare-watermark-variants.py`、`prepare-watermark-expansion.py`；仅运行首批脚本仍会将目录退回27款。使用方法与生成受限状态见[本次实施记录](../../../WATERMARK-EXPANSION-PLAN.md)。
+
+
+## 2026-11-14 · 新源图192款
+
+- 专用图片通道核实成功后，八组实际源图全部返回（不是从旧图换色复制）：猫咪A / B、花朵、海边、星星、枝叶、蝴蝶结、爱心，均1024×1024，总10,690,207B。前次额度失败属于上节历史；本接续首次探测仍失败、再次核实成功后完成八组，记录见[生成回执](../../../output/imagegen/watermark-newsource-generation.json)。只使用共享project-image / gpt-image-2，没有网站AI接口，凭据只在本机技能配置。
+- 本批新增猫咪53、花20、海边16、星24、枝叶29、心意50（领结20 / 爱心30）；全库六类82 / 53 / 35 / 48 / 58 / 85，总361款。旧169款元数据、顺序和文件字节保持。猫种标签仍按插画外观，不作血统鉴定。
+- 原图保存在`output/imagegen/watermark-expansion-{cats-a,cats-b,flowers,seaside,stars,leaves,bows,hearts}.png`，输入SHA、实际标签、裁切框与邻图排除矩形见[本批清单](../../../scripts/watermark-newsource-crops.json)。猫咪B是原生透明RGBA：保留真实alpha / 白毛，不用去白底算法；其余RGB复用外部白底处理和必要的白毛闭合。对分离花瓣、星点、心环保留全部组件，按逐图边界清除邻图碎片。六类联系表逐项复看修正蝴蝶结尾部、海草 / 珊瑚、花枝和爱心边界。
+- 新图共4,896,720B（约4.67MiB），无损WebP；尺寸 / 输出SHA见`catalog.json`。图库仅作者入口懒加载，默认访客不请求。共享调节、普通Blob存稿、备份 / 内容包与所有输出路径复用原功能，不新增模型字段或逐帧工作。
+
+重建 / 核对本批（不访问网络或读取配置，只替换明确批次键）：
+
+```sh
+~/.local/bin/document-python scripts/prepare-watermark-expansion.py --spec scripts/watermark-newsource-crops.json
+~/.local/bin/document-python scripts/prepare-watermark-expansion.py --spec scripts/watermark-newsource-crops.json --check
+```
+
+如从源图完整重建，依次首批27、82变体、默认60扩充，再执行上面的192批命令；只运行首批脚本会把目录退回27款。新批 / 60批`--check`及旧82批重建后362文件（361图＋目录）逐字节保持已核对。详细当前状态见[分步记录](../../../WATERMARK-EXPANSION-PLAN.md) Y00–Y03。

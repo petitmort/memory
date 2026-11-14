@@ -2586,5 +2586,3117 @@
     "sha256": "9ba9c6c5d483e0d1ae89284022f1f9b94257871c5d9e99db906b29ea07ea5675",
     "width": 73,
     "height": 78
+  },
+  {
+    "key": "fresh-cat-ginger-smile",
+    "name": "橘猫·闭眼端坐",
+    "category": "cats",
+    "kind": "橘猫",
+    "color": "橘白",
+    "details": [
+      "端坐",
+      "闭眼笑",
+      "朝前"
+    ],
+    "file": "fresh-cat-ginger-smile.webp",
+    "sha256": "dfb86def0890e4366be4e3f903cc53f0280deb6b0ed1ff2e81b59f8078959660",
+    "width": 158,
+    "height": 178
+  },
+  {
+    "key": "fresh-cat-gray-bow",
+    "name": "灰白猫·蓝领结",
+    "category": "cats",
+    "kind": "灰白猫",
+    "color": "灰白",
+    "details": [
+      "端坐",
+      "圆眼",
+      "蓝领结",
+      "朝前"
+    ],
+    "file": "fresh-cat-gray-bow.webp",
+    "sha256": "ae20bf3dc8a2ab5f3fbed2c6fb6d631da57fa9c56bf54d7271e89a2d15059791",
+    "width": 158,
+    "height": 180
+  },
+  {
+    "key": "fresh-cat-white-crown",
+    "name": "白长毛猫·小王冠",
+    "category": "cats",
+    "kind": "白长毛猫",
+    "color": "白",
+    "details": [
+      "闭眼笑",
+      "王冠",
+      "端坐"
+    ],
+    "file": "fresh-cat-white-crown.webp",
+    "sha256": "485cf19aa5ae87d81192909a6b850e24b3f8c30f87df99e961195ba4953af857",
+    "width": 159,
+    "height": 178
+  },
+  {
+    "key": "fresh-cat-black-red-bow",
+    "name": "黑猫·红领结",
+    "category": "cats",
+    "kind": "黑猫",
+    "color": "深棕",
+    "details": [
+      "端坐",
+      "金眼",
+      "红领结",
+      "朝前"
+    ],
+    "file": "fresh-cat-black-red-bow.webp",
+    "sha256": "ce38be056da7ed1d93aa4484f027962fab6609cd13a0af6bef01251cff738aa3",
+    "width": 157,
+    "height": 180
+  },
+  {
+    "key": "fresh-cat-tabby-side",
+    "name": "灰虎斑·侧身仰望",
+    "category": "cats",
+    "kind": "虎斑猫",
+    "color": "灰白",
+    "details": [
+      "端坐",
+      "仰望",
+      "朝右"
+    ],
+    "file": "fresh-cat-tabby-side.webp",
+    "sha256": "1cbab8ef0898887b02fcef12b02c66b11d0a2b1e8fa95d2113e2bb9451080b8a",
+    "width": 146,
+    "height": 181
+  },
+  {
+    "key": "fresh-cat-calico-back",
+    "name": "三花猫·端坐背影",
+    "category": "cats",
+    "kind": "三花猫",
+    "color": "三花",
+    "details": [
+      "背影",
+      "端坐",
+      "朝后"
+    ],
+    "file": "fresh-cat-calico-back.webp",
+    "sha256": "091531e706d710f47c6fdf02f58746ef669ebf8280d7218642147e1d91687e88",
+    "width": 121,
+    "height": 181
+  },
+  {
+    "key": "fresh-cat-gray-stretch",
+    "name": "灰白猫·伸懒腰",
+    "category": "cats",
+    "kind": "灰白猫",
+    "color": "灰白",
+    "details": [
+      "伸懒腰",
+      "闭眼",
+      "翘尾",
+      "朝右"
+    ],
+    "file": "fresh-cat-gray-stretch.webp",
+    "sha256": "05509dcdfa5d7b3517591ed7fa12bcca8bba4da889b5247f23915fd8fca0ee08",
+    "width": 174,
+    "height": 169
+  },
+  {
+    "key": "fresh-cat-ginger-nap",
+    "name": "橘猫·抱尾小睡",
+    "category": "cats",
+    "kind": "橘猫",
+    "color": "橘白",
+    "details": [
+      "蜷睡",
+      "闭眼",
+      "抱尾",
+      "朝右"
+    ],
+    "file": "fresh-cat-ginger-nap.webp",
+    "sha256": "a6ed17140402a4c25bb8c5b984ee70d7833919dbebff3de4049ad8957768fd3b",
+    "width": 185,
+    "height": 109
+  },
+  {
+    "key": "fresh-cat-white-belly",
+    "name": "白猫·翻肚撒娇",
+    "category": "cats",
+    "kind": "白猫",
+    "color": "白",
+    "details": [
+      "翻肚",
+      "抬爪",
+      "笑脸",
+      "朝右"
+    ],
+    "file": "fresh-cat-white-belly.webp",
+    "sha256": "6bc16a89a663cd8aa39aca1d0e6c1a32242ad4ac8f99150e095076e2a95afeae",
+    "width": 164,
+    "height": 149
+  },
+  {
+    "key": "fresh-cat-tabby-peek",
+    "name": "灰虎斑·探头",
+    "category": "cats",
+    "kind": "虎斑猫",
+    "color": "灰白",
+    "details": [
+      "探头",
+      "圆眼",
+      "露爪",
+      "朝前"
+    ],
+    "file": "fresh-cat-tabby-peek.webp",
+    "sha256": "b39b47d94e7b09d65cd4201970ebfcd7c8a2ca9dcaecae6add97876a05e722c6",
+    "width": 177,
+    "height": 109
+  },
+  {
+    "key": "fresh-cat-tuxedo-nap",
+    "name": "黑白猫·格垫小睡",
+    "category": "cats",
+    "kind": "黑白猫",
+    "color": "黑白",
+    "details": [
+      "侧睡",
+      "格纹垫",
+      "闭眼",
+      "朝左"
+    ],
+    "file": "fresh-cat-tuxedo-nap.webp",
+    "sha256": "e06e3ec4951996b021443b51ab21a0e03d50abd46f18f2fa8351133f1d249d48",
+    "width": 190,
+    "height": 126
+  },
+  {
+    "key": "fresh-cat-gray-yarn",
+    "name": "灰白猫·玩毛线球",
+    "category": "cats",
+    "kind": "灰白猫",
+    "color": "灰白",
+    "details": [
+      "毛线球",
+      "抬爪",
+      "朝左"
+    ],
+    "file": "fresh-cat-gray-yarn.webp",
+    "sha256": "3df77c056878c3a12396e810714d8de3e05e2d81c39135711ab0773ef2219812",
+    "width": 172,
+    "height": 155
+  },
+  {
+    "key": "fresh-cat-colorpoint-look",
+    "name": "重点色猫·歪头",
+    "category": "cats",
+    "kind": "重点色猫",
+    "color": "奶油棕",
+    "details": [
+      "歪头",
+      "仰望",
+      "蓝领结",
+      "朝右"
+    ],
+    "file": "fresh-cat-colorpoint-look.webp",
+    "sha256": "15491de1a599cea90c472beb0d36f3c9a756e6a5444f407c7edc1621099ec0b3",
+    "width": 144,
+    "height": 179
+  },
+  {
+    "key": "fresh-cat-ginger-leap",
+    "name": "橘猫·轻轻跃起",
+    "category": "cats",
+    "kind": "橘猫",
+    "color": "橘白",
+    "details": [
+      "跃起",
+      "闭眼笑",
+      "朝左"
+    ],
+    "file": "fresh-cat-ginger-leap.webp",
+    "sha256": "8984990bf041638d02a441309c86ac091eb6555bc46f2f61f10db0694a28af5b",
+    "width": 185,
+    "height": 148
+  },
+  {
+    "key": "fresh-cat-black-scarf",
+    "name": "黑猫·围巾哼歌",
+    "category": "cats",
+    "kind": "黑猫",
+    "color": "深棕",
+    "details": [
+      "围巾",
+      "闭眼",
+      "端坐",
+      "朝前"
+    ],
+    "file": "fresh-cat-black-scarf.webp",
+    "sha256": "48131e586401fe62f34d024bb8aa3d069f0853747392d128bf930bd411c6eff2",
+    "width": 131,
+    "height": 169
+  },
+  {
+    "key": "fresh-cat-white-blue-bow",
+    "name": "白猫·蓝结微笑",
+    "category": "cats",
+    "kind": "白猫",
+    "color": "白",
+    "details": [
+      "蓝领结",
+      "闭眼笑",
+      "端坐",
+      "朝前"
+    ],
+    "file": "fresh-cat-white-blue-bow.webp",
+    "sha256": "fb2469652eb40808a96106f6d2296d82dd018be90fc2898af8b81f9e710fb689",
+    "width": 141,
+    "height": 171
+  },
+  {
+    "key": "fresh-cat-calico-box",
+    "name": "三花猫·纸箱探头",
+    "category": "cats",
+    "kind": "三花猫",
+    "color": "三花",
+    "details": [
+      "纸箱",
+      "探头",
+      "闭眼",
+      "朝前"
+    ],
+    "file": "fresh-cat-calico-box.webp",
+    "sha256": "c116aeebbed24528d540d7584c1f870c6be6928ca78a6b0379af7d7e2aa1cf32",
+    "width": 148,
+    "height": 156
+  },
+  {
+    "key": "fresh-cat-tabby-curious",
+    "name": "虎斑头像·好奇",
+    "category": "cats",
+    "kind": "猫咪头像",
+    "color": "灰白",
+    "details": [
+      "探头",
+      "圆眼",
+      "露爪",
+      "朝前"
+    ],
+    "file": "fresh-cat-tabby-curious.webp",
+    "sha256": "d8882f9e3b65ebfbeaab9ee0472ab3b8d1fea2e860c2e5ab527d7ea3be7e0862",
+    "width": 172,
+    "height": 102
+  },
+  {
+    "key": "fresh-cat-ginger-pout",
+    "name": "橘猫头像·小委屈",
+    "category": "cats",
+    "kind": "猫咪头像",
+    "color": "橘白",
+    "details": [
+      "皱眉",
+      "眯眼",
+      "露爪",
+      "朝前"
+    ],
+    "file": "fresh-cat-ginger-pout.webp",
+    "sha256": "499525d31237dd2d5f4e643cb4f935e8ed5679205c051bfad62600dae47575ea",
+    "width": 161,
+    "height": 99
+  },
+  {
+    "key": "fresh-cat-black-curious",
+    "name": "黑猫头像·疑惑",
+    "category": "cats",
+    "kind": "猫咪头像",
+    "color": "深棕",
+    "details": [
+      "疑惑",
+      "圆眼",
+      "露爪",
+      "朝前"
+    ],
+    "file": "fresh-cat-black-curious.webp",
+    "sha256": "13a31eb0d6b67daab95fb4732eb0801f8d8f56c473adad5069b3374bea8fde25",
+    "width": 159,
+    "height": 100
+  },
+  {
+    "key": "fresh-cat-white-laugh",
+    "name": "白猫头像·大笑",
+    "category": "cats",
+    "kind": "猫咪头像",
+    "color": "白",
+    "details": [
+      "大笑",
+      "闭眼",
+      "朝前"
+    ],
+    "file": "fresh-cat-white-laugh.webp",
+    "sha256": "5d6268124bee475542603eaed3f457c2b7da4cd957bb5764e1b73e61e86e7067",
+    "width": 159,
+    "height": 109
+  },
+  {
+    "key": "fresh-cat-gray-grumpy",
+    "name": "灰猫头像·小脾气",
+    "category": "cats",
+    "kind": "猫咪头像",
+    "color": "灰",
+    "details": [
+      "不高兴",
+      "眯眼",
+      "露爪",
+      "朝前"
+    ],
+    "file": "fresh-cat-gray-grumpy.webp",
+    "sha256": "336109ddd3b5697d3dbfc5baaee2e064f609af962eb1ca3fbc89d3c75fa81e25",
+    "width": 142,
+    "height": 94
+  },
+  {
+    "key": "fresh-cat-calico-pout",
+    "name": "三花头像·鼓脸",
+    "category": "cats",
+    "kind": "猫咪头像",
+    "color": "三花",
+    "details": [
+      "鼓脸",
+      "眯眼",
+      "露爪",
+      "朝前"
+    ],
+    "file": "fresh-cat-calico-pout.webp",
+    "sha256": "bcebc7363c72786c4c850012e4db4aafa21c23a90f64aed5fcc2f41b86246b81",
+    "width": 152,
+    "height": 93
+  },
+  {
+    "key": "fresh-cat-frog-hat",
+    "name": "小猫·青蛙帽",
+    "category": "cats",
+    "kind": "装扮猫",
+    "color": "棕白绿",
+    "details": [
+      "青蛙帽",
+      "圆眼",
+      "探头",
+      "朝前"
+    ],
+    "file": "fresh-cat-frog-hat.webp",
+    "sha256": "49cc34695d079f7791a81f76752efe53b3091d2553f7e2fc777e36e0987952fd",
+    "width": 156,
+    "height": 130
+  },
+  {
+    "key": "fresh-cat-bunny-hat",
+    "name": "小猫·兔耳帽",
+    "category": "cats",
+    "kind": "装扮猫",
+    "color": "棕白粉",
+    "details": [
+      "兔耳帽",
+      "圆眼",
+      "探头",
+      "朝前"
+    ],
+    "file": "fresh-cat-bunny-hat.webp",
+    "sha256": "4f0afd379a242baf67519ffef4a8633c7622fd08e428859bd8855fb654c69ea9",
+    "width": 160,
+    "height": 145
+  },
+  {
+    "key": "fresh-cat-bear-hat",
+    "name": "小猫·小熊帽",
+    "category": "cats",
+    "kind": "装扮猫",
+    "color": "棕白",
+    "details": [
+      "小熊帽",
+      "圆眼",
+      "探头",
+      "朝前"
+    ],
+    "file": "fresh-cat-bear-hat.webp",
+    "sha256": "8a96a848891bffbc80ac0c203537a5fe353f152d00a6fe51c754e99a24fd5c6a",
+    "width": 156,
+    "height": 128
+  },
+  {
+    "key": "fresh-cat-gray-check-bed",
+    "name": "灰白猫·格垫蜷睡",
+    "category": "cats",
+    "kind": "灰白猫",
+    "color": "灰白",
+    "details": [
+      "蜷睡",
+      "格纹垫",
+      "闭眼",
+      "朝左"
+    ],
+    "file": "fresh-cat-gray-check-bed.webp",
+    "sha256": "8b5a336c19c753ef5e8542548280abdc88d6e77bb4909e13afb678febf8d9e44",
+    "width": 193,
+    "height": 116
+  },
+  {
+    "key": "fresh-cat-calico-chick",
+    "name": "三花猫·头顶小鸡",
+    "category": "cats",
+    "kind": "三花猫",
+    "color": "三花",
+    "details": [
+      "小鸡",
+      "闭眼笑",
+      "露爪",
+      "朝前"
+    ],
+    "file": "fresh-cat-calico-chick.webp",
+    "sha256": "d8dc9d631e84faa1469da546ef018ab9ea89775803487cb27a90f4085f8ce5f1",
+    "width": 139,
+    "height": 146
+  },
+  {
+    "key": "fresh-cat-calico-hug-fish",
+    "name": "三花猫·抱小鱼",
+    "category": "cats",
+    "kind": "三花猫",
+    "color": "三花",
+    "details": [
+      "抱鱼",
+      "闭眼笑",
+      "端坐",
+      "朝前"
+    ],
+    "file": "fresh-cat-calico-hug-fish.webp",
+    "sha256": "cb20763a2e7abff59d8eeb1dfaf998b97888934ae579a3c7308d8976cb6f338c",
+    "width": 133,
+    "height": 147
+  },
+  {
+    "key": "fresh-cat-moon-back",
+    "name": "小猫·月牙背影",
+    "category": "cats",
+    "kind": "情景猫",
+    "color": "棕白",
+    "details": [
+      "月牙",
+      "背影",
+      "仰望",
+      "朝右"
+    ],
+    "file": "fresh-cat-moon-back.webp",
+    "sha256": "0ec6fe7e5f4e7dcfff26c93ab5c8cef304d88d2e964d3e087e85374207a6f34e",
+    "width": 185,
+    "height": 178
+  },
+  {
+    "key": "fresh-cat-black-back",
+    "name": "黑猫·红结背影",
+    "category": "cats",
+    "kind": "黑猫",
+    "color": "深棕",
+    "details": [
+      "背影",
+      "红领结",
+      "端坐",
+      "朝后"
+    ],
+    "file": "fresh-cat-black-back.webp",
+    "sha256": "c0b0acbac1d54b266373558f53f8594fc9449df4a38cc570b803abe85d9b0f8d",
+    "width": 109,
+    "height": 160
+  },
+  {
+    "key": "fresh-cat-paper-boat",
+    "name": "小猫·纸船入梦",
+    "category": "cats",
+    "kind": "情景猫",
+    "color": "灰白",
+    "details": [
+      "纸船",
+      "闭眼",
+      "波浪",
+      "朝前"
+    ],
+    "file": "fresh-cat-paper-boat.webp",
+    "sha256": "1147a7b6f1f86a5340b022a957efd0fe33838a5e516b39953390a1338d4681c7",
+    "width": 191,
+    "height": 166
+  },
+  {
+    "key": "fresh-cat-pair-bed",
+    "name": "两只猫·依偎小睡",
+    "category": "cats",
+    "kind": "双猫",
+    "color": "橘三花",
+    "details": [
+      "双猫",
+      "蜷睡",
+      "猫窝",
+      "闭眼"
+    ],
+    "file": "fresh-cat-pair-bed.webp",
+    "sha256": "2538b03c83c72602b887a48ee988510abc3b8432695e76c08c67d7a01bde59ac",
+    "width": 216,
+    "height": 148
+  },
+  {
+    "key": "fresh-cat-b-tabby-red-collar",
+    "name": "虎斑猫·红项圈微笑",
+    "category": "cats",
+    "kind": "虎斑猫",
+    "color": "灰白",
+    "details": [
+      "端坐",
+      "闭眼笑",
+      "红项圈",
+      "朝前"
+    ],
+    "file": "fresh-cat-b-tabby-red-collar.webp",
+    "sha256": "fa75c9498787291d42a12a4bc6b86590a329c3c5891ba3f7e5ca834255028e7f",
+    "width": 225,
+    "height": 209
+  },
+  {
+    "key": "fresh-cat-b-ginger-blue-bed",
+    "name": "橘猫·蓝格床垫",
+    "category": "cats",
+    "kind": "橘猫",
+    "color": "橘白",
+    "details": [
+      "蜷睡",
+      "格纹垫",
+      "闭眼",
+      "朝左"
+    ],
+    "file": "fresh-cat-b-ginger-blue-bed.webp",
+    "sha256": "406bcf1e9852f4cfefc6dcde262cf869bd914f2b07c2db3a8ac9b06a310b8b58",
+    "width": 244,
+    "height": 166
+  },
+  {
+    "key": "fresh-cat-b-black-paws-peek",
+    "name": "黑白猫·伸爪探头",
+    "category": "cats",
+    "kind": "黑白猫",
+    "color": "黑白",
+    "details": [
+      "探头",
+      "圆眼",
+      "露爪",
+      "朝前"
+    ],
+    "file": "fresh-cat-b-black-paws-peek.webp",
+    "sha256": "65c88ab85da3f46989eb20b8786f3f4f1508a8820cfa03566345c5fb770ce61c",
+    "width": 233,
+    "height": 134
+  },
+  {
+    "key": "fresh-cat-b-white-curled-tail",
+    "name": "白猫·卷尾端坐",
+    "category": "cats",
+    "kind": "白长毛猫",
+    "color": "白",
+    "details": [
+      "端坐",
+      "闭眼笑",
+      "蓝领结",
+      "卷尾"
+    ],
+    "file": "fresh-cat-b-white-curled-tail.webp",
+    "sha256": "7f9320fd84cd158843f6cb8374405b9c4a9296e986b8898e7c6e3bcd99f4b32d",
+    "width": 232,
+    "height": 203
+  },
+  {
+    "key": "fresh-cat-b-ginger-reaching",
+    "name": "橘猫·伸爪仰望",
+    "category": "cats",
+    "kind": "橘猫",
+    "color": "橘白",
+    "details": [
+      "伸爪",
+      "仰望",
+      "朝右"
+    ],
+    "file": "fresh-cat-b-ginger-reaching.webp",
+    "sha256": "6e7f0eefc568b8b0a1a697a41c97fa1879304ed95844ee366be8f62c33f08348",
+    "width": 210,
+    "height": 189
+  },
+  {
+    "key": "fresh-cat-b-gray-pink-yarn",
+    "name": "灰猫·抱粉色线球",
+    "category": "cats",
+    "kind": "灰白猫",
+    "color": "灰白",
+    "details": [
+      "翻肚",
+      "毛线球",
+      "闭眼笑",
+      "朝前"
+    ],
+    "file": "fresh-cat-b-gray-pink-yarn.webp",
+    "sha256": "d7d7230904d0c17cb6e6aa738b97859a49aee868167e9f93bacb1cf69d733350",
+    "width": 234,
+    "height": 191
+  },
+  {
+    "key": "fresh-cat-b-gray-open-box",
+    "name": "灰白猫·打开纸箱",
+    "category": "cats",
+    "kind": "灰白猫",
+    "color": "灰白",
+    "details": [
+      "纸箱",
+      "探头",
+      "圆眼",
+      "朝前"
+    ],
+    "file": "fresh-cat-b-gray-open-box.webp",
+    "sha256": "142fce8f18167f3d705c499375111071dd7882928ac97f2b018cc0a68323d191",
+    "width": 240,
+    "height": 214
+  },
+  {
+    "key": "fresh-cat-b-black-deep-stretch",
+    "name": "黑猫·低头伸懒腰",
+    "category": "cats",
+    "kind": "黑猫",
+    "color": "深棕",
+    "details": [
+      "伸懒腰",
+      "翘尾",
+      "闭眼",
+      "朝左"
+    ],
+    "file": "fresh-cat-b-black-deep-stretch.webp",
+    "sha256": "35a2349cebe4adbeae04c0a5f24925b329d135fdb0cb09792437155785d7e4a6",
+    "width": 216,
+    "height": 203
+  },
+  {
+    "key": "fresh-cat-b-white-fluffy-blue-eyes",
+    "name": "白长毛猫·蓝眼端坐",
+    "category": "cats",
+    "kind": "白长毛猫",
+    "color": "白",
+    "details": [
+      "端坐",
+      "蓝眼",
+      "蓬松",
+      "朝前"
+    ],
+    "file": "fresh-cat-b-white-fluffy-blue-eyes.webp",
+    "sha256": "c1be8f2ce908826cf5a6503261f4cf68c1bf3c6d12783d64d8de4992aed71f38",
+    "width": 207,
+    "height": 207
+  },
+  {
+    "key": "fresh-cat-b-calico-side-look",
+    "name": "三花猫·侧坐仰望",
+    "category": "cats",
+    "kind": "三花猫",
+    "color": "三花",
+    "details": [
+      "端坐",
+      "仰望",
+      "朝左"
+    ],
+    "file": "fresh-cat-b-calico-side-look.webp",
+    "sha256": "6c90dd43781e9b4fc5efcb9fc1158ca4cf23d1ebbb7d2c2578a111d41237ebb3",
+    "width": 212,
+    "height": 212
+  },
+  {
+    "key": "fresh-cat-b-gray-tail-sleep",
+    "name": "灰虎斑·垂尾小睡",
+    "category": "cats",
+    "kind": "虎斑猫",
+    "color": "灰白",
+    "details": [
+      "侧睡",
+      "垂尾",
+      "闭眼",
+      "朝左"
+    ],
+    "file": "fresh-cat-b-gray-tail-sleep.webp",
+    "sha256": "19f82258cade56ffcbc698dfe0bb15cb3eb6b48a04d939c3df4ee2ed46fb131c",
+    "width": 222,
+    "height": 150
+  },
+  {
+    "key": "fresh-cat-b-ginger-back-tail",
+    "name": "橘猫·回头背影",
+    "category": "cats",
+    "kind": "橘猫",
+    "color": "橘黄",
+    "details": [
+      "背影",
+      "卷尾",
+      "回头",
+      "朝后"
+    ],
+    "file": "fresh-cat-b-ginger-back-tail.webp",
+    "sha256": "1983de4d42542c094cba7e3ad77fcb3bb4cb6742f96d21426fab42f81084e219",
+    "width": 154,
+    "height": 206
+  },
+  {
+    "key": "fresh-cat-b-tuxedo-pink-bed",
+    "name": "黑白猫·粉格床垫",
+    "category": "cats",
+    "kind": "黑白猫",
+    "color": "黑白",
+    "details": [
+      "侧睡",
+      "格纹垫",
+      "闭眼",
+      "朝右"
+    ],
+    "file": "fresh-cat-b-tuxedo-pink-bed.webp",
+    "sha256": "89c24bfd857b004bcece59ac9fa4046136fa2a5a51ae99f1387f67a3234256c0",
+    "width": 240,
+    "height": 157
+  },
+  {
+    "key": "fresh-cat-b-white-red-wink",
+    "name": "白猫·红结眨眼",
+    "category": "cats",
+    "kind": "白猫",
+    "color": "白",
+    "details": [
+      "探头",
+      "红领结",
+      "眨眼",
+      "露爪"
+    ],
+    "file": "fresh-cat-b-white-red-wink.webp",
+    "sha256": "ca08e020958fa6cbc30d07e63d86b45cac4ae8678a452ca31b45e16e9769795b",
+    "width": 210,
+    "height": 138
+  },
+  {
+    "key": "fresh-cat-b-tabby-running",
+    "name": "灰虎斑·开心奔跑",
+    "category": "cats",
+    "kind": "虎斑猫",
+    "color": "灰白",
+    "details": [
+      "奔跑",
+      "闭眼笑",
+      "朝左"
+    ],
+    "file": "fresh-cat-b-tabby-running.webp",
+    "sha256": "c17100642cba1e7a80d2a40f32abf771fe0340eadc2d124c9c2fcec184612395",
+    "width": 229,
+    "height": 166
+  },
+  {
+    "key": "fresh-cat-b-white-fish-hug",
+    "name": "白猫·拥抱蓝鱼",
+    "category": "cats",
+    "kind": "白猫",
+    "color": "白",
+    "details": [
+      "抱鱼",
+      "翻肚",
+      "闭眼笑",
+      "朝前"
+    ],
+    "file": "fresh-cat-b-white-fish-hug.webp",
+    "sha256": "60f25d1d55f3f18e8e9acc7c0e9586db99aaced7d40b9497b1a2a851ff0d25a1",
+    "width": 220,
+    "height": 190
+  },
+  {
+    "key": "fresh-cat-b-gray-greeting",
+    "name": "灰白猫·举爪问好",
+    "category": "cats",
+    "kind": "灰白猫",
+    "color": "灰白",
+    "details": [
+      "抬爪",
+      "金项圈",
+      "圆眼",
+      "朝右"
+    ],
+    "file": "fresh-cat-b-gray-greeting.webp",
+    "sha256": "1d94d6652c8538fe3bf48190b0cc9ba875cad11727b8aa0a5b737bf09dd86cfc",
+    "width": 215,
+    "height": 179
+  },
+  {
+    "key": "fresh-cat-b-ginger-blue-cup",
+    "name": "橘猫·蓝杯探头",
+    "category": "cats",
+    "kind": "情景猫",
+    "color": "橘白蓝",
+    "details": [
+      "杯子",
+      "探头",
+      "露爪",
+      "朝前"
+    ],
+    "file": "fresh-cat-b-ginger-blue-cup.webp",
+    "sha256": "2f8cfcb028deee39efd895be1630ec93a2412e55bb11b094a5c612df72c4b9c2",
+    "width": 209,
+    "height": 199
+  },
+  {
+    "key": "fresh-cat-b-black-yellow-cushion",
+    "name": "黑白猫·黄垫小睡",
+    "category": "cats",
+    "kind": "黑白猫",
+    "color": "黑白",
+    "details": [
+      "侧睡",
+      "黄垫",
+      "闭眼",
+      "朝左"
+    ],
+    "file": "fresh-cat-b-black-yellow-cushion.webp",
+    "sha256": "815d5a0d3c80999e68c7aa0a8f00645e8560f945949f0a7147cb6c202b470a4a",
+    "width": 230,
+    "height": 149
+  },
+  {
+    "key": "fresh-cat-b-gray-looking-up",
+    "name": "灰白猫·抬头望天",
+    "category": "cats",
+    "kind": "灰白猫",
+    "color": "灰白",
+    "details": [
+      "端坐",
+      "仰望",
+      "朝右"
+    ],
+    "file": "fresh-cat-b-gray-looking-up.webp",
+    "sha256": "277db90c6912657084654aabe41b48d167c57a37c0c0519088cf53dfaed77858",
+    "width": 219,
+    "height": 178
+  },
+  {
+    "key": "fresh-flower-tulip-bouquet-pink",
+    "name": "粉色三枝郁金香",
+    "category": "flowers",
+    "kind": "郁金香",
+    "color": "粉",
+    "details": [
+      "三花",
+      "有茎叶",
+      "蝴蝶结"
+    ],
+    "file": "fresh-flower-tulip-bouquet-pink.webp",
+    "sha256": "42fb83578e166e22cdc5bdda7a0d28821679d9ad5e1d9ba1b9f00bf32f455929",
+    "width": 159,
+    "height": 241
+  },
+  {
+    "key": "fresh-flower-daisy-blue-bow",
+    "name": "雏菊·蓝带花束",
+    "category": "flowers",
+    "kind": "雏菊",
+    "color": "米白",
+    "details": [
+      "三花",
+      "有茎叶",
+      "蓝领结"
+    ],
+    "file": "fresh-flower-daisy-blue-bow.webp",
+    "sha256": "d0a6883fd88ef0c8eb4a8ad97b8761bd72441e28cd5ccc5e52e18e4ec67bce63",
+    "width": 162,
+    "height": 247
+  },
+  {
+    "key": "fresh-flower-purple-two",
+    "name": "紫色双朵小花",
+    "category": "flowers",
+    "kind": "五瓣花",
+    "color": "紫",
+    "details": [
+      "双花",
+      "白花心",
+      "散叶"
+    ],
+    "file": "fresh-flower-purple-two.webp",
+    "sha256": "d4afc8b2fe31b211e58f5b2595d655fd59c995c7165a7993b35a7c75e9af4a5b",
+    "width": 166,
+    "height": 199
+  },
+  {
+    "key": "fresh-flower-pink-bud",
+    "name": "粉花·并肩花苞",
+    "category": "flowers",
+    "kind": "圆瓣花",
+    "color": "粉",
+    "details": [
+      "花苞",
+      "有茎叶",
+      "朝左"
+    ],
+    "file": "fresh-flower-pink-bud.webp",
+    "sha256": "7e494cbc63bac6becf102c8eb842cb6f9a6c332f11e2c38cc9126207ad0f44d5",
+    "width": 164,
+    "height": 218
+  },
+  {
+    "key": "fresh-flower-sunflower-pair",
+    "name": "向日葵·高低双花",
+    "category": "flowers",
+    "kind": "向日葵",
+    "color": "金黄",
+    "details": [
+      "双花",
+      "有茎叶",
+      "朝右"
+    ],
+    "file": "fresh-flower-sunflower-pair.webp",
+    "sha256": "a771cb2201184f85bd1482df93f17e0992e71598cce5cbe0f6a46c7d8e55ee6b",
+    "width": 156,
+    "height": 232
+  },
+  {
+    "key": "fresh-flower-forget-me-not",
+    "name": "蓝色勿忘我花束",
+    "category": "flowers",
+    "kind": "勿忘我",
+    "color": "蓝",
+    "details": [
+      "多花",
+      "有茎叶",
+      "朝右"
+    ],
+    "file": "fresh-flower-forget-me-not.webp",
+    "sha256": "ae7ae7ff6b27020e96fcf3ca5d5505b1ed52a6e5f15259d92f3164497ff1b13f",
+    "width": 157,
+    "height": 215
+  },
+  {
+    "key": "fresh-flower-rose-branch",
+    "name": "粉玫瑰·层叠花瓣",
+    "category": "flowers",
+    "kind": "玫瑰",
+    "color": "粉",
+    "details": [
+      "层叠花瓣",
+      "有茎叶",
+      "朝前"
+    ],
+    "file": "fresh-flower-rose-branch.webp",
+    "sha256": "76212724e29fc46f4de420b5f9fc61d4e536b191048d431879feb427a4a6ea20",
+    "width": 144,
+    "height": 198
+  },
+  {
+    "key": "fresh-flower-purple-tape-bouquet",
+    "name": "紫色小花·点纹纸胶带",
+    "category": "flowers",
+    "kind": "小花束",
+    "color": "紫",
+    "details": [
+      "多花",
+      "纸胶带",
+      "点纹"
+    ],
+    "file": "fresh-flower-purple-tape-bouquet.webp",
+    "sha256": "1e0cb2ee9767fbad65ac638dd6e52b059a9c85c5c00ac29acda8f4847c469bc9",
+    "width": 161,
+    "height": 213
+  },
+  {
+    "key": "fresh-flower-daisy-pair-new",
+    "name": "双朵雏菊·斜斜长茎",
+    "category": "flowers",
+    "kind": "雏菊",
+    "color": "米白",
+    "details": [
+      "双花",
+      "长茎",
+      "朝左"
+    ],
+    "file": "fresh-flower-daisy-pair-new.webp",
+    "sha256": "1f95c816fadd723e77bf2ce34a632054957706c36630e735826ae5abb17a98ac",
+    "width": 166,
+    "height": 166
+  },
+  {
+    "key": "fresh-flower-sakura-trio",
+    "name": "樱粉三朵·散落花瓣",
+    "category": "flowers",
+    "kind": "樱花",
+    "color": "粉",
+    "details": [
+      "三花",
+      "花瓣",
+      "正面"
+    ],
+    "file": "fresh-flower-sakura-trio.webp",
+    "sha256": "680da4e2bfd1c1917cf9ee1dc6d8e310a4265f86c660b641248462a7ade275c9",
+    "width": 171,
+    "height": 178
+  },
+  {
+    "key": "fresh-flower-purple-cosmos",
+    "name": "紫色波斯菊·侧枝",
+    "category": "flowers",
+    "kind": "波斯菊",
+    "color": "紫",
+    "details": [
+      "单花",
+      "黄花心",
+      "朝左"
+    ],
+    "file": "fresh-flower-purple-cosmos.webp",
+    "sha256": "7276901fc9b0bf8d7e83895a67fae64fa37802515e79ec67216bb0d85beec8ec",
+    "width": 173,
+    "height": 162
+  },
+  {
+    "key": "fresh-flower-lily-bells",
+    "name": "铃兰·低垂小铃",
+    "category": "flowers",
+    "kind": "铃兰",
+    "color": "米白绿",
+    "details": [
+      "铃铛花",
+      "长叶",
+      "朝右"
+    ],
+    "file": "fresh-flower-lily-bells.webp",
+    "sha256": "947b2348b30d2953a2797fd75bf8e6c1a2bce447984bbe7b56fbe805ae29e9b5",
+    "width": 165,
+    "height": 233
+  },
+  {
+    "key": "fresh-flower-sakura-leaf",
+    "name": "樱花·一枝新叶",
+    "category": "flowers",
+    "kind": "樱花",
+    "color": "粉",
+    "details": [
+      "单花",
+      "有茎叶",
+      "朝前"
+    ],
+    "file": "fresh-flower-sakura-leaf.webp",
+    "sha256": "658e331a8593340f3c32ec51308579c08e3966d6be2ab9d389ee33df0916e5a7",
+    "width": 153,
+    "height": 138
+  },
+  {
+    "key": "fresh-flower-hydrangea-blue",
+    "name": "蓝色绣球·花束",
+    "category": "flowers",
+    "kind": "绣球",
+    "color": "蓝",
+    "details": [
+      "多花",
+      "蝴蝶结",
+      "有茎叶"
+    ],
+    "file": "fresh-flower-hydrangea-blue.webp",
+    "sha256": "81930ee1d4a6e026b2af1e9f5f369eab82934de188cd684be4289cf56f77e4f0",
+    "width": 180,
+    "height": 202
+  },
+  {
+    "key": "fresh-flower-tulip-pale-three",
+    "name": "浅粉三枝郁金香",
+    "category": "flowers",
+    "kind": "郁金香",
+    "color": "浅粉",
+    "details": [
+      "三花",
+      "有茎叶",
+      "朝右"
+    ],
+    "file": "fresh-flower-tulip-pale-three.webp",
+    "sha256": "f3d58e6f8f318a0cee78a198010a5d1830e68f54aacc79021e9f6fb63015b475",
+    "width": 172,
+    "height": 221
+  },
+  {
+    "key": "fresh-flower-yellow-bouquet",
+    "name": "金黄五瓣花·花束",
+    "category": "flowers",
+    "kind": "五瓣花",
+    "color": "金黄",
+    "details": [
+      "多花",
+      "蝴蝶结",
+      "有茎叶"
+    ],
+    "file": "fresh-flower-yellow-bouquet.webp",
+    "sha256": "76f95b2a68b345a501461969b86fbedfff22c7ecaab1fb3f566fa2fbfa1ce100",
+    "width": 178,
+    "height": 252
+  },
+  {
+    "key": "fresh-flower-sakura-petals",
+    "name": "樱花·飞散花瓣",
+    "category": "flowers",
+    "kind": "樱花",
+    "color": "粉",
+    "details": [
+      "花瓣",
+      "单花",
+      "朝左"
+    ],
+    "file": "fresh-flower-sakura-petals.webp",
+    "sha256": "29e6474ed7b44fc1d87c5f3e1cc9b50269c5922fb00015e16966616c894ac59d",
+    "width": 145,
+    "height": 208
+  },
+  {
+    "key": "fresh-flower-tulip-yellow",
+    "name": "黄色郁金香·双枝",
+    "category": "flowers",
+    "kind": "郁金香",
+    "color": "黄",
+    "details": [
+      "双花",
+      "有茎叶",
+      "朝右"
+    ],
+    "file": "fresh-flower-tulip-yellow.webp",
+    "sha256": "8dcc0c7be2ac092d72c528e5a20f0cafb5aa92ccfa340201e6584aa5cc8a58bc",
+    "width": 162,
+    "height": 212
+  },
+  {
+    "key": "fresh-flower-purple-stems",
+    "name": "紫色小花·三枝",
+    "category": "flowers",
+    "kind": "五瓣花",
+    "color": "紫",
+    "details": [
+      "三花",
+      "有茎叶",
+      "朝左"
+    ],
+    "file": "fresh-flower-purple-stems.webp",
+    "sha256": "be893640adf381b73e1287cae6739d6863cc89d0b56343600e1cb8c8b481d638",
+    "width": 194,
+    "height": 189
+  },
+  {
+    "key": "fresh-flower-blue-round-stem",
+    "name": "蓝色圆花·弯枝",
+    "category": "flowers",
+    "kind": "圆瓣花",
+    "color": "蓝",
+    "details": [
+      "弯枝",
+      "多花",
+      "黄花心"
+    ],
+    "file": "fresh-flower-blue-round-stem.webp",
+    "sha256": "6c109bccffbaba90fdaf30ab679591d60df8917837574f5b4daef9338d175c5d",
+    "width": 193,
+    "height": 241
+  },
+  {
+    "key": "fresh-sea-pink-fan",
+    "name": "粉扇贝·珍珠与气泡",
+    "category": "seaside",
+    "kind": "扇贝",
+    "color": "粉",
+    "details": [
+      "珍珠",
+      "气泡",
+      "贝壳"
+    ],
+    "file": "fresh-sea-pink-fan.webp",
+    "sha256": "a6ec471fe04bf74bef75083fb5034ad6f190483b366e657556361158f9b89f82",
+    "width": 246,
+    "height": 199
+  },
+  {
+    "key": "fresh-sea-purple-conch",
+    "name": "紫螺贝·深浅斑点",
+    "category": "seaside",
+    "kind": "螺贝",
+    "color": "紫",
+    "details": [
+      "斑点",
+      "气泡",
+      "贝壳"
+    ],
+    "file": "fresh-sea-purple-conch.webp",
+    "sha256": "43a6a6366bcdffb7810d992dae750aa8390e98b4c6d74bf1ed863eb7f9ce142a",
+    "width": 213,
+    "height": 193
+  },
+  {
+    "key": "fresh-sea-gold-starfish",
+    "name": "金色海星·白色点纹",
+    "category": "seaside",
+    "kind": "海星",
+    "color": "金黄",
+    "details": [
+      "点纹",
+      "星芒",
+      "正面"
+    ],
+    "file": "fresh-sea-gold-starfish.webp",
+    "sha256": "1a946bb1067607ae462e5ef704680eee8b4ce6b4440a83efd91490e135320d87",
+    "width": 218,
+    "height": 213
+  },
+  {
+    "key": "fresh-sea-blue-fan",
+    "name": "蓝紫贝·轻轻水纹",
+    "category": "seaside",
+    "kind": "扇贝",
+    "color": "蓝紫",
+    "details": [
+      "水纹",
+      "气泡",
+      "贝壳"
+    ],
+    "file": "fresh-sea-blue-fan.webp",
+    "sha256": "18e00dbbe33161da79d16d39ee3d9315708082c8c36c1ab1368aeffa93df361c",
+    "width": 214,
+    "height": 210
+  },
+  {
+    "key": "fresh-sea-blue-spiral-weed",
+    "name": "蓝色螺·一枝海草",
+    "category": "seaside",
+    "kind": "螺贝",
+    "color": "蓝白",
+    "details": [
+      "海草",
+      "气泡",
+      "贝壳"
+    ],
+    "file": "fresh-sea-blue-spiral-weed.webp",
+    "sha256": "3aa494e3b0997dc5eb020c3270d6bb7f7913b1a968738c2dc02d5d071b5e66e6",
+    "width": 252,
+    "height": 207
+  },
+  {
+    "key": "fresh-sea-pink-starfish",
+    "name": "粉色海星·星芒",
+    "category": "seaside",
+    "kind": "海星",
+    "color": "粉",
+    "details": [
+      "点纹",
+      "星芒",
+      "正面"
+    ],
+    "file": "fresh-sea-pink-starfish.webp",
+    "sha256": "5bfca29a1a472d87898f3801355bbb36ecf84f86596eabf114d23d626390d43c",
+    "width": 205,
+    "height": 218
+  },
+  {
+    "key": "fresh-sea-purple-fan",
+    "name": "紫粉扇贝·小气泡",
+    "category": "seaside",
+    "kind": "扇贝",
+    "color": "紫粉",
+    "details": [
+      "气泡",
+      "竖纹",
+      "贝壳"
+    ],
+    "file": "fresh-sea-purple-fan.webp",
+    "sha256": "4c4d6a93bf9a25dc0eea4b1cf2a54ae75f49213380c7036f5dd10d3a209f5deb",
+    "width": 230,
+    "height": 219
+  },
+  {
+    "key": "fresh-sea-cream-conch",
+    "name": "奶油螺贝·斑纹",
+    "category": "seaside",
+    "kind": "螺贝",
+    "color": "奶油棕",
+    "details": [
+      "斑点",
+      "星芒",
+      "贝壳"
+    ],
+    "file": "fresh-sea-cream-conch.webp",
+    "sha256": "35accd40794e0bd18ca24b9f81394c5ff16638e632b834117fdb9d6e2ce1a914",
+    "width": 204,
+    "height": 225
+  },
+  {
+    "key": "fresh-sea-blue-starfish",
+    "name": "蓝紫海星·水纹",
+    "category": "seaside",
+    "kind": "海星",
+    "color": "蓝紫",
+    "details": [
+      "点纹",
+      "气泡",
+      "水纹"
+    ],
+    "file": "fresh-sea-blue-starfish.webp",
+    "sha256": "899ab55cbda57e83d811336dda85a42fa6a490cb6c73d130baeceb28cb145ed9",
+    "width": 241,
+    "height": 211
+  },
+  {
+    "key": "fresh-sea-peach-fan",
+    "name": "蜜桃扇贝·水滴",
+    "category": "seaside",
+    "kind": "扇贝",
+    "color": "蜜桃",
+    "details": [
+      "水滴",
+      "竖纹",
+      "贝壳"
+    ],
+    "file": "fresh-sea-peach-fan.webp",
+    "sha256": "708a3b675db2ed0b419a787510acb98beadcbf4c7ffd0c7791e50ea62e6df650",
+    "width": 242,
+    "height": 205
+  },
+  {
+    "key": "fresh-sea-mint-starfish",
+    "name": "薄荷海星·紫珊瑚",
+    "category": "seaside",
+    "kind": "海星",
+    "color": "薄荷紫",
+    "details": [
+      "珊瑚",
+      "气泡",
+      "点纹"
+    ],
+    "file": "fresh-sea-mint-starfish.webp",
+    "sha256": "77f11ac37af2e1f888be79c8c21d16fda851d8758d7095046790d76b8360baaa",
+    "width": 239,
+    "height": 199
+  },
+  {
+    "key": "fresh-sea-pink-spiral-path",
+    "name": "粉条螺·海星轨迹",
+    "category": "seaside",
+    "kind": "螺贝",
+    "color": "粉白",
+    "details": [
+      "螺纹",
+      "海星",
+      "虚线",
+      "贝壳"
+    ],
+    "file": "fresh-sea-pink-spiral-path.webp",
+    "sha256": "7e09c041242838a7f6ebca872d193081f679c129d2b9cbb4a6cc410d4c20d19d",
+    "width": 207,
+    "height": 243
+  },
+  {
+    "key": "fresh-sea-blue-fan-weed",
+    "name": "蓝白扇贝·长叶海草",
+    "category": "seaside",
+    "kind": "扇贝",
+    "color": "蓝白",
+    "details": [
+      "海草",
+      "气泡",
+      "贝壳"
+    ],
+    "file": "fresh-sea-blue-fan-weed.webp",
+    "sha256": "da69d3375c173106dc897aec24eeca5e7168b937674a88edca8e4798a35c93c0",
+    "width": 252,
+    "height": 239
+  },
+  {
+    "key": "fresh-sea-purple-spike",
+    "name": "紫色骨螺·尖尖角",
+    "category": "seaside",
+    "kind": "骨螺",
+    "color": "紫白",
+    "details": [
+      "尖角",
+      "星芒",
+      "贝壳"
+    ],
+    "file": "fresh-sea-purple-spike.webp",
+    "sha256": "505a4ff6f4af0d2a26af4ac2a6998183c1344bedebd8454896fda51c196f689c",
+    "width": 225,
+    "height": 210
+  },
+  {
+    "key": "fresh-sea-sand-starfish",
+    "name": "沙色海星·温柔水纹",
+    "category": "seaside",
+    "kind": "海星",
+    "color": "沙色",
+    "details": [
+      "点纹",
+      "水纹",
+      "正面"
+    ],
+    "file": "fresh-sea-sand-starfish.webp",
+    "sha256": "309e7e2a93bc1dab65faefc53c03591c2efef65920f27421761931649d69b749",
+    "width": 217,
+    "height": 213
+  },
+  {
+    "key": "fresh-sea-rainbow-fan",
+    "name": "渐彩扇贝·珊瑚枝",
+    "category": "seaside",
+    "kind": "扇贝",
+    "color": "粉蓝",
+    "details": [
+      "渐彩",
+      "珊瑚",
+      "气泡",
+      "贝壳"
+    ],
+    "file": "fresh-sea-rainbow-fan.webp",
+    "sha256": "c6b947a8de4fffabdf92d8facf3ebd6a27858d22257f85d3162e49db956f26e8",
+    "width": 229,
+    "height": 214
+  },
+  {
+    "key": "fresh-star-scribble-hole",
+    "name": "紫星·涂鸦镂空",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "紫",
+    "details": [
+      "涂鸦",
+      "镂空",
+      "正面"
+    ],
+    "file": "fresh-star-scribble-hole.webp",
+    "sha256": "e98b390857c8a482a9a1120319bab659a6c7cc335f7a4526083c724ffc6c68fd",
+    "width": 197,
+    "height": 188
+  },
+  {
+    "key": "fresh-star-rainbow-tail",
+    "name": "金色流星·彩虹尾迹",
+    "category": "stars",
+    "kind": "流星",
+    "color": "彩虹金",
+    "details": [
+      "三色尾迹",
+      "星点",
+      "朝左"
+    ],
+    "file": "fresh-star-rainbow-tail.webp",
+    "sha256": "6e568c5b77f53ee6e8508156e1f1bda5a644eb073d57792191cee28b0abecd89",
+    "width": 252,
+    "height": 141
+  },
+  {
+    "key": "fresh-star-smiling-pair",
+    "name": "金紫双星·一起微笑",
+    "category": "stars",
+    "kind": "双星",
+    "color": "金紫",
+    "details": [
+      "双星",
+      "微笑",
+      "爱心"
+    ],
+    "file": "fresh-star-smiling-pair.webp",
+    "sha256": "c1ced4775098a7194bf3d6fc0b8eb4369161c020aae79a02e9ab55ac904d9b83",
+    "width": 221,
+    "height": 174
+  },
+  {
+    "key": "fresh-star-purple-orbit-long",
+    "name": "紫星·长椭圆星环",
+    "category": "stars",
+    "kind": "星环",
+    "color": "紫",
+    "details": [
+      "星环",
+      "斜纹",
+      "朝右"
+    ],
+    "file": "fresh-star-purple-orbit-long.webp",
+    "sha256": "f7b16183dc936b823748bff8c3c3e7464c9171e4163fe7dcd52c263ae3e17a0f",
+    "width": 217,
+    "height": 166
+  },
+  {
+    "key": "fresh-star-double-outline",
+    "name": "粉紫双星·相叠",
+    "category": "stars",
+    "kind": "双星",
+    "color": "粉紫",
+    "details": [
+      "双星",
+      "镂空",
+      "相叠"
+    ],
+    "file": "fresh-star-double-outline.webp",
+    "sha256": "16e6fbab817bcea9cb5c38aa198a94430b287a72d91364a18112f722e3e0c8df",
+    "width": 206,
+    "height": 172
+  },
+  {
+    "key": "fresh-star-cream-purple-bow",
+    "name": "奶油星·紫色小结",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "奶油紫",
+    "details": [
+      "闭眼笑",
+      "蝴蝶结",
+      "正面"
+    ],
+    "file": "fresh-star-cream-purple-bow.webp",
+    "sha256": "a8e764c5fcc420e2ca7306425337f0e223dd8bc9310738ae3ca761c83dd2904c",
+    "width": 202,
+    "height": 159
+  },
+  {
+    "key": "fresh-star-twinkle-pink-blue",
+    "name": "紫粉蓝·小星群",
+    "category": "stars",
+    "kind": "星群",
+    "color": "紫粉蓝",
+    "details": [
+      "多星",
+      "星芒",
+      "散落"
+    ],
+    "file": "fresh-star-twinkle-pink-blue.webp",
+    "sha256": "28be32f9d8a2ccdb800bd4ae9393b7c13aaab3dee5d037438303143de91580e5",
+    "width": 153,
+    "height": 147
+  },
+  {
+    "key": "fresh-star-gingham-stitch",
+    "name": "紫格星·虚线边",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "紫白",
+    "details": [
+      "格纹",
+      "虚线",
+      "正面"
+    ],
+    "file": "fresh-star-gingham-stitch.webp",
+    "sha256": "cc01dcefecb323266e4d0a37256b0977c89a8df87ab66b7e2c570ab6bed6d310",
+    "width": 171,
+    "height": 166
+  },
+  {
+    "key": "fresh-star-trio-trails",
+    "name": "蓝金紫·三颗流星",
+    "category": "stars",
+    "kind": "星群",
+    "color": "蓝金紫",
+    "details": [
+      "三颗星",
+      "轨迹",
+      "朝左"
+    ],
+    "file": "fresh-star-trio-trails.webp",
+    "sha256": "cd40d1582130c322c259f607d6421f901ef710381b41fdca4f580797e7ed4c52",
+    "width": 183,
+    "height": 150
+  },
+  {
+    "key": "fresh-star-purple-round-shine",
+    "name": "紫星·圆角亮点",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "淡紫",
+    "details": [
+      "圆角",
+      "亮点",
+      "正面"
+    ],
+    "file": "fresh-star-purple-round-shine.webp",
+    "sha256": "ff21e0e8a633cd2cee232e9a09ca9d974680619bc7b67acedebae9694ab5f049",
+    "width": 206,
+    "height": 171
+  },
+  {
+    "key": "fresh-star-stitched-center",
+    "name": "虚线星·紫色星心",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "紫",
+    "details": [
+      "虚线",
+      "星心",
+      "正面"
+    ],
+    "file": "fresh-star-stitched-center.webp",
+    "sha256": "493debd15229f6f9091a0120ebfbcd4b7c0605daef7cc0e649737504d4bea309",
+    "width": 171,
+    "height": 166
+  },
+  {
+    "key": "fresh-star-violet-silver-ring",
+    "name": "浅紫星·细细星环",
+    "category": "stars",
+    "kind": "星环",
+    "color": "浅紫",
+    "details": [
+      "星环",
+      "星芒",
+      "朝右"
+    ],
+    "file": "fresh-star-violet-silver-ring.webp",
+    "sha256": "9fad0ff024c3889ea2ac5587119d4a25f5936819179bd734560b437948f37f28",
+    "width": 185,
+    "height": 176
+  },
+  {
+    "key": "fresh-star-lilac-stripes",
+    "name": "浅紫星·斜条纹",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "紫白",
+    "details": [
+      "斜条纹",
+      "正面"
+    ],
+    "file": "fresh-star-lilac-stripes.webp",
+    "sha256": "f70e94a06783df383302800d2fb2aa09d5d0f29869371a45b9c4d666bb91fc28",
+    "width": 190,
+    "height": 171
+  },
+  {
+    "key": "fresh-star-bow-outline",
+    "name": "紫星·小结空心",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "紫",
+    "details": [
+      "蝴蝶结",
+      "空心",
+      "正面"
+    ],
+    "file": "fresh-star-bow-outline.webp",
+    "sha256": "13b33ab1fa8c4bd78d4fa2a958626412948984928227fb4b15fa17c790de3197",
+    "width": 173,
+    "height": 186
+  },
+  {
+    "key": "fresh-star-multicolor-little",
+    "name": "彩色小星·散落",
+    "category": "stars",
+    "kind": "星群",
+    "color": "彩色",
+    "details": [
+      "多星",
+      "星芒",
+      "散落"
+    ],
+    "file": "fresh-star-multicolor-little.webp",
+    "sha256": "aa8e042428b4cf0f71225ae752d404180032d4e55e929f93aacdc877cc5bf5f6",
+    "width": 217,
+    "height": 163
+  },
+  {
+    "key": "fresh-star-stacked-gold",
+    "name": "紫粉金·层叠三星",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "紫粉金",
+    "details": [
+      "层叠",
+      "三颗星",
+      "正面"
+    ],
+    "file": "fresh-star-stacked-gold.webp",
+    "sha256": "09adda01d925a837815bad70e9323e8d746f1a89ab9822d80d9e793584c9e43f",
+    "width": 191,
+    "height": 155
+  },
+  {
+    "key": "fresh-star-racing-pair",
+    "name": "紫色双星·轻快轨迹",
+    "category": "stars",
+    "kind": "双星",
+    "color": "紫",
+    "details": [
+      "双星",
+      "轨迹",
+      "朝左"
+    ],
+    "file": "fresh-star-racing-pair.webp",
+    "sha256": "2b9273524fc50df72d42d633d8965d74ec59b987c51e1bfb06beb05941ffb33a",
+    "width": 171,
+    "height": 159
+  },
+  {
+    "key": "fresh-star-blue-watercolor",
+    "name": "蓝紫星·轻淡晕染",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "蓝紫",
+    "details": [
+      "晕染",
+      "星点",
+      "正面"
+    ],
+    "file": "fresh-star-blue-watercolor.webp",
+    "sha256": "e697bfb43ff5f54f51a21d45c97663de56519bd41d1754e39ade209401e1ceb2",
+    "width": 199,
+    "height": 170
+  },
+  {
+    "key": "fresh-star-purple-pencil",
+    "name": "紫色小星·铅笔涂鸦",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "紫",
+    "details": [
+      "涂鸦",
+      "爱心",
+      "正面"
+    ],
+    "file": "fresh-star-purple-pencil.webp",
+    "sha256": "c76088980c5fca551a43621b4c3e2c9c69e2738180e2778a3bfee849ee9d8864",
+    "width": 157,
+    "height": 163
+  },
+  {
+    "key": "fresh-star-lavender-wide-orbit",
+    "name": "薰衣草星·横向星环",
+    "category": "stars",
+    "kind": "星环",
+    "color": "薰衣草紫",
+    "details": [
+      "星环",
+      "星芒",
+      "朝右"
+    ],
+    "file": "fresh-star-lavender-wide-orbit.webp",
+    "sha256": "6a80ea6b9d42d72b01e1b987c18bcd89a139688e9b8da0f00328ab2ef3673400",
+    "width": 205,
+    "height": 160
+  },
+  {
+    "key": "fresh-star-gold-purple-outlines",
+    "name": "金紫双星·空心",
+    "category": "stars",
+    "kind": "双星",
+    "color": "金紫",
+    "details": [
+      "双星",
+      "空心",
+      "爱心"
+    ],
+    "file": "fresh-star-gold-purple-outlines.webp",
+    "sha256": "16b9cc0a36938ab593dd34c69786e347f65815796e3ea3028d63af879328bc79",
+    "width": 185,
+    "height": 168
+  },
+  {
+    "key": "fresh-star-party-cream",
+    "name": "奶油星·派对帽",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "奶油紫",
+    "details": [
+      "派对帽",
+      "微笑",
+      "正面"
+    ],
+    "file": "fresh-star-party-cream.webp",
+    "sha256": "59325b90c39bcd33361a24c66603f4bd8d9b1b80623d36e5fbc41f133b9392b6",
+    "width": 175,
+    "height": 196
+  },
+  {
+    "key": "fresh-star-twinkle-four",
+    "name": "金紫四芒·星群",
+    "category": "stars",
+    "kind": "四芒星",
+    "color": "金紫",
+    "details": [
+      "四芒",
+      "多星",
+      "正面"
+    ],
+    "file": "fresh-star-twinkle-four.webp",
+    "sha256": "bd584e9918b56e993cd3363af5d0376791cc3e197581254198ddec58f88d8c23",
+    "width": 152,
+    "height": 146
+  },
+  {
+    "key": "fresh-star-pink-rainbow-tail",
+    "name": "粉色流星·四彩尾迹",
+    "category": "stars",
+    "kind": "流星",
+    "color": "彩虹粉",
+    "details": [
+      "四色尾迹",
+      "星点",
+      "朝左"
+    ],
+    "file": "fresh-star-pink-rainbow-tail.webp",
+    "sha256": "ea4499cfad12cc415bd9ecdd2b5d7ced3b40f2fd834b21a09662d5cd018a0e0b",
+    "width": 180,
+    "height": 164
+  },
+  {
+    "key": "fresh-leaf-round-blue",
+    "name": "蓝灰圆叶·五叶枝",
+    "category": "leaves",
+    "kind": "圆叶枝",
+    "color": "蓝灰绿",
+    "details": [
+      "圆叶",
+      "叶脉",
+      "朝左"
+    ],
+    "file": "fresh-leaf-round-blue.webp",
+    "sha256": "74a2616b083996504c08916108d324b278db4ad350cab9c911c04977f9a9caec",
+    "width": 128,
+    "height": 208
+  },
+  {
+    "key": "fresh-leaf-olive-light",
+    "name": "浅绿长叶·舒展枝",
+    "category": "leaves",
+    "kind": "长叶枝",
+    "color": "浅绿",
+    "details": [
+      "长叶",
+      "朝右"
+    ],
+    "file": "fresh-leaf-olive-light.webp",
+    "sha256": "2e4f1a5f2959d73a0d5e84168e6c23933c79b9343854337952f863f2c8110118",
+    "width": 141,
+    "height": 208
+  },
+  {
+    "key": "fresh-leaf-pink-buds",
+    "name": "樱粉小芽·细枝",
+    "category": "leaves",
+    "kind": "花芽枝",
+    "color": "粉绿",
+    "details": [
+      "花芽",
+      "长枝",
+      "朝右"
+    ],
+    "file": "fresh-leaf-pink-buds.webp",
+    "sha256": "0c5b58387947c3e91ab4ac85a4753a15dc830e7a5b8ac1ba59c0345639fbb330",
+    "width": 138,
+    "height": 206
+  },
+  {
+    "key": "fresh-leaf-round-mottled",
+    "name": "斑驳圆叶·绿枝",
+    "category": "leaves",
+    "kind": "圆叶枝",
+    "color": "绿",
+    "details": [
+      "圆叶",
+      "斑纹",
+      "朝右"
+    ],
+    "file": "fresh-leaf-round-mottled.webp",
+    "sha256": "36996176c4742ebb636787c08e2a723901555e2327169c83e608240805ebf66d",
+    "width": 150,
+    "height": 187
+  },
+  {
+    "key": "fresh-leaf-gold-buds",
+    "name": "金黄小芽·多枝",
+    "category": "leaves",
+    "kind": "花芽枝",
+    "color": "金黄绿",
+    "details": [
+      "圆芽",
+      "多枝",
+      "朝右"
+    ],
+    "file": "fresh-leaf-gold-buds.webp",
+    "sha256": "2b5573fcd46760e6444ffe790917eb9b425daa02cff281294e18369e5adcb3f3",
+    "width": 137,
+    "height": 204
+  },
+  {
+    "key": "fresh-leaf-monstera-new",
+    "name": "深绿龟背叶·白脉",
+    "category": "leaves",
+    "kind": "龟背叶",
+    "color": "深绿",
+    "details": [
+      "裂叶",
+      "白叶脉",
+      "朝右"
+    ],
+    "file": "fresh-leaf-monstera-new.webp",
+    "sha256": "8d312455f425f21b01138eb1cbb6a95617e37845bbec4973c6ba902fa0c3d0bc",
+    "width": 152,
+    "height": 189
+  },
+  {
+    "key": "fresh-leaf-narrow-left",
+    "name": "橄榄长叶·左倾枝",
+    "category": "leaves",
+    "kind": "长叶枝",
+    "color": "橄榄绿",
+    "details": [
+      "窄叶",
+      "朝左"
+    ],
+    "file": "fresh-leaf-narrow-left.webp",
+    "sha256": "d6ab41a90b6d89259519ee9f1f69744d9fff56c4420a3c0f40d4e5c2de9e27b4",
+    "width": 159,
+    "height": 169
+  },
+  {
+    "key": "fresh-leaf-red-berries",
+    "name": "红浆果·绿叶枝",
+    "category": "leaves",
+    "kind": "浆果枝",
+    "color": "红绿",
+    "details": [
+      "浆果",
+      "圆叶",
+      "朝右"
+    ],
+    "file": "fresh-leaf-red-berries.webp",
+    "sha256": "953ac46ce758f6d8a152a3622b1ee8189a1a0d941ad2ef38ab4e983cb41575c3",
+    "width": 157,
+    "height": 183
+  },
+  {
+    "key": "fresh-leaf-maple",
+    "name": "浅橄榄枫叶",
+    "category": "leaves",
+    "kind": "枫叶",
+    "color": "浅橄榄",
+    "details": [
+      "掌状",
+      "叶脉",
+      "朝左"
+    ],
+    "file": "fresh-leaf-maple.webp",
+    "sha256": "ce6546e85b752eabaec1716eb54ceed00045f71a1524da0e44ab19783837271b",
+    "width": 151,
+    "height": 150
+  },
+  {
+    "key": "fresh-leaf-baby-buds",
+    "name": "橄榄圆芽·散枝",
+    "category": "leaves",
+    "kind": "花芽枝",
+    "color": "橄榄绿",
+    "details": [
+      "圆芽",
+      "多枝",
+      "朝右"
+    ],
+    "file": "fresh-leaf-baby-buds.webp",
+    "sha256": "2566ac8aca3ef7bf3459548c887b730423227d56113dd5fd220d25b05dd30c90",
+    "width": 143,
+    "height": 193
+  },
+  {
+    "key": "fresh-leaf-blue-berries",
+    "name": "蓝莓·三叶枝",
+    "category": "leaves",
+    "kind": "浆果枝",
+    "color": "蓝绿",
+    "details": [
+      "浆果",
+      "尖叶",
+      "朝右"
+    ],
+    "file": "fresh-leaf-blue-berries.webp",
+    "sha256": "094b2f0db7d6339c91c462b8bc1e5534f4a7a26ae92884b3be50b4a8df1dbadf",
+    "width": 136,
+    "height": 184
+  },
+  {
+    "key": "fresh-leaf-pink-leaves",
+    "name": "粉色叶片·细枝",
+    "category": "leaves",
+    "kind": "长叶枝",
+    "color": "粉",
+    "details": [
+      "尖叶",
+      "叶脉",
+      "朝右"
+    ],
+    "file": "fresh-leaf-pink-leaves.webp",
+    "sha256": "91208ec70580e040a00276d3e81c2cc8ec18a63bcf70ea1d1eacfd2776499b0a",
+    "width": 144,
+    "height": 175
+  },
+  {
+    "key": "fresh-leaf-eucalyptus-new",
+    "name": "灰绿圆叶·交错枝",
+    "category": "leaves",
+    "kind": "圆叶枝",
+    "color": "灰绿",
+    "details": [
+      "圆叶",
+      "叶脉",
+      "朝右"
+    ],
+    "file": "fresh-leaf-eucalyptus-new.webp",
+    "sha256": "8955daf31a58b72ac3b9f64e0a035dac7b69d9a4da65f6c2b293b7d38c71445e",
+    "width": 168,
+    "height": 206
+  },
+  {
+    "key": "fresh-leaf-white-blossom",
+    "name": "白色小花·尖叶枝",
+    "category": "leaves",
+    "kind": "花枝",
+    "color": "米白绿",
+    "details": [
+      "白花",
+      "尖叶",
+      "朝右"
+    ],
+    "file": "fresh-leaf-white-blossom.webp",
+    "sha256": "d6cd3d61b2358e88b26f4d02e25bf279385d5de414ecaf6dd4337baaf8c5c4cc",
+    "width": 157,
+    "height": 178
+  },
+  {
+    "key": "fresh-leaf-single-vein",
+    "name": "浅绿单叶·细白脉",
+    "category": "leaves",
+    "kind": "单叶",
+    "color": "浅绿",
+    "details": [
+      "白叶脉",
+      "尖叶",
+      "朝右"
+    ],
+    "file": "fresh-leaf-single-vein.webp",
+    "sha256": "28c9fca4a3e4cc823c93101c86bb3c861110309e007e2599cb09c7f691bc45f3",
+    "width": 124,
+    "height": 182
+  },
+  {
+    "key": "fresh-leaf-green-many",
+    "name": "草绿多叶·交错枝",
+    "category": "leaves",
+    "kind": "长叶枝",
+    "color": "草绿",
+    "details": [
+      "多叶",
+      "叶脉",
+      "朝右"
+    ],
+    "file": "fresh-leaf-green-many.webp",
+    "sha256": "380832e725e7a184f444142ebc23968941b6a44302049617099645d115ec2813",
+    "width": 167,
+    "height": 175
+  },
+  {
+    "key": "fresh-leaf-gold-berries",
+    "name": "金黄浆果·短枝",
+    "category": "leaves",
+    "kind": "浆果枝",
+    "color": "金黄绿",
+    "details": [
+      "圆果",
+      "多叶",
+      "朝右"
+    ],
+    "file": "fresh-leaf-gold-berries.webp",
+    "sha256": "e2e3f0dae988906c06e310b94f0a9e49988935c145907161ecd236b8e5044fc6",
+    "width": 128,
+    "height": 162
+  },
+  {
+    "key": "fresh-leaf-tiny-white",
+    "name": "细小米白花·分枝",
+    "category": "leaves",
+    "kind": "花枝",
+    "color": "米白绿",
+    "details": [
+      "小花",
+      "多枝",
+      "朝右"
+    ],
+    "file": "fresh-leaf-tiny-white.webp",
+    "sha256": "101d51e0fd2d5eccfb83c3972209171c81985775a0ae21c20fa0a578ff01b727",
+    "width": 127,
+    "height": 186
+  },
+  {
+    "key": "fresh-leaf-olive-long",
+    "name": "青灰橄榄·斜长枝",
+    "category": "leaves",
+    "kind": "长叶枝",
+    "color": "青灰绿",
+    "details": [
+      "长枝",
+      "多叶",
+      "朝右"
+    ],
+    "file": "fresh-leaf-olive-long.webp",
+    "sha256": "ebaac52b8c7056d721a4c8742f8c9651bece9fd285be40952c5a9b26112fb0f9",
+    "width": 174,
+    "height": 131
+  },
+  {
+    "key": "fresh-leaf-pink-flowering",
+    "name": "樱粉花枝·横斜",
+    "category": "leaves",
+    "kind": "花枝",
+    "color": "粉绿",
+    "details": [
+      "多花",
+      "横枝",
+      "朝右"
+    ],
+    "file": "fresh-leaf-pink-flowering.webp",
+    "sha256": "7a9395e8f861c5ae612bbc08de0bca01b91f1b9713dbebf78b0fa59e4bc7c3f7",
+    "width": 199,
+    "height": 116
+  },
+  {
+    "key": "fresh-leaf-ribbon-wreath",
+    "name": "橄榄花环·粉色结",
+    "category": "leaves",
+    "kind": "花环",
+    "color": "绿粉",
+    "details": [
+      "花环",
+      "蝴蝶结",
+      "开口"
+    ],
+    "file": "fresh-leaf-ribbon-wreath.webp",
+    "sha256": "d362fb721effa2886abb417fce6fde58ea394a9c7dc6233d14eda9049a02771d",
+    "width": 201,
+    "height": 177
+  },
+  {
+    "key": "fresh-leaf-hanging-olive",
+    "name": "悬垂橄榄·圆果",
+    "category": "leaves",
+    "kind": "浆果枝",
+    "color": "橄榄绿",
+    "details": [
+      "垂枝",
+      "圆果",
+      "朝右"
+    ],
+    "file": "fresh-leaf-hanging-olive.webp",
+    "sha256": "9660e28c967fde112d9d0e2b3cd9f24b4489ad361c0e7a15afe03265c4aa566c",
+    "width": 177,
+    "height": 127
+  },
+  {
+    "key": "fresh-leaf-steel-blue",
+    "name": "钢蓝叶片·弯枝",
+    "category": "leaves",
+    "kind": "长叶枝",
+    "color": "钢蓝",
+    "details": [
+      "长叶",
+      "弯枝",
+      "朝右"
+    ],
+    "file": "fresh-leaf-steel-blue.webp",
+    "sha256": "c17f27118aa33c1fe2414d66d4f39a07cea6dc74a3d86c1bb80e4c76e1b3e426",
+    "width": 163,
+    "height": 146
+  },
+  {
+    "key": "fresh-leaf-dark-cluster",
+    "name": "深绿叶·大小相伴",
+    "category": "leaves",
+    "kind": "叶片组",
+    "color": "深绿",
+    "details": [
+      "叶脉",
+      "多叶",
+      "散落"
+    ],
+    "file": "fresh-leaf-dark-cluster.webp",
+    "sha256": "daa37e0878e7607dd56a84e01c0efc30a3326cd9c5ffc40a8eafe2e81511fe37",
+    "width": 180,
+    "height": 196
+  },
+  {
+    "key": "fresh-leaf-blue-pointed",
+    "name": "蓝灰尖叶·斜枝",
+    "category": "leaves",
+    "kind": "长叶枝",
+    "color": "蓝灰",
+    "details": [
+      "尖叶",
+      "朝左"
+    ],
+    "file": "fresh-leaf-blue-pointed.webp",
+    "sha256": "a92f6c80902c737fd818fe190245b19d26aace9c43caf19b41998be437129b34",
+    "width": 156,
+    "height": 208
+  },
+  {
+    "key": "fresh-leaf-oak",
+    "name": "嫩绿橡叶·叠叶枝",
+    "category": "leaves",
+    "kind": "橡叶",
+    "color": "嫩绿",
+    "details": [
+      "裂叶",
+      "多叶",
+      "朝右"
+    ],
+    "file": "fresh-leaf-oak.webp",
+    "sha256": "166de59ca56a64ea0ade76c23c63106b9b397b42c8659c5454656e5855490b37",
+    "width": 135,
+    "height": 184
+  },
+  {
+    "key": "fresh-leaf-round-red-buds",
+    "name": "圆叶·珊瑚小芽",
+    "category": "leaves",
+    "kind": "花芽枝",
+    "color": "绿红",
+    "details": [
+      "圆叶",
+      "红芽",
+      "朝右"
+    ],
+    "file": "fresh-leaf-round-red-buds.webp",
+    "sha256": "dad026d646dfb63386b73f0ecb7eb68eae1cbc57d4dfc9634e6c7ccee004fb82",
+    "width": 163,
+    "height": 182
+  },
+  {
+    "key": "fresh-leaf-narrow-sprig",
+    "name": "浅绿窄叶·细长枝",
+    "category": "leaves",
+    "kind": "长叶枝",
+    "color": "浅绿",
+    "details": [
+      "窄叶",
+      "长枝",
+      "朝右"
+    ],
+    "file": "fresh-leaf-narrow-sprig.webp",
+    "sha256": "d0a3eaf92c72f0cf1d1e5356da12a120a52a7323e5f5b5b795badbc75bcb21d0",
+    "width": 130,
+    "height": 190
+  },
+  {
+    "key": "fresh-leaf-clover",
+    "name": "三叶草·高低小枝",
+    "category": "leaves",
+    "kind": "三叶草",
+    "color": "嫩绿",
+    "details": [
+      "三叶",
+      "高低",
+      "散落"
+    ],
+    "file": "fresh-leaf-clover.webp",
+    "sha256": "f897ea28a76d7df112323f85f7388dd5c7a8a760882d3e253b1dbdbada15daab",
+    "width": 128,
+    "height": 190
+  },
+  {
+    "key": "fresh-bow-pink-check",
+    "name": "粉白格结·宽尾",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉白",
+    "details": [
+      "格纹",
+      "宽带",
+      "双尾"
+    ],
+    "file": "fresh-bow-pink-check.webp",
+    "sha256": "59766ba4a99db95da3c6069c5648765e805635ddd03eb35c0e8550c7e4c3cc8f",
+    "width": 250,
+    "height": 205
+  },
+  {
+    "key": "fresh-bow-purple-lace-heart",
+    "name": "紫蕾丝结·心形扣",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "紫白",
+    "details": [
+      "蕾丝",
+      "心扣",
+      "双尾"
+    ],
+    "file": "fresh-bow-purple-lace-heart.webp",
+    "sha256": "58e7e488c5b77f5bb8bd58b4e7605bd7d5123af15257f1667b545338b80dc0f5",
+    "width": 245,
+    "height": 197
+  },
+  {
+    "key": "fresh-bow-blue-sheer",
+    "name": "浅蓝薄纱结·细带",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "浅蓝",
+    "details": [
+      "薄纱",
+      "细带",
+      "双尾"
+    ],
+    "file": "fresh-bow-blue-sheer.webp",
+    "sha256": "40672cacb7046d1ae50540b7917f96e02f306658e512a71b6c2e0ac026ea1bb9",
+    "width": 244,
+    "height": 216
+  },
+  {
+    "key": "fresh-bow-cherry",
+    "name": "粉色点结·樱桃坠",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉",
+    "details": [
+      "点纹",
+      "樱桃",
+      "双尾"
+    ],
+    "file": "fresh-bow-cherry.webp",
+    "sha256": "19d749c33228c9fc712101563a333b29ed3acfedc621b9404f19ea17a13b99cc",
+    "width": 226,
+    "height": 197
+  },
+  {
+    "key": "fresh-bow-bear",
+    "name": "奶油细边结·小熊扣",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "奶油",
+    "details": [
+      "缝线",
+      "小熊扣",
+      "双尾"
+    ],
+    "file": "fresh-bow-bear.webp",
+    "sha256": "e6121509aebe1325e3b29f6a4fdd9d26f839892630b9f1563bbda68989ed2dbe",
+    "width": 252,
+    "height": 192
+  },
+  {
+    "key": "fresh-bow-pink-heart",
+    "name": "粉绸结·金边心扣",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉",
+    "details": [
+      "心扣",
+      "丝带",
+      "双尾"
+    ],
+    "file": "fresh-bow-pink-heart.webp",
+    "sha256": "9f898b917a374bd48a1133b6bc3269339ec9f2004bb4d8ec4ff8ed8c3987e4b4",
+    "width": 252,
+    "height": 203
+  },
+  {
+    "key": "fresh-bow-blue-daisy",
+    "name": "蓝格结·雏菊扣",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "蓝白",
+    "details": [
+      "格纹",
+      "花扣",
+      "双尾"
+    ],
+    "file": "fresh-bow-blue-daisy.webp",
+    "sha256": "6277289a208f382f7a5adcff80e30c8da88b036fdccb59ef5469a9c44b8fd3b2",
+    "width": 245,
+    "height": 186
+  },
+  {
+    "key": "fresh-bow-purple-star",
+    "name": "紫色长带·星星扣",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "紫",
+    "details": [
+      "星扣",
+      "长飘带",
+      "双尾"
+    ],
+    "file": "fresh-bow-purple-star.webp",
+    "sha256": "7fa723102ace362973e7defc241b63620e259bdfac2cbb9fcc2b29e076c370af",
+    "width": 228,
+    "height": 221
+  },
+  {
+    "key": "fresh-bow-pink-double-heart",
+    "name": "粉色细带·双心尾",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉",
+    "details": [
+      "细带",
+      "双心",
+      "长飘带"
+    ],
+    "file": "fresh-bow-pink-double-heart.webp",
+    "sha256": "b76844e843e6f7acd933e09b61e8a63678efe431e0a89775c6f30ff3084f7c2a",
+    "width": 235,
+    "height": 211
+  },
+  {
+    "key": "fresh-bow-blue-doily",
+    "name": "蓝色蕾丝结·圆瓣边",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "蓝白",
+    "details": [
+      "蕾丝",
+      "圆瓣边",
+      "双尾"
+    ],
+    "file": "fresh-bow-blue-doily.webp",
+    "sha256": "2d04d97b8a1830aeea36feb5a5c6e55f425b97264d8c1157311ebb8879940ae0",
+    "width": 252,
+    "height": 190
+  },
+  {
+    "key": "fresh-bow-gold-pendant",
+    "name": "香槟结·星星吊坠",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "香槟金",
+    "details": [
+      "星坠",
+      "细链",
+      "双尾"
+    ],
+    "file": "fresh-bow-gold-pendant.webp",
+    "sha256": "0f835bae484f9aee88257d2987495ba444fcd3806200c8d1d8308a7aee6baf2a",
+    "width": 251,
+    "height": 209
+  },
+  {
+    "key": "fresh-bow-pink-lace-gingham",
+    "name": "粉格蕾丝结·小心扣",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉白",
+    "details": [
+      "格纹",
+      "蕾丝",
+      "心扣"
+    ],
+    "file": "fresh-bow-pink-lace-gingham.webp",
+    "sha256": "f4d2fdeb59b61ce1d9528272dfda45ba3cdf1556015bbb48b1319c92d1a51586",
+    "width": 220,
+    "height": 181
+  },
+  {
+    "key": "fresh-bow-purple-stripe",
+    "name": "紫条纹结·爱心坠",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "紫白",
+    "details": [
+      "条纹",
+      "心坠",
+      "双尾"
+    ],
+    "file": "fresh-bow-purple-stripe.webp",
+    "sha256": "bbdaf41120650373ba6e04f877dbc5c6b70c9c659c8d0ae94497a94033f00fc8",
+    "width": 252,
+    "height": 190
+  },
+  {
+    "key": "fresh-bow-pink-flower-ribbon",
+    "name": "粉色花扣·细长带",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉",
+    "details": [
+      "花扣",
+      "细带",
+      "长飘带"
+    ],
+    "file": "fresh-bow-pink-flower-ribbon.webp",
+    "sha256": "b268afc23e430a7eec28673406a5b7f62d579985068f144b437e567a0502be64",
+    "width": 252,
+    "height": 172
+  },
+  {
+    "key": "fresh-bow-blue-crown",
+    "name": "蓝色小结·王冠",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "蓝",
+    "details": [
+      "王冠",
+      "丝带",
+      "双尾"
+    ],
+    "file": "fresh-bow-blue-crown.webp",
+    "sha256": "9512a75e4ecbb8fe71b10097e7a0121884cf1f596696332cd61a9984511dee71",
+    "width": 234,
+    "height": 186
+  },
+  {
+    "key": "fresh-bow-floral-cream",
+    "name": "奶油花纹结·粉花",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "奶油粉",
+    "details": [
+      "花纹",
+      "小花",
+      "双尾"
+    ],
+    "file": "fresh-bow-floral-cream.webp",
+    "sha256": "d76efcbc9ab5a8739ac2229606879713e0434adf814c37747bef83171af7840c",
+    "width": 212,
+    "height": 169
+  },
+  {
+    "key": "fresh-bow-pink-satin-wide",
+    "name": "粉绸宽带·自然褶皱",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉",
+    "details": [
+      "宽带",
+      "褶皱",
+      "双尾"
+    ],
+    "file": "fresh-bow-pink-satin-wide.webp",
+    "sha256": "fa3eb73e0e2b7028c1e79a18e7b32de7c961d15fc37c6ca72c5aa28a71028b1d",
+    "width": 252,
+    "height": 200
+  },
+  {
+    "key": "fresh-bow-purple-gingham",
+    "name": "紫格结·金边心扣",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "紫白",
+    "details": [
+      "格纹",
+      "心扣",
+      "双尾"
+    ],
+    "file": "fresh-bow-purple-gingham.webp",
+    "sha256": "7651794d202f5ef8d1b1118ce7153bc25758be67924173c2ea24cdbdeecf686a",
+    "width": 225,
+    "height": 186
+  },
+  {
+    "key": "fresh-bow-blue-pearl",
+    "name": "蓝色卷带·珍珠扣",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "蓝",
+    "details": [
+      "珍珠扣",
+      "卷带",
+      "细链"
+    ],
+    "file": "fresh-bow-blue-pearl.webp",
+    "sha256": "2fcc44173866976d823edb1d505f381fe14a483af6a599b5c66fe2284dca575e",
+    "width": 244,
+    "height": 197
+  },
+  {
+    "key": "fresh-bow-pink-polka",
+    "name": "粉点宽结·斜斜双尾",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉白",
+    "details": [
+      "点纹",
+      "宽带",
+      "双尾"
+    ],
+    "file": "fresh-bow-pink-polka.webp",
+    "sha256": "4ee8efc80f2b51a358cbd61c7432ce2edba58392352a7741b04a3fb877558de7",
+    "width": 217,
+    "height": 207
+  },
+  {
+    "key": "fresh-heart-ribbon-pink",
+    "name": "粉色毛边心·缎带",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉",
+    "details": [
+      "蝴蝶结",
+      "毛边",
+      "实心"
+    ],
+    "file": "fresh-heart-ribbon-pink.webp",
+    "sha256": "ddecbf8e9f88b319cbc61e0aea1f7b14c58012d359f0c1d1c10b8f504e22aba2",
+    "width": 218,
+    "height": 172
+  },
+  {
+    "key": "fresh-heart-double-pink-outline",
+    "name": "粉色双线心·心跳",
+    "category": "sentiments",
+    "kind": "手绘心",
+    "color": "粉",
+    "details": [
+      "双线",
+      "空心",
+      "心跳"
+    ],
+    "file": "fresh-heart-double-pink-outline.webp",
+    "sha256": "b6dff171cbb562767cde952df421374b842fe96365162a92292998759bb87434",
+    "width": 175,
+    "height": 159
+  },
+  {
+    "key": "fresh-heart-rose-gloss",
+    "name": "玫粉亮心·小爱心",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "玫粉",
+    "details": [
+      "亮点",
+      "实心",
+      "小爱心"
+    ],
+    "file": "fresh-heart-rose-gloss.webp",
+    "sha256": "e5b38845460a9241a5b29fdc2cdddcba8a4ab45847648759b2dd129f8103b16d",
+    "width": 186,
+    "height": 154
+  },
+  {
+    "key": "fresh-heart-angel-halo",
+    "name": "天使心·蓝翅光环",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉蓝",
+    "details": [
+      "翅膀",
+      "光环",
+      "实心"
+    ],
+    "file": "fresh-heart-angel-halo.webp",
+    "sha256": "0d010e64de3719a4ae63e1e8a4ebecbd92e084f07b6b165def121949afe9cb29",
+    "width": 211,
+    "height": 148
+  },
+  {
+    "key": "fresh-heart-gingham-coral",
+    "name": "珊瑚格心·小心",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "珊瑚粉",
+    "details": [
+      "格纹",
+      "实心",
+      "小爱心"
+    ],
+    "file": "fresh-heart-gingham-coral.webp",
+    "sha256": "404b4530241c57cd6b5293c8d5a26dbe163142304029cbaf6b612f3723c9e1d8",
+    "width": 184,
+    "height": 146
+  },
+  {
+    "key": "fresh-heart-purple-pink-pair",
+    "name": "紫粉双心·相叠",
+    "category": "sentiments",
+    "kind": "双心",
+    "color": "粉紫",
+    "details": [
+      "双心",
+      "相叠",
+      "空心"
+    ],
+    "file": "fresh-heart-purple-pink-pair.webp",
+    "sha256": "abd18c78c87ff65125183dad55cc873409102b686e41470196fa9f3464df0aeb",
+    "width": 200,
+    "height": 153
+  },
+  {
+    "key": "fresh-heart-stripe-pink",
+    "name": "粉色斜线·涂鸦心",
+    "category": "sentiments",
+    "kind": "手绘心",
+    "color": "粉",
+    "details": [
+      "斜线",
+      "涂鸦",
+      "实心"
+    ],
+    "file": "fresh-heart-stripe-pink.webp",
+    "sha256": "c94ab30b6daeb79577fdb571bf09c46f9670f00ac1f6744aa0aabdb3c9d4f926",
+    "width": 176,
+    "height": 151
+  },
+  {
+    "key": "fresh-heart-arrow",
+    "name": "粉心·一箭穿心",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉棕",
+    "details": [
+      "箭",
+      "实心",
+      "朝右"
+    ],
+    "file": "fresh-heart-arrow.webp",
+    "sha256": "ad9de8faaeb71b4aa1b98cb7c84b7f0c851b87c4e9da3d88db25c4987964d6fa",
+    "width": 209,
+    "height": 144
+  },
+  {
+    "key": "fresh-heart-nested-purple",
+    "name": "紫色套心·三重",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "紫",
+    "details": [
+      "套心",
+      "三重",
+      "空心"
+    ],
+    "file": "fresh-heart-nested-purple.webp",
+    "sha256": "c0904dd1bd5f6c109af3b15470477a7b63eff3fc7e46757d52494fd5ac077942",
+    "width": 168,
+    "height": 142
+  },
+  {
+    "key": "fresh-heart-feather-pink",
+    "name": "淡粉心·柔软毛边",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "浅粉",
+    "details": [
+      "毛边",
+      "小爱心",
+      "实心"
+    ],
+    "file": "fresh-heart-feather-pink.webp",
+    "sha256": "fb0ab7cab9f4b55ea11db1c43914f5378fbeedd01fc4caa1057701347680a3c1",
+    "width": 184,
+    "height": 161
+  },
+  {
+    "key": "fresh-heart-gift-pink",
+    "name": "礼物心·粉色横结",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉",
+    "details": [
+      "蝴蝶结",
+      "横带",
+      "实心"
+    ],
+    "file": "fresh-heart-gift-pink.webp",
+    "sha256": "3fe57bae8e19da1f329d903c9b20271e63bfac1ee4648d262c37d034a233b059",
+    "width": 209,
+    "height": 149
+  },
+  {
+    "key": "fresh-heart-ring-pink",
+    "name": "粉色小心·围成圈",
+    "category": "sentiments",
+    "kind": "心形花环",
+    "color": "粉",
+    "details": [
+      "花环",
+      "多心",
+      "空心"
+    ],
+    "file": "fresh-heart-ring-pink.webp",
+    "sha256": "a473e179f93b8453ea3b65f37b9044c695080581419eff11b4239909aad262de",
+    "width": 186,
+    "height": 161
+  },
+  {
+    "key": "fresh-heart-gradient-purple",
+    "name": "粉紫蓝心·渐彩",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉紫蓝",
+    "details": [
+      "渐彩",
+      "亮点",
+      "实心"
+    ],
+    "file": "fresh-heart-gradient-purple.webp",
+    "sha256": "cf7c22b09e34256a4441b2ba46111aa602f90600c9a587611d08a285c41461b8",
+    "width": 188,
+    "height": 164
+  },
+  {
+    "key": "fresh-heart-large-small-pink",
+    "name": "粉心·大小相依",
+    "category": "sentiments",
+    "kind": "双心",
+    "color": "粉",
+    "details": [
+      "双心",
+      "相叠",
+      "实心"
+    ],
+    "file": "fresh-heart-large-small-pink.webp",
+    "sha256": "967c057f14c4ffd73553df25511530c98aa9e4471e9cce7c2ec595ec802eb82f",
+    "width": 190,
+    "height": 148
+  },
+  {
+    "key": "fresh-heart-brush-purple",
+    "name": "紫色笔触·空心",
+    "category": "sentiments",
+    "kind": "手绘心",
+    "color": "紫",
+    "details": [
+      "笔触",
+      "双线",
+      "空心"
+    ],
+    "file": "fresh-heart-brush-purple.webp",
+    "sha256": "4156ec3dccb3c5091f793dbdfe072edbab0c9cace8018f31123df49bce75d197",
+    "width": 173,
+    "height": 142
+  },
+  {
+    "key": "fresh-heart-gingham-light",
+    "name": "浅粉格心·细纹",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "浅粉白",
+    "details": [
+      "格纹",
+      "实心",
+      "正面"
+    ],
+    "file": "fresh-heart-gingham-light.webp",
+    "sha256": "8c3a727f32e836d131e13daa864d639a4f916c73c3f402b053d68098d9edf6e7",
+    "width": 164,
+    "height": 138
+  },
+  {
+    "key": "fresh-heart-red-gloss",
+    "name": "红心·白色亮点",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "红",
+    "details": [
+      "亮点",
+      "实心",
+      "正面"
+    ],
+    "file": "fresh-heart-red-gloss.webp",
+    "sha256": "64a8270b0035b1cdd7d92352b152e48082eca1d0d01cf6b06b720649893965c6",
+    "width": 184,
+    "height": 151
+  },
+  {
+    "key": "fresh-heart-interlocked-pink",
+    "name": "粉色双心·穿插",
+    "category": "sentiments",
+    "kind": "双心",
+    "color": "粉",
+    "details": [
+      "双心",
+      "相扣",
+      "空心"
+    ],
+    "file": "fresh-heart-interlocked-pink.webp",
+    "sha256": "367f5e6a846e3e306bfe2bec59c3ccb4b9cf966b0648513fed75de8ca6af1ad8",
+    "width": 161,
+    "height": 130
+  },
+  {
+    "key": "fresh-heart-polka-pink",
+    "name": "粉点爱心·小星芒",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉白",
+    "details": [
+      "点纹",
+      "星芒",
+      "实心"
+    ],
+    "file": "fresh-heart-polka-pink.webp",
+    "sha256": "b04b90965efe291e84f45c806344ab568919141a13f9def15071af7aec710173",
+    "width": 178,
+    "height": 145
+  },
+  {
+    "key": "fresh-heart-stitch-small-heart",
+    "name": "缝线心·小心花芯",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉",
+    "details": [
+      "虚线",
+      "套心",
+      "空心"
+    ],
+    "file": "fresh-heart-stitch-small-heart.webp",
+    "sha256": "c23b94852eff8def9bb67c629965cb4709f8afa0ee66a67dda2bd8166839ce0e",
+    "width": 171,
+    "height": 152
+  },
+  {
+    "key": "fresh-heart-peach-gloss",
+    "name": "蜜桃心·星光渐彩",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "蜜桃粉",
+    "details": [
+      "渐彩",
+      "星芒",
+      "实心"
+    ],
+    "file": "fresh-heart-peach-gloss.webp",
+    "sha256": "87d9c47dfc3f59fbc1ac6bbaf03bf358ba1e9bcb7db4c7ad7603d252fda88cf3",
+    "width": 175,
+    "height": 153
+  },
+  {
+    "key": "fresh-heart-heart-in-heart",
+    "name": "粉色心·涂鸦套心",
+    "category": "sentiments",
+    "kind": "手绘心",
+    "color": "粉",
+    "details": [
+      "套心",
+      "涂鸦",
+      "心跳"
+    ],
+    "file": "fresh-heart-heart-in-heart.webp",
+    "sha256": "545c818e0cffaafc4ca286c0e7e1bf20cecdbd713f3c775cda95bf8e5b3e9506",
+    "width": 180,
+    "height": 132
+  },
+  {
+    "key": "fresh-heart-gingham-purple",
+    "name": "紫白格心·小格",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "紫白",
+    "details": [
+      "格纹",
+      "实心",
+      "正面"
+    ],
+    "file": "fresh-heart-gingham-purple.webp",
+    "sha256": "11e00a7e592b65e852980a99b1ea4a1aed378edee9c49f9a9c7bdee83ac07243",
+    "width": 144,
+    "height": 125
+  },
+  {
+    "key": "fresh-heart-planet-heart",
+    "name": "粉心·行星光环",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉",
+    "details": [
+      "星环",
+      "星芒",
+      "实心"
+    ],
+    "file": "fresh-heart-planet-heart.webp",
+    "sha256": "01533262e153983db2a6b88d941a62aef79e77fecde1fee74e751e9ec6c2893a",
+    "width": 199,
+    "height": 125
+  },
+  {
+    "key": "fresh-heart-little-three",
+    "name": "粉紫三心·散落",
+    "category": "sentiments",
+    "kind": "心群",
+    "color": "粉紫",
+    "details": [
+      "三心",
+      "散落",
+      "实心"
+    ],
+    "file": "fresh-heart-little-three.webp",
+    "sha256": "19d325a2c3b83750f02b89f6a0ca450644ebc67829b2a9618bc820f28d84ae71",
+    "width": 159,
+    "height": 121
+  },
+  {
+    "key": "fresh-heart-scribble-red",
+    "name": "红色心·随手涂鸦",
+    "category": "sentiments",
+    "kind": "手绘心",
+    "color": "红",
+    "details": [
+      "涂鸦",
+      "心跳",
+      "实心"
+    ],
+    "file": "fresh-heart-scribble-red.webp",
+    "sha256": "d27cd5e80cbcc9239552e3a0ce106c7f120c54d8cf623e9320856f4e747dfee5",
+    "width": 174,
+    "height": 140
+  },
+  {
+    "key": "fresh-heart-ring-purple",
+    "name": "紫色小心·围成圈",
+    "category": "sentiments",
+    "kind": "心形花环",
+    "color": "紫",
+    "details": [
+      "花环",
+      "多心",
+      "空心"
+    ],
+    "file": "fresh-heart-ring-purple.webp",
+    "sha256": "17f887eaa1023b292441392755f673ce9b142002968a56222e97e160a43ef76e",
+    "width": 173,
+    "height": 155
+  },
+  {
+    "key": "fresh-heart-white-wings",
+    "name": "粉心·奶油小翅膀",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉奶油",
+    "details": [
+      "翅膀",
+      "心跳",
+      "实心"
+    ],
+    "file": "fresh-heart-white-wings.webp",
+    "sha256": "a1e8848d35841b5cf8dc27927a29e60541c3d7e0d9270a691f2db36022386166",
+    "width": 219,
+    "height": 135
+  },
+  {
+    "key": "fresh-heart-double-satin",
+    "name": "粉绸心·双线",
+    "category": "sentiments",
+    "kind": "手绘心",
+    "color": "粉",
+    "details": [
+      "双线",
+      "空心",
+      "正面"
+    ],
+    "file": "fresh-heart-double-satin.webp",
+    "sha256": "cbd4cea861cb3fa8a59ee8e16f480ed1d08887cdcee2f31d301cf32bcb02871e",
+    "width": 160,
+    "height": 155
+  },
+  {
+    "key": "fresh-heart-pale-pair",
+    "name": "浅粉双心·大小相伴",
+    "category": "sentiments",
+    "kind": "双心",
+    "color": "浅粉",
+    "details": [
+      "双心",
+      "相叠",
+      "实心"
+    ],
+    "file": "fresh-heart-pale-pair.webp",
+    "sha256": "c1888187e4543ada98ed4698c76fb32c3b6081f34c800a2a51ab9d6b47b2a867",
+    "width": 176,
+    "height": 146
   }
 ]

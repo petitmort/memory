@@ -50,12 +50,12 @@ test('gallery categories and search filter real images without changing the draf
   await page.locator('#open-watermarks').click(); const initial = await draft(page);
   await page.evaluate(() => { (window as any).__galleryNodes = Array.from(document.querySelectorAll('.editor-watermark-choice, .editor-watermark-choice img, [aria-label="搜索水印"], [aria-label="水印透明度"]')); });
   const category = page.getByLabel('水印分类', { exact: true }), search = page.getByLabel('搜索水印', { exact: true });
-  for (const [name, count] of [['cats', 29], ['flowers', 33], ['seaside', 19], ['stars', 24], ['leaves', 29], ['sentiments', 35], ['all', 169]] as const) {
+  for (const [name, count] of [['cats', 82], ['flowers', 53], ['seaside', 35], ['stars', 48], ['leaves', 58], ['sentiments', 85], ['all', 361]] as const) {
     await category.selectOption(name); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(count);
   }
-  await search.fill('贝壳'); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(18);
+  await search.fill('贝壳'); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(29);
   await category.selectOption('cats'); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(0); await expect(page.locator('.editor-gallery-result')).toContainText('没有找到图案');
-  await search.fill(''); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(29);
+  await search.fill(''); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(82);
   expect(await page.evaluate(() => (window as any).__galleryNodes.every((node: Element) => node.isConnected))).toBe(true);
   expect(await draft(page)).toEqual(initial); await expect(page.locator('#undo')).toBeDisabled();
 });
@@ -128,6 +128,6 @@ for (const size of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const sizes = await page.locator('.editor-property-nav button').evaluateAll(buttons => buttons.map(button => { const r = button.getBoundingClientRect(); return { width: r.width, height: r.height, font: parseFloat(getComputedStyle(button).fontSize) }; }));
   for (const s of sizes) { expect(s.width).toBeGreaterThanOrEqual(44); expect(s.height).toBeGreaterThanOrEqual(44); expect(s.font).toBeGreaterThanOrEqual(13); }
-  await page.getByLabel('水印分类').selectOption('cats'); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(29);
+  await page.getByLabel('水印分类').selectOption('cats'); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(82);
   await nav(page, '纸张').click(); await page.getByLabel('纸张', { exact: true }).selectOption('kraft'); await expect(left(page)).toHaveAttribute('data-paper', 'kraft');
 });
