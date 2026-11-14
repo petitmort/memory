@@ -2497,6 +2497,16 @@
     "startRepository": 200216,
     "startPnpmStore": 1445180,
     "preCommitRepository": 208120,
-    "pnpmStore": 1445180
+    "pnpmStore": 1445180,
+    "afterImplementationCommitRepository": 218916,
+    "deltaAfterImplementationCommit": 18700,
+    "afterImplementationCommitPnpmStore": 1445180,
+    "note": "Includes Git objects and regenerated test/build output; excludes final receipt commit objects. No new environment or dependency installation."
+  },
+  "delivery": {
+    "implementationCommit": "86920f34f402399c76d132c0477d2686f8c80653",
+    "verifiedRemoteBranch": "codex/watermark-variants",
+    "verifiedRemoteMain": "d9a4d3c998488467cfc65cd0c814a955425b5dd2",
+    "published": false
   }
 }
