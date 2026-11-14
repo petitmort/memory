@@ -2911,10 +2911,16 @@
     "note": "Includes Git and regenerable build/test output; final after-commit observation appended in delivery receipt.",
     "beforeImplementationCommitRepository": 259332,
     "beforeImplementationCommitDelta": 2620,
-    "externalEvidenceDirectory": 7896
+    "externalEvidenceDirectory": 7896,
+    "afterImplementationCommitRepository": 259596,
+    "afterImplementationCommitDelta": 2884,
+    "afterImplementationCommitSharedStore": 1445180
   },
   "delivery": {
-    "status": "local validation complete; development branch delivery pending",
+    "status": "implementation pushed and remote commit verified; final receipt changes only documentation and disk metadata",
+    "implementationCommit": "020efbb9b7bef446ae5672d3039aa5e5b3dcffc2",
+    "remoteVerifiedCommit": "020efbb9b7bef446ae5672d3039aa5e5b3dcffc2",
+    "sourceAndProductionHashes": "unchanged at final receipt; verified by local check-docs.py snapshot",
     "published": false
   }
 }
