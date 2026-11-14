@@ -5771,11 +5771,28 @@
     "startRepo": 220088,
     "startStore": 1445180,
     "validatedRepo": 241216,
-    "validatedStore": 1445180
+    "validatedStore": 1445180,
+    "afterImplementationCommitRepo": 256536,
+    "afterImplementationCommitStore": 1445180,
+    "deltaRepoSinceStart": 36448,
+    "deltaStore": 0,
+    "note": "Includes source/derived art, Git objects and regenerable build/test changes; excludes final documentation receipt objects. No source or user files removed."
   },
   "delivery": {
-    "status": "local validation complete; final fetch confirms origin branch at baseline and main unchanged; normal development-branch push pending",
-    "published": false
+    "status": "implementation and validation pushed and remote hash verified; separate documentation-only receipt",
+    "implementationCommit": "675ba64a7865b7f85f4b20e45b2c852428e49d22",
+    "branch": "codex/watermark-variants",
+    "remoteBranchAtVerification": "675ba64a7865b7f85f4b20e45b2c852428e49d22",
+    "remoteMainAtVerification": "d9a4d3c998488467cfc65cd0c814a955425b5dd2",
+    "published": false,
+    "finalReceiptFiles": [
+      "README.md",
+      "AGENTS.md",
+      "WATERMARK-EXPANSION-PLAN.md",
+      "benchmark/watermark-newsource-2026-11-14.json"
+    ],
+    "validatedArtifactsUnchanged": 912,
+    "repeatedApplicationChecksAfterReceipt": false
   },
   "documentation": {
     "files": 6,
