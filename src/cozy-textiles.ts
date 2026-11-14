@@ -52,7 +52,7 @@ export function createSeatingSupportSampler(seating:THREE.Object3D,axis:'y'|'z')
   };
 }
 
-/** Shared, neutral linen study; one texture for the throw, cushion and lampshade. */
+/** Shared, neutral linen for the throw, bookmark and lampshade. */
 export function createHomeFabric() {
   const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
   const ctx=canvas.getContext('2d')!;
@@ -92,7 +92,11 @@ export function createCozyRug(material:THREE.Material) {
 export function createCozyTextiles(seating:THREE.Group,fabric:THREE.Texture) {
   const group=new THREE.Group();group.name='soft-home-textiles';
   const linen=new THREE.MeshStandardMaterial({color:'#e4dbca',map:fabric,bumpMap:fabric,bumpScale:.00055,roughness:1});
-  const pillowMaterial=linen.clone();pillowMaterial.color.set('#b69080');
+  // Share the chair's existing cotton maps, including its normal/roughness
+  // detail. The chair continues to own and release these textures.
+  const cover=seating.getObjectByName('beanbag-soft-linen-shell') as THREE.Mesh<THREE.BufferGeometry,THREE.MeshPhysicalMaterial>;
+  const pillowMaterial=cover.material.clone();pillowMaterial.name='soft-terracotta-cotton-cushion';
+  pillowMaterial.color.set('#c79d8b');pillowMaterial.normalScale.set(.48,.48);
   const seamMaterial=new THREE.MeshStandardMaterial({color:'#c6b79e',roughness:1});
   const add=(geometry:THREE.BufferGeometry,material:THREE.Material,name:string)=>{
     const mesh=new THREE.Mesh(geometry,material);mesh.name=name;mesh.castShadow=mesh.receiveShadow=true;group.add(mesh);return mesh;
@@ -140,14 +144,24 @@ export function createCozyTextiles(seating:THREE.Group,fabric:THREE.Texture) {
   const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
   geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.setIndex(indices);geometry.computeVertexNormals();
   add(geometry,linen,'oatmeal-draped-throw');
-  // A small closed, stuffed cushion with pinched seams and shallow corner folds.
-  const pillowPositions:number[]=[],pillowUV:number[]=[],pillowIndex:number[]=[],n=16,stride=n+1;
+  // Closed, filled linen: broad domes, gathered corners and a narrow sewn edge.
+  // A few unequal folds lose depth toward the centre, rather than corrugating
+  // the whole face. All shaping happens once during scene construction.
+  const pillowPositions:number[]=[],pillowUV:number[]=[],pillowIndex:number[]=[],n=32,stride=n+1;
+  const folds=[[-1,-.67,.27,.0075],[-1,.63,-.34,.009],[1,-.58,-.25,.0065],[1,.72,.30,.0085]];
   for(let side=0;side<2;side++)for(let row=0;row<=n;row++)for(let col=0;col<=n;col++) {
     const u=col/n*2-1,v=row/n*2-1;
-    const bulge=(Math.sin((u+1)*Math.PI/2)*Math.sin((v+1)*Math.PI/2))**.65;
-    const crease=.002*Math.sin(u*29+v*8)*Math.abs(u*v)**3;
-    pillowPositions.push(.091*u*Math.sqrt(1-.16*v*v),.082*v*Math.sqrt(1-.16*u*u),(side?-1:1)*(.0035+.033*bulge-crease));
-    pillowUV.push((u+1)*.75,(v+1)*.68);
+    const fullness=Math.max(0,(1-u*u)*(1-v*v))**.58;
+    let crease=0;
+    for(const [edge,from,slope,depth] of folds){
+      const inward=1-edge*u,line=from+slope*inward;
+      crease+=depth*Math.exp(-(((v-line)/.075)**2)-inward*2.5)*Math.sin(Math.PI*Math.min(1,inward*1.7));
+    }
+    const x=.109*u*Math.sqrt(1-.24*v*v),y=.101*v*Math.sqrt(1-.22*u*u);
+    const depth=.0075+.048*fullness*(1+.055*u-.035*v)-crease;
+    pillowPositions.push(x,y,(side?-1:1)*depth);
+    // Same physical weave scale as the beanbag (two UV units per metre).
+    pillowUV.push(x*2+.25,y*2+.25);
   }
   const half=stride*stride;
   for(let side=0;side<2;side++)for(let row=0;row<n;row++)for(let col=0;col<n;col++) {
@@ -159,11 +173,11 @@ export function createCozyTextiles(seating:THREE.Group,fabric:THREE.Texture) {
   for(let i=1;i<=n;i++)rim.push(i*stride+n);
   for(let i=n-1;i>=0;i--)rim.push(n*stride+i);
   for(let i=n-1;i>0;i--)rim.push(i*stride);
-  for(let i=0;i<rim.length;i++){const a=rim[i],b=rim[(i+1)%rim.length];pillowIndex.push(a,b+half,a+half,a,b,b+half);}
+  for(let i=0;i<rim.length;i++){const a=rim[i],b=rim[(i+1)%rim.length];pillowIndex.push(a,a+half,b+half,a,b+half,b);}
   const pillowGeometry=new THREE.BufferGeometry();pillowGeometry.setAttribute('position',new THREE.Float32BufferAttribute(pillowPositions,3));
   pillowGeometry.setAttribute('uv',new THREE.Float32BufferAttribute(pillowUV,2));pillowGeometry.setIndex(pillowIndex);pillowGeometry.computeVertexNormals();
   const pillow=add(pillowGeometry,pillowMaterial,'small-terracotta-linen-cushion');
-  pillow.position.set(.24,.60,0);pillow.rotation.set(-.40,-.12,-.13);
+  pillow.position.set(.278,.475,0);pillow.rotation.set(-.60,.35,.25);
   pillow.updateMatrix();
   // Rest the pinched rear against the real sloping back, instead of burying
   // half the cushion inside it or floating its bottom above the seat.
@@ -178,7 +192,7 @@ export function createCozyTextiles(seating:THREE.Group,fabric:THREE.Texture) {
   const hem=perimeter.map(i=>top[i].clone().add(new THREE.Vector3(0,.0008,0)));
   seams.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(hem,true,'centripetal'),112,.00065,4,true));
   const pillowRim=rim.map(i=>new THREE.Vector3(pillowPositions[i*3],pillowPositions[i*3+1],0));
-  const piping=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pillowRim,true,'centripetal'),64,.0008,4,true);
+  const piping=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pillowRim,true,'centripetal'),128,.0011,5,true);
   pillow.updateMatrix();piping.applyMatrix4(pillow.matrix);seams.push(piping);
   add(mergeGeometries(seams)!,seamMaterial,'home-textile-stitched-hems');seams.forEach(g=>g.dispose());
   return {group};

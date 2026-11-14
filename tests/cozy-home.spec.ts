@@ -3,7 +3,37 @@ import {test,expect,type Page} from '@playwright/test';
 import * as THREE from 'three';
 import {createCozyLamp} from '../src/cozy-lamp';
 import {consoleLayout} from '../src/interior-layout';
-import {createSeatingSupportSampler} from '../src/cozy-textiles';
+import {createCozyTextiles,createSeatingSupportSampler} from '../src/cozy-textiles';
+
+test('filled cushion has a closed outward-facing edge and shares the chair cotton maps',()=>{
+  const seating=new THREE.Group(),maps=[new THREE.Texture(),new THREE.Texture(),new THREE.Texture()];
+  const material=new THREE.MeshPhysicalMaterial({map:maps[0],normalMap:maps[1],roughnessMap:maps[2]});
+  const cover=new THREE.Mesh(new THREE.PlaneGeometry(.8,.8),material);
+  cover.name='beanbag-soft-linen-shell';cover.position.set(0,.4,-.25);seating.add(cover);
+  const fabric=new THREE.Texture(),textiles=createCozyTextiles(seating,fabric);
+  const pillow=textiles.group.getObjectByName('small-terracotta-linen-cushion') as THREE.Mesh<THREE.BufferGeometry,THREE.MeshPhysicalMaterial>;
+  expect(pillow.material).not.toBe(material);
+  expect([pillow.material.map,pillow.material.normalMap,pillow.material.roughnessMap]).toEqual(maps);
+  expect(pillow.material.side).toBe(THREE.FrontSide);
+  const p=pillow.geometry.getAttribute('position'),index=pillow.geometry.index!,edges=new Map<string,number[]>();
+  const a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),normal=new THREE.Vector3(),centre=new THREE.Vector3();
+  let volume=0;
+  for(let i=0;i<index.count;i+=3){
+    const ids=[index.getX(i),index.getX(i+1),index.getX(i+2)];
+    a.fromBufferAttribute(p,ids[0]);b.fromBufferAttribute(p,ids[1]);c.fromBufferAttribute(p,ids[2]);
+    normal.crossVectors(b.clone().sub(a),c.clone().sub(a));centre.copy(a).add(b).add(c).multiplyScalar(1/3);
+    expect(normal.dot(centre)).toBeGreaterThan(0);
+    volume+=a.dot(b.clone().cross(c))/6;
+    for(let k=0;k<3;k++){
+      const from=ids[k],to=ids[(k+1)%3],key=[Math.min(from,to),Math.max(from,to)].join(':');
+      const orientations=edges.get(key)??[];orientations.push(Math.sign(to-from));edges.set(key,orientations);
+    }
+  }
+  for(const orientations of edges.values())expect(orientations.sort()).toEqual([-1,1]);
+  expect(volume).toBeGreaterThan(.0015);expect(volume).toBeLessThan(.0035);
+  textiles.group.traverse(o=>{if(o instanceof THREE.Mesh){o.geometry.dispose();o.material.dispose();}});
+  cover.geometry.dispose();material.dispose();fabric.dispose();maps.forEach(texture=>texture.dispose());
+});
 
 test('indexed static chair support agrees with actual raycasting for height, back contact and face sides',()=>{
   const seating=new THREE.Group(),material=new THREE.MeshStandardMaterial();
@@ -66,6 +96,8 @@ async function instrument(page:Page){
       for(const root of [cozyLamp.group,textiles.group,rug])root.traverse(o=>{
         if(o.isMesh){homeResources.add(o.geometry);for(const m of Array.isArray(o.material)?o.material:[o.material])homeResources.add(m);}
       });
+      const homePillow=textiles.group.getObjectByName('small-terracotta-linen-cushion');
+      for(const map of [homePillow.material.map,homePillow.material.normalMap,homePillow.material.roughnessMap])homeResources.add(map);
       for(const resource of homeResources){homeReleases[resource.uuid]=0;resource.addEventListener('dispose',()=>homeReleases[resource.uuid]++);}
       window.__home={
         snapshot(){
@@ -113,7 +145,10 @@ async function instrument(page:Page){
           // cat vertices. Repeating the support raycasts for every pose would
           // measure test overhead instead of checking animation clearance.
           const fixed=this.snapshot(),inverse=lounge.group.matrixWorld.clone().invert();
-          const meshes=[],p=new THREE.Vector3();
+          const pillow=textiles.group.getObjectByName('small-terracotta-linen-cushion');
+          pillow.geometry.computeBoundingBox();
+          const pillowBox=pillow.geometry.boundingBox,pillowInverse=pillow.matrixWorld.clone().invert();
+          const meshes=[],p=new THREE.Vector3(),local=new THREE.Vector3(),nearest=new THREE.Vector3();
           cat.group.traverse(o=>{if(o.isMesh)meshes.push(o);});
           let minimum=Infinity;const reactions=[];
           for(let gesture=0;gesture<6;gesture++){
@@ -125,13 +160,31 @@ async function instrument(page:Page){
               const t=i*.05;cat.setReactionClock(()=>t);cat.update(start+t,false);
               cat.group.updateMatrixWorld(true);
               for(const mesh of meshes)for(let j=0;j<mesh.geometry.attributes.position.count;j++){
-                mesh.getVertexPosition(j,p);p.applyMatrix4(mesh.matrixWorld).applyMatrix4(inverse);
-                minimum=Math.min(minimum,p.x-fixed.throw.max[0],p.z-fixed.pillow.max[2]);
+                mesh.getVertexPosition(j,p);p.applyMatrix4(mesh.matrixWorld);
+                local.copy(p).applyMatrix4(pillowInverse);pillowBox.clampPoint(local,nearest);
+                const cushionGap=pillowBox.containsPoint(local)?-1:local.distanceTo(nearest);
+                p.applyMatrix4(inverse);
+                minimum=Math.min(minimum,p.x-fixed.throw.max[0],cushionGap);
               }
             }
           }
           cat.cancelPet();cat.update(simulationTime,true);cat.cancelPet();
           return {minimum,reactions};
+        },
+        async cushionContact(){
+          const {createSeatingSupportSampler}=await import('/src/cozy-textiles.ts');
+          const chair=new THREE.Group();
+          for(const child of lounge.group.children)if(child.isMesh)chair.add(child.clone(false));
+          const front=createSeatingSupportSampler(chair,'z'),height=createSeatingSupportSampler(chair,'y');
+          const pillow=textiles.group.getObjectByName('small-terracotta-linen-cushion'),p=new THREE.Vector3();
+          const pos=pillow.geometry.attributes.position;
+          let backGap=Infinity,bottomGap=Infinity;
+          for(let i=0;i<pos.count;i++){
+            p.fromBufferAttribute(pos,i).applyMatrix4(pillow.matrix);
+            const z=front(p.x,p.y,.6);if(z!==undefined)backGap=Math.min(backGap,p.z-z);
+            if(pos.getY(i)<-.07){const y=height(p.x,p.z,1.15);if(y!==undefined)bottomGap=Math.min(bottomGap,p.y-y);}
+          }
+          return {backGap,bottomGap};
         }
       };${marker}`)});
   });return errors;
@@ -154,8 +207,17 @@ for(const width of [1280,390])test(`cozy furnishing keeps cat, book and controls
     expect(initial.rug.size[0]).toBeCloseTo(2.4,4);expect(initial.rug.size[2]).toBeCloseTo(1.75,4);
     expect(initial.clothClearance).toBeGreaterThan(.001);
     expect(initial.throw.max[0]).toBeLessThan(initial.cat.min[0]-.008);
-    // The small cushion rests behind the cat; local coordinates avoid an inflated rotated world AABB.
-    expect(initial.pillow.max[2]).toBeLessThan(initial.cat.min[2]-.01);
+    // The lowered cushion rests beside the cat. Check lateral separation and
+    // the oriented cushion volume throughout all six real reactions below.
+    expect(initial.pillow.min[0]).toBeGreaterThan(initial.cat.max[0]+.02);
+    const contact=await page.evaluate(()=>(window as any).__home.cushionContact());
+    expect(contact.backGap).toBeGreaterThan(.0015);expect(contact.backGap).toBeLessThan(.004);
+    // Cloth rests within 3 mm of the seat; positive clearance excludes an
+    // intersection without requiring a visibly floating air gap underneath.
+    expect(contact.bottomGap).toBeGreaterThan(0);expect(contact.bottomGap).toBeLessThan(.003);
+    // Stay at the back/arm junction instead of satisfying support by sliding
+    // the whole cushion to the front of the chair.
+    expect(initial.pillow.max[2]).toBeLessThan(.06);
     const reactions=await page.evaluate(()=>(window as any).__home.reactionClearance());
     expect(reactions.minimum).toBeGreaterThan(.008);
     expect(new Set(reactions.reactions).size).toBe(6);
@@ -179,7 +241,7 @@ for(const width of [1280,390])test(`cozy furnishing keeps cat, book and controls
     expect((await snapshot()).light).toBeCloseTo(.35);
     await page.locator('#quality').click();const low=await snapshot();expect(low.light).toBeCloseTo(.275);
     await page.locator('#quality').click();expect((await snapshot()).light).toBeCloseTo(.35);
-    await test.info().attach('cozy-home',{body:JSON.stringify({prepared,initial,nook,low},null,2),contentType:'application/json'});
+    await test.info().attach('cozy-home',{body:JSON.stringify({prepared,initial,nook,low,contact,reactions},null,2),contentType:'application/json'});
     await page.locator('#world canvas').evaluate(canvas=>(canvas as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext());
     await expect(page.locator('#fallback')).toBeVisible();
     const released=await snapshot();expect(Object.values(released.releases)).toEqual(Object.keys(released.releases).map(()=>1));
