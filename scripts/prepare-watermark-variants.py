@@ -89,12 +89,12 @@ def main():
         assert hashlib.sha256(path.read_bytes()).hexdigest() == source['sha256'], f'Changed source: {key}'
         sources[key] = Image.open(path)
         assert sources[key].size == (1024, 1024)
-    catalog = [p for p in json.loads((DEST / 'catalog.json').read_text()) if not p['key'].startswith('variant-')]
+    catalog = json.loads((DEST / 'catalog.json').read_text())
     for entry in catalog:
         if entry['key'] in spec['legacy']:
             entry.update(spec['legacy'][entry['key']])
         assert hashlib.sha256((DEST / entry['file']).read_bytes()).hexdigest() == entry['sha256']
-    images = []
+    images, replacements = [], {}
     for item in spec['crops']:
         crop = sources[item['sheet']].crop(item['bounds']).convert('RGB')
         # White padding lets the original matte routine retain a principal
@@ -109,8 +109,12 @@ def main():
         image.save(path, 'WEBP', lossless=True, method=6)
         entry = {k: item[k] for k in ['key', 'name', 'category', 'kind', 'color', 'details']}
         entry.update(file=path.name, sha256=hashlib.sha256(path.read_bytes()).hexdigest(), width=image.width, height=image.height)
-        catalog.append(entry)
+        replacements[entry['key']] = entry
         images.append(image)
+    # Replace only this recorded batch, in place. Later expansions and their
+    # order must survive rebuilding the earlier variants.
+    catalog = [replacements.pop(entry['key'], entry) for entry in catalog]
+    catalog.extend(replacements.values())
     (DEST / 'catalog.json').write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n')
     if args.sheet:
         columns, cell = 8, (164, 172)

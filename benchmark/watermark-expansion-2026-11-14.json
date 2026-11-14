@@ -1,0 +1,4076 @@
+{
+  "date": "2026-11-14",
+  "baseline": "3459ea50a1ecf0596064e0514cc2c07c61d4826f",
+  "branch": "codex/watermark-variants",
+  "scope": "60 previously unused independent Image motifs; no new generation output returned; existing109 bytes and metadata retained",
+  "assets": {
+    "count": 169,
+    "bytes": 3941668,
+    "categories": {
+      "cats": 29,
+      "flowers": 33,
+      "seaside": 19,
+      "stars": 24,
+      "leaves": 29,
+      "sentiments": 35
+    },
+    "preservedCatalogAndHashes": 109,
+    "details": [
+      {
+        "key": "paw",
+        "width": 232,
+        "height": 215,
+        "bytes": 34772,
+        "visiblePixels": 32960,
+        "alphaBounds": [
+          6,
+          6,
+          226,
+          209
+        ]
+      },
+      {
+        "key": "blossom",
+        "width": 139,
+        "height": 139,
+        "bytes": 14822,
+        "visiblePixels": 10846,
+        "alphaBounds": [
+          6,
+          6,
+          133,
+          133
+        ]
+      },
+      {
+        "key": "blue-flower",
+        "width": 93,
+        "height": 92,
+        "bytes": 6778,
+        "visiblePixels": 4447,
+        "alphaBounds": [
+          6,
+          6,
+          87,
+          86
+        ]
+      },
+      {
+        "key": "lilac-shell",
+        "width": 205,
+        "height": 176,
+        "bytes": 26864,
+        "visiblePixels": 22825,
+        "alphaBounds": [
+          6,
+          6,
+          199,
+          170
+        ]
+      },
+      {
+        "key": "soft-star",
+        "width": 100,
+        "height": 96,
+        "bytes": 8050,
+        "visiblePixels": 5281,
+        "alphaBounds": [
+          6,
+          6,
+          94,
+          90
+        ]
+      },
+      {
+        "key": "paired-leaves",
+        "width": 180,
+        "height": 147,
+        "bytes": 14378,
+        "visiblePixels": 9513,
+        "alphaBounds": [
+          6,
+          6,
+          174,
+          141
+        ]
+      },
+      {
+        "key": "leaf",
+        "width": 105,
+        "height": 145,
+        "bytes": 10550,
+        "visiblePixels": 8039,
+        "alphaBounds": [
+          6,
+          6,
+          99,
+          139
+        ]
+      },
+      {
+        "key": "peach-flower",
+        "width": 183,
+        "height": 173,
+        "bytes": 23696,
+        "visiblePixels": 19059,
+        "alphaBounds": [
+          6,
+          6,
+          177,
+          167
+        ]
+      },
+      {
+        "key": "small-heart",
+        "width": 94,
+        "height": 84,
+        "bytes": 5798,
+        "visiblePixels": 4043,
+        "alphaBounds": [
+          6,
+          6,
+          88,
+          78
+        ]
+      },
+      {
+        "key": "pink-bow",
+        "width": 229,
+        "height": 162,
+        "bytes": 22314,
+        "visiblePixels": 15302,
+        "alphaBounds": [
+          6,
+          6,
+          223,
+          156
+        ]
+      },
+      {
+        "key": "stitched-star",
+        "width": 180,
+        "height": 176,
+        "bytes": 22294,
+        "visiblePixels": 16359,
+        "alphaBounds": [
+          6,
+          6,
+          174,
+          170
+        ]
+      },
+      {
+        "key": "gold-star",
+        "width": 224,
+        "height": 223,
+        "bytes": 34432,
+        "visiblePixels": 28241,
+        "alphaBounds": [
+          6,
+          6,
+          218,
+          217
+        ]
+      },
+      {
+        "key": "stitched-paw",
+        "width": 239,
+        "height": 213,
+        "bytes": 25142,
+        "visiblePixels": 15875,
+        "alphaBounds": [
+          6,
+          6,
+          233,
+          207
+        ]
+      },
+      {
+        "key": "purple-flower",
+        "width": 88,
+        "height": 88,
+        "bytes": 6062,
+        "visiblePixels": 3907,
+        "alphaBounds": [
+          6,
+          6,
+          82,
+          82
+        ]
+      },
+      {
+        "key": "round-flower",
+        "width": 130,
+        "height": 123,
+        "bytes": 11788,
+        "visiblePixels": 9378,
+        "alphaBounds": [
+          6,
+          6,
+          124,
+          117
+        ]
+      },
+      {
+        "key": "pink-flower",
+        "width": 141,
+        "height": 141,
+        "bytes": 15382,
+        "visiblePixels": 11108,
+        "alphaBounds": [
+          6,
+          6,
+          135,
+          135
+        ]
+      },
+      {
+        "key": "wide-leaves",
+        "width": 173,
+        "height": 127,
+        "bytes": 13994,
+        "visiblePixels": 9604,
+        "alphaBounds": [
+          6,
+          6,
+          167,
+          121
+        ]
+      },
+      {
+        "key": "twig",
+        "width": 125,
+        "height": 198,
+        "bytes": 13176,
+        "visiblePixels": 8130,
+        "alphaBounds": [
+          6,
+          6,
+          119,
+          192
+        ]
+      },
+      {
+        "key": "pink-shell",
+        "width": 216,
+        "height": 187,
+        "bytes": 30134,
+        "visiblePixels": 25809,
+        "alphaBounds": [
+          6,
+          6,
+          210,
+          181
+        ]
+      },
+      {
+        "key": "blue-bow",
+        "width": 178,
+        "height": 129,
+        "bytes": 18798,
+        "visiblePixels": 13108,
+        "alphaBounds": [
+          6,
+          6,
+          172,
+          123
+        ]
+      },
+      {
+        "key": "blue-shell",
+        "width": 116,
+        "height": 101,
+        "bytes": 8278,
+        "visiblePixels": 6504,
+        "alphaBounds": [
+          6,
+          6,
+          110,
+          95
+        ]
+      },
+      {
+        "key": "blue-heart",
+        "width": 96,
+        "height": 86,
+        "bytes": 6374,
+        "visiblePixels": 4229,
+        "alphaBounds": [
+          6,
+          6,
+          90,
+          80
+        ]
+      },
+      {
+        "key": "cat",
+        "width": 252,
+        "height": 186,
+        "bytes": 34774,
+        "visiblePixels": 29185,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          180
+        ]
+      },
+      {
+        "key": "large-heart",
+        "width": 116,
+        "height": 111,
+        "bytes": 9954,
+        "visiblePixels": 6938,
+        "alphaBounds": [
+          6,
+          6,
+          110,
+          105
+        ]
+      },
+      {
+        "key": "tall-leaf",
+        "width": 95,
+        "height": 147,
+        "bytes": 10496,
+        "visiblePixels": 7125,
+        "alphaBounds": [
+          6,
+          6,
+          89,
+          141
+        ]
+      },
+      {
+        "key": "sprout",
+        "width": 131,
+        "height": 76,
+        "bytes": 6522,
+        "visiblePixels": 4124,
+        "alphaBounds": [
+          6,
+          6,
+          125,
+          70
+        ]
+      },
+      {
+        "key": "little-star",
+        "width": 108,
+        "height": 109,
+        "bytes": 9158,
+        "visiblePixels": 5855,
+        "alphaBounds": [
+          6,
+          6,
+          102,
+          103
+        ]
+      },
+      {
+        "key": "variant-cat-tabby-look",
+        "width": 231,
+        "height": 248,
+        "bytes": 55186,
+        "visiblePixels": 31516,
+        "alphaBounds": [
+          6,
+          6,
+          225,
+          242
+        ]
+      },
+      {
+        "key": "variant-cat-ginger-sleep",
+        "width": 252,
+        "height": 160,
+        "bytes": 47622,
+        "visiblePixels": 28724,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          154
+        ]
+      },
+      {
+        "key": "variant-cat-tuxedo-look",
+        "width": 193,
+        "height": 245,
+        "bytes": 47192,
+        "visiblePixels": 27009,
+        "alphaBounds": [
+          6,
+          6,
+          187,
+          239
+        ]
+      },
+      {
+        "key": "variant-cat-tabby-yawn",
+        "width": 250,
+        "height": 174,
+        "bytes": 38554,
+        "visiblePixels": 23051,
+        "alphaBounds": [
+          6,
+          6,
+          244,
+          168
+        ]
+      },
+      {
+        "key": "variant-cat-tabby-smile",
+        "width": 213,
+        "height": 241,
+        "bytes": 48514,
+        "visiblePixels": 28223,
+        "alphaBounds": [
+          6,
+          6,
+          207,
+          235
+        ]
+      },
+      {
+        "key": "variant-cat-white-peek",
+        "width": 229,
+        "height": 171,
+        "bytes": 35276,
+        "visiblePixels": 24639,
+        "alphaBounds": [
+          6,
+          6,
+          223,
+          165
+        ]
+      },
+      {
+        "key": "variant-cat-ginger-look",
+        "width": 196,
+        "height": 251,
+        "bytes": 51612,
+        "visiblePixels": 29183,
+        "alphaBounds": [
+          6,
+          6,
+          190,
+          245
+        ]
+      },
+      {
+        "key": "variant-cat-tabby-sleep",
+        "width": 239,
+        "height": 157,
+        "bytes": 41024,
+        "visiblePixels": 25531,
+        "alphaBounds": [
+          6,
+          6,
+          233,
+          151
+        ]
+      },
+      {
+        "key": "variant-cat-calico-back",
+        "width": 194,
+        "height": 252,
+        "bytes": 46960,
+        "visiblePixels": 29608,
+        "alphaBounds": [
+          6,
+          6,
+          188,
+          246
+        ]
+      },
+      {
+        "key": "variant-cat-tabby-wave",
+        "width": 175,
+        "height": 243,
+        "bytes": 40470,
+        "visiblePixels": 23105,
+        "alphaBounds": [
+          6,
+          6,
+          169,
+          237
+        ]
+      },
+      {
+        "key": "variant-paw-white",
+        "width": 196,
+        "height": 199,
+        "bytes": 26432,
+        "visiblePixels": 26971,
+        "alphaBounds": [
+          6,
+          6,
+          190,
+          193
+        ]
+      },
+      {
+        "key": "variant-paw-calico",
+        "width": 193,
+        "height": 207,
+        "bytes": 31180,
+        "visiblePixels": 27992,
+        "alphaBounds": [
+          6,
+          6,
+          187,
+          201
+        ]
+      },
+      {
+        "key": "variant-paw-tabby",
+        "width": 191,
+        "height": 209,
+        "bytes": 30554,
+        "visiblePixels": 27097,
+        "alphaBounds": [
+          6,
+          6,
+          185,
+          203
+        ]
+      },
+      {
+        "key": "variant-paw-ink",
+        "width": 197,
+        "height": 198,
+        "bytes": 29452,
+        "visiblePixels": 27082,
+        "alphaBounds": [
+          6,
+          6,
+          191,
+          192
+        ]
+      },
+      {
+        "key": "variant-paw-orange",
+        "width": 195,
+        "height": 215,
+        "bytes": 31050,
+        "visiblePixels": 28338,
+        "alphaBounds": [
+          6,
+          6,
+          189,
+          209
+        ]
+      },
+      {
+        "key": "variant-paw-fluffy",
+        "width": 203,
+        "height": 209,
+        "bytes": 27714,
+        "visiblePixels": 30225,
+        "alphaBounds": [
+          6,
+          6,
+          197,
+          203
+        ]
+      },
+      {
+        "key": "variant-paw-black",
+        "width": 195,
+        "height": 210,
+        "bytes": 30166,
+        "visiblePixels": 28489,
+        "alphaBounds": [
+          6,
+          6,
+          189,
+          204
+        ]
+      },
+      {
+        "key": "variant-paw-bow",
+        "width": 193,
+        "height": 220,
+        "bytes": 27762,
+        "visiblePixels": 28248,
+        "alphaBounds": [
+          6,
+          6,
+          187,
+          214
+        ]
+      },
+      {
+        "key": "variant-flower-blue-round",
+        "width": 123,
+        "height": 118,
+        "bytes": 11916,
+        "visiblePixels": 8105,
+        "alphaBounds": [
+          6,
+          6,
+          117,
+          112
+        ]
+      },
+      {
+        "key": "variant-flower-pink-five",
+        "width": 171,
+        "height": 161,
+        "bytes": 23462,
+        "visiblePixels": 15730,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          155
+        ]
+      },
+      {
+        "key": "variant-flower-purple-five",
+        "width": 143,
+        "height": 136,
+        "bytes": 16930,
+        "visiblePixels": 10692,
+        "alphaBounds": [
+          6,
+          6,
+          137,
+          130
+        ]
+      },
+      {
+        "key": "variant-flower-tulip-check",
+        "width": 137,
+        "height": 164,
+        "bytes": 19478,
+        "visiblePixels": 12579,
+        "alphaBounds": [
+          6,
+          6,
+          131,
+          158
+        ]
+      },
+      {
+        "key": "variant-flower-yellow-loose",
+        "width": 139,
+        "height": 133,
+        "bytes": 14680,
+        "visiblePixels": 10575,
+        "alphaBounds": [
+          6,
+          6,
+          133,
+          127
+        ]
+      },
+      {
+        "key": "variant-flower-coral-check",
+        "width": 129,
+        "height": 168,
+        "bytes": 17496,
+        "visiblePixels": 10788,
+        "alphaBounds": [
+          6,
+          6,
+          123,
+          162
+        ]
+      },
+      {
+        "key": "variant-flower-tulip-coral",
+        "width": 153,
+        "height": 217,
+        "bytes": 25006,
+        "visiblePixels": 15518,
+        "alphaBounds": [
+          6,
+          6,
+          147,
+          211
+        ]
+      },
+      {
+        "key": "variant-flower-blue-small",
+        "width": 101,
+        "height": 95,
+        "bytes": 7530,
+        "visiblePixels": 5001,
+        "alphaBounds": [
+          6,
+          6,
+          95,
+          89
+        ]
+      },
+      {
+        "key": "variant-flower-purple-round",
+        "width": 171,
+        "height": 161,
+        "bytes": 24672,
+        "visiblePixels": 16317,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          155
+        ]
+      },
+      {
+        "key": "variant-flower-pink-small",
+        "width": 131,
+        "height": 124,
+        "bytes": 12852,
+        "visiblePixels": 8907,
+        "alphaBounds": [
+          6,
+          6,
+          125,
+          118
+        ]
+      },
+      {
+        "key": "variant-flower-yellow-round",
+        "width": 168,
+        "height": 166,
+        "bytes": 21860,
+        "visiblePixels": 15724,
+        "alphaBounds": [
+          6,
+          6,
+          162,
+          160
+        ]
+      },
+      {
+        "key": "variant-flower-tulip-side",
+        "width": 163,
+        "height": 192,
+        "bytes": 24506,
+        "visiblePixels": 15086,
+        "alphaBounds": [
+          6,
+          6,
+          157,
+          186
+        ]
+      },
+      {
+        "key": "variant-shell-pink-fan",
+        "width": 252,
+        "height": 228,
+        "bytes": 53338,
+        "visiblePixels": 37128,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          222
+        ]
+      },
+      {
+        "key": "variant-shell-peach-spiral",
+        "width": 169,
+        "height": 227,
+        "bytes": 27064,
+        "visiblePixels": 22412,
+        "alphaBounds": [
+          6,
+          6,
+          163,
+          221
+        ]
+      },
+      {
+        "key": "variant-shell-blue-round",
+        "width": 240,
+        "height": 189,
+        "bytes": 39376,
+        "visiblePixels": 31869,
+        "alphaBounds": [
+          6,
+          6,
+          234,
+          183
+        ]
+      },
+      {
+        "key": "variant-shell-gold-spike",
+        "width": 214,
+        "height": 214,
+        "bytes": 29012,
+        "visiblePixels": 22792,
+        "alphaBounds": [
+          6,
+          6,
+          208,
+          208
+        ]
+      },
+      {
+        "key": "variant-shell-starfish",
+        "width": 226,
+        "height": 221,
+        "bytes": 28840,
+        "visiblePixels": 20560,
+        "alphaBounds": [
+          6,
+          6,
+          220,
+          215
+        ]
+      },
+      {
+        "key": "variant-shell-speckled",
+        "width": 198,
+        "height": 209,
+        "bytes": 35190,
+        "visiblePixels": 27560,
+        "alphaBounds": [
+          6,
+          6,
+          192,
+          203
+        ]
+      },
+      {
+        "key": "variant-shell-lilac-fan",
+        "width": 234,
+        "height": 210,
+        "bytes": 38182,
+        "visiblePixels": 32093,
+        "alphaBounds": [
+          6,
+          6,
+          228,
+          204
+        ]
+      },
+      {
+        "key": "variant-shell-aqua-spiral",
+        "width": 181,
+        "height": 226,
+        "bytes": 24554,
+        "visiblePixels": 17275,
+        "alphaBounds": [
+          6,
+          6,
+          175,
+          220
+        ]
+      },
+      {
+        "key": "variant-shell-cream-fan",
+        "width": 245,
+        "height": 223,
+        "bytes": 41362,
+        "visiblePixels": 36330,
+        "alphaBounds": [
+          6,
+          6,
+          239,
+          217
+        ]
+      },
+      {
+        "key": "variant-shell-pearl",
+        "width": 244,
+        "height": 223,
+        "bytes": 43990,
+        "visiblePixels": 36911,
+        "alphaBounds": [
+          6,
+          6,
+          238,
+          217
+        ]
+      },
+      {
+        "key": "variant-shell-aqua-fan",
+        "width": 226,
+        "height": 206,
+        "bytes": 37818,
+        "visiblePixels": 30098,
+        "alphaBounds": [
+          6,
+          6,
+          220,
+          200
+        ]
+      },
+      {
+        "key": "variant-shell-purple-spiral",
+        "width": 210,
+        "height": 230,
+        "bytes": 24474,
+        "visiblePixels": 18635,
+        "alphaBounds": [
+          6,
+          6,
+          204,
+          224
+        ]
+      },
+      {
+        "key": "variant-star-gold-smile",
+        "width": 192,
+        "height": 181,
+        "bytes": 26622,
+        "visiblePixels": 19974,
+        "alphaBounds": [
+          6,
+          6,
+          186,
+          175
+        ]
+      },
+      {
+        "key": "variant-star-blue-wink",
+        "width": 192,
+        "height": 179,
+        "bytes": 25422,
+        "visiblePixels": 19705,
+        "alphaBounds": [
+          6,
+          6,
+          186,
+          173
+        ]
+      },
+      {
+        "key": "variant-star-purple-smile",
+        "width": 192,
+        "height": 180,
+        "bytes": 27676,
+        "visiblePixels": 19969,
+        "alphaBounds": [
+          6,
+          6,
+          186,
+          174
+        ]
+      },
+      {
+        "key": "variant-star-pink-blush",
+        "width": 194,
+        "height": 187,
+        "bytes": 26402,
+        "visiblePixels": 20574,
+        "alphaBounds": [
+          6,
+          6,
+          188,
+          181
+        ]
+      },
+      {
+        "key": "variant-star-gold-cutout",
+        "width": 177,
+        "height": 176,
+        "bytes": 22914,
+        "visiblePixels": 17012,
+        "alphaBounds": [
+          6,
+          6,
+          171,
+          170
+        ]
+      },
+      {
+        "key": "variant-star-blue-dots",
+        "width": 198,
+        "height": 184,
+        "bytes": 26596,
+        "visiblePixels": 20672,
+        "alphaBounds": [
+          6,
+          6,
+          192,
+          178
+        ]
+      },
+      {
+        "key": "variant-star-green-smile",
+        "width": 192,
+        "height": 182,
+        "bytes": 25778,
+        "visiblePixels": 20247,
+        "alphaBounds": [
+          6,
+          6,
+          186,
+          176
+        ]
+      },
+      {
+        "key": "variant-star-purple-sleep",
+        "width": 205,
+        "height": 186,
+        "bytes": 27696,
+        "visiblePixels": 21513,
+        "alphaBounds": [
+          6,
+          6,
+          199,
+          180
+        ]
+      },
+      {
+        "key": "variant-star-gold-shy",
+        "width": 210,
+        "height": 195,
+        "bytes": 30920,
+        "visiblePixels": 23696,
+        "alphaBounds": [
+          6,
+          6,
+          204,
+          189
+        ]
+      },
+      {
+        "key": "variant-star-pink-stitch",
+        "width": 198,
+        "height": 185,
+        "bytes": 26530,
+        "visiblePixels": 17693,
+        "alphaBounds": [
+          6,
+          6,
+          192,
+          179
+        ]
+      },
+      {
+        "key": "variant-star-blue-orbit",
+        "width": 212,
+        "height": 178,
+        "bytes": 28848,
+        "visiblePixels": 19406,
+        "alphaBounds": [
+          6,
+          6,
+          206,
+          172
+        ]
+      },
+      {
+        "key": "variant-star-cream-bow",
+        "width": 196,
+        "height": 176,
+        "bytes": 25154,
+        "visiblePixels": 20619,
+        "alphaBounds": [
+          6,
+          6,
+          190,
+          170
+        ]
+      },
+      {
+        "key": "variant-leaf-heart-dark",
+        "width": 153,
+        "height": 168,
+        "bytes": 24214,
+        "visiblePixels": 13971,
+        "alphaBounds": [
+          6,
+          6,
+          147,
+          162
+        ]
+      },
+      {
+        "key": "variant-leaf-sprig-olive",
+        "width": 138,
+        "height": 137,
+        "bytes": 12750,
+        "visiblePixels": 6234,
+        "alphaBounds": [
+          6,
+          6,
+          132,
+          131
+        ]
+      },
+      {
+        "key": "variant-leaf-monstera-dark",
+        "width": 252,
+        "height": 217,
+        "bytes": 64662,
+        "visiblePixels": 34855,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          211
+        ]
+      },
+      {
+        "key": "variant-leaf-eucalyptus",
+        "width": 158,
+        "height": 193,
+        "bytes": 21120,
+        "visiblePixels": 11316,
+        "alphaBounds": [
+          6,
+          6,
+          152,
+          187
+        ]
+      },
+      {
+        "key": "variant-leaf-heart-light",
+        "width": 194,
+        "height": 228,
+        "bytes": 42188,
+        "visiblePixels": 25819,
+        "alphaBounds": [
+          6,
+          6,
+          188,
+          222
+        ]
+      },
+      {
+        "key": "variant-leaf-sprig-wide",
+        "width": 229,
+        "height": 222,
+        "bytes": 28662,
+        "visiblePixels": 11994,
+        "alphaBounds": [
+          6,
+          6,
+          223,
+          216
+        ]
+      },
+      {
+        "key": "variant-leaf-curly-vine",
+        "width": 232,
+        "height": 154,
+        "bytes": 19614,
+        "visiblePixels": 7213,
+        "alphaBounds": [
+          6,
+          6,
+          226,
+          148
+        ]
+      },
+      {
+        "key": "variant-leaf-branch-long",
+        "width": 188,
+        "height": 224,
+        "bytes": 26726,
+        "visiblePixels": 11709,
+        "alphaBounds": [
+          6,
+          6,
+          182,
+          218
+        ]
+      },
+      {
+        "key": "variant-leaf-yellow-buds",
+        "width": 120,
+        "height": 127,
+        "bytes": 10608,
+        "visiblePixels": 4037,
+        "alphaBounds": [
+          6,
+          6,
+          114,
+          121
+        ]
+      },
+      {
+        "key": "variant-leaf-heart-bright",
+        "width": 158,
+        "height": 175,
+        "bytes": 24918,
+        "visiblePixels": 14935,
+        "alphaBounds": [
+          6,
+          6,
+          152,
+          169
+        ]
+      },
+      {
+        "key": "variant-leaf-single",
+        "width": 116,
+        "height": 148,
+        "bytes": 12546,
+        "visiblePixels": 7920,
+        "alphaBounds": [
+          6,
+          6,
+          110,
+          142
+        ]
+      },
+      {
+        "key": "variant-leaf-small-sprig",
+        "width": 106,
+        "height": 124,
+        "bytes": 9184,
+        "visiblePixels": 4003,
+        "alphaBounds": [
+          6,
+          6,
+          100,
+          118
+        ]
+      },
+      {
+        "key": "variant-bow-pink-gingham",
+        "width": 252,
+        "height": 199,
+        "bytes": 47828,
+        "visiblePixels": 26262,
+        "alphaBounds": [
+          6,
+          6,
+          246,
+          193
+        ]
+      },
+      {
+        "key": "variant-bow-cream-heart",
+        "width": 227,
+        "height": 207,
+        "bytes": 38302,
+        "visiblePixels": 24556,
+        "alphaBounds": [
+          6,
+          6,
+          221,
+          201
+        ]
+      },
+      {
+        "key": "variant-bow-pink-soft",
+        "width": 241,
+        "height": 228,
+        "bytes": 42718,
+        "visiblePixels": 25096,
+        "alphaBounds": [
+          6,
+          6,
+          235,
+          222
+        ]
+      },
+      {
+        "key": "variant-bow-blue-lace",
+        "width": 220,
+        "height": 203,
+        "bytes": 41496,
+        "visiblePixels": 25618,
+        "alphaBounds": [
+          6,
+          6,
+          214,
+          197
+        ]
+      },
+      {
+        "key": "variant-bow-pink-satin",
+        "width": 250,
+        "height": 209,
+        "bytes": 41180,
+        "visiblePixels": 24557,
+        "alphaBounds": [
+          6,
+          6,
+          244,
+          203
+        ]
+      },
+      {
+        "key": "variant-bow-blue-ribbon",
+        "width": 190,
+        "height": 198,
+        "bytes": 21888,
+        "visiblePixels": 10496,
+        "alphaBounds": [
+          6,
+          6,
+          184,
+          192
+        ]
+      },
+      {
+        "key": "variant-bow-pink-dots",
+        "width": 219,
+        "height": 175,
+        "bytes": 31910,
+        "visiblePixels": 19253,
+        "alphaBounds": [
+          6,
+          6,
+          213,
+          169
+        ]
+      },
+      {
+        "key": "variant-bow-cream-small",
+        "width": 204,
+        "height": 203,
+        "bytes": 24128,
+        "visiblePixels": 14130,
+        "alphaBounds": [
+          6,
+          6,
+          198,
+          197
+        ]
+      },
+      {
+        "key": "variant-heart-floral",
+        "width": 191,
+        "height": 150,
+        "bytes": 30268,
+        "visiblePixels": 19264,
+        "alphaBounds": [
+          6,
+          6,
+          185,
+          144
+        ]
+      },
+      {
+        "key": "variant-heart-pink-dots",
+        "width": 119,
+        "height": 107,
+        "bytes": 11314,
+        "visiblePixels": 7079,
+        "alphaBounds": [
+          6,
+          6,
+          113,
+          101
+        ]
+      },
+      {
+        "key": "variant-heart-lace-bow",
+        "width": 187,
+        "height": 147,
+        "bytes": 28800,
+        "visiblePixels": 17859,
+        "alphaBounds": [
+          6,
+          6,
+          181,
+          141
+        ]
+      },
+      {
+        "key": "variant-heart-pink-soft",
+        "width": 119,
+        "height": 109,
+        "bytes": 11948,
+        "visiblePixels": 7197,
+        "alphaBounds": [
+          6,
+          6,
+          113,
+          103
+        ]
+      },
+      {
+        "key": "variant-heart-blue-gingham",
+        "width": 154,
+        "height": 134,
+        "bytes": 20888,
+        "visiblePixels": 12161,
+        "alphaBounds": [
+          6,
+          6,
+          148,
+          128
+        ]
+      },
+      {
+        "key": "variant-heart-pink-gingham",
+        "width": 134,
+        "height": 115,
+        "bytes": 14500,
+        "visiblePixels": 8722,
+        "alphaBounds": [
+          6,
+          6,
+          128,
+          109
+        ]
+      },
+      {
+        "key": "variant-heart-pink-stitch",
+        "width": 112,
+        "height": 97,
+        "bytes": 11536,
+        "visiblePixels": 5683,
+        "alphaBounds": [
+          6,
+          6,
+          106,
+          91
+        ]
+      },
+      {
+        "key": "variant-heart-wings",
+        "width": 181,
+        "height": 89,
+        "bytes": 11830,
+        "visiblePixels": 7196,
+        "alphaBounds": [
+          6,
+          6,
+          175,
+          83
+        ]
+      },
+      {
+        "key": "extra-paw-calico-tilt",
+        "width": 198,
+        "height": 205,
+        "bytes": 29116,
+        "visiblePixels": 28356,
+        "alphaBounds": [
+          6,
+          6,
+          192,
+          199
+        ]
+      },
+      {
+        "key": "extra-paw-gray-tilt",
+        "width": 200,
+        "height": 215,
+        "bytes": 31044,
+        "visiblePixels": 28770,
+        "alphaBounds": [
+          6,
+          6,
+          194,
+          209
+        ]
+      },
+      {
+        "key": "extra-paw-cream-wave",
+        "width": 182,
+        "height": 219,
+        "bytes": 27576,
+        "visiblePixels": 28520,
+        "alphaBounds": [
+          6,
+          6,
+          176,
+          213
+        ]
+      },
+      {
+        "key": "extra-paw-ginger-cream",
+        "width": 197,
+        "height": 213,
+        "bytes": 31354,
+        "visiblePixels": 29721,
+        "alphaBounds": [
+          6,
+          6,
+          191,
+          207
+        ]
+      },
+      {
+        "key": "extra-paw-dark-cream",
+        "width": 195,
+        "height": 208,
+        "bytes": 29294,
+        "visiblePixels": 28234,
+        "alphaBounds": [
+          6,
+          6,
+          189,
+          202
+        ]
+      },
+      {
+        "key": "extra-paw-tabby-white",
+        "width": 194,
+        "height": 205,
+        "bytes": 35144,
+        "visiblePixels": 24456,
+        "alphaBounds": [
+          6,
+          6,
+          188,
+          199
+        ]
+      },
+      {
+        "key": "extra-paw-cream-patches",
+        "width": 204,
+        "height": 206,
+        "bytes": 28966,
+        "visiblePixels": 29618,
+        "alphaBounds": [
+          6,
+          6,
+          198,
+          200
+        ]
+      },
+      {
+        "key": "extra-paw-blue-white",
+        "width": 198,
+        "height": 203,
+        "bytes": 28158,
+        "visiblePixels": 27477,
+        "alphaBounds": [
+          6,
+          6,
+          192,
+          197
+        ]
+      },
+      {
+        "key": "extra-flower-check-wide",
+        "width": 174,
+        "height": 161,
+        "bytes": 24810,
+        "visiblePixels": 17322,
+        "alphaBounds": [
+          6,
+          6,
+          168,
+          155
+        ]
+      },
+      {
+        "key": "extra-flower-blue-wide",
+        "width": 137,
+        "height": 133,
+        "bytes": 14024,
+        "visiblePixels": 10619,
+        "alphaBounds": [
+          6,
+          6,
+          131,
+          127
+        ]
+      },
+      {
+        "key": "extra-flower-purple-check",
+        "width": 147,
+        "height": 139,
+        "bytes": 18856,
+        "visiblePixels": 11686,
+        "alphaBounds": [
+          6,
+          6,
+          141,
+          133
+        ]
+      },
+      {
+        "key": "extra-flower-red-tulip",
+        "width": 109,
+        "height": 155,
+        "bytes": 13626,
+        "visiblePixels": 7812,
+        "alphaBounds": [
+          6,
+          6,
+          103,
+          149
+        ]
+      },
+      {
+        "key": "extra-flower-pink-check-small",
+        "width": 133,
+        "height": 130,
+        "bytes": 15946,
+        "visiblePixels": 9520,
+        "alphaBounds": [
+          6,
+          6,
+          127,
+          124
+        ]
+      },
+      {
+        "key": "extra-flower-daisy-pair",
+        "width": 113,
+        "height": 91,
+        "bytes": 8350,
+        "visiblePixels": 4287,
+        "alphaBounds": [
+          6,
+          6,
+          107,
+          85
+        ]
+      },
+      {
+        "key": "extra-flower-daisy-cluster",
+        "width": 92,
+        "height": 96,
+        "bytes": 7230,
+        "visiblePixels": 3749,
+        "alphaBounds": [
+          6,
+          6,
+          86,
+          90
+        ]
+      },
+      {
+        "key": "extra-flower-pink-daisy",
+        "width": 75,
+        "height": 72,
+        "bytes": 4466,
+        "visiblePixels": 2557,
+        "alphaBounds": [
+          6,
+          6,
+          69,
+          66
+        ]
+      },
+      {
+        "key": "extra-flower-cream-daisy",
+        "width": 64,
+        "height": 70,
+        "bytes": 3972,
+        "visiblePixels": 1983,
+        "alphaBounds": [
+          6,
+          6,
+          58,
+          64
+        ]
+      },
+      {
+        "key": "extra-flower-gray-daisy",
+        "width": 94,
+        "height": 90,
+        "bytes": 6548,
+        "visiblePixels": 3005,
+        "alphaBounds": [
+          6,
+          6,
+          88,
+          84
+        ]
+      },
+      {
+        "key": "extra-flower-green-cream",
+        "width": 85,
+        "height": 80,
+        "bytes": 5758,
+        "visiblePixels": 3406,
+        "alphaBounds": [
+          6,
+          6,
+          79,
+          74
+        ]
+      },
+      {
+        "key": "extra-flower-cream-round",
+        "width": 86,
+        "height": 82,
+        "bytes": 5804,
+        "visiblePixels": 3517,
+        "alphaBounds": [
+          6,
+          6,
+          80,
+          76
+        ]
+      },
+      {
+        "key": "extra-flower-gold-cream",
+        "width": 85,
+        "height": 78,
+        "bytes": 5888,
+        "visiblePixels": 3442,
+        "alphaBounds": [
+          6,
+          6,
+          79,
+          72
+        ]
+      },
+      {
+        "key": "extra-flower-cream-side",
+        "width": 74,
+        "height": 73,
+        "bytes": 4684,
+        "visiblePixels": 2609,
+        "alphaBounds": [
+          6,
+          6,
+          68,
+          67
+        ]
+      },
+      {
+        "key": "extra-flower-tiny-cream",
+        "width": 80,
+        "height": 68,
+        "bytes": 4808,
+        "visiblePixels": 2875,
+        "alphaBounds": [
+          6,
+          6,
+          74,
+          62
+        ]
+      },
+      {
+        "key": "extra-shell-pink-spiral",
+        "width": 203,
+        "height": 205,
+        "bytes": 34494,
+        "visiblePixels": 27265,
+        "alphaBounds": [
+          6,
+          6,
+          197,
+          199
+        ]
+      },
+      {
+        "key": "extra-shell-blue-ridge",
+        "width": 221,
+        "height": 196,
+        "bytes": 33360,
+        "visiblePixels": 27676,
+        "alphaBounds": [
+          6,
+          6,
+          215,
+          190
+        ]
+      },
+      {
+        "key": "extra-shell-nautilus",
+        "width": 201,
+        "height": 213,
+        "bytes": 33580,
+        "visiblePixels": 27717,
+        "alphaBounds": [
+          6,
+          6,
+          195,
+          207
+        ]
+      },
+      {
+        "key": "extra-shell-lilac-round",
+        "width": 220,
+        "height": 207,
+        "bytes": 35014,
+        "visiblePixels": 29556,
+        "alphaBounds": [
+          6,
+          6,
+          214,
+          201
+        ]
+      },
+      {
+        "key": "extra-star-shooting",
+        "width": 251,
+        "height": 149,
+        "bytes": 31946,
+        "visiblePixels": 18546,
+        "alphaBounds": [
+          6,
+          6,
+          245,
+          143
+        ]
+      },
+      {
+        "key": "extra-star-gold-stripes",
+        "width": 190,
+        "height": 180,
+        "bytes": 28352,
+        "visiblePixels": 19032,
+        "alphaBounds": [
+          6,
+          6,
+          184,
+          174
+        ]
+      },
+      {
+        "key": "extra-star-blue-cutout",
+        "width": 184,
+        "height": 166,
+        "bytes": 22510,
+        "visiblePixels": 17605,
+        "alphaBounds": [
+          6,
+          6,
+          178,
+          160
+        ]
+      },
+      {
+        "key": "extra-star-purple-orbit",
+        "width": 231,
+        "height": 171,
+        "bytes": 34700,
+        "visiblePixels": 19983,
+        "alphaBounds": [
+          6,
+          6,
+          225,
+          165
+        ]
+      },
+      {
+        "key": "extra-star-gold-happy",
+        "width": 203,
+        "height": 189,
+        "bytes": 28222,
+        "visiblePixels": 21509,
+        "alphaBounds": [
+          6,
+          6,
+          197,
+          183
+        ]
+      },
+      {
+        "key": "extra-star-purple-heart",
+        "width": 190,
+        "height": 186,
+        "bytes": 25072,
+        "visiblePixels": 20347,
+        "alphaBounds": [
+          6,
+          6,
+          184,
+          180
+        ]
+      },
+      {
+        "key": "extra-star-green-wink",
+        "width": 205,
+        "height": 186,
+        "bytes": 27900,
+        "visiblePixels": 22363,
+        "alphaBounds": [
+          6,
+          6,
+          199,
+          180
+        ]
+      },
+      {
+        "key": "extra-star-gold-shine",
+        "width": 197,
+        "height": 186,
+        "bytes": 30254,
+        "visiblePixels": 20455,
+        "alphaBounds": [
+          6,
+          6,
+          191,
+          180
+        ]
+      },
+      {
+        "key": "extra-leaf-long-sprig",
+        "width": 130,
+        "height": 214,
+        "bytes": 21762,
+        "visiblePixels": 9499,
+        "alphaBounds": [
+          6,
+          6,
+          124,
+          208
+        ]
+      },
+      {
+        "key": "extra-leaf-gold-bud",
+        "width": 131,
+        "height": 118,
+        "bytes": 10768,
+        "visiblePixels": 4043,
+        "alphaBounds": [
+          6,
+          6,
+          125,
+          112
+        ]
+      },
+      {
+        "key": "extra-leaf-olive-oval",
+        "width": 74,
+        "height": 89,
+        "bytes": 6172,
+        "visiblePixels": 3559,
+        "alphaBounds": [
+          6,
+          6,
+          68,
+          83
+        ]
+      },
+      {
+        "key": "extra-leaf-light-point",
+        "width": 90,
+        "height": 91,
+        "bytes": 7662,
+        "visiblePixels": 4691,
+        "alphaBounds": [
+          6,
+          6,
+          84,
+          85
+        ]
+      },
+      {
+        "key": "extra-leaf-diagonal-sprig",
+        "width": 151,
+        "height": 175,
+        "bytes": 15108,
+        "visiblePixels": 6993,
+        "alphaBounds": [
+          6,
+          6,
+          145,
+          169
+        ]
+      },
+      {
+        "key": "extra-leaf-soft-vine",
+        "width": 223,
+        "height": 158,
+        "bytes": 28156,
+        "visiblePixels": 10331,
+        "alphaBounds": [
+          6,
+          6,
+          217,
+          152
+        ]
+      },
+      {
+        "key": "extra-leaf-lime-stripes",
+        "width": 111,
+        "height": 76,
+        "bytes": 7734,
+        "visiblePixels": 4475,
+        "alphaBounds": [
+          6,
+          6,
+          105,
+          70
+        ]
+      },
+      {
+        "key": "extra-leaf-three-olive",
+        "width": 112,
+        "height": 78,
+        "bytes": 6362,
+        "visiblePixels": 3387,
+        "alphaBounds": [
+          6,
+          6,
+          106,
+          72
+        ]
+      },
+      {
+        "key": "extra-leaf-little-point",
+        "width": 75,
+        "height": 63,
+        "bytes": 3860,
+        "visiblePixels": 2075,
+        "alphaBounds": [
+          6,
+          6,
+          69,
+          57
+        ]
+      },
+      {
+        "key": "extra-leaf-green-small",
+        "width": 75,
+        "height": 65,
+        "bytes": 3918,
+        "visiblePixels": 2135,
+        "alphaBounds": [
+          6,
+          6,
+          69,
+          59
+        ]
+      },
+      {
+        "key": "extra-leaf-young-sprout",
+        "width": 85,
+        "height": 84,
+        "bytes": 4370,
+        "visiblePixels": 2218,
+        "alphaBounds": [
+          6,
+          6,
+          79,
+          78
+        ]
+      },
+      {
+        "key": "extra-bow-check-small",
+        "width": 179,
+        "height": 166,
+        "bytes": 26770,
+        "visiblePixels": 14780,
+        "alphaBounds": [
+          6,
+          6,
+          173,
+          160
+        ]
+      },
+      {
+        "key": "extra-heart-linked",
+        "width": 122,
+        "height": 86,
+        "bytes": 7654,
+        "visiblePixels": 4035,
+        "alphaBounds": [
+          6,
+          6,
+          116,
+          80
+        ]
+      },
+      {
+        "key": "extra-heart-pink-shiny",
+        "width": 109,
+        "height": 98,
+        "bytes": 9544,
+        "visiblePixels": 5756,
+        "alphaBounds": [
+          6,
+          6,
+          103,
+          92
+        ]
+      },
+      {
+        "key": "extra-heart-small-doily",
+        "width": 146,
+        "height": 129,
+        "bytes": 20764,
+        "visiblePixels": 9868,
+        "alphaBounds": [
+          6,
+          6,
+          140,
+          123
+        ]
+      },
+      {
+        "key": "extra-bow-heart-flowing",
+        "width": 225,
+        "height": 236,
+        "bytes": 29720,
+        "visiblePixels": 17397,
+        "alphaBounds": [
+          6,
+          6,
+          219,
+          230
+        ]
+      },
+      {
+        "key": "extra-bow-lace-wide",
+        "width": 218,
+        "height": 189,
+        "bytes": 38984,
+        "visiblePixels": 23095,
+        "alphaBounds": [
+          6,
+          6,
+          212,
+          183
+        ]
+      },
+      {
+        "key": "extra-bow-ribbon-flowing",
+        "width": 201,
+        "height": 252,
+        "bytes": 36802,
+        "visiblePixels": 17369,
+        "alphaBounds": [
+          6,
+          6,
+          195,
+          246
+        ]
+      },
+      {
+        "key": "extra-bow-blue-flower",
+        "width": 181,
+        "height": 186,
+        "bytes": 27894,
+        "visiblePixels": 16958,
+        "alphaBounds": [
+          6,
+          6,
+          175,
+          180
+        ]
+      },
+      {
+        "key": "extra-bow-pink-double",
+        "width": 157,
+        "height": 201,
+        "bytes": 26340,
+        "visiblePixels": 15892,
+        "alphaBounds": [
+          6,
+          6,
+          151,
+          195
+        ]
+      },
+      {
+        "key": "extra-bow-little-tilt",
+        "width": 136,
+        "height": 95,
+        "bytes": 9154,
+        "visiblePixels": 5207,
+        "alphaBounds": [
+          6,
+          6,
+          130,
+          89
+        ]
+      },
+      {
+        "key": "extra-bow-tiny-ribbon",
+        "width": 104,
+        "height": 68,
+        "bytes": 5938,
+        "visiblePixels": 3162,
+        "alphaBounds": [
+          6,
+          6,
+          98,
+          62
+        ]
+      },
+      {
+        "key": "extra-heart-dotted-trail",
+        "width": 171,
+        "height": 60,
+        "bytes": 3948,
+        "visiblePixels": 1975,
+        "alphaBounds": [
+          6,
+          6,
+          165,
+          54
+        ]
+      },
+      {
+        "key": "extra-heart-plain-pink",
+        "width": 75,
+        "height": 68,
+        "bytes": 4166,
+        "visiblePixels": 2493,
+        "alphaBounds": [
+          6,
+          6,
+          69,
+          62
+        ]
+      },
+      {
+        "key": "extra-heart-outline-tall",
+        "width": 73,
+        "height": 78,
+        "bytes": 3920,
+        "visiblePixels": 2543,
+        "alphaBounds": [
+          6,
+          6,
+          67,
+          72
+        ]
+      }
+    ]
+  },
+  "rebuild": {
+    "passed": true,
+    "preservedFiles": 170,
+    "oldBatchRebuild": {
+      "new": 82,
+      "total": 169,
+      "bytes": 3941668
+    }
+  },
+  "validation": {
+    "typecheck": true,
+    "build": true,
+    "buildEditor": true,
+    "tests": 36,
+    "singleFinalRun": false,
+    "runs": [
+      {
+        "tests": 36,
+        "passed": 35,
+        "failed": 1,
+        "reason": "source crop write triggered Vite reload during initial save; first test timed out"
+      },
+      {
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "reason": "same failing test rerun after source writes stopped"
+      }
+    ],
+    "newTests": 1,
+    "newOriginalPNGAndCapture": true,
+    "remaining": "Safari, physical mobile, long device sessions and full historical suite not retested"
+  },
+  "production": {
+    "baseline": "3459ea5",
+    "flow": "editor -> real variant selection / mirror / color -> saved draft -> preview / PNG / room handoff",
+    "browserPath": "Browser plugin not available; existing Playwright / system Chrome",
+    "pages": [
+      {
+        "name": "author, isolated production draft",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "requests": [
+          "http://127.0.0.1:4174/editor.html",
+          "http://127.0.0.1:4174/assets/editor-Pt7rHmrp.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/published-CbSvN2FD.js",
+          "http://127.0.0.1:4174/assets/document-OxjUhQbK.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/storage-Bf2HcqRe.js",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/editor-L35a9eRs.css",
+          "http://127.0.0.1:4174/favicon.svg",
+          "http://127.0.0.1:4174/assets/samples-gD8VBcqN.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/paw-DRK3otlj.webp",
+          "http://127.0.0.1:4174/assets/blossom-B2T7713E.webp",
+          "http://127.0.0.1:4174/assets/blue-flower-Bd820UZr.webp",
+          "http://127.0.0.1:4174/assets/lilac-shell-C1M7aqkI.webp",
+          "http://127.0.0.1:4174/assets/soft-star-oDs_CMS0.webp",
+          "http://127.0.0.1:4174/assets/paired-leaves-DJ5GqTmu.webp",
+          "http://127.0.0.1:4174/assets/leaf-C5XnhWOu.webp",
+          "http://127.0.0.1:4174/assets/peach-flower-DEK5Lk4G.webp",
+          "http://127.0.0.1:4174/assets/small-heart-DiiN6Teq.webp",
+          "http://127.0.0.1:4174/assets/pink-bow-CdNzCRG9.webp",
+          "http://127.0.0.1:4174/assets/stitched-star-D6znvpYB.webp",
+          "http://127.0.0.1:4174/assets/gold-star-DfKrLY-4.webp",
+          "http://127.0.0.1:4174/assets/stitched-paw-uSAu8kdq.webp",
+          "http://127.0.0.1:4174/assets/purple-flower-DFO6DOZ6.webp",
+          "http://127.0.0.1:4174/assets/round-flower-CYLc2O5k.webp",
+          "http://127.0.0.1:4174/assets/pink-flower-BGtkk-Ll.webp",
+          "http://127.0.0.1:4174/assets/wide-leaves-B3UrxOqI.webp",
+          "http://127.0.0.1:4174/assets/twig-DQ3_psFA.webp",
+          "http://127.0.0.1:4174/assets/pink-shell-DYava6m2.webp",
+          "http://127.0.0.1:4174/assets/blue-bow-C2lkUQbi.webp",
+          "http://127.0.0.1:4174/assets/blue-shell-BkkmpiLD.webp",
+          "http://127.0.0.1:4174/assets/blue-heart-ChxiHS7w.webp",
+          "http://127.0.0.1:4174/assets/cat-CJkbGHZP.webp",
+          "http://127.0.0.1:4174/assets/large-heart-B9sqKh_1.webp",
+          "http://127.0.0.1:4174/assets/tall-leaf-D1WtV7HU.webp",
+          "http://127.0.0.1:4174/assets/sprout-rXskQ4hG.webp",
+          "http://127.0.0.1:4174/assets/little-star-Cp7bSjAg.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-look-0mkhPCNE.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-sleep-Da1LMME4.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tuxedo-look-DzcO0uCO.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-yawn-CY2aJS_M.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-smile-CW-2OVtJ.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-white-peek-Ng_bcldL.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-look-CQEK38sP.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-sleep-CCsWW-b8.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-calico-back-ClFELSdh.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-wave-Co-Beqgz.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-white-CmrLhYq3.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-calico-C5n-LSfi.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-tabby-CIhvgh7b.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-ink-B4-UPIxT.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-orange-BwhytFgE.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-fluffy-Btfjthu7.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-black-BnJ-LHYc.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-bow-DBzEbLVw.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-blue-round-Dy3x_7GX.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-pink-five-06UHqGnk.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-purple-five-Cv5lCrmC.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-check-DlIilW1N.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-yellow-loose-DqyC5bAa.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-coral-check-D68zKHd1.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-coral-BqkEUCJd.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-blue-small-BEV9x0Ww.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-purple-round-rQwH6nc_.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-pink-small-4Bg9i0a_.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-yellow-round-CmgZH6Eh.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-side-tno596DV.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-pink-fan-vlhKGyxx.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-peach-spiral-C2DNKeZy.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-blue-round-CNn110Gw.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-gold-spike-B-04EPIQ.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-starfish-IjBHy75L.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-speckled-QUuWWKT1.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-lilac-fan-BkYgKirg.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-aqua-spiral-D0oVEQWP.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-cream-fan-DECbueTa.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-pearl-CZs49-ad.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-aqua-fan-CcyMCMs8.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-purple-spiral-DMNAnw-f.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-smile-Br1IuO3G.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-wink-CMa57BaZ.webp",
+          "http://127.0.0.1:4174/assets/variant-star-purple-smile-BmkGKC5X.webp",
+          "http://127.0.0.1:4174/assets/variant-star-pink-blush-BD-sDjt9.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-cutout-rTrZEvAw.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-dots-DXnL1gRn.webp",
+          "http://127.0.0.1:4174/assets/variant-star-green-smile-BQITfct8.webp",
+          "http://127.0.0.1:4174/assets/variant-star-purple-sleep-ABnz6lkU.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-shy-2iV2qQX9.webp",
+          "http://127.0.0.1:4174/assets/variant-star-pink-stitch-DJH5vr21.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-orbit-BIv8vQ8P.webp",
+          "http://127.0.0.1:4174/assets/variant-star-cream-bow-BdiQquh5.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-dark-DxPJgF71.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-sprig-olive-CHzrk6AE.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-monstera-dark-Z2xUYEEh.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-eucalyptus-CiV6gw0S.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-light-DIOGQxRo.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-sprig-wide-A55gQ9BF.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-curly-vine-CxPKGB5m.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-branch-long-CAC2Yatg.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-yellow-buds-rahYYZxH.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-bright-C4EgVALN.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-single-CCGVLx6w.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-small-sprig-DIMfWCr2.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-gingham-C2TO-W_E.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-cream-heart-CKfUbpTU.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-soft-CyiPPLF8.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-blue-lace-B0s4LKWD.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-satin-CneBDp-t.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-blue-ribbon-Bn-g3FqD.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-dots-CxOaVotf.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-cream-small-BV0wcLjI.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-floral-D-tJMrS8.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-dots-B3ebiK5-.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-lace-bow-B3PW3G_b.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-soft-BzPZjyfg.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-blue-gingham-V8lgWB02.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-gingham-Bs4yxb2-.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-stitch-DRDk1o4o.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-wings-BXc9e_C3.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-calico-tilt-btvqVu5x.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-gray-tilt-BSWPSwTv.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-cream-wave-CEeNfrx-.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-ginger-cream-BW8DYj5b.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-dark-cream-JJe8kRc6.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-tabby-white-80EyNQ9T.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-cream-patches-BTDSPYzz.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-blue-white-DmDjXHKf.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-check-wide-DrcTlcb1.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-blue-wide-4rVc8B2Z.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-purple-check-C7dugc6E.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-red-tulip-ChDRhXBK.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-pink-check-small-BJrqjXkx.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-daisy-pair-CpBneaCB.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-daisy-cluster-CsRYrt5Z.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-pink-daisy-NKaiZGK4.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-gray-daisy-C3P89mep.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-green-cream-MvLwMPfu.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-cream-round-Dye6X3RG.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-gold-cream-oQXd7FuG.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-cream-side-CP5w3-n6.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-tiny-cream-Db3CXjbS.webp",
+          "http://127.0.0.1:4174/assets/extra-shell-pink-spiral-CEIRVNKt.webp",
+          "http://127.0.0.1:4174/assets/extra-shell-blue-ridge-C7ue27Lz.webp",
+          "http://127.0.0.1:4174/assets/extra-shell-nautilus-HGzMBc8p.webp",
+          "http://127.0.0.1:4174/assets/extra-shell-lilac-round-CkhzNsMP.webp",
+          "http://127.0.0.1:4174/assets/extra-star-shooting-CE93_eVR.webp",
+          "http://127.0.0.1:4174/assets/extra-star-gold-stripes-BKBlcmxO.webp",
+          "http://127.0.0.1:4174/assets/extra-star-blue-cutout-CN73nCQc.webp",
+          "http://127.0.0.1:4174/assets/extra-star-purple-orbit-CKjxqXoO.webp",
+          "http://127.0.0.1:4174/assets/extra-star-gold-happy-5PpC7uId.webp",
+          "http://127.0.0.1:4174/assets/extra-star-purple-heart-tVo1k-a4.webp",
+          "http://127.0.0.1:4174/assets/extra-star-green-wink-CF6MM21k.webp",
+          "http://127.0.0.1:4174/assets/extra-star-gold-shine-BD_dmbKQ.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-long-sprig-B1FbyT19.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-gold-bud-Uf0iL9mT.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-olive-oval-NzI5GN9A.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-light-point-CWkqSGf0.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-diagonal-sprig-DbjIKH1J.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-soft-vine-Dx4wf-3H.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-lime-stripes-ChI78flj.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-three-olive-Dq6fvuaM.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-young-sprout-DfIoA7M9.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-check-small-KE2wrNXu.webp",
+          "http://127.0.0.1:4174/assets/extra-heart-linked-B90RiZ7w.webp",
+          "http://127.0.0.1:4174/assets/extra-heart-pink-shiny-CNiZoKhr.webp",
+          "http://127.0.0.1:4174/assets/extra-heart-small-doily-CFbrPTpC.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-heart-flowing-Nc7JykBG.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-lace-wide-CkUkBsyW.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-ribbon-flowing-iIqT7Yl4.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-blue-flower-CIkltaXf.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-pink-double-DdscE1jD.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-little-tilt-CdECBiD9.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-tiny-ribbon-CTDsZcWa.webp",
+          "http://127.0.0.1:4174/assets/extra-heart-plain-pink-BjxwH7em.webp",
+          "blob:http://127.0.0.1:4174/03c3f83e-6a9c-46a5-acf6-bd91a3c5001e",
+          "http://127.0.0.1:4174/assets/extra-paw-blue-white-DmDjXHKf.webp",
+          "blob:http://127.0.0.1:4174/4a4126ca-59b6-466c-b862-6cf7a950bfa5",
+          "http://127.0.0.1:4174/assets/extra-paw-blue-white-DmDjXHKf.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-purple-check-C7dugc6E.webp",
+          "blob:http://127.0.0.1:4174/6a347ed5-e13b-434f-b92d-0844250d3b3f",
+          "http://127.0.0.1:4174/assets/extra-flower-purple-check-C7dugc6E.webp",
+          "http://127.0.0.1:4174/assets/extra-shell-nautilus-HGzMBc8p.webp",
+          "blob:http://127.0.0.1:4174/e6c4325e-55c8-48d7-8bbb-f9418ad4d3b5",
+          "http://127.0.0.1:4174/assets/extra-shell-nautilus-HGzMBc8p.webp",
+          "http://127.0.0.1:4174/assets/extra-star-shooting-CE93_eVR.webp",
+          "blob:http://127.0.0.1:4174/5c06caa8-ce31-43c3-99dc-bf0058bacd6f",
+          "http://127.0.0.1:4174/assets/extra-star-shooting-CE93_eVR.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-soft-vine-Dx4wf-3H.webp",
+          "blob:http://127.0.0.1:4174/a77274ae-4797-476a-9ecc-34fdb023bf90",
+          "http://127.0.0.1:4174/assets/extra-leaf-soft-vine-Dx4wf-3H.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-ribbon-flowing-iIqT7Yl4.webp",
+          "blob:http://127.0.0.1:4174/9a053bcf-b21d-4053-8c9c-c9c625681f81",
+          "http://127.0.0.1:4174/assets/extra-bow-ribbon-flowing-iIqT7Yl4.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-look-CQEK38sP.webp",
+          "blob:http://127.0.0.1:4174/ec3147d5-c225-469d-a974-4bc971da3beb",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-look-CQEK38sP.webp",
+          "http://127.0.0.1:4174/assets/page-image-BCbSzGOd.js",
+          "http://127.0.0.1:4174/assets/page-raster-DwBSMYVH.js",
+          "http://127.0.0.1:4174/assets/font-raster-CxjQ0MEe.js",
+          "http://127.0.0.1:4174/editor.html",
+          "http://127.0.0.1:4174/assets/editor-Pt7rHmrp.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/published-CbSvN2FD.js",
+          "http://127.0.0.1:4174/assets/document-OxjUhQbK.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/storage-Bf2HcqRe.js",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/editor-L35a9eRs.css",
+          "http://127.0.0.1:4174/favicon.svg",
+          "http://127.0.0.1:4174/assets/paw-DRK3otlj.webp",
+          "http://127.0.0.1:4174/assets/blossom-B2T7713E.webp",
+          "http://127.0.0.1:4174/assets/blue-flower-Bd820UZr.webp",
+          "http://127.0.0.1:4174/assets/lilac-shell-C1M7aqkI.webp",
+          "http://127.0.0.1:4174/assets/soft-star-oDs_CMS0.webp",
+          "http://127.0.0.1:4174/assets/paired-leaves-DJ5GqTmu.webp",
+          "http://127.0.0.1:4174/assets/leaf-C5XnhWOu.webp",
+          "http://127.0.0.1:4174/assets/peach-flower-DEK5Lk4G.webp",
+          "http://127.0.0.1:4174/assets/small-heart-DiiN6Teq.webp",
+          "http://127.0.0.1:4174/assets/pink-bow-CdNzCRG9.webp",
+          "http://127.0.0.1:4174/assets/stitched-star-D6znvpYB.webp",
+          "http://127.0.0.1:4174/assets/gold-star-DfKrLY-4.webp",
+          "http://127.0.0.1:4174/assets/stitched-paw-uSAu8kdq.webp",
+          "http://127.0.0.1:4174/assets/purple-flower-DFO6DOZ6.webp",
+          "http://127.0.0.1:4174/assets/round-flower-CYLc2O5k.webp",
+          "http://127.0.0.1:4174/assets/pink-flower-BGtkk-Ll.webp",
+          "http://127.0.0.1:4174/assets/wide-leaves-B3UrxOqI.webp",
+          "http://127.0.0.1:4174/assets/twig-DQ3_psFA.webp",
+          "http://127.0.0.1:4174/assets/pink-shell-DYava6m2.webp",
+          "http://127.0.0.1:4174/assets/blue-bow-C2lkUQbi.webp",
+          "http://127.0.0.1:4174/assets/blue-shell-BkkmpiLD.webp",
+          "http://127.0.0.1:4174/assets/blue-heart-ChxiHS7w.webp",
+          "http://127.0.0.1:4174/assets/cat-CJkbGHZP.webp",
+          "http://127.0.0.1:4174/assets/large-heart-B9sqKh_1.webp",
+          "http://127.0.0.1:4174/assets/tall-leaf-D1WtV7HU.webp",
+          "http://127.0.0.1:4174/assets/sprout-rXskQ4hG.webp",
+          "http://127.0.0.1:4174/assets/little-star-Cp7bSjAg.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-look-0mkhPCNE.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-sleep-Da1LMME4.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tuxedo-look-DzcO0uCO.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-yawn-CY2aJS_M.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-smile-CW-2OVtJ.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-white-peek-Ng_bcldL.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-look-CQEK38sP.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-sleep-CCsWW-b8.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-calico-back-ClFELSdh.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-wave-Co-Beqgz.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-white-CmrLhYq3.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-calico-C5n-LSfi.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-tabby-CIhvgh7b.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-ink-B4-UPIxT.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-orange-BwhytFgE.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-fluffy-Btfjthu7.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-black-BnJ-LHYc.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-bow-DBzEbLVw.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-blue-round-Dy3x_7GX.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-pink-five-06UHqGnk.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-purple-five-Cv5lCrmC.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-check-DlIilW1N.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-yellow-loose-DqyC5bAa.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-coral-check-D68zKHd1.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-coral-BqkEUCJd.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-blue-small-BEV9x0Ww.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-purple-round-rQwH6nc_.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-pink-small-4Bg9i0a_.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-yellow-round-CmgZH6Eh.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-side-tno596DV.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-pink-fan-vlhKGyxx.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-peach-spiral-C2DNKeZy.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-blue-round-CNn110Gw.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-gold-spike-B-04EPIQ.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-starfish-IjBHy75L.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-speckled-QUuWWKT1.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-lilac-fan-BkYgKirg.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-aqua-spiral-D0oVEQWP.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-cream-fan-DECbueTa.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-pearl-CZs49-ad.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-aqua-fan-CcyMCMs8.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-purple-spiral-DMNAnw-f.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-smile-Br1IuO3G.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-wink-CMa57BaZ.webp",
+          "http://127.0.0.1:4174/assets/variant-star-purple-smile-BmkGKC5X.webp",
+          "http://127.0.0.1:4174/assets/variant-star-pink-blush-BD-sDjt9.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-cutout-rTrZEvAw.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-dots-DXnL1gRn.webp",
+          "http://127.0.0.1:4174/assets/variant-star-green-smile-BQITfct8.webp",
+          "http://127.0.0.1:4174/assets/variant-star-purple-sleep-ABnz6lkU.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-shy-2iV2qQX9.webp",
+          "http://127.0.0.1:4174/assets/variant-star-pink-stitch-DJH5vr21.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-orbit-BIv8vQ8P.webp",
+          "http://127.0.0.1:4174/assets/variant-star-cream-bow-BdiQquh5.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-dark-DxPJgF71.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-sprig-olive-CHzrk6AE.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-monstera-dark-Z2xUYEEh.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-eucalyptus-CiV6gw0S.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-light-DIOGQxRo.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-sprig-wide-A55gQ9BF.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-curly-vine-CxPKGB5m.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-branch-long-CAC2Yatg.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-yellow-buds-rahYYZxH.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-bright-C4EgVALN.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-single-CCGVLx6w.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-small-sprig-DIMfWCr2.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-gingham-C2TO-W_E.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-cream-heart-CKfUbpTU.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-soft-CyiPPLF8.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-blue-lace-B0s4LKWD.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-satin-CneBDp-t.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-blue-ribbon-Bn-g3FqD.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-dots-CxOaVotf.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-cream-small-BV0wcLjI.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-floral-D-tJMrS8.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-dots-B3ebiK5-.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-lace-bow-B3PW3G_b.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-soft-BzPZjyfg.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-blue-gingham-V8lgWB02.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-gingham-Bs4yxb2-.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-stitch-DRDk1o4o.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-wings-BXc9e_C3.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-calico-tilt-btvqVu5x.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-gray-tilt-BSWPSwTv.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-cream-wave-CEeNfrx-.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-ginger-cream-BW8DYj5b.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-dark-cream-JJe8kRc6.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-tabby-white-80EyNQ9T.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-cream-patches-BTDSPYzz.webp",
+          "http://127.0.0.1:4174/assets/extra-paw-blue-white-DmDjXHKf.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-check-wide-DrcTlcb1.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-blue-wide-4rVc8B2Z.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-purple-check-C7dugc6E.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-red-tulip-ChDRhXBK.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-pink-check-small-BJrqjXkx.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-daisy-pair-CpBneaCB.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-daisy-cluster-CsRYrt5Z.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-pink-daisy-NKaiZGK4.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-gray-daisy-C3P89mep.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-green-cream-MvLwMPfu.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-cream-round-Dye6X3RG.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-gold-cream-oQXd7FuG.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-cream-side-CP5w3-n6.webp",
+          "http://127.0.0.1:4174/assets/extra-flower-tiny-cream-Db3CXjbS.webp",
+          "http://127.0.0.1:4174/assets/extra-shell-pink-spiral-CEIRVNKt.webp",
+          "http://127.0.0.1:4174/assets/extra-shell-blue-ridge-C7ue27Lz.webp",
+          "http://127.0.0.1:4174/assets/extra-shell-nautilus-HGzMBc8p.webp",
+          "http://127.0.0.1:4174/assets/extra-shell-lilac-round-CkhzNsMP.webp",
+          "http://127.0.0.1:4174/assets/extra-star-shooting-CE93_eVR.webp",
+          "http://127.0.0.1:4174/assets/extra-star-gold-stripes-BKBlcmxO.webp",
+          "http://127.0.0.1:4174/assets/extra-star-blue-cutout-CN73nCQc.webp",
+          "http://127.0.0.1:4174/assets/extra-star-purple-orbit-CKjxqXoO.webp",
+          "http://127.0.0.1:4174/assets/extra-star-gold-happy-5PpC7uId.webp",
+          "http://127.0.0.1:4174/assets/extra-star-purple-heart-tVo1k-a4.webp",
+          "http://127.0.0.1:4174/assets/extra-star-green-wink-CF6MM21k.webp",
+          "http://127.0.0.1:4174/assets/extra-star-gold-shine-BD_dmbKQ.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-long-sprig-B1FbyT19.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-gold-bud-Uf0iL9mT.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-olive-oval-NzI5GN9A.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-light-point-CWkqSGf0.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-diagonal-sprig-DbjIKH1J.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-soft-vine-Dx4wf-3H.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-lime-stripes-ChI78flj.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-three-olive-Dq6fvuaM.webp",
+          "http://127.0.0.1:4174/assets/extra-leaf-young-sprout-DfIoA7M9.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-check-small-KE2wrNXu.webp",
+          "http://127.0.0.1:4174/assets/extra-heart-linked-B90RiZ7w.webp",
+          "http://127.0.0.1:4174/assets/extra-heart-pink-shiny-CNiZoKhr.webp",
+          "http://127.0.0.1:4174/assets/extra-heart-small-doily-CFbrPTpC.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-heart-flowing-Nc7JykBG.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-lace-wide-CkUkBsyW.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-ribbon-flowing-iIqT7Yl4.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-blue-flower-CIkltaXf.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-pink-double-DdscE1jD.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-little-tilt-CdECBiD9.webp",
+          "http://127.0.0.1:4174/assets/extra-bow-tiny-ribbon-CTDsZcWa.webp",
+          "http://127.0.0.1:4174/assets/extra-heart-plain-pink-BjxwH7em.webp",
+          "blob:http://127.0.0.1:4174/bb5f16ea-51d7-4612-b6cf-98c6c09ff4c3",
+          "blob:http://127.0.0.1:4174/1a0fbdf7-81e1-4e89-9141-3a4134208189",
+          "http://127.0.0.1:4174/album-preview.html?albumPreview=1506d20a-8c5d-4da2-9693-228839fa3795",
+          "http://127.0.0.1:4174/assets/preview-1KfUIAU6.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/document-OxjUhQbK.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/runtime-B2Jo9w2R.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-Bf2HcqRe.js",
+          "blob:http://127.0.0.1:4174/16ecde7c-d6ec-48c4-b4da-23172ec93893",
+          "blob:http://127.0.0.1:4174/c32b86e2-27fe-4378-b763-b29acd251a1e"
+        ]
+      },
+      {
+        "name": "custom reading, four sizes",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "requests": [
+          "http://127.0.0.1:4174/album-preview.html?albumPreview=1506d20a-8c5d-4da2-9693-228839fa3795",
+          "http://127.0.0.1:4174/assets/preview-1KfUIAU6.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/document-OxjUhQbK.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/runtime-B2Jo9w2R.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-Bf2HcqRe.js",
+          "http://127.0.0.1:4174/favicon.svg",
+          "blob:http://127.0.0.1:4174/09b913a9-d169-48be-a81b-21543711f1d2",
+          "blob:http://127.0.0.1:4174/b35fc257-bc76-44eb-9a2d-0a82871115e9",
+          "blob:http://127.0.0.1:4174/7bcd32e3-b15f-4a02-a2a4-ec359b37571b",
+          "http://127.0.0.1:4174/album-preview.html?albumPreview=1506d20a-8c5d-4da2-9693-228839fa3795",
+          "http://127.0.0.1:4174/assets/preview-1KfUIAU6.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/document-OxjUhQbK.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/runtime-B2Jo9w2R.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-Bf2HcqRe.js",
+          "http://127.0.0.1:4174/favicon.svg",
+          "blob:http://127.0.0.1:4174/53c38d97-73e7-4de4-a8de-85504efab08d",
+          "blob:http://127.0.0.1:4174/82b33590-052d-4105-acb6-0855fab91794",
+          "blob:http://127.0.0.1:4174/530ec075-5e56-4834-9779-4319a630a28e",
+          "http://127.0.0.1:4174/album-preview.html?albumPreview=1506d20a-8c5d-4da2-9693-228839fa3795",
+          "http://127.0.0.1:4174/assets/preview-1KfUIAU6.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/document-OxjUhQbK.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/runtime-B2Jo9w2R.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-Bf2HcqRe.js",
+          "http://127.0.0.1:4174/favicon.svg",
+          "blob:http://127.0.0.1:4174/66d4e186-afe0-4bba-ae55-a9b39000ab20",
+          "blob:http://127.0.0.1:4174/f61ecfa7-0eb2-4f7e-96c1-260b0547b2bf",
+          "blob:http://127.0.0.1:4174/1856152c-350e-4e9a-884d-6bee32a936b9",
+          "http://127.0.0.1:4174/album-preview.html?albumPreview=1506d20a-8c5d-4da2-9693-228839fa3795",
+          "http://127.0.0.1:4174/assets/preview-1KfUIAU6.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/document-OxjUhQbK.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/runtime-B2Jo9w2R.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-Bf2HcqRe.js",
+          "http://127.0.0.1:4174/favicon.svg",
+          "blob:http://127.0.0.1:4174/77d8da47-5966-491c-bbff-008a50d30d60",
+          "blob:http://127.0.0.1:4174/ebdc6d51-b295-41ea-836b-191f3c6502b7",
+          "blob:http://127.0.0.1:4174/c32dc8b4-5956-4afc-8665-681de8c929e9"
+        ]
+      },
+      {
+        "name": "custom room / physical-page handoff",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [
+          "[.WebGL-0x11400508400] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x11400508400] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x11400508400] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x11400508400] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x11400508400] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x11400508400] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions."
+        ],
+        "failedRequests": [],
+        "requests": [
+          "http://127.0.0.1:4174/assets/main-_a4nDShi.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/three-D38cRHR9.js",
+          "http://127.0.0.1:4174/assets/page-raster-DwBSMYVH.js",
+          "http://127.0.0.1:4174/assets/published-CbSvN2FD.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/main-Cun-_viW.css",
+          "http://127.0.0.1:4174/assets/runtime-B2Jo9w2R.js",
+          "http://127.0.0.1:4174/assets/document-OxjUhQbK.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-Bf2HcqRe.js",
+          "http://127.0.0.1:4174/favicon.svg",
+          "http://127.0.0.1:4174/assets/sleeping-tabby-CyUHHslq.glb",
+          "http://127.0.0.1:4174/assets/cat-purr-B57CHUyJ.mp3",
+          "http://127.0.0.1:4174/assets/cat-curious-CBhrcmiB.mp3",
+          "http://127.0.0.1:4174/assets/cat-affectionate-CUlDS4g6.mp3",
+          "http://127.0.0.1:4174/assets/cat-sleepy-CjL28w9V.mp3",
+          "http://127.0.0.1:4174/assets/cat-playful-DkXWt-oC.mp3",
+          "http://127.0.0.1:4174/assets/cat-stretch-CP9kLb2u.mp3",
+          "http://127.0.0.1:4174/materials/quiet-oak.webp",
+          "http://127.0.0.1:4174/assets/beanbag-cotton-albedo-DYEVnpPX.webp",
+          "http://127.0.0.1:4174/assets/beanbag-cotton-normal-BU7Z5WMP.webp",
+          "http://127.0.0.1:4174/assets/beanbag-cotton-roughness-v2pw-Xko.webp",
+          "http://127.0.0.1:4174/art/classical-myth-oil.webp",
+          "blob:http://127.0.0.1:4174/84f9ba06-e6c2-4c2b-838a-3c0a636f6861",
+          "http://127.0.0.1:4174/assets/default-record-CroFQKMH.mp3",
+          "http://127.0.0.1:4174/favicon.svg",
+          "blob:http://127.0.0.1:4174/0752c10b-c22b-418e-ba84-574c15ab32e6",
+          "blob:http://127.0.0.1:4174/c05098e0-4f74-4bc6-a67f-a955a6c15d38",
+          "http://127.0.0.1:4174/assets/font-raster-CxjQ0MEe.js"
+        ]
+      },
+      {
+        "name": "default visitor, no private gallery",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [
+          "[.WebGL-0x10400573600] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x10400573600] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions."
+        ],
+        "failedRequests": [],
+        "requests": [
+          "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envDensity=0&envBirdDensity=0",
+          "http://127.0.0.1:4173/assets/index-BgSi-As0.js",
+          "http://127.0.0.1:4173/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4173/assets/three-D38cRHR9.js",
+          "http://127.0.0.1:4173/assets/index-C7AOOR3A.css",
+          "http://127.0.0.1:4173/assets/sleeping-tabby-CyUHHslq.glb",
+          "http://127.0.0.1:4173/assets/cat-purr-B57CHUyJ.mp3",
+          "http://127.0.0.1:4173/assets/cat-curious-CBhrcmiB.mp3",
+          "http://127.0.0.1:4173/assets/cat-affectionate-CUlDS4g6.mp3",
+          "http://127.0.0.1:4173/assets/cat-sleepy-CjL28w9V.mp3",
+          "http://127.0.0.1:4173/assets/cat-playful-DkXWt-oC.mp3",
+          "http://127.0.0.1:4173/assets/cat-stretch-CP9kLb2u.mp3",
+          "http://127.0.0.1:4173/materials/quiet-oak.webp",
+          "http://127.0.0.1:4173/assets/beanbag-cotton-albedo-DYEVnpPX.webp",
+          "http://127.0.0.1:4173/assets/beanbag-cotton-normal-BU7Z5WMP.webp",
+          "http://127.0.0.1:4173/assets/beanbag-cotton-roughness-v2pw-Xko.webp",
+          "http://127.0.0.1:4173/art/classical-myth-oil.webp",
+          "blob:http://127.0.0.1:4173/e73f6560-f626-47cc-8907-3d21bba8fbf9",
+          "http://127.0.0.1:4173/favicon.svg",
+          "http://127.0.0.1:4173/assets/default-record-CroFQKMH.mp3",
+          "http://127.0.0.1:4173/favicon.svg"
+        ]
+      }
+    ],
+    "screenshots": [
+      "production-editor.png",
+      "production-gallery-cats.png",
+      "production-page-cats.png",
+      "production-gallery-flowers.png",
+      "production-page-flowers.png",
+      "production-gallery-seaside.png",
+      "production-page-seaside.png",
+      "production-gallery-stars.png",
+      "production-page-stars.png",
+      "production-gallery-leaves.png",
+      "production-page-leaves.png",
+      "production-gallery-sentiments.png",
+      "production-page-sentiments.png",
+      "production-combined-filters.png",
+      "production-original-variant.png",
+      "production-adjusted-variant.png",
+      "production-adjustment-controls.png",
+      "production-adjusted-export.png",
+      "production-controls-320x568.png",
+      "production-controls-390x844.png",
+      "production-controls-844x390.png",
+      "production-preview-dialog.png",
+      "production-reading-320x568.png",
+      "production-reading-390x844.png",
+      "production-reading-844x390.png",
+      "production-reading-1440x1000.png",
+      "production-room-reading.png",
+      "production-room-return.png",
+      "production-default-reading.png"
+    ],
+    "checks": {
+      "identity": {
+        "url": "http://127.0.0.1:4174/editor.html",
+        "title": "纪念手帐工作台 · 潮汐之间",
+        "nonblank": true,
+        "frameworkOverlay": 0
+      },
+      "responsive": [
+        {
+          "size": {
+            "width": 320,
+            "height": 568
+          },
+          "overflow": false
+        },
+        {
+          "size": {
+            "width": 390,
+            "height": 844
+          },
+          "overflow": false
+        },
+        {
+          "size": {
+            "width": 844,
+            "height": 390
+          },
+          "overflow": false
+        }
+      ],
+      "idle": {
+        "seconds": 5,
+        "raf": 0,
+        "webgl": 0
+      },
+      "reload": true,
+      "roomReopen": true,
+      "defaultNoAuthorAssets": true,
+      "console": true
+    },
+    "passed": true
+  },
+  "performance": {
+    "before": {
+      "stage": "before",
+      "cpu": 4,
+      "repetitions": 3,
+      "url": "http://127.0.0.1:5173/editor.html",
+      "browser": "157.0.8103.51",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "runs": [
+        {
+          "run": 1,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 7.200000002980232,
+              "toNextPaintMs": 16.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.9000000059604645,
+              "toNextPaintMs": 30.700000002980232
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 32.69999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.19999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 33.30000001192093
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.399999991059303,
+              "toNextPaintMs": 34.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.80000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 34.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 7,
+              "toNextPaintMs": 33
+            }
+          ],
+          "handlerMedianMs": 5.200000002980232,
+          "handlerP95Ms": 7,
+          "paintMedianMs": 33.29999999701977,
+          "paintP95Ms": 34.20000000298023,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 2,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 15.799999997019768
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.699999988079071,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.299999997019768,
+              "toNextPaintMs": 34.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 33.30000001192093
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.5,
+              "toNextPaintMs": 33.19999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 34.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.299999997019768,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.800000011920929,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.899999991059303,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 32.80000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.299999997019768,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 32.70000000298023
+            }
+          ],
+          "handlerMedianMs": 5.100000008940697,
+          "handlerP95Ms": 6.5,
+          "paintMedianMs": 33.19999998807907,
+          "paintP95Ms": 34.099999994039536,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 3,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 9.5,
+              "toNextPaintMs": 21.299999997019768
+            },
+            {
+              "label": "字体",
+              "jsMs": 8.700000002980232,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.899999991059303,
+              "toNextPaintMs": 50.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.199999988079071,
+              "toNextPaintMs": 33.19999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.299999997019768,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 32.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.100000008940697,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.800000011920929,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 34.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 33.19999998807907
+            }
+          ],
+          "handlerMedianMs": 5.200000002980232,
+          "handlerP95Ms": 8.700000002980232,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34.20000000298023,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        }
+      ],
+      "note": "Isolated drafts; CPU throttle is laboratory stress, not physical hardware. Repeated native DOM change dispatch and double-RAF observation; pointer slider is actual held mouse."
+    },
+    "after": {
+      "stage": "after",
+      "cpu": 4,
+      "repetitions": 3,
+      "url": "http://127.0.0.1:5173/editor.html",
+      "browser": "157.0.8103.51",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "runs": [
+        {
+          "run": 1,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 6.100000008940697,
+              "toNextPaintMs": 22.600000008940697
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.5999999940395355,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.899999991059303,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.299999997019768,
+              "toNextPaintMs": 34.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 32.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6,
+              "toNextPaintMs": 34.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 6,
+              "toNextPaintMs": 32.69999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.600000008940697,
+              "toNextPaintMs": 33.30000001192093
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.199999988079071,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 32.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5,
+              "toNextPaintMs": 34.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 32.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 34.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.100000008940697,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.899999991059303,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6,
+              "toNextPaintMs": 33.70000000298023
+            }
+          ],
+          "handlerMedianMs": 5.5,
+          "handlerP95Ms": 6.899999991059303,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34.29999999701977,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 2,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 7,
+              "toNextPaintMs": 16.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.200000002980232,
+              "toNextPaintMs": 25.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.100000008940697,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 6,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 34.1000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.199999988079071,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.399999991059303,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 3.5999999940395355,
+              "toNextPaintMs": 33.19999998807907
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.29999999701977
+            }
+          ],
+          "handlerMedianMs": 5.4000000059604645,
+          "handlerP95Ms": 7,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 33.599999994039536,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 3,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 6.9000000059604645,
+              "toNextPaintMs": 16.100000008940697
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.5,
+              "toNextPaintMs": 25.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 32
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.800000011920929,
+              "toNextPaintMs": 33.30000001192093
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 32.69999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.199999988079071,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 31.80000001192093
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 34.1000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.29999999701977
+            }
+          ],
+          "handlerMedianMs": 5.5,
+          "handlerP95Ms": 6.5,
+          "paintMedianMs": 33.29999999701977,
+          "paintP95Ms": 33.900000005960464,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        }
+      ],
+      "note": "Isolated drafts; CPU throttle is laboratory stress, not physical hardware. Repeated native DOM change dispatch and double-RAF observation; pointer slider is actual held mouse."
+    }
+  },
+  "sourceSha256": {
+    "src/editor/watermarks/catalog.json": "cdbf0691a5f91a491a45d57fd0300882d33cacfb9c8e97a50054bf6ea8b1a5be",
+    "scripts/prepare-watermark-expansion.py": "aae207d32f0a2d475ae830e2ce1956967cf10921d267008ad4b489dffd521a45",
+    "scripts/watermark-expansion-crops.json": "e1e13c082216bb2b08d8d0bd1843dda73f818df67fcf0602feecc16c6457c97a",
+    "scripts/prepare-watermark-variants.py": "928c8b509395f8501575409a3a2d3a001cd169f71158317f3f7651bb81574e3a",
+    "tests/album-editor-design.spec.ts": "4f87da52961c49ef140d3a232b1f62f187beea242caaecdc6233a1a48d999383",
+    "tests/album-watermark-variants.spec.ts": "310886168b7bd75baee6fd16845bc016235a77e4a279b38f5908b7227964d38d"
+  },
+  "generation": {
+    "provider": "juapi-gpt-image-2",
+    "model": "gpt-image-2",
+    "status": "blocked by provider quota HTTP403 even after user-authorized replenishment retry",
+    "newImages": 0,
+    "existingSheetsReused": 7,
+    "requestsFile": "output/imagegen/watermark-expansion-prompts.json",
+    "attemptsFile": "output/imagegen/watermark-expansion-quota-attempts.json"
+  },
+  "environment": {
+    "node": "/Users/jiangyuhan/.nvm/versions/node/v24.14.0",
+    "nodeEntry": "/Users/jiangyuhan/.local/bin/project-node",
+    "pnpmEntry": "/Users/jiangyuhan/.local/bin/project-pnpm",
+    "pnpm": "11.7.0",
+    "store": "/Users/jiangyuhan/Library/pnpm/store/v11",
+    "python": "/Users/jiangyuhan/.local/share/project-envs/document-tools",
+    "pythonEntry": "/Users/jiangyuhan/.local/bin/document-python",
+    "imageEntry": "/Users/jiangyuhan/.local/bin/project-image",
+    "newInstalls": false,
+    "isolatedExceptions": []
+  },
+  "diskKiB": {
+    "startRepo": 219076,
+    "startStore": 1445180,
+    "afterValidationRepo": 218300,
+    "afterValidationStore": 1445180
+  },
+  "evidenceDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/11/14/watermark-expansion",
+  "notes": [
+    "First after measurement overlapped builds/tests, excluded from comparison and retained in after-concurrent-discarded.json",
+    "CPU4x lab samples are interaction timings, not physical device FPS or cold-network proof",
+    "Both matching before and serial after use same old paw, 12spreads, fixed photo and preloaded font",
+    "Source images were already generated; new60 are independent source motifs, not recolor or mirror copies"
+  ]
+}

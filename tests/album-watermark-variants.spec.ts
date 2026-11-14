@@ -24,7 +24,7 @@ test('all families have independent generated kinds, original colors and actual 
         return { category, kinds: new Set(p.map(p => p.kind)).size, colors: new Set(p.map(p => p.color)).size, details: new Set(p.flatMap(p => p.details)).size };
       }), cats: all.filter(p => p.category === 'cats' && p.kind !== '猫爪').map(p => ({ name: p.name, details: p.details })) };
   });
-  expect(data.total).toBe(109); expect(data.first).toBe('paw'); expect(data.hashes).toBe(109);
+  expect(data.total).toBe(169); expect(data.first).toBe('paw'); expect(data.hashes).toBe(169);
   for (const family of data.families) { expect(family.kinds).toBeGreaterThanOrEqual(2); expect(family.colors).toBeGreaterThanOrEqual(3); expect(family.details).toBeGreaterThanOrEqual(5); }
   for (const detail of ['蜷睡', '眨眼', '打哈欠', '背影', '抬爪', '朝左', '朝右']) expect(data.cats.some(p => p.details.includes(detail))).toBe(true);
 });
@@ -37,7 +37,26 @@ test('kind, original color and detail combine without writing a draft and surviv
   await expect(page.getByLabel('水印种类')).toHaveValue('橘猫'); await expect(page.getByLabel('水印动作与细节')).toHaveValue('蜷睡');
   await page.locator('#other-page').click(); await expect(page.getByLabel('水印原色')).toHaveValue('橘白'); await expect(visible).toHaveCount(1);
   await page.getByLabel('水印动作与细节').selectOption('眨眼'); await expect(visible).toHaveCount(0); await page.getByRole('button', { name: '清除筛选' }).click();
-  await expect(page.getByLabel('水印分类')).toHaveValue('all'); await expect(visible).toHaveCount(109);
+  await expect(page.getByLabel('水印分类')).toHaveValue('all'); await expect(visible).toHaveCount(169);
+});
+
+test('new shooting-star and long-tail bow can be found by actual details and selected without losing effects', async ({ page }) => {
+  const initial = await draft(page);
+  await page.getByLabel('水印分类').selectOption('stars'); await page.getByLabel('水印种类').selectOption('流星');
+  await page.getByLabel('水印原色').selectOption('金蓝紫'); await page.getByLabel('水印动作与细节').selectOption('双色尾迹');
+  await expect(page.locator('.editor-watermark-choice:visible')).toHaveText('流星·蓝紫尾迹');
+  expect(await draft(page)).toEqual(initial); await pick(page, '流星·蓝紫尾迹');
+  await page.getByLabel('左右镜像').check(); await amount(page.getByLabel('水印色相'), -40);
+  await page.getByLabel('水印分类').selectOption('sentiments'); await page.getByLabel('水印种类').selectOption('蝴蝶结');
+  await page.getByLabel('搜索水印').fill('长飘带');
+  await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(2); await pick(page, '粉色细带长尾结');
+  await page.reload(); await saved(page); await page.locator('#open-watermarks').click();
+  await expect(page.getByRole('button', { name: '使用水印：粉色细带长尾结', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByLabel('水印色相')).toHaveValue('-40'); await expect(page.getByLabel('左右镜像')).toBeChecked();
+  const image = left(page).locator('.album-watermark img').first(); await image.evaluate((i: HTMLImageElement) => i.decode());
+  const bytes = await page.evaluate(async () => { const s = (await (await import('/src/editor/storage.ts')).readDraft())!; const id = s.document.chapters[0].spreads[0].pages[0].watermark.assetId; return (await (await import('/src/editor/watermark-library.ts')).imageHash(s.assets.get(id)!)); });
+  const entry = JSON.parse(await readFile('src/editor/watermarks/catalog.json', 'utf8')).find((p: { key: string }) => p.key === 'extra-bow-ribbon-flowing');
+  expect(bytes).toBe(entry.sha256);
 });
 
 test('held color adjustment retains image and input nodes, previews every value and is one undo', async ({ page }) => {
@@ -83,7 +102,7 @@ test('old schema-1 documents remain unchanged and malformed optional effects are
 });
 
 test('mirroring and color changes affect real reader and physical-page capture pixels', async ({ page }) => {
-  await pick(page); await page.getByLabel('图案排布').selectOption('repeat'); await amount(page.getByLabel('水印透明度'), 100); await amount(page.getByLabel('图案大小'), 120);
+  await pick(page, '粉色细带长尾结'); await page.getByLabel('图案排布').selectOption('repeat'); await amount(page.getByLabel('水印透明度'), 100); await amount(page.getByLabel('图案大小'), 120);
   await page.getByLabel('左右镜像').check(); await amount(page.getByLabel('水印色相'), 120); await amount(page.getByLabel('水印饱和度'), 160);
   await page.locator('#preview').click(); const frame = page.locator('#preview-frame').contentFrame();
   await expect(frame.locator('.page-left .album-watermark')).toHaveCSS('filter', 'hue-rotate(120deg) saturate(1.6) brightness(1)');
@@ -137,7 +156,7 @@ test('both faces of a moving leaf retain their own image direction and palette',
 });
 
 test('backup and public package keep effects and original variants remain portable', async ({ page }) => {
-  await pick(page); await page.getByLabel('左右镜像').check(); await amount(page.getByLabel('水印色相'), -70); await amount(page.getByLabel('水印饱和度'), 65); await amount(page.getByLabel('水印明亮度'), 120); await saved(page);
+  await pick(page, '蓝灰猫爪·白袖口'); await page.getByLabel('左右镜像').check(); await amount(page.getByLabel('水印色相'), -70); await amount(page.getByLabel('水印饱和度'), 65); await amount(page.getByLabel('水印明亮度'), 120); await saved(page);
   const original = (await draft(page)).chapters[0].spreads[0].pages[0].watermark;
   await page.locator('.editor-export summary').click();
   const backupWaiting = page.waitForEvent('download'); await page.locator('#export-backup').click(); const filename = (await (await backupWaiting).path())!;

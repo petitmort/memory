@@ -1,0 +1,70 @@
+{
+  "date": "2026-11-14",
+  "reason": "HTTP403 provider quota insufficient; user replenished and requested retry.",
+  "attempts": [
+    {
+      "key": "cats-a",
+      "file": "output/imagegen/watermark-expansion-cats-a.png",
+      "status": "failed",
+      "started": 1794637197078,
+      "elapsedMs": 1732,
+      "errorCode": 1
+    },
+    {
+      "key": "cats-b",
+      "file": "output/imagegen/watermark-expansion-cats-b.png",
+      "status": "failed",
+      "started": 1794637197080,
+      "elapsedMs": 3153,
+      "errorCode": 1
+    },
+    {
+      "key": "flowers",
+      "file": "output/imagegen/watermark-expansion-flowers.png",
+      "status": "failed",
+      "started": 1794637198811,
+      "elapsedMs": 2463,
+      "errorCode": 1
+    },
+    {
+      "key": "seaside",
+      "file": "output/imagegen/watermark-expansion-seaside.png",
+      "status": "failed",
+      "started": 1794637200233,
+      "elapsedMs": 2149,
+      "errorCode": 1
+    },
+    {
+      "key": "stars",
+      "file": "output/imagegen/watermark-expansion-stars.png",
+      "status": "failed",
+      "started": 1794637201275,
+      "elapsedMs": 2127,
+      "errorCode": 1
+    },
+    {
+      "key": "leaves",
+      "file": "output/imagegen/watermark-expansion-leaves.png",
+      "status": "failed",
+      "started": 1794637202382,
+      "elapsedMs": 1426,
+      "errorCode": 1
+    },
+    {
+      "key": "bows",
+      "file": "output/imagegen/watermark-expansion-bows.png",
+      "status": "failed",
+      "started": 1794637203402,
+      "elapsedMs": 3026,
+      "errorCode": 1
+    },
+    {
+      "key": "hearts",
+      "file": "output/imagegen/watermark-expansion-hearts.png",
+      "status": "failed",
+      "started": 1794637203809,
+      "elapsedMs": 6097,
+      "errorCode": 1
+    }
+  ]
+}

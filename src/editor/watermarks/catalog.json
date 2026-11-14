@@ -1646,5 +1646,945 @@
     "sha256": "c168aa24d7892ebb37438d5dc3fb4529259a3fd380e0160496c05b56b4ecdd18",
     "width": 181,
     "height": 89
+  },
+  {
+    "key": "extra-paw-calico-tilt",
+    "name": "三花猫爪·侧倾",
+    "category": "cats",
+    "kind": "猫爪",
+    "color": "三花",
+    "details": [
+      "肉垫",
+      "倾斜",
+      "朝左"
+    ],
+    "file": "extra-paw-calico-tilt.webp",
+    "sha256": "343eb3239ca7ec9adaf1123d290d978a0a7e36c91ccdd5b6eda20a9a64ea6d1a",
+    "width": 198,
+    "height": 205
+  },
+  {
+    "key": "extra-paw-gray-tilt",
+    "name": "灰白猫爪·斜举",
+    "category": "cats",
+    "kind": "猫爪",
+    "color": "灰白",
+    "details": [
+      "肉垫",
+      "倾斜",
+      "朝右"
+    ],
+    "file": "extra-paw-gray-tilt.webp",
+    "sha256": "6313ea4667e2bfb8f26067cb56648df2f9b100f48c3c55b99ae4d086f94be006",
+    "width": 200,
+    "height": 215
+  },
+  {
+    "key": "extra-paw-cream-wave",
+    "name": "奶油猫爪·挥挥",
+    "category": "cats",
+    "kind": "猫爪",
+    "color": "奶油",
+    "details": [
+      "肉垫",
+      "挥动",
+      "朝右"
+    ],
+    "file": "extra-paw-cream-wave.webp",
+    "sha256": "270733a7bedb8cc3562720c36410ddca4a9d4e6b75d5e2bf7b48a20e41721c87",
+    "width": 182,
+    "height": 219
+  },
+  {
+    "key": "extra-paw-ginger-cream",
+    "name": "橘猫爪·奶油肉垫",
+    "category": "cats",
+    "kind": "猫爪",
+    "color": "橘黄",
+    "details": [
+      "奶油肉垫",
+      "正面"
+    ],
+    "file": "extra-paw-ginger-cream.webp",
+    "sha256": "af549fe52521b10cf32c8385b932212c103052eb17fbe68a3839e9380c6b135a",
+    "width": 197,
+    "height": 213
+  },
+  {
+    "key": "extra-paw-dark-cream",
+    "name": "深棕猫爪·奶油肉垫",
+    "category": "cats",
+    "kind": "猫爪",
+    "color": "深棕",
+    "details": [
+      "奶油肉垫",
+      "正面"
+    ],
+    "file": "extra-paw-dark-cream.webp",
+    "sha256": "08c3cebc867ad2bd526229050048f505f81b6f9ac5aa356552d2d24bdb475abd",
+    "width": 195,
+    "height": 208
+  },
+  {
+    "key": "extra-paw-tabby-white",
+    "name": "白底虎斑猫爪",
+    "category": "cats",
+    "kind": "猫爪",
+    "color": "灰白",
+    "details": [
+      "条纹",
+      "肉垫",
+      "正面"
+    ],
+    "file": "extra-paw-tabby-white.webp",
+    "sha256": "fba85c4ca29bd0eabea307b671088dc337953e34b6dfcd0435be37cb78d6a332",
+    "width": 194,
+    "height": 205
+  },
+  {
+    "key": "extra-paw-cream-patches",
+    "name": "米白棕斑猫爪",
+    "category": "cats",
+    "kind": "猫爪",
+    "color": "米白棕",
+    "details": [
+      "拼色",
+      "肉垫",
+      "正面"
+    ],
+    "file": "extra-paw-cream-patches.webp",
+    "sha256": "cb1d982c502c72190d0ac5fcb749185cb814102012a7174ca77bf9b8116a17c3",
+    "width": 204,
+    "height": 206
+  },
+  {
+    "key": "extra-paw-blue-white",
+    "name": "蓝灰猫爪·白袖口",
+    "category": "cats",
+    "kind": "猫爪",
+    "color": "蓝灰",
+    "details": [
+      "白袖口",
+      "肉垫",
+      "正面"
+    ],
+    "file": "extra-paw-blue-white.webp",
+    "sha256": "239a73d6bd5188a3e1aed35d00844623c67e41ec3accf8c5b0a1084aa92b7197",
+    "width": 198,
+    "height": 203
+  },
+  {
+    "key": "extra-flower-check-wide",
+    "name": "粉格圆瓣花",
+    "category": "flowers",
+    "kind": "圆瓣花",
+    "color": "粉",
+    "details": [
+      "格纹",
+      "白花心",
+      "正面"
+    ],
+    "file": "extra-flower-check-wide.webp",
+    "sha256": "8d6679081a31792ea289443a2a7e32756d6b5ccf41e178c2b069783af36286ff",
+    "width": 174,
+    "height": 161
+  },
+  {
+    "key": "extra-flower-blue-wide",
+    "name": "天蓝五瓣花",
+    "category": "flowers",
+    "kind": "五瓣花",
+    "color": "蓝",
+    "details": [
+      "白花心",
+      "正面"
+    ],
+    "file": "extra-flower-blue-wide.webp",
+    "sha256": "f4ff3ff9f8e30dc95c7083c294695bcc7a143ddd357d843df410c21e6331dd6b",
+    "width": 137,
+    "height": 133
+  },
+  {
+    "key": "extra-flower-purple-check",
+    "name": "紫格小花",
+    "category": "flowers",
+    "kind": "圆瓣花",
+    "color": "紫",
+    "details": [
+      "格纹",
+      "黄花心",
+      "正面"
+    ],
+    "file": "extra-flower-purple-check.webp",
+    "sha256": "ce95a5760d7625e0114601ace87a661768edd7d225b8b9fb5b222d91c1d1988c",
+    "width": 147,
+    "height": 139
+  },
+  {
+    "key": "extra-flower-red-tulip",
+    "name": "珊瑚红郁金香",
+    "category": "flowers",
+    "kind": "郁金香",
+    "color": "珊瑚红",
+    "details": [
+      "有茎叶",
+      "朝右"
+    ],
+    "file": "extra-flower-red-tulip.webp",
+    "sha256": "16c0db8a495d7d857e070ee39c44ab9c0d9de3532812c17cd9fff0359347385b",
+    "width": 109,
+    "height": 155
+  },
+  {
+    "key": "extra-flower-pink-check-small",
+    "name": "粉白格纹花",
+    "category": "flowers",
+    "kind": "圆瓣花",
+    "color": "粉白",
+    "details": [
+      "格纹",
+      "黄花心",
+      "正面"
+    ],
+    "file": "extra-flower-pink-check-small.webp",
+    "sha256": "90fc8239427cd1ce935c065a61ac7d9959ed4da6b54963b74278dabaa684b1a8",
+    "width": 133,
+    "height": 130
+  },
+  {
+    "key": "extra-flower-daisy-pair",
+    "name": "并肩两朵小雏菊",
+    "category": "flowers",
+    "kind": "雏菊",
+    "color": "米白",
+    "details": [
+      "双花",
+      "黄花心",
+      "有茎叶"
+    ],
+    "file": "extra-flower-daisy-pair.webp",
+    "sha256": "2ef8c762d78623c9505dab23f1ca1f1f372b01445ac85cccd2b921add8d61878",
+    "width": 113,
+    "height": 91
+  },
+  {
+    "key": "extra-flower-daisy-cluster",
+    "name": "三朵小雏菊",
+    "category": "flowers",
+    "kind": "雏菊",
+    "color": "米白",
+    "details": [
+      "三花",
+      "黄花心",
+      "有茎叶"
+    ],
+    "file": "extra-flower-daisy-cluster.webp",
+    "sha256": "7a343b1629c386fbc5201643bb2371b926274527ed2032510a46e069f842fb23",
+    "width": 92,
+    "height": 96
+  },
+  {
+    "key": "extra-flower-pink-daisy",
+    "name": "粉边小雏菊",
+    "category": "flowers",
+    "kind": "雏菊",
+    "color": "浅粉",
+    "details": [
+      "单花",
+      "黄花心",
+      "正面"
+    ],
+    "file": "extra-flower-pink-daisy.webp",
+    "sha256": "69e11fc59c622b99ad5ec051ecfaf0a7ad7bd5db9d1d9120ea4b326e9c5266d4",
+    "width": 75,
+    "height": 72
+  },
+  {
+    "key": "extra-flower-cream-daisy",
+    "name": "奶油小雏菊",
+    "category": "flowers",
+    "kind": "雏菊",
+    "color": "奶油",
+    "details": [
+      "单花",
+      "黄花心",
+      "朝左"
+    ],
+    "file": "extra-flower-cream-daisy.webp",
+    "sha256": "fbcd90a685e5937e78d1e4677971ace98cf81f2c8033ea4b946d7596059d6413",
+    "width": 64,
+    "height": 70
+  },
+  {
+    "key": "extra-flower-gray-daisy",
+    "name": "灰瓣小雏菊",
+    "category": "flowers",
+    "kind": "雏菊",
+    "color": "灰",
+    "details": [
+      "黄花心",
+      "有茎叶",
+      "朝右"
+    ],
+    "file": "extra-flower-gray-daisy.webp",
+    "sha256": "5c0488814b0a6d74eae87cdc223ce25032b39dc438f219dbf3d934a8e8d86127",
+    "width": 94,
+    "height": 90
+  },
+  {
+    "key": "extra-flower-green-cream",
+    "name": "淡绿小花",
+    "category": "flowers",
+    "kind": "圆瓣花",
+    "color": "淡绿",
+    "details": [
+      "圆瓣",
+      "黄花心",
+      "正面"
+    ],
+    "file": "extra-flower-green-cream.webp",
+    "sha256": "69fba0302d462d0267d5b46f0b58ded21d3da8f3846014036f0826a15e2a1afe",
+    "width": 85,
+    "height": 80
+  },
+  {
+    "key": "extra-flower-cream-round",
+    "name": "米白圆瓣花",
+    "category": "flowers",
+    "kind": "圆瓣花",
+    "color": "米白",
+    "details": [
+      "圆瓣",
+      "黄花心",
+      "正面"
+    ],
+    "file": "extra-flower-cream-round.webp",
+    "sha256": "d90a2687fa6bf5dddbee2f0b9d3ce62f9334984e6ebd265f290181ba5ffe6584",
+    "width": 86,
+    "height": 82
+  },
+  {
+    "key": "extra-flower-gold-cream",
+    "name": "奶油金花",
+    "category": "flowers",
+    "kind": "圆瓣花",
+    "color": "奶油",
+    "details": [
+      "圆瓣",
+      "黄花心",
+      "正面"
+    ],
+    "file": "extra-flower-gold-cream.webp",
+    "sha256": "c41e3223fa663944823994b5e0754e4d269d26fd1977199c32fafe36fe996a4a",
+    "width": 85,
+    "height": 78
+  },
+  {
+    "key": "extra-flower-cream-side",
+    "name": "侧开奶油花",
+    "category": "flowers",
+    "kind": "圆瓣花",
+    "color": "奶油",
+    "details": [
+      "圆瓣",
+      "黄花心",
+      "朝左"
+    ],
+    "file": "extra-flower-cream-side.webp",
+    "sha256": "97430af50aeb200ff735f946bd4935e965e49a4585b2f8efcb0a1a7c6cb826d0",
+    "width": 74,
+    "height": 73
+  },
+  {
+    "key": "extra-flower-tiny-cream",
+    "name": "米黄小花",
+    "category": "flowers",
+    "kind": "圆瓣花",
+    "color": "米黄",
+    "details": [
+      "圆瓣",
+      "黄花心",
+      "正面"
+    ],
+    "file": "extra-flower-tiny-cream.webp",
+    "sha256": "595a0bf33d8839048b613ebfc563aaa5bbb0df5215f84bcb5e7388d2056a0044",
+    "width": 80,
+    "height": 68
+  },
+  {
+    "key": "extra-shell-pink-spiral",
+    "name": "粉纹圆螺",
+    "category": "seaside",
+    "kind": "螺贝",
+    "color": "粉",
+    "details": [
+      "旋纹",
+      "朝左",
+      "贝壳"
+    ],
+    "file": "extra-shell-pink-spiral.webp",
+    "sha256": "a5c259cce9528d9b63ae482ef80f411973817f7b3277f9c9256e9e766b4fa70a",
+    "width": 203,
+    "height": 205
+  },
+  {
+    "key": "extra-shell-blue-ridge",
+    "name": "蓝紫脊纹扇贝",
+    "category": "seaside",
+    "kind": "扇贝",
+    "color": "蓝紫",
+    "details": [
+      "脊纹",
+      "正面",
+      "贝壳"
+    ],
+    "file": "extra-shell-blue-ridge.webp",
+    "sha256": "b02e696642446660d2599bf3ed23d10f4ec48cf4db223c97c98712572c3202aa",
+    "width": 221,
+    "height": 196
+  },
+  {
+    "key": "extra-shell-nautilus",
+    "name": "奶油鹦鹉螺",
+    "category": "seaside",
+    "kind": "鹦鹉螺",
+    "color": "奶油橘",
+    "details": [
+      "旋纹",
+      "朝右",
+      "贝壳"
+    ],
+    "file": "extra-shell-nautilus.webp",
+    "sha256": "be9338584307947ca75163bfdc8ab666fca42be1ddee73a9318bc79c4e87b8de",
+    "width": 201,
+    "height": 213
+  },
+  {
+    "key": "extra-shell-lilac-round",
+    "name": "淡紫圆扇贝",
+    "category": "seaside",
+    "kind": "扇贝",
+    "color": "淡紫",
+    "details": [
+      "圆扇",
+      "正面",
+      "贝壳"
+    ],
+    "file": "extra-shell-lilac-round.webp",
+    "sha256": "7b65d2960fc2993a3baa84d0731a201995a9e9fc484ed85c51edc9a930615e4e",
+    "width": 220,
+    "height": 207
+  },
+  {
+    "key": "extra-star-shooting",
+    "name": "流星·蓝紫尾迹",
+    "category": "stars",
+    "kind": "流星",
+    "color": "金蓝紫",
+    "details": [
+      "双色尾迹",
+      "朝左"
+    ],
+    "file": "extra-star-shooting.webp",
+    "sha256": "000e63cf48d9a7f9fcdec967939791a21955e88afa4a446c591110ca5b80ab56",
+    "width": 251,
+    "height": 149
+  },
+  {
+    "key": "extra-star-gold-stripes",
+    "name": "金星·斜条纹",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "金",
+    "details": [
+      "斜条纹",
+      "正面"
+    ],
+    "file": "extra-star-gold-stripes.webp",
+    "sha256": "2d19b39fdbf1143b41430444235e4042f26d54a56c0dc15817cd66deb5ab3798",
+    "width": 190,
+    "height": 180
+  },
+  {
+    "key": "extra-star-blue-cutout",
+    "name": "蓝星·镂空心",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "蓝",
+    "details": [
+      "镂空",
+      "正面"
+    ],
+    "file": "extra-star-blue-cutout.webp",
+    "sha256": "df00e65954e0823be060e029db38e08fad83e3115981b605ce4cf4dc43ef0660",
+    "width": 184,
+    "height": 166
+  },
+  {
+    "key": "extra-star-purple-orbit",
+    "name": "紫星·微笑星环",
+    "category": "stars",
+    "kind": "星环",
+    "color": "紫",
+    "details": [
+      "星环",
+      "眯眼笑",
+      "朝左"
+    ],
+    "file": "extra-star-purple-orbit.webp",
+    "sha256": "c4a7e9fb44f9254aec466fcec509e61510bd5fd0efb73f8b54bdd1fb4bfa9f88",
+    "width": 231,
+    "height": 171
+  },
+  {
+    "key": "extra-star-gold-happy",
+    "name": "金星·圆眼笑",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "金",
+    "details": [
+      "圆眼",
+      "微笑",
+      "正面"
+    ],
+    "file": "extra-star-gold-happy.webp",
+    "sha256": "32cf1e252978640d4ea23d75ee12b2700c0a724ec7f848582e60b84ea78b5bda",
+    "width": 203,
+    "height": 189
+  },
+  {
+    "key": "extra-star-purple-heart",
+    "name": "紫星·爱心镂空",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "紫",
+    "details": [
+      "爱心",
+      "镂空",
+      "正面"
+    ],
+    "file": "extra-star-purple-heart.webp",
+    "sha256": "b25461676b389b89c2a9a0baecf289c6c9c49a35e90e04736d813f766e674880",
+    "width": 190,
+    "height": 186
+  },
+  {
+    "key": "extra-star-green-wink",
+    "name": "绿星·调皮眨眼",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "绿",
+    "details": [
+      "眨眼",
+      "微笑",
+      "正面"
+    ],
+    "file": "extra-star-green-wink.webp",
+    "sha256": "d66fda1c2e6148f83b267f138367b84e9eb0bdcb742f09cff5b59e12c29bb607",
+    "width": 205,
+    "height": 186
+  },
+  {
+    "key": "extra-star-gold-shine",
+    "name": "金星·亮光",
+    "category": "stars",
+    "kind": "五角星",
+    "color": "金黄",
+    "details": [
+      "亮光",
+      "正面"
+    ],
+    "file": "extra-star-gold-shine.webp",
+    "sha256": "04bc3d8f32001a06b1e44258cc4891fdac8b10fca189cd39f9b0c2331a1fa7ea",
+    "width": 197,
+    "height": 186
+  },
+  {
+    "key": "extra-leaf-long-sprig",
+    "name": "舒展长叶枝",
+    "category": "leaves",
+    "kind": "长叶枝",
+    "color": "绿",
+    "details": [
+      "多叶",
+      "朝右"
+    ],
+    "file": "extra-leaf-long-sprig.webp",
+    "sha256": "199cb0d36deff3340e484466a78fb7e9966c23e7222f8dc3328df98cd9591047",
+    "width": 130,
+    "height": 214
+  },
+  {
+    "key": "extra-leaf-gold-bud",
+    "name": "金黄圆芽枝",
+    "category": "leaves",
+    "kind": "花芽枝",
+    "color": "金黄",
+    "details": [
+      "圆芽",
+      "朝右"
+    ],
+    "file": "extra-leaf-gold-bud.webp",
+    "sha256": "a8c469581a310d54503d9209b70d22967a7a0def11808fb65d3e524aa5c5542c",
+    "width": 131,
+    "height": 118
+  },
+  {
+    "key": "extra-leaf-olive-oval",
+    "name": "橄榄色圆叶",
+    "category": "leaves",
+    "kind": "单叶",
+    "color": "橄榄绿",
+    "details": [
+      "圆叶",
+      "朝右"
+    ],
+    "file": "extra-leaf-olive-oval.webp",
+    "sha256": "575226f6eda9c8300d729af26cab149328969a9f8e86b8c3c624af81f6279288",
+    "width": 74,
+    "height": 89
+  },
+  {
+    "key": "extra-leaf-light-point",
+    "name": "浅绿尖叶",
+    "category": "leaves",
+    "kind": "单叶",
+    "color": "浅绿",
+    "details": [
+      "尖叶",
+      "朝左"
+    ],
+    "file": "extra-leaf-light-point.webp",
+    "sha256": "a39e58df86b9b9e41e308aaadc3686d9558de0e871086316eb2b9f776f28e90a",
+    "width": 90,
+    "height": 91
+  },
+  {
+    "key": "extra-leaf-diagonal-sprig",
+    "name": "嫩绿斜枝",
+    "category": "leaves",
+    "kind": "长叶枝",
+    "color": "嫩绿",
+    "details": [
+      "多叶",
+      "朝左"
+    ],
+    "file": "extra-leaf-diagonal-sprig.webp",
+    "sha256": "0eaf7f22265b3ed01c5aa20aa00eb0fb25909af66a5ef8147b052b3c33c969f1",
+    "width": 151,
+    "height": 175
+  },
+  {
+    "key": "extra-leaf-soft-vine",
+    "name": "蜿蜒嫩叶藤",
+    "category": "leaves",
+    "kind": "藤蔓",
+    "color": "嫩绿",
+    "details": [
+      "弯枝",
+      "多叶",
+      "朝右"
+    ],
+    "file": "extra-leaf-soft-vine.webp",
+    "sha256": "e3014840081fe8796d2eecb5803e9027bc721aac3940b20966f05466f8bd7885",
+    "width": 223,
+    "height": 158
+  },
+  {
+    "key": "extra-leaf-lime-stripes",
+    "name": "青柠叶脉",
+    "category": "leaves",
+    "kind": "单叶",
+    "color": "青柠绿",
+    "details": [
+      "叶脉",
+      "朝右"
+    ],
+    "file": "extra-leaf-lime-stripes.webp",
+    "sha256": "948ea735560525135749f521142e4aafc13c239b5276a4fd2266c393a23f05a0",
+    "width": 111,
+    "height": 76
+  },
+  {
+    "key": "extra-leaf-three-olive",
+    "name": "橄榄色三叶",
+    "category": "leaves",
+    "kind": "三叶枝",
+    "color": "橄榄绿",
+    "details": [
+      "三叶",
+      "朝左"
+    ],
+    "file": "extra-leaf-three-olive.webp",
+    "sha256": "0a45c1de8969665ee140d7e175e40b5fa6b59dd036f83812a92cc11539d75b4e",
+    "width": 112,
+    "height": 78
+  },
+  {
+    "key": "extra-leaf-little-point",
+    "name": "小尖叶",
+    "category": "leaves",
+    "kind": "单叶",
+    "color": "橄榄绿",
+    "details": [
+      "尖叶",
+      "朝右"
+    ],
+    "file": "extra-leaf-little-point.webp",
+    "sha256": "44d4588fc1c3bdef341a19c2719f8ea2b1db71667eb1e3598c5403b988176c5b",
+    "width": 75,
+    "height": 63
+  },
+  {
+    "key": "extra-leaf-green-small",
+    "name": "浓绿小叶",
+    "category": "leaves",
+    "kind": "单叶",
+    "color": "绿",
+    "details": [
+      "叶脉",
+      "朝左"
+    ],
+    "file": "extra-leaf-green-small.webp",
+    "sha256": "5f61a32997a0922798eac8c25bbe8a235467c1557fc5391da6ac0c63971d43dd",
+    "width": 75,
+    "height": 65
+  },
+  {
+    "key": "extra-leaf-young-sprout",
+    "name": "嫩芽小枝",
+    "category": "leaves",
+    "kind": "嫩芽",
+    "color": "嫩绿",
+    "details": [
+      "三叶",
+      "朝右"
+    ],
+    "file": "extra-leaf-young-sprout.webp",
+    "sha256": "546e300e995efbbc14432062e042027af573e34c429df3b4e4c3e41b28de8368",
+    "width": 85,
+    "height": 84
+  },
+  {
+    "key": "extra-bow-check-small",
+    "name": "粉格双尾领结",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉白",
+    "details": [
+      "格纹",
+      "双尾",
+      "正面"
+    ],
+    "file": "extra-bow-check-small.webp",
+    "sha256": "7e370f5057097f7ef1a4ceaf74ba1e995e81b254aa8c75f842d4436567f25bd6",
+    "width": 179,
+    "height": 166
+  },
+  {
+    "key": "extra-heart-linked",
+    "name": "相扣双心",
+    "category": "sentiments",
+    "kind": "双心",
+    "color": "粉",
+    "details": [
+      "线条",
+      "相扣",
+      "倾斜"
+    ],
+    "file": "extra-heart-linked.webp",
+    "sha256": "42a4a8818770e3dba43dbb23701f73f85fcfb59f7d22fcdbb8c268727da0a31f",
+    "width": 122,
+    "height": 86
+  },
+  {
+    "key": "extra-heart-pink-shiny",
+    "name": "粉心·亮点",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉",
+    "details": [
+      "亮点",
+      "正面"
+    ],
+    "file": "extra-heart-pink-shiny.webp",
+    "sha256": "40e0fa08125050a752de07394912b5ca5d1a9301703071898374b1efaf6a155d",
+    "width": 109,
+    "height": 98
+  },
+  {
+    "key": "extra-heart-small-doily",
+    "name": "粉心·蕾丝领结",
+    "category": "sentiments",
+    "kind": "爱心",
+    "color": "粉白",
+    "details": [
+      "蕾丝",
+      "蝴蝶结",
+      "正面"
+    ],
+    "file": "extra-heart-small-doily.webp",
+    "sha256": "0b13dd0fda1666507bef3800a4e34e3fa21eeae1eb20b92aec3a46242739c386",
+    "width": 146,
+    "height": 129
+  },
+  {
+    "key": "extra-bow-heart-flowing",
+    "name": "粉色心扣长飘带",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉",
+    "details": [
+      "心扣",
+      "长飘带",
+      "朝右"
+    ],
+    "file": "extra-bow-heart-flowing.webp",
+    "sha256": "ec721848b1a8f0bd964dc612653fbbb780c35975c493e1bcc40f27304c730bfd",
+    "width": 225,
+    "height": 236
+  },
+  {
+    "key": "extra-bow-lace-wide",
+    "name": "粉色蕾丝大领结",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉白",
+    "details": [
+      "蕾丝",
+      "宽带",
+      "正面"
+    ],
+    "file": "extra-bow-lace-wide.webp",
+    "sha256": "0469d9bafa0e04cc03c8b6512a7153f62ea799e1e359b17227c40f106f561927",
+    "width": 218,
+    "height": 189
+  },
+  {
+    "key": "extra-bow-ribbon-flowing",
+    "name": "粉色细带长尾结",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "浅粉",
+    "details": [
+      "细带",
+      "长飘带",
+      "朝左"
+    ],
+    "file": "extra-bow-ribbon-flowing.webp",
+    "sha256": "ae67eb81177d2511d99bd6704344c627113cd4bed2cc02d72935d9e0878f4b9b",
+    "width": 201,
+    "height": 252
+  },
+  {
+    "key": "extra-bow-blue-flower",
+    "name": "蓝色花扣领结",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "蓝",
+    "details": [
+      "花扣",
+      "双尾",
+      "正面"
+    ],
+    "file": "extra-bow-blue-flower.webp",
+    "sha256": "6e651a026db99ac6637ed21d7102cc3c1c5b840ce7c816abec361fbd0618bbac",
+    "width": 181,
+    "height": 186
+  },
+  {
+    "key": "extra-bow-pink-double",
+    "name": "粉色叠带领结",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉",
+    "details": [
+      "叠带",
+      "双尾",
+      "正面"
+    ],
+    "file": "extra-bow-pink-double.webp",
+    "sha256": "a4f2dc72eb66eda7030ee67cd7f5c2b78151512fdda4849e04bec5b8498c4bd3",
+    "width": 157,
+    "height": 201
+  },
+  {
+    "key": "extra-bow-little-tilt",
+    "name": "粉色斜系小结",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉",
+    "details": [
+      "细带",
+      "倾斜",
+      "朝右"
+    ],
+    "file": "extra-bow-little-tilt.webp",
+    "sha256": "29650b91808cc28c314bc3c3b38695c67924f62af9fe4a90290209d0385775be",
+    "width": 136,
+    "height": 95
+  },
+  {
+    "key": "extra-bow-tiny-ribbon",
+    "name": "粉色细带小结",
+    "category": "sentiments",
+    "kind": "蝴蝶结",
+    "color": "粉",
+    "details": [
+      "细带",
+      "双尾",
+      "正面"
+    ],
+    "file": "extra-bow-tiny-ribbon.webp",
+    "sha256": "f2613d2a37b07dd8ce81a4ed3c403e8477cb773d1e3d52ff949b8df1515849e3",
+    "width": 104,
+    "height": 68
+  },
+  {
+    "key": "extra-heart-dotted-trail",
+    "name": "爱心虚线路径",
+    "category": "sentiments",
+    "kind": "手绘心",
+    "color": "粉",
+    "details": [
+      "虚线",
+      "线条",
+      "朝右"
+    ],
+    "file": "extra-heart-dotted-trail.webp",
+    "sha256": "924be2000b46964ac5b4429960824f1e45c4d169d0013a75d5a2a6566238a5ad",
+    "width": 171,
+    "height": 60
+  },
+  {
+    "key": "extra-heart-plain-pink",
+    "name": "手绘粉色实心",
+    "category": "sentiments",
+    "kind": "手绘心",
+    "color": "粉",
+    "details": [
+      "实心",
+      "正面"
+    ],
+    "file": "extra-heart-plain-pink.webp",
+    "sha256": "cd421f39ef25519350e6b8212c499ad543e9dfde8cff95c1fa18d809b6b52c40",
+    "width": 75,
+    "height": 68
+  },
+  {
+    "key": "extra-heart-outline-tall",
+    "name": "手绘高瘦心",
+    "category": "sentiments",
+    "kind": "手绘心",
+    "color": "粉",
+    "details": [
+      "空心",
+      "线条",
+      "正面"
+    ],
+    "file": "extra-heart-outline-tall.webp",
+    "sha256": "9ba9c6c5d483e0d1ae89284022f1f9b94257871c5d9e99db906b29ea07ea5675",
+    "width": 73,
+    "height": 78
   }
 ]
