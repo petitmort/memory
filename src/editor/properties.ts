@@ -1,10 +1,11 @@
 import { PAPER_NAMES, TEMPLATE_NAMES, FRAME_NAMES, MOTIF_NAMES, FONT_NAMES, copy, type AlbumPage, type AlbumDocument, type AlbumElement, type PageStyle } from '../album/document';
 import { motifSvg, type AssetResolver } from '../album/renderer';
 import { watermarkAppearance } from '../album/watermark-appearance';
+import { newWatermarkMix, watermarkTiles } from '../album/watermark-layout';
 import { WATERMARK_PRESETS, WATERMARK_CATEGORIES, watermarkOptions, matchesWatermark, type WatermarkPreset, type WatermarkFilter } from './watermark-library';
 import { STYLE_KITS } from './style-kits';
 
-type Options = { document: AlbumDocument; page: AlbumPage; selected?: AlbumElement; scope: string; onScope(value: string): void; change(action: () => void, preview?: boolean): void; style<K extends keyof PageStyle>(key: K, value: PageStyle[K], preview?: boolean): void; applyKit(key: string): void; watermarkFilter: WatermarkFilter; upload(kind: 'photo' | 'watermark' | 'sticker'): void; chooseWatermark(preset: WatermarkPreset): void; loadingWatermark(): string; resolveAsset: AssetResolver };
+type Options = { document: AlbumDocument; page: AlbumPage; selected?: AlbumElement; scope: string; onScope(value: string): void; change(action: () => void, preview?: boolean): void; style<K extends keyof PageStyle>(key: K, value: PageStyle[K], preview?: boolean): void; applyKit(key: string): void; watermarkFilter: WatermarkFilter; upload(kind: 'photo' | 'watermark' | 'sticker'): void; chooseWatermark(preset: WatermarkPreset): void; loadingWatermark(): string; isWatermarkLoading(key: string): boolean; resolveAsset: AssetResolver };
 const node = <K extends keyof HTMLElementTagNameMap>(tag: K, text = '') => { const e = document.createElement(tag); e.textContent = text; return e; };
 function field(title: string, input: HTMLElement) { const label = node('label'); label.className = 'editor-field'; if (input.matches('input,select,textarea')) input.setAttribute('aria-label', title); label.append(node('span', title), input); return label; }
 // Bind values to the live model so native controls keep focus / pointer capture.
@@ -60,23 +61,64 @@ export function createProperties(options: Options) {
   let swatchKey = '';
   const refreshWatermark = () => {
     enable.checked = page.watermark.opacity > 0;
-    const name = doc.assets.find(a => a.id === page.watermark.assetId)?.name.replace(/^水印·|\.webp$/g, '') ?? MOTIF_NAMES[page.watermark.motif];
+    const mix = page.watermark.mix, assetId = mix?.enabled ? mix.items[0]?.assetId ?? '' : page.watermark.assetId;
+    const name = mix?.enabled ? `同页混排 · ${mix.items.length}款` : doc.assets.find(a => a.id === assetId)?.name.replace(/^水印·|\.webp$/g, '') ?? MOTIF_NAMES[page.watermark.motif];
     const status = options.loadingWatermark() ? '正在载入图案…' : page.watermark.opacity ? `${name} · ${Math.round(page.watermark.opacity * 100)}%` : '水印已关闭，选图案即可开启';
     if (state.textContent !== status) state.textContent = status;
-    const src = page.watermark.assetId && options.resolveAsset(page.watermark.assetId), key = src || `${page.watermark.motif}:${page.watermark.color}`;
+    const src = assetId && options.resolveAsset(assetId), key = mix?.enabled && !assetId ? 'empty-mix' : src || `${page.watermark.motif}:${page.watermark.color}`;
     if (key !== swatchKey) {
       if (src) { const img = new Image(); img.src = src; img.alt = '当前水印'; swatch.replaceChildren(img); }
+      else if (key === 'empty-mix') swatch.replaceChildren();
       else swatch.replaceChildren(motifSvg(page.watermark.motif, page.watermark.color));
       swatchKey = key;
     }
     const appearance = watermarkAppearance(page.watermark);
     swatch.style.filter = appearance.filter;
-    (swatch.firstElementChild as HTMLElement | SVGElement).style.transform = appearance.mirror.trim();
+    if (swatch.firstElementChild) (swatch.firstElementChild as HTMLElement | SVGElement).style.transform = appearance.mirror.trim();
   };
   refreshers.set(current, refreshWatermark); refreshWatermark();
   const amounts = node('div'); amounts.className = 'editor-field-pair';
   amounts.append(range('水印透明度', () => page.watermark.opacity * 100, 0, 100, 1, value => style('watermark', w => { w.opacity = value / 100; })), range('图案大小', () => page.watermark.size, 8, 120, 1, value => style('watermark', w => { w.size = value; })));
   pattern.append(current, amounts);
+  const mixToggle = node('input'); mixToggle.type = 'checkbox'; mixToggle.setAttribute('aria-label', '同页混用多款');
+  const refreshMixToggle = () => { mixToggle.checked = !!page.watermark.mix?.enabled; };
+  refreshers.set(mixToggle, refreshMixToggle); refreshMixToggle();
+  mixToggle.onchange = () => style('watermark', w => {
+    if (!w.mix) { w.mix = newWatermarkMix(w); if (w.mode === 'single' || w.mode === 'corner') w.mode = 'repeat'; }
+    w.mix.enabled = mixToggle.checked;
+    if (mixToggle.checked) { if (!w.opacity) w.opacity = .28; w.size = Math.max(88, w.size); }
+  });
+  const mixLabel = node('label'); mixLabel.className = 'editor-mix-toggle'; mixLabel.append(mixToggle, node('span', '同页混用多款'));
+  const mixPanel = node('div'); mixPanel.className = 'editor-watermark-mix';
+  const mixStatus = node('p'); mixStatus.setAttribute('role', 'status');
+  const refreshMix = () => {
+    mixPanel.hidden = !page.watermark.mix?.enabled;
+    const total = page.watermark.mix?.items.length ?? 0, tiles = watermarkTiles(page.watermark).length;
+    mixStatus.textContent = total ? `已选${total}款 · 本页${tiles}枚${tiles < total ? '；位置不足，可增加密度或改为重复铺底。' : '；原色一起保留。'}` : '从下方图库点选多款图案，最多16款。';
+  };
+  refreshers.set(mixPanel, refreshMix); refreshMix();
+  mixPanel.append(node('p', '先选猫咪等分类，再点选多款；再次点击可移除。自动角度各不相同，也能让某款始终正放。'), mixStatus,
+    range('混排随机转角', () => page.watermark.mix?.angleRange ?? 28, 0, 90, 1, value => style('watermark', w => { if (w.mix) w.mix.angleRange = value; })),
+    range('混排正放比例', () => (page.watermark.mix?.upright ?? .35) * 100, 0, 100, 5, value => style('watermark', w => { if (w.mix) w.mix.upright = value / 100; })),
+    button('换一组排布', () => style('watermark', w => { if (w.mix) w.mix.seed = (w.mix.seed + 1) % 2147483648; })));
+  const mixList = node('div'); mixList.className = 'editor-mix-list'; mixList.setAttribute('aria-label', '已选混排图案');
+  for (const item of page.watermark.mix?.items ?? []) {
+    const asset = doc.assets.find(a => a.id === item.assetId)!, name = asset.name.replace(/^水印·|\.webp$/g, '');
+    const row = node('section'); row.className = 'editor-mix-item'; row.dataset.mixAsset = item.assetId;
+    const heading = node('div'); heading.className = 'editor-mix-heading';
+    const img = new Image(); img.src = options.resolveAsset(item.assetId) ?? ''; img.alt = ''; img.width = img.height = 40;
+    const remove = button('移除', () => style('watermark', w => { if (w.mix) w.mix.items = w.mix.items.filter(v => v.assetId !== item.assetId); })); remove.setAttribute('aria-label', `移除混排图案：${name}`);
+    heading.append(img, node('span', name), remove); row.append(heading);
+    const entry = () => page.watermark.mix?.items.find(v => v.assetId === item.assetId);
+    const mode = select(`角度方式：${name}`, () => entry()?.rotation === undefined ? 'auto' : 'fixed', { auto: '自动分散', fixed: '固定角度' }, value => style('watermark', w => {
+      const variant = w.mix?.items.find(v => v.assetId === item.assetId); if (!variant) return;
+      if (value === 'fixed') variant.rotation = 0; else delete variant.rotation;
+    }));
+    const angle = range(`固定角度：${name}`, () => entry()?.rotation ?? 0, -180, 180, 1, value => style('watermark', w => { const variant = w.mix?.items.find(v => v.assetId === item.assetId); if (variant) variant.rotation = value; }));
+    const refreshAngle = () => { angle.hidden = entry()?.rotation === undefined; }; refreshers.set(angle, refreshAngle); refreshAngle();
+    row.append(mode, angle); mixList.append(row);
+  }
+  mixPanel.append(mixList); pattern.append(mixLabel, mixPanel);
   const gallery = node('div'); gallery.className = 'editor-watermark-gallery'; gallery.setAttribute('role', 'group'); gallery.setAttribute('aria-label', '图片水印图库');
   const filter = options.watermarkFilter, result = node('p'); result.className = 'editor-gallery-result'; result.setAttribute('role', 'status');
   filter.kind ??= 'all'; filter.color ??= 'all'; filter.detail ??= 'all';
@@ -84,7 +126,7 @@ export function createProperties(options: Options) {
   const filterGallery = () => {
     let count = 0;
     for (const { preset, button } of choices) { button.hidden = !matchesWatermark(preset, filter); if (!button.hidden) count++; }
-    result.textContent = count ? `${count} / ${WATERMARK_PRESETS.length} 款 · 点图使用，换图保留当前调节` : '没有找到图案，试试放宽筛选或清除筛选。';
+    result.textContent = count ? `${count} / ${WATERMARK_PRESETS.length} 款 · ${page.watermark.mix?.enabled ? '点图多选，再点移除' : '点图使用，换图保留当前调节'}` : '没有找到图案，试试放宽筛选或清除筛选。';
   };
   const dimensions = node('div'); dimensions.className = 'editor-watermark-dimensions';
   const dimensionsFields = (['kind', 'color', 'detail'] as const).map((dimension, i) => {
@@ -110,7 +152,7 @@ export function createProperties(options: Options) {
     const choice = button(preset.name, () => options.chooseWatermark(preset)); choice.className = 'editor-watermark-choice'; choice.dataset.watermarkPreset = preset.key; choice.setAttribute('aria-label', `使用水印：${preset.name}`);
     choice.title = `${preset.kind} · 原色${preset.color} · ${preset.details.join(' / ')}`;
     const img = new Image(); img.src = preset.url; img.alt = ''; img.width = img.height = 64; img.loading = 'lazy'; img.decoding = 'async'; choice.prepend(img);
-    const refresh = () => { choice.setAttribute('aria-pressed', String(page.watermark.assetId === preset.assetId)); choice.setAttribute('aria-busy', String(options.loadingWatermark() === preset.key)); };
+    const refresh = () => { choice.setAttribute('aria-pressed', String(page.watermark.mix?.enabled ? page.watermark.mix.items.some(v => v.presetKey === preset.key || v.assetId === preset.assetId) : page.watermark.assetId === preset.assetId)); choice.setAttribute('aria-busy', String(options.isWatermarkLoading(preset.key))); };
     refreshers.set(choice, refresh); refresh(); gallery.append(choice); choices.push({ preset, button: choice });
   }
   filterGallery();
@@ -131,8 +173,10 @@ export function createProperties(options: Options) {
     button('恢复镜像与原色', () => style('watermark', w => { delete w.flipX; delete w.flipY; delete w.hue; delete w.saturation; delete w.brightness; })),
     node('p', '原色是生成图片本身的颜色。色相用于整体偏色，饱和度0为灰度、100为原色，明亮度100为原亮度；换动作、花纹或表情请选另一张原图。'));
   pattern.append(effects, select('图案排布', () => page.watermark.mode, { single: '单个', corner: '页角', border: '边框', repeat: '重复铺底' }, value => style('watermark', w => { w.mode = value as any; })), node('p', '下方线条图案可直接选颜色；图片也可使用上方镜像与调色。'));
-  pattern.append(select('图案主题', () => page.watermark.motif, MOTIF_NAMES, value => style('watermark', w => { w.motif = value as any; w.assetId = ''; if (!w.opacity) w.opacity = .28; })), color('图案颜色', () => page.watermark.color, value => style('watermark', w => { w.color = value; })), range('图案密度', () => page.watermark.density, 1, 8, 1, value => style('watermark', w => { w.density = value; })), range('图案角度', () => page.watermark.rotation, -180, 180, 1, value => style('watermark', w => { w.rotation = value; })), range('图案水平偏移', () => page.watermark.x, 0, 100, 1, value => style('watermark', w => { w.x = value; })), range('图案垂直偏移', () => page.watermark.y, 0, 100, 1, value => style('watermark', w => { w.y = value; })), button('导入自己的水印', () => options.upload('watermark')));
-  if (page.watermark.assetId) pattern.append(button('恢复内置图案', () => style('watermark', w => { w.assetId = ''; if (!w.opacity) w.opacity = .28; })));
+  const singleAngle = range('图案角度', () => page.watermark.rotation, -180, 180, 1, value => style('watermark', w => { w.rotation = value; }));
+  const refreshSingleAngle = () => { singleAngle.hidden = !!page.watermark.mix?.enabled; }; refreshers.set(singleAngle, refreshSingleAngle); refreshSingleAngle();
+  pattern.append(select('图案主题', () => page.watermark.motif, MOTIF_NAMES, value => style('watermark', w => { w.motif = value as any; w.assetId = ''; if (w.mix) w.mix.enabled = false; if (!w.opacity) w.opacity = .28; })), color('图案颜色', () => page.watermark.color, value => style('watermark', w => { w.color = value; })), range('图案密度', () => page.watermark.density, 1, 8, 1, value => style('watermark', w => { w.density = value; })), singleAngle, range('图案水平偏移', () => page.watermark.x, 0, 100, 1, value => style('watermark', w => { w.x = value; })), range('图案垂直偏移', () => page.watermark.y, 0, 100, 1, value => style('watermark', w => { w.y = value; })), button('导入自己的水印', () => options.upload('watermark')));
+  if (page.watermark.assetId) pattern.append(button('恢复内置图案', () => style('watermark', w => { w.assetId = ''; if (w.mix) w.mix.enabled = false; if (!w.opacity) w.opacity = .28; })));
   const kits = group('一键搭配'); kits.dataset.section = 'kits';
   kits.append(node('p', '调整纸张、格线、留白、文字样式与相框。保留原文、照片取景、水印和贴纸；可一次撤销。'));
   for (const [key, kit] of Object.entries(STYLE_KITS)) {

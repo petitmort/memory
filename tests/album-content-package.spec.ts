@@ -10,6 +10,7 @@ test('content apply validates in advance, separates optimized assets, and detect
     const c = document.createElement('canvas'); c.width = 200; c.height = 100; c.getContext('2d')!.fillRect(0, 0, 200, 100);
     const blob = await new Promise<Blob>(resolve => c.toBlob(blob => resolve(blob!), 'image/png')), imported = await p.importImage(new File([blob], '不会公开的原图.png', { type: blob.type }));
     d.assets.push(imported.asset); (d.chapters[0].spreads[0].pages[0].elements[0] as any).assetId = imported.asset.id;
+    d.chapters[0].spreads[0].pages[0].watermark.mix = { enabled: true, seed: 3, angleRange: 28, upright: .35, items: [{ assetId: imported.asset.id, rotation: 12 }] };
     return await (await p.exportPackage(d, new Map([[imported.asset.id, blob]]), true, await p.contentHash(null))).text();
   });
   const folder = await mkdtemp(join(tmpdir(), 'album-apply-test-'));
@@ -23,6 +24,7 @@ test('content apply validates in advance, separates optimized assets, and detect
     const check = run('--check'); expect(check.status, check.stderr).toBe(0); expect(JSON.parse(await readFile(join(folder, 'src/album/published.json'), 'utf8'))).toBe(null);
     const applied = run(); expect(applied.status, applied.stderr).toBe(0);
     const manifest = JSON.parse(await readFile(join(folder, 'src/album/published.json'), 'utf8')); expect(manifest.title).toBe('内容包测试'); expect(manifest.assets[0].mime).toBe('image/webp'); expect(manifest.assets[0].src).toMatch(/^\.\/album\/assets\/[a-f0-9]{64}\.webp$/);
+    expect(manifest.chapters[0].spreads[0].pages[0].watermark.mix.items).toEqual([{ assetId: manifest.assets[0].id, rotation: 12 }]);
     const image = await readFile(join(folder, 'public', manifest.assets[0].src)); expect(image.toString('ascii', 8, 12)).toBe('WEBP');
     const conflict = run(); expect(conflict.status).toBe(1); expect(conflict.stderr).toContain('网站内容已变化');
     expect(JSON.parse(await readFile(join(folder, 'src/album/published.json'), 'utf8')).title).toBe('内容包测试');

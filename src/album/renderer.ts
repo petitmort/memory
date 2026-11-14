@@ -1,6 +1,7 @@
 import './page.css';
 import type { AlbumPage, AlbumElement, Motif, PhotoElement } from './document';
 import { watermarkAppearance } from './watermark-appearance';
+import { watermarkTiles } from './watermark-layout';
 
 export type AssetResolver = (id: string) => string | undefined;
 export type PageRenderOptions = { resolveAsset: AssetResolver; editable?: boolean; number?: number };
@@ -26,24 +27,21 @@ function watermarks(page: AlbumPage, resolve: AssetResolver, layer: HTMLElement 
   layer.style.filter = appearance.filter;
   layer.style.opacity = String(w.opacity);
   if (!w.opacity) { layer.replaceChildren(); return layer; }
-  const positions: [number, number][] = [];
-  if (w.mode === 'single') positions.push([w.x, w.y]);
-  if (w.mode === 'corner') positions.push([10, 9], [90, 91]);
-  if (w.mode === 'border') for (let i = 0; i <= w.density * 2; i++) { const a = 8 + 84 * i / (w.density * 2); positions.push([a, 6], [a, 94]); if (i > 0 && i < w.density * 2) positions.push([6, a], [94, a]); }
-  if (w.mode === 'repeat') for (let y = 0; y < w.density * 2; y++) for (let x = 0; x < w.density; x++) positions.push([(x + .5 + (y % 2 ? .25 : 0)) * 100 / w.density, (y + .5) * 100 / (w.density * 2)]);
-  const src = w.assetId && resolve(w.assetId), identity = src || `${w.motif}:${w.color}`, sameContent = watermarkContents.get(layer) === identity;
-  while (layer.children.length > positions.length) layer.lastElementChild!.remove();
-  positions.forEach(([x, y], i) => {
+  const tiles = watermarkTiles(w);
+  while (layer.children.length > tiles.length) layer.lastElementChild!.remove();
+  tiles.forEach(({ x, y, assetId, rotation }, i) => {
     let tile = layer.children[i] as HTMLElement | undefined;
     if (!tile) { tile = document.createElement('div'); tile.className = 'album-watermark-tile'; layer.append(tile); }
-    const styles = { width: `${w.size}px`, height: `${w.size}px`, left: `${x}%`, top: `${y}%`, transform: `translate(-50%,-50%) rotate(${w.rotation}deg)${appearance.mirror}` };
+    const src = assetId && resolve(assetId), identity = src || `${w.motif}:${w.color}`;
+    if (tile.dataset.watermarkAsset !== assetId) tile.dataset.watermarkAsset = assetId;
+    const styles = { width: `${w.size}px`, height: `${w.size}px`, left: `${x}%`, top: `${y}%`, transform: `translate(-50%,-50%) rotate(${rotation}deg)${appearance.mirror}` };
     for (const [key, value] of Object.entries(styles)) if (tile.style.getPropertyValue(key) !== value) tile.style.setProperty(key, value);
-    if (!sameContent || !tile.firstElementChild) {
+    if (watermarkContents.get(tile) !== identity || !tile.firstElementChild) {
       if (src) { const img = new Image(); img.src = src; img.alt = ''; tile.replaceChildren(img); }
       else tile.replaceChildren(motifSvg(w.motif, w.color));
+      watermarkContents.set(tile, identity);
     }
   });
-  watermarkContents.set(layer, identity);
   return layer;
 }
 function photoContent(photo: PhotoElement, resolve: AssetResolver, figure = document.createElement('figure')) {

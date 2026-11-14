@@ -9,10 +9,12 @@ export type TextElement = { id: string; type: 'text'; text: string; role: 'title
 export type PhotoElement = { id: string; type: 'photo'; assetId: string; caption: string; alt: string; frame: keyof typeof FRAME_NAMES; border: number; color: string; shadow: number; crop: { zoom: number; x: number; y: number; rotation: number } };
 export type StickerElement = { id: string; type: 'sticker'; motif: Motif; assetId: string; color: string; x: number; y: number; width: number; rotation: number; opacity: number; locked: boolean };
 export type AlbumElement = TextElement | PhotoElement | StickerElement;
+export type WatermarkVariant = { assetId: string; presetKey?: string; rotation?: number };
+export type WatermarkMix = { enabled: boolean; items: WatermarkVariant[]; seed: number; angleRange: number; upright: number };
 export type PageStyle = {
   paper: { kind: keyof typeof PAPER_NAMES; tint: string; texture: number };
   grid: { kind: 'none' | 'ruled' | 'square' | 'dotted'; spacing: number; weight: number; color: string; opacity: number; offset: number };
-  watermark: { motif: Motif; assetId: string; mode: 'single' | 'corner' | 'border' | 'repeat'; color: string; size: number; rotation: number; opacity: number; density: number; x: number; y: number; flipX?: boolean; flipY?: boolean; hue?: number; saturation?: number; brightness?: number };
+  watermark: { motif: Motif; assetId: string; mode: 'single' | 'corner' | 'border' | 'repeat'; color: string; size: number; rotation: number; opacity: number; density: number; x: number; y: number; flipX?: boolean; flipY?: boolean; hue?: number; saturation?: number; brightness?: number; mix?: WatermarkMix };
   layout: { template: keyof typeof TEMPLATE_NAMES; margin: number; columns: number; gap: number };
 };
 export type AlbumPage = PageStyle & { id: string; elements: AlbumElement[] };
@@ -97,6 +99,22 @@ export function validateDocument(input: unknown): AlbumDocument {
         for (const field of ['flipX', 'flipY']) if (w[field] !== undefined && typeof w[field] !== 'boolean') fail('图案镜像');
         if (w.hue !== undefined) num(w.hue, -180, 180, '图案色相');
         for (const field of ['saturation', 'brightness']) if (w[field] !== undefined) num(w[field], 0, 2, '图案调色');
+        if (w.mix !== undefined) {
+          const mix = object(w.mix, '混排图案');
+          if (typeof mix.enabled !== 'boolean') fail('混排开关');
+          num(mix.seed, 0, 2147483647, '混排种子'); if (!Number.isInteger(mix.seed)) fail('混排种子');
+          num(mix.angleRange, 0, 90, '混排转角'); num(mix.upright, 0, 1, '混排正放比例');
+          const seen = new Set<string>(), presets = new Set<string>();
+          for (const value of array(mix.items, 0, 16, '混排款数')) {
+            const item = object(value, '混排款式'); ref(item.assetId);
+            if (!item.assetId || seen.has(item.assetId)) fail('重复或空混排素材'); seen.add(item.assetId);
+            if (item.presetKey !== undefined) {
+              const key = str(item.presetKey, '混排款式标记', 100);
+              if (!/^[a-z0-9_-]{1,100}$/.test(key) || presets.has(key)) fail('混排款式标记'); presets.add(key);
+            }
+            if (item.rotation !== undefined) num(item.rotation, -180, 180, '混排固定角度');
+          }
+        }
         const l = object(page.layout, '布局'); choice(l.template, Object.keys(TEMPLATE_NAMES), '模板'); num(l.margin, 12, 60, '边距'); num(l.columns, 1, 2, '列数'); if (![1, 2].includes(l.columns)) fail('列数'); num(l.gap, 8, 40, '列距');
         for (const value of array(page.elements, 0, 80, '元素数量')) {
           const e = object(value, '元素'); checkId(e.id);

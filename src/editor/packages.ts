@@ -20,6 +20,7 @@ export function usedAssets(doc: AlbumDocument): Set<string> {
   const refs = new Set<string>();
   for (const chapter of doc.chapters) for (const spread of chapter.spreads) for (const page of spread.pages) {
     if (page.watermark.assetId) refs.add(page.watermark.assetId);
+    for (const item of page.watermark.mix?.items ?? []) refs.add(item.assetId);
     for (const e of page.elements) if ('assetId' in e && e.assetId) refs.add(e.assetId);
   }
   return refs;

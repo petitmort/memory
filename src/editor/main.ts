@@ -8,6 +8,7 @@ import { readDraft, saveDraft, savePreview, watchDraft, AlbumConflictError, type
 import { contentHash, exportPackage, importPackage, importImage, optimizeAssets, download } from './packages';
 import { loadWatermark, imageHash, type WatermarkPreset, type WatermarkFilter } from './watermark-library';
 import { applyStyleKit, STYLE_KITS } from './style-kits';
+import { newWatermarkMix } from '../album/watermark-layout';
 
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const app = $('#editor-app');
@@ -24,7 +25,10 @@ let storageVersion = 0, sequence = 0, savedSequence = 0, saveError: Error | unde
 let continuousBefore: AlbumDocument | undefined, previewFrame = 0;
 let inspector: { document: AlbumDocument; page: AlbumPage; selected?: AlbumElement; key: string; host: HTMLElement } | undefined;
 let libraryDocument: AlbumDocument | undefined, libraryKey = '';
-let watermarkRequest = 0, loadingWatermark = '';
+let watermarkRequest = 0;
+type WatermarkRequest = { epoch: number; source: AlbumDocument; pages: AlbumPage[]; key: string; cancelled: boolean };
+const pendingWatermarks = new Set<WatermarkRequest>();
+const activeWatermark = (request: WatermarkRequest) => request.epoch === watermarkRequest && request.source === doc && !request.cancelled;
 const watermarkFilter: WatermarkFilter = { category: 'all', query: '' };
 let composing = false, textBefore: AlbumDocument | undefined, textDirty = false, previewToken = '', initialized = false;
 const history = new AlbumHistory(), urls = new Map<string, string>(), viewport = $('#canvas-stage');
@@ -93,27 +97,29 @@ function commit(action: () => void) {
 }
 function renderProperties() {
   const currentPage = page(), currentElement = selected();
-  const key = JSON.stringify([scope, doc.assets.map(a => [a.id, a.name]), currentPage.watermark.assetId]);
+  const key = JSON.stringify([scope, doc.assets.map(a => [a.id, a.name]), currentPage.watermark.assetId, currentPage.watermark.mix?.enabled, currentPage.watermark.mix?.items.map(v => [v.assetId, v.presetKey])]);
   if (inspector?.document === doc && inspector.page === currentPage && inspector.selected === currentElement && inspector.key === key) { refreshProperties(inspector.host); return; }
   const expanded = new Map(Array.from($('#properties').querySelectorAll('details')).map(details => [details.querySelector('summary')!.textContent, details.open]));
   const properties = createProperties({ document: doc, page: currentPage, selected: currentElement, scope,
     onScope(value) { finishContinuous(); scope = value; renderProperties(); },
     change(action, preview) { if (preview) previewChange(action); else commit(action); },
     style(key, value, preview) {
-      watermarkRequest++; loadingWatermark = '';
+      watermarkRequest++;
       const update = () => {
         const pages = scope === 'book' ? flatten(doc).flatMap(v => v.spread.pages) : scope === 'spread' ? doc.chapters[chapterIndex].spreads[spreadIndex].pages : [currentPage];
         for (const p of pages) { const template = p.layout.template; (p as any)[key] = copy(value); if (key === 'layout' && template !== p.layout.template) applyTemplate(p, p.layout.template); }
       };
       if (preview) previewChange(update); else commit(update);
     }, applyKit(key) {
-      watermarkRequest++; loadingWatermark = '';
+      watermarkRequest++;
       commit(() => {
         const pages = scope === 'book' ? flatten(doc).flatMap(v => v.spread.pages) : scope === 'spread' ? doc.chapters[chapterIndex].spreads[spreadIndex].pages : [currentPage];
         pages.forEach(p => applyStyleKit(p, key));
       });
       notify(`已套用「${STYLE_KITS[key].name}」到${scope === 'book' ? '整本纪念册' : scope === 'spread' ? '当前跨页' : '当前单页'}，可一次撤销。`);
-    }, watermarkFilter, upload: chooseImages, chooseWatermark, loadingWatermark: () => loadingWatermark, resolveAsset,
+    }, watermarkFilter, upload: chooseImages, chooseWatermark,
+    loadingWatermark: () => [...pendingWatermarks].find(r => activeWatermark(r) && r.pages.includes(page()))?.key ?? '',
+    isWatermarkLoading: key => [...pendingWatermarks].some(r => activeWatermark(r) && r.pages.includes(page()) && r.key === key), resolveAsset,
   });
   properties.querySelectorAll('details').forEach(details => { const value = expanded.get(details.querySelector('summary')!.textContent); if (value !== undefined) details.open = value; });
   $('#properties').replaceChildren(properties); inspector = { document: doc, page: currentPage, selected: currentElement, key, host: properties };
@@ -279,12 +285,29 @@ $('#paper-spread').addEventListener('pointerdown', event => {
   element.addEventListener('pointermove', move); element.addEventListener('pointerup', end); element.addEventListener('pointercancel', end);
 });
 
-let uploadTarget: { kind: 'photo' | 'watermark' | 'sticker'; pageId: string; elementId: string };
+let uploadTarget: { kind: 'photo' | 'watermark' | 'sticker'; pageId: string; elementId: string; source: AlbumDocument; epoch: number };
 async function chooseWatermark(preset: WatermarkPreset) {
   finishContinuous(); finishText();
-  const request = ++watermarkRequest, source = doc;
+  const mixed = !!page().watermark.mix?.enabled;
   const pages = scope === 'book' ? flatten(doc).flatMap(v => v.spread.pages) : scope === 'spread' ? doc.chapters[chapterIndex].spreads[spreadIndex].pages : [page()];
-  loadingWatermark = preset.key; renderProperties();
+  // A backup can reuse a catalog ID for different bytes. Only a verified
+  // legacy single image can stand in for a selection without a preset key.
+  let canonicalMatches = true;
+  if (mixed && pages.some(p => p.watermark.mix?.items.some(v => !v.presetKey && v.assetId === preset.assetId))) {
+    const source = doc, epoch = watermarkRequest, original = blobs.get(preset.assetId);
+    canonicalMatches = !!original && await imageHash(original) === preset.sha256;
+    if (doc !== source || watermarkRequest !== epoch) return;
+  }
+  const matches = (item: { assetId: string; presetKey?: string }) => item.presetKey ? item.presetKey === preset.key : canonicalMatches && item.assetId === preset.assetId;
+  if (mixed && page().watermark.mix!.items.some(matches)) {
+    for (const pending of pendingWatermarks) if (pending.key === preset.key && pending.pages.some(p => pages.includes(p))) pending.cancelled = true;
+    commit(() => { for (const p of pages) if (p.watermark.mix) p.watermark.mix.items = p.watermark.mix.items.filter(item => !matches(item)); });
+    return;
+  }
+  if (mixed && [...pendingWatermarks].some(r => activeWatermark(r) && r.key === preset.key && r.pages.length === pages.length && r.pages.every(p => pages.includes(p)))) return;
+  if (mixed && pages.some(p => { const items = p.watermark.mix?.items ?? (p.watermark.assetId ? [{ assetId: p.watermark.assetId }] : []); return items.length >= 16 && !items.some(matches); })) { notify('每页最多混用16款，请先移除一款。'); return; }
+  const request: WatermarkRequest = { epoch: mixed ? watermarkRequest : ++watermarkRequest, source: doc, pages, key: preset.key, cancelled: false };
+  pendingWatermarks.add(request); renderProperties();
   try {
     const imported = await importImage(await loadWatermark(preset));
     imported.asset.id = preset.assetId;
@@ -292,34 +315,49 @@ async function chooseWatermark(preset: WatermarkPreset) {
     // A restored backup may have reused the deterministic ID with other bytes.
     // Keep that original and give the catalog image a fresh ID instead.
     if ((existing && !previous) || (previous && await imageHash(previous) !== preset.sha256)) imported.asset.id = id();
-    if (request !== watermarkRequest || doc !== source) return;
+    if (!activeWatermark(request)) return;
     const targets = pages.filter(p => flatten(doc).some(v => v.spread.pages.includes(p)));
     if (!targets.length) return;
     const reuse = doc.assets.some(asset => asset.id === imported.asset.id);
+    if (mixed && targets.some(p => {
+      const items = p.watermark.mix?.items ?? (p.watermark.assetId ? [{ assetId: p.watermark.assetId }] : []);
+      return !items.some(matches) && items.length >= 16;
+    })) throw new Error('每页最多混用16款，请先移除一款。');
     if (!reuse && (doc.assets.length >= 300 || doc.assets.reduce((total, a) => total + (blobs.get(a.id)?.size ?? 0), 0) + imported.blob.size > 120 * 1024 * 1024)) throw new Error('本册素材已达上限，请先备份或另建分册。');
     commit(() => {
       if (!reuse) { doc.assets.push(imported.asset); blobs.set(imported.asset.id, imported.blob); }
       for (const p of targets) {
-        p.watermark.assetId = imported.asset.id;
+        if (mixed) {
+          const w = p.watermark;
+          if (!w.mix) { w.mix = newWatermarkMix(w); if (w.mode === 'single' || w.mode === 'corner') w.mode = 'repeat'; }
+          w.mix.enabled = true;
+          if (!w.mix.items.some(item => matches(item) || item.assetId === imported.asset.id)) w.mix.items.push({ assetId: imported.asset.id, presetKey: preset.key });
+        } else p.watermark.assetId = imported.asset.id;
         if (!p.watermark.opacity) p.watermark.opacity = .28;
         p.watermark.size = Math.max(88, p.watermark.size);
       }
     });
-  } catch (error) { if (request === watermarkRequest) notify((error as Error).message); }
-  finally { if (request === watermarkRequest) { loadingWatermark = ''; renderProperties(); } }
+  } catch (error) { if (activeWatermark(request)) notify((error as Error).message); }
+  finally { pendingWatermarks.delete(request); renderProperties(); }
 }
-function chooseImages(kind: 'photo' | 'watermark' | 'sticker') { finishContinuous(); watermarkRequest++; loadingWatermark = ''; uploadTarget = { kind, pageId: page().id, elementId: selectedId }; const input = $<HTMLInputElement>('#image-input'); input.value = ''; input.multiple = kind === 'photo'; input.click(); }
+function chooseImages(kind: 'photo' | 'watermark' | 'sticker') { finishContinuous(); watermarkRequest++; uploadTarget = { kind, pageId: page().id, elementId: selectedId, source: doc, epoch: watermarkRequest }; renderProperties(); const input = $<HTMLInputElement>('#image-input'); input.value = ''; input.multiple = kind === 'photo'; input.click(); }
 $<HTMLInputElement>('#image-input').onchange = async event => {
   const files = Array.from((event.target as HTMLInputElement).files ?? []), target = uploadTarget; if (!files.length) return;
   try {
     const bytes = doc.assets.reduce((sum, asset) => sum + (blobs.get(asset.id)?.size ?? 0), 0) + files.reduce((sum, file) => sum + file.size, 0);
     if (bytes > 120 * 1024 * 1024 || doc.assets.length + files.length > 300) throw new Error('本册素材上限120MB / 300张，请缩小照片或另建分册，以便完整备份。');
     const imported: Awaited<ReturnType<typeof importImage>>[] = []; for (const file of files) imported.push(await importImage(file));
+    if (doc !== target.source || target.epoch !== watermarkRequest) return;
+    const p = flatten(doc).flatMap(v => v.spread.pages).find(p => p.id === target.pageId); if (!p) throw new Error('原页面已删除，请重新导入。');
+    if (target.kind === 'watermark' && p.watermark.mix?.enabled && p.watermark.mix.items.length + imported.length > 16) throw new Error('每页最多混用16款，请先移除一款。');
+    if (doc.assets.length + imported.length > 300 || doc.assets.reduce((sum, asset) => sum + (blobs.get(asset.id)?.size ?? 0), 0) + imported.reduce((sum, item) => sum + item.blob.size, 0) > 120 * 1024 * 1024) throw new Error('本册素材已达上限，请先备份或另建分册。');
     commit(() => {
-      const p = flatten(doc).flatMap(v => v.spread.pages).find(p => p.id === target.pageId); if (!p) throw new Error('原页面已删除，请重新导入。');
       imported.forEach(({ asset, blob }, index) => {
         blobs.set(asset.id, blob); doc.assets.push(asset);
-        if (target.kind === 'watermark') { p.watermark.assetId = asset.id; p.watermark.opacity = .12; }
+        if (target.kind === 'watermark') {
+          if (p.watermark.mix?.enabled) { p.watermark.mix.items.push({ assetId: asset.id }); if (!p.watermark.opacity) p.watermark.opacity = .28; p.watermark.size = Math.max(88, p.watermark.size); }
+          else { p.watermark.assetId = asset.id; p.watermark.opacity = .12; }
+        }
         else if (target.kind === 'sticker') { const existing = p.elements.find(e => e.id === target.elementId && e.type === 'sticker'); const sticker = existing?.type === 'sticker' ? existing : stickerElement(); sticker.assetId = asset.id; if (!existing) p.elements.push(sticker); selectedId = sticker.id; }
         else {
           const existing = index === 0 ? p.elements.find(e => e.id === target.elementId && e.type === 'photo') ?? p.elements.find(e => e.type === 'photo' && !e.assetId) : undefined;
@@ -343,7 +381,7 @@ $<HTMLInputElement>('#project-input').onchange = async event => {
     // Imported packages can reuse IDs; isolate their originals from the undo history.
     for (const asset of imported.document.assets) if (blobs.has(asset.id)) {
       const previous = asset.id, fresh = id(); asset.id = fresh; imported.assets.set(fresh, imported.assets.get(previous)!); imported.assets.delete(previous);
-      for (const { spread } of flatten(imported.document)) for (const p of spread.pages) { if (p.watermark.assetId === previous) p.watermark.assetId = fresh; for (const e of p.elements) if ('assetId' in e && e.assetId === previous) e.assetId = fresh; }
+      for (const { spread } of flatten(imported.document)) for (const p of spread.pages) { if (p.watermark.assetId === previous) p.watermark.assetId = fresh; for (const item of p.watermark.mix?.items ?? []) if (item.assetId === previous) item.assetId = fresh; for (const e of p.elements) if ('assetId' in e && e.assetId === previous) e.assetId = fresh; }
     }
     commit(() => { doc = imported.document; for (const [key, blob] of imported.assets) blobs.set(key, blob); releaseUrls(); chapterIndex = spreadIndex = side = 0; selectedId = ''; }); notify('项目已恢复，可继续编辑；可撤销这次导入。');
   }
