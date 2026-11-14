@@ -1,0 +1,1230 @@
+{
+  "version": 1,
+  "preservedCount": 109,
+  "preservedCatalogSha256": "97e40cb64023e0dbeab6f3863d080a98e9bcdf5eff830eb0f033f5f205f9816a",
+  "provenance": "60 previously generated, unused independent motifs from recorded gpt-image-2 sheets. New requests and user-authorized retry were blocked by provider quota HTTP403; no new source image has been returned and no other provider was used.",
+  "sources": {
+    "cats": {
+      "file": "output/imagegen/watermark-variants-cats.png",
+      "sha256": "6a04163937fe3219466adb8f7f5d0cb522a4fdfecf0c6cb5d3f9cc18086dfed1"
+    },
+    "paws": {
+      "file": "output/imagegen/watermark-variants-paws.png",
+      "sha256": "562b760d8d461ef94e5c52a69984385ae97c6ed615b83fc9096548a6fa8ca8eb"
+    },
+    "flowers": {
+      "file": "output/imagegen/watermark-variants-flowers.png",
+      "sha256": "32e998738ec649b2d8ff2bfd8dd0ed985aebeff7d2705e4ed3fa30b21d2afcdc"
+    },
+    "seaside": {
+      "file": "output/imagegen/watermark-variants-seaside.png",
+      "sha256": "2b907b9327ae86f6f0bbc161c7595e9a997aca8d46f21d083fb238f02922f2aa"
+    },
+    "stars": {
+      "file": "output/imagegen/watermark-variants-stars.png",
+      "sha256": "cb9fb5dd982f1fdd935137ada2424f0ded6c71e1e6e7cab43bbb8aef94f2e7bb"
+    },
+    "leaves": {
+      "file": "output/imagegen/watermark-variants-leaves.png",
+      "sha256": "3ac9eb87c717502b379cf04e32480f3ee610b7ff8dc9b51068d914300a75351a"
+    },
+    "sentiments": {
+      "file": "output/imagegen/watermark-variants-sentiments.png",
+      "sha256": "d2d6c5e0b249a71f76a0174f17576960c6477d4a30283f243eb21b0213f50010"
+    }
+  },
+  "crops": [
+    {
+      "key": "extra-paw-calico-tilt",
+      "name": "三花猫爪·侧倾",
+      "sheet": "paws",
+      "bounds": [
+        788,
+        281,
+        1019,
+        504
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "三花",
+      "details": [
+        "肉垫",
+        "倾斜",
+        "朝左"
+      ],
+      "whiteInterior": true,
+      "parts": "inner"
+    },
+    {
+      "key": "extra-paw-gray-tilt",
+      "name": "灰白猫爪·斜举",
+      "sheet": "paws",
+      "bounds": [
+        20,
+        537,
+        251,
+        760
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "灰白",
+      "details": [
+        "肉垫",
+        "倾斜",
+        "朝右"
+      ],
+      "whiteInterior": true,
+      "parts": "inner"
+    },
+    {
+      "key": "extra-paw-cream-wave",
+      "name": "奶油猫爪·挥挥",
+      "sheet": "paws",
+      "bounds": [
+        276,
+        537,
+        507,
+        760
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "奶油",
+      "details": [
+        "肉垫",
+        "挥动",
+        "朝右"
+      ],
+      "whiteInterior": true,
+      "parts": "inner"
+    },
+    {
+      "key": "extra-paw-ginger-cream",
+      "name": "橘猫爪·奶油肉垫",
+      "sheet": "paws",
+      "bounds": [
+        532,
+        537,
+        763,
+        760
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "橘黄",
+      "details": [
+        "奶油肉垫",
+        "正面"
+      ],
+      "whiteInterior": true,
+      "parts": "inner"
+    },
+    {
+      "key": "extra-paw-dark-cream",
+      "name": "深棕猫爪·奶油肉垫",
+      "sheet": "paws",
+      "bounds": [
+        20,
+        775,
+        251,
+        1016
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "深棕",
+      "details": [
+        "奶油肉垫",
+        "正面"
+      ],
+      "whiteInterior": true,
+      "parts": "inner"
+    },
+    {
+      "key": "extra-paw-tabby-white",
+      "name": "白底虎斑猫爪",
+      "sheet": "paws",
+      "bounds": [
+        276,
+        793,
+        507,
+        1016
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "灰白",
+      "details": [
+        "条纹",
+        "肉垫",
+        "正面"
+      ],
+      "whiteInterior": true,
+      "parts": "inner",
+      "exclude": [
+        [
+          454,
+          775,
+          510,
+          817
+        ]
+      ]
+    },
+    {
+      "key": "extra-paw-cream-patches",
+      "name": "米白棕斑猫爪",
+      "sheet": "paws",
+      "bounds": [
+        532,
+        793,
+        763,
+        1016
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "米白棕",
+      "details": [
+        "拼色",
+        "肉垫",
+        "正面"
+      ],
+      "whiteInterior": true,
+      "parts": "inner"
+    },
+    {
+      "key": "extra-paw-blue-white",
+      "name": "蓝灰猫爪·白袖口",
+      "sheet": "paws",
+      "bounds": [
+        788,
+        793,
+        1019,
+        1016
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "蓝灰",
+      "details": [
+        "白袖口",
+        "肉垫",
+        "正面"
+      ],
+      "whiteInterior": true,
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-check-wide",
+      "name": "粉格圆瓣花",
+      "sheet": "flowers",
+      "bounds": [
+        793,
+        421,
+        974,
+        594
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "粉",
+      "details": [
+        "格纹",
+        "白花心",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-blue-wide",
+      "name": "天蓝五瓣花",
+      "sheet": "flowers",
+      "bounds": [
+        416,
+        679,
+        564,
+        828
+      ],
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "蓝",
+      "details": [
+        "白花心",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-purple-check",
+      "name": "紫格小花",
+      "sheet": "flowers",
+      "bounds": [
+        700,
+        777,
+        850,
+        921
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "紫",
+      "details": [
+        "格纹",
+        "黄花心",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-red-tulip",
+      "name": "珊瑚红郁金香",
+      "sheet": "flowers",
+      "bounds": [
+        857,
+        705,
+        1006,
+        858
+      ],
+      "category": "flowers",
+      "kind": "郁金香",
+      "color": "珊瑚红",
+      "details": [
+        "有茎叶",
+        "朝右"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-pink-check-small",
+      "name": "粉白格纹花",
+      "sheet": "flowers",
+      "bounds": [
+        351,
+        863,
+        487,
+        997
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "粉白",
+      "details": [
+        "格纹",
+        "黄花心",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-daisy-pair",
+      "name": "并肩两朵小雏菊",
+      "sheet": "cats",
+      "bounds": [
+        250,
+        10,
+        354,
+        106
+      ],
+      "category": "flowers",
+      "kind": "雏菊",
+      "color": "米白",
+      "details": [
+        "双花",
+        "黄花心",
+        "有茎叶"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-daisy-cluster",
+      "name": "三朵小雏菊",
+      "sheet": "cats",
+      "bounds": [
+        285,
+        683,
+        368,
+        774
+      ],
+      "category": "flowers",
+      "kind": "雏菊",
+      "color": "米白",
+      "details": [
+        "三花",
+        "黄花心",
+        "有茎叶"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-pink-daisy",
+      "name": "粉边小雏菊",
+      "sheet": "cats",
+      "bounds": [
+        149,
+        934,
+        232,
+        1017
+      ],
+      "category": "flowers",
+      "kind": "雏菊",
+      "color": "浅粉",
+      "details": [
+        "单花",
+        "黄花心",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-cream-daisy",
+      "name": "奶油小雏菊",
+      "sheet": "cats",
+      "bounds": [
+        467,
+        856,
+        535,
+        929
+      ],
+      "category": "flowers",
+      "kind": "雏菊",
+      "color": "奶油",
+      "details": [
+        "单花",
+        "黄花心",
+        "朝左"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-gray-daisy",
+      "name": "灰瓣小雏菊",
+      "sheet": "cats",
+      "bounds": [
+        239,
+        901,
+        354,
+        997
+      ],
+      "category": "flowers",
+      "kind": "雏菊",
+      "color": "灰",
+      "details": [
+        "黄花心",
+        "有茎叶",
+        "朝右"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-green-cream",
+      "name": "淡绿小花",
+      "sheet": "leaves",
+      "bounds": [
+        15,
+        281,
+        94,
+        356
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "淡绿",
+      "details": [
+        "圆瓣",
+        "黄花心",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-cream-round",
+      "name": "米白圆瓣花",
+      "sheet": "leaves",
+      "bounds": [
+        168,
+        687,
+        250,
+        768
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "米白",
+      "details": [
+        "圆瓣",
+        "黄花心",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-gold-cream",
+      "name": "奶油金花",
+      "sheet": "leaves",
+      "bounds": [
+        705,
+        390,
+        783,
+        463
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "奶油",
+      "details": [
+        "圆瓣",
+        "黄花心",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-cream-side",
+      "name": "侧开奶油花",
+      "sheet": "leaves",
+      "bounds": [
+        770,
+        206,
+        849,
+        278
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "奶油",
+      "details": [
+        "圆瓣",
+        "黄花心",
+        "朝左"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-flower-tiny-cream",
+      "name": "米黄小花",
+      "sheet": "leaves",
+      "bounds": [
+        315,
+        934,
+        391,
+        997
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "米黄",
+      "details": [
+        "圆瓣",
+        "黄花心",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-shell-pink-spiral",
+      "name": "粉纹圆螺",
+      "sheet": "seaside",
+      "bounds": [
+        787,
+        533,
+        1007,
+        753
+      ],
+      "category": "seaside",
+      "kind": "螺贝",
+      "color": "粉",
+      "details": [
+        "旋纹",
+        "朝左",
+        "贝壳"
+      ]
+    },
+    {
+      "key": "extra-shell-blue-ridge",
+      "name": "蓝紫脊纹扇贝",
+      "sheet": "seaside",
+      "bounds": [
+        256,
+        791,
+        492,
+        1005
+      ],
+      "category": "seaside",
+      "kind": "扇贝",
+      "color": "蓝紫",
+      "details": [
+        "脊纹",
+        "正面",
+        "贝壳"
+      ]
+    },
+    {
+      "key": "extra-shell-nautilus",
+      "name": "奶油鹦鹉螺",
+      "sheet": "seaside",
+      "bounds": [
+        529,
+        784,
+        763,
+        1008
+      ],
+      "category": "seaside",
+      "kind": "鹦鹉螺",
+      "color": "奶油橘",
+      "details": [
+        "旋纹",
+        "朝右",
+        "贝壳"
+      ]
+    },
+    {
+      "key": "extra-shell-lilac-round",
+      "name": "淡紫圆扇贝",
+      "sheet": "seaside",
+      "bounds": [
+        785,
+        787,
+        1007,
+        1007
+      ],
+      "category": "seaside",
+      "kind": "扇贝",
+      "color": "淡紫",
+      "details": [
+        "圆扇",
+        "正面",
+        "贝壳"
+      ]
+    },
+    {
+      "key": "extra-star-shooting",
+      "name": "流星·蓝紫尾迹",
+      "sheet": "stars",
+      "bounds": [
+        750,
+        15,
+        1018,
+        210
+      ],
+      "category": "stars",
+      "kind": "流星",
+      "color": "金蓝紫",
+      "details": [
+        "双色尾迹",
+        "朝左"
+      ],
+      "parts": "principal"
+    },
+    {
+      "key": "extra-star-gold-stripes",
+      "name": "金星·斜条纹",
+      "sheet": "stars",
+      "bounds": [
+        15,
+        623,
+        250,
+        814
+      ],
+      "category": "stars",
+      "kind": "五角星",
+      "color": "金",
+      "details": [
+        "斜条纹",
+        "正面"
+      ],
+      "parts": "principal"
+    },
+    {
+      "key": "extra-star-blue-cutout",
+      "name": "蓝星·镂空心",
+      "sheet": "stars",
+      "bounds": [
+        271,
+        623,
+        506,
+        814
+      ],
+      "category": "stars",
+      "kind": "五角星",
+      "color": "蓝",
+      "details": [
+        "镂空",
+        "正面"
+      ],
+      "parts": "principal"
+    },
+    {
+      "key": "extra-star-purple-orbit",
+      "name": "紫星·微笑星环",
+      "sheet": "stars",
+      "bounds": [
+        527,
+        623,
+        782,
+        814
+      ],
+      "category": "stars",
+      "kind": "星环",
+      "color": "紫",
+      "details": [
+        "星环",
+        "眯眼笑",
+        "朝左"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-star-gold-happy",
+      "name": "金星·圆眼笑",
+      "sheet": "stars",
+      "bounds": [
+        15,
+        813,
+        250,
+        1018
+      ],
+      "category": "stars",
+      "kind": "五角星",
+      "color": "金",
+      "details": [
+        "圆眼",
+        "微笑",
+        "正面"
+      ],
+      "parts": "principal"
+    },
+    {
+      "key": "extra-star-purple-heart",
+      "name": "紫星·爱心镂空",
+      "sheet": "stars",
+      "bounds": [
+        271,
+        813,
+        506,
+        1018
+      ],
+      "category": "stars",
+      "kind": "五角星",
+      "color": "紫",
+      "details": [
+        "爱心",
+        "镂空",
+        "正面"
+      ],
+      "parts": "principal"
+    },
+    {
+      "key": "extra-star-green-wink",
+      "name": "绿星·调皮眨眼",
+      "sheet": "stars",
+      "bounds": [
+        527,
+        828,
+        762,
+        1018
+      ],
+      "category": "stars",
+      "kind": "五角星",
+      "color": "绿",
+      "details": [
+        "眨眼",
+        "微笑",
+        "正面"
+      ],
+      "parts": "principal"
+    },
+    {
+      "key": "extra-star-gold-shine",
+      "name": "金星·亮光",
+      "sheet": "stars",
+      "bounds": [
+        783,
+        818,
+        1018,
+        1018
+      ],
+      "category": "stars",
+      "kind": "五角星",
+      "color": "金黄",
+      "details": [
+        "亮光",
+        "正面"
+      ],
+      "parts": "principal"
+    },
+    {
+      "key": "extra-leaf-long-sprig",
+      "name": "舒展长叶枝",
+      "sheet": "leaves",
+      "bounds": [
+        850,
+        43,
+        1016,
+        359
+      ],
+      "category": "leaves",
+      "kind": "长叶枝",
+      "color": "绿",
+      "details": [
+        "多叶",
+        "朝右"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-leaf-gold-bud",
+      "name": "金黄圆芽枝",
+      "sheet": "leaves",
+      "bounds": [
+        120,
+        510,
+        248,
+        631
+      ],
+      "category": "leaves",
+      "kind": "花芽枝",
+      "color": "金黄",
+      "details": [
+        "圆芽",
+        "朝右"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-leaf-olive-oval",
+      "name": "橄榄色圆叶",
+      "sheet": "leaves",
+      "bounds": [
+        223,
+        567,
+        302,
+        665
+      ],
+      "category": "leaves",
+      "kind": "单叶",
+      "color": "橄榄绿",
+      "details": [
+        "圆叶",
+        "朝右"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-leaf-light-point",
+      "name": "浅绿尖叶",
+      "sheet": "leaves",
+      "bounds": [
+        578,
+        23,
+        678,
+        115
+      ],
+      "category": "leaves",
+      "kind": "单叶",
+      "color": "浅绿",
+      "details": [
+        "尖叶",
+        "朝左"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-leaf-diagonal-sprig",
+      "name": "嫩绿斜枝",
+      "sheet": "leaves",
+      "bounds": [
+        239,
+        97,
+        434,
+        282
+      ],
+      "category": "leaves",
+      "kind": "长叶枝",
+      "color": "嫩绿",
+      "details": [
+        "多叶",
+        "朝左"
+      ],
+      "parts": "principal"
+    },
+    {
+      "key": "extra-leaf-soft-vine",
+      "name": "蜿蜒嫩叶藤",
+      "sheet": "leaves",
+      "bounds": [
+        650,
+        827,
+        901,
+        980
+      ],
+      "category": "leaves",
+      "kind": "藤蔓",
+      "color": "嫩绿",
+      "details": [
+        "弯枝",
+        "多叶",
+        "朝右"
+      ],
+      "parts": "principal"
+    },
+    {
+      "key": "extra-leaf-lime-stripes",
+      "name": "青柠叶脉",
+      "sheet": "leaves",
+      "bounds": [
+        506,
+        913,
+        612,
+        990
+      ],
+      "category": "leaves",
+      "kind": "单叶",
+      "color": "青柠绿",
+      "details": [
+        "叶脉",
+        "朝右"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-leaf-three-olive",
+      "name": "橄榄色三叶",
+      "sheet": "flowers",
+      "bounds": [
+        140,
+        13,
+        250,
+        90
+      ],
+      "category": "leaves",
+      "kind": "三叶枝",
+      "color": "橄榄绿",
+      "details": [
+        "三叶",
+        "朝左"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-leaf-little-point",
+      "name": "小尖叶",
+      "sheet": "flowers",
+      "bounds": [
+        934,
+        349,
+        1017,
+        418
+      ],
+      "category": "leaves",
+      "kind": "单叶",
+      "color": "橄榄绿",
+      "details": [
+        "尖叶",
+        "朝右"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-leaf-green-small",
+      "name": "浓绿小叶",
+      "sheet": "flowers",
+      "bounds": [
+        157,
+        452,
+        231,
+        524
+      ],
+      "category": "leaves",
+      "kind": "单叶",
+      "color": "绿",
+      "details": [
+        "叶脉",
+        "朝左"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-leaf-young-sprout",
+      "name": "嫩芽小枝",
+      "sheet": "flowers",
+      "bounds": [
+        521,
+        829,
+        599,
+        915
+      ],
+      "category": "leaves",
+      "kind": "嫩芽",
+      "color": "嫩绿",
+      "details": [
+        "三叶",
+        "朝右"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-bow-check-small",
+      "name": "粉格双尾领结",
+      "sheet": "sentiments",
+      "bounds": [
+        844,
+        384,
+        1017,
+        567
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉白",
+      "details": [
+        "格纹",
+        "双尾",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-heart-linked",
+      "name": "相扣双心",
+      "sheet": "sentiments",
+      "bounds": [
+        582,
+        587,
+        708,
+        692
+      ],
+      "category": "sentiments",
+      "kind": "双心",
+      "color": "粉",
+      "details": [
+        "线条",
+        "相扣",
+        "倾斜"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-heart-pink-shiny",
+      "name": "粉心·亮点",
+      "sheet": "sentiments",
+      "bounds": [
+        725,
+        588,
+        838,
+        693
+      ],
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉",
+      "details": [
+        "亮点",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-heart-small-doily",
+      "name": "粉心·蕾丝领结",
+      "sheet": "sentiments",
+      "bounds": [
+        866,
+        569,
+        1009,
+        704
+      ],
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉白",
+      "details": [
+        "蕾丝",
+        "蝴蝶结",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-bow-heart-flowing",
+      "name": "粉色心扣长飘带",
+      "sheet": "sentiments",
+      "bounds": [
+        17,
+        691,
+        242,
+        917
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉",
+      "details": [
+        "心扣",
+        "长飘带",
+        "朝右"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-bow-lace-wide",
+      "name": "粉色蕾丝大领结",
+      "sheet": "sentiments",
+      "bounds": [
+        255,
+        699,
+        478,
+        879
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉白",
+      "details": [
+        "蕾丝",
+        "宽带",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-bow-ribbon-flowing",
+      "name": "粉色细带长尾结",
+      "sheet": "sentiments",
+      "bounds": [
+        476,
+        675,
+        679,
+        923
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "浅粉",
+      "details": [
+        "细带",
+        "长飘带",
+        "朝左"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-bow-blue-flower",
+      "name": "蓝色花扣领结",
+      "sheet": "sentiments",
+      "bounds": [
+        668,
+        697,
+        859,
+        894
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "蓝",
+      "details": [
+        "花扣",
+        "双尾",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-bow-pink-double",
+      "name": "粉色叠带领结",
+      "sheet": "sentiments",
+      "bounds": [
+        856,
+        708,
+        1014,
+        900
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉",
+      "details": [
+        "叠带",
+        "双尾",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-bow-little-tilt",
+      "name": "粉色斜系小结",
+      "sheet": "sentiments",
+      "bounds": [
+        23,
+        921,
+        167,
+        1009
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉",
+      "details": [
+        "细带",
+        "倾斜",
+        "朝右"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-bow-tiny-ribbon",
+      "name": "粉色细带小结",
+      "sheet": "sentiments",
+      "bounds": [
+        500,
+        937,
+        609,
+        997
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉",
+      "details": [
+        "细带",
+        "双尾",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-heart-dotted-trail",
+      "name": "爱心虚线路径",
+      "sheet": "sentiments",
+      "bounds": [
+        640,
+        923,
+        813,
+        987
+      ],
+      "category": "sentiments",
+      "kind": "手绘心",
+      "color": "粉",
+      "details": [
+        "虚线",
+        "线条",
+        "朝右"
+      ],
+      "parts": "all"
+    },
+    {
+      "key": "extra-heart-plain-pink",
+      "name": "手绘粉色实心",
+      "sheet": "sentiments",
+      "bounds": [
+        926,
+        923,
+        1006,
+        1002
+      ],
+      "category": "sentiments",
+      "kind": "手绘心",
+      "color": "粉",
+      "details": [
+        "实心",
+        "正面"
+      ],
+      "parts": "inner"
+    },
+    {
+      "key": "extra-heart-outline-tall",
+      "name": "手绘高瘦心",
+      "sheet": "sentiments",
+      "bounds": [
+        287,
+        926,
+        359,
+        1002
+      ],
+      "category": "sentiments",
+      "kind": "手绘心",
+      "color": "粉",
+      "details": [
+        "空心",
+        "线条",
+        "正面"
+      ],
+      "parts": "inner"
+    }
+  ]
+}

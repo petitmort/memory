@@ -1,0 +1,91 @@
+{
+  "date": "2026-11-14",
+  "model": "gpt-image-2",
+  "keyStoredOnlyInLocalSkillConfig": true,
+  "initialProbe": {
+    "status": "failed",
+    "reason": "quota",
+    "elapsedMs": 1781
+  },
+  "items": [
+    {
+      "key": "cats-a",
+      "prompt": "继续更多变体，我要丰富一下。猫咪水印，类似手帐本，可爱图案。每一种水印自己内部都有一些区别，比如颜色、方向、小细节、种类，猫咪有不同动作、颜色、种类、表情，可以朝向不同方向；分别在种类、颜色、细节上生成不同图像。",
+      "file": "output/imagegen/watermark-expansion-cats-a.png",
+      "status": "done",
+      "started": 1794639528064,
+      "elapsedMs": 50507,
+      "bytes": 1330628
+    },
+    {
+      "key": "cats-b",
+      "prompt": "继续更多变体，我要丰富一下。猫咪水印，类似手帐本，可爱图案。每一种水印自己内部都有一些区别，比如颜色、方向、小细节、种类，猫咪有不同动作、颜色、种类、表情，可以朝向不同方向；分别在种类、颜色、细节上生成不同图像。",
+      "file": "output/imagegen/watermark-expansion-cats-b.png",
+      "status": "done",
+      "started": 1794639791996,
+      "elapsedMs": 44188,
+      "code": 0,
+      "bytes": 1783825
+    },
+    {
+      "key": "flowers",
+      "prompt": "继续更多变体，我要丰富一下。小花水印，类似手帐本，可爱图案。每一种水印自己内部都有一些区别，比如颜色、方向、小细节、种类；分别在种类、颜色、细节上生成不同图像。",
+      "file": "output/imagegen/watermark-expansion-flowers.png",
+      "status": "done",
+      "started": 1794639791998,
+      "elapsedMs": 37515,
+      "code": 0,
+      "bytes": 1388219
+    },
+    {
+      "key": "seaside",
+      "prompt": "继续更多变体，我要丰富一下。贝壳和海星水印，类似手帐本，可爱图案。每一种水印自己内部都有一些区别，比如颜色、方向、小细节、种类；分别在种类、颜色、细节上生成不同图像。",
+      "file": "output/imagegen/watermark-expansion-seaside.png",
+      "status": "done",
+      "started": 1794639829513,
+      "elapsedMs": 37292,
+      "code": 0,
+      "bytes": 1271830
+    },
+    {
+      "key": "stars",
+      "prompt": "继续更多变体，我要丰富一下。星星水印，类似手帐本，可爱图案。每一种水印自己内部都有一些区别，比如颜色、方向、小细节、种类；分别在种类、颜色、细节上生成不同图像。",
+      "file": "output/imagegen/watermark-expansion-stars.png",
+      "status": "done",
+      "started": 1794639836185,
+      "elapsedMs": 35882,
+      "code": 0,
+      "bytes": 1118022
+    },
+    {
+      "key": "leaves",
+      "prompt": "继续更多变体，我要丰富一下。叶片和枝叶水印，类似手帐本，可爱图案。每一种水印自己内部都有一些区别，比如颜色、方向、小细节、种类；分别在种类、颜色、细节上生成不同图像。",
+      "file": "output/imagegen/watermark-expansion-leaves.png",
+      "status": "done",
+      "started": 1794639866806,
+      "elapsedMs": 43441,
+      "code": 0,
+      "bytes": 1246222
+    },
+    {
+      "key": "bows",
+      "prompt": "继续更多变体，我要丰富一下。蝴蝶结水印，类似手帐本，可爱图案。每一种水印自己内部都有一些区别，比如颜色、方向、小细节、种类；分别在种类、颜色、细节上生成不同图像。",
+      "file": "output/imagegen/watermark-expansion-bows.png",
+      "status": "done",
+      "started": 1794639872067,
+      "elapsedMs": 31197,
+      "code": 0,
+      "bytes": 1382281
+    },
+    {
+      "key": "hearts",
+      "prompt": "继续更多变体，我要丰富一下。爱心水印，类似手帐本，可爱图案。每一种水印自己内部都有一些区别，比如颜色、方向、小细节、种类；分别在种类、颜色、细节上生成不同图像。",
+      "file": "output/imagegen/watermark-expansion-hearts.png",
+      "status": "done",
+      "started": 1794639903264,
+      "elapsedMs": 32858,
+      "code": 0,
+      "bytes": 1169180
+    }
+  ]
+}

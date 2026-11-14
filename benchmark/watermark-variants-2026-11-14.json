@@ -1,0 +1,2512 @@
+{
+  "schema": 1,
+  "date": "2026-11-14",
+  "baseline": "3dcf9254e54fdf8993dde099a82605f4abf8a87a",
+  "branch": "codex/watermark-variants",
+  "evidenceDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/11/14/watermark-variants",
+  "sourceSha256": {
+    "src/album/document.ts": "8dba21ffb310f34642f74a39a26c820dc502b2e0b48244b5ec22de5ff7d23f1e",
+    "src/album/renderer.ts": "4339a473308346bc033eae53db2ed9287dcb08358cc032ffe65e5c7de002b900",
+    "src/album/watermark-appearance.ts": "d02443b8c103b977503cd1865582f813bf3f8fa19db6e6aca07d927fe80125c1",
+    "src/editor/properties.ts": "5a8c56551d5b1685c99b7e19249ceced44699982f0f0cdae172550544e122e6d",
+    "src/editor/watermark-library.ts": "8288873308590bf3b9ae16e97d442f34b3ab2a4d56e9ce40445d51c091a4d28f",
+    "src/editor/workbench.css": "c87eb290585a973d04727ef5cb0f33de275e6f5f4c444e5c107c6c8f3b94363f",
+    "src/editor/watermarks/catalog.json": "1a9feb5c50dcec2171217c34f9581d9e91aad8ec0565792e94bc2b8773acd6c7",
+    "scripts/prepare-watermark-variants.py": "4a4b650667b0a63ae20507f7e504f460852a4bc6aee8c193e7886b7ff8f2e064",
+    "scripts/watermark-variant-crops.json": "aa4a8835c2a7be756697b21ba540c8e8d609ad8273344139a0ebeee22ba8eed8",
+    "tests/album-watermark-variants.spec.ts": "c3654147a52166343cad3ec3b76e1e94dde533b291f323e621e37f9f4a8f6530",
+    "tests/album-editor-design.spec.ts": "8e77d50d5ac5ce42513f8aca174fdd16c2199a9fe924bd0828bd13c97cb75717"
+  },
+  "assets": {
+    "count": 109,
+    "originalUntouched": 27,
+    "new": 82,
+    "libraryBytes": 2823372,
+    "rawSourceBytes": 8695960,
+    "categories": {
+      "cats": 21,
+      "flowers": 18,
+      "leaves": 18,
+      "seaside": 15,
+      "sentiments": 21,
+      "stars": 16
+    }
+  },
+  "performance": {
+    "before": {
+      "stage": "before",
+      "cpu": 4,
+      "repetitions": 3,
+      "url": "http://127.0.0.1:5173/editor.html",
+      "browser": "157.0.8103.51",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "runs": [
+        {
+          "run": 1,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 8.5,
+              "toNextPaintMs": 19.399999991059303
+            },
+            {
+              "label": "字体",
+              "jsMs": 7,
+              "toNextPaintMs": 23.69999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.5,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.30000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.5,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 4,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.200000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.600000008940697,
+              "toNextPaintMs": 33.900000005960464
+            }
+          ],
+          "handlerMedianMs": 5,
+          "handlerP95Ms": 7,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 2,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 7.9000000059604645,
+              "toNextPaintMs": 20.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.0999999940395355,
+              "toNextPaintMs": 32.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.199999988079071,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.399999991059303,
+              "toNextPaintMs": 32.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.199999988079071,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.800000011920929,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.399999991059303,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 32.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 34.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.699999988079071,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.200000002980232,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 33.69999998807907
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.800000011920929,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33.70000000298023
+            }
+          ],
+          "handlerMedianMs": 4.799999997019768,
+          "handlerP95Ms": 6.700000002980232,
+          "paintMedianMs": 33.099999994039536,
+          "paintP95Ms": 34,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 3,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 10.099999994039536,
+              "toNextPaintMs": 21.200000002980232
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.799999997019768,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 6,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.299999997019768,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.399999991059303,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.200000002980232,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.0999999940395355,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 3.9000000059604645,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 32.70000000298023
+            }
+          ],
+          "handlerMedianMs": 5.0999999940395355,
+          "handlerP95Ms": 6.799999997019768,
+          "paintMedianMs": 33.1000000089407,
+          "paintP95Ms": 33.70000000298023,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        }
+      ],
+      "note": "Isolated drafts; CPU throttle is laboratory stress, not physical hardware. Repeated native DOM change dispatch and double-RAF observation; pointer slider is actual held mouse."
+    },
+    "after": {
+      "stage": "after",
+      "cpu": 4,
+      "repetitions": 3,
+      "url": "http://127.0.0.1:5173/editor.html",
+      "browser": "157.0.8103.51",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "runs": [
+        {
+          "run": 1,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 13.700000002980232
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.799999997019768,
+              "toNextPaintMs": 30.700000002980232
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 32.3999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.600000008940697,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.200000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4,
+              "toNextPaintMs": 34.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 31.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.299999997019768,
+              "toNextPaintMs": 34.6000000089407
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.699999988079071,
+              "toNextPaintMs": 32.3999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5,
+              "toNextPaintMs": 34.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5,
+              "toNextPaintMs": 32.1000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 34.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.5,
+              "toNextPaintMs": 31.700000002980232
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.199999988079071,
+              "toNextPaintMs": 34.29999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.5,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 31.5
+            }
+          ],
+          "handlerMedianMs": 4.600000008940697,
+          "handlerP95Ms": 6.200000002980232,
+          "paintMedianMs": 33.400000005960464,
+          "paintP95Ms": 34.6000000089407,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 2,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 7,
+              "toNextPaintMs": 20.299999997019768
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.80000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.200000002980232,
+              "toNextPaintMs": 31.899999991059303
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.70000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.800000011920929,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.300000011920929,
+              "toNextPaintMs": 34.20000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.5,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.600000008940697,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.5,
+              "toNextPaintMs": 32.3999999910593
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.699999988079071,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.300000011920929,
+              "toNextPaintMs": 33.80000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.299999997019768,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.600000008940697,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.400000005960464
+            }
+          ],
+          "handlerMedianMs": 4.600000008940697,
+          "handlerP95Ms": 5.5,
+          "paintMedianMs": 33.3999999910593,
+          "paintP95Ms": 34,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 3,
+          "changes": [
+            {
+              "label": "纸张",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 10.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 28.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 7.199999988079071,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 6,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 32.29999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 6.4000000059604645,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 6.299999997019768,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 7.5,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.299999997019768,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 32.400000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.399999991059303,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 32.20000000298023
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.4000000059604645,
+              "toNextPaintMs": 34.400000005960464
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.699999988079071,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.100000008940697,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 34.30000001192093
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5,
+              "toNextPaintMs": 32.099999994039536
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "纸张",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "字体",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "纸张",
+              "jsMs": 4.5999999940395355,
+              "toNextPaintMs": 33.19999998807907
+            },
+            {
+              "label": "字体",
+              "jsMs": 7,
+              "toNextPaintMs": 33
+            }
+          ],
+          "handlerMedianMs": 5.200000002980232,
+          "handlerP95Ms": 7.199999988079071,
+          "paintMedianMs": 33.099999994039536,
+          "paintP95Ms": 34.30000001192093,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        }
+      ],
+      "note": "Isolated drafts; CPU throttle is laboratory stress, not physical hardware. Repeated native DOM change dispatch and double-RAF observation; pointer slider is actual held mouse."
+    },
+    "effects": {
+      "stage": "effects",
+      "cpu": 4,
+      "repetitions": 3,
+      "url": "http://127.0.0.1:5173/editor.html",
+      "browser": "157.0.8103.51",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "runs": [
+        {
+          "run": 1,
+          "changes": [
+            {
+              "label": "水印色相",
+              "jsMs": 9.299999997019768,
+              "toNextPaintMs": 23.700000002980232
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 7.700000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 6.299999997019768,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 6,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 6.199999988079071,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.199999988079071,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.800000011920929,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.800000011920929,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 6,
+              "toNextPaintMs": 32
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5,
+              "toNextPaintMs": 34.20000000298023
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 34.29999999701977
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 32.6000000089407
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 4.899999991059303,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 7.899999991059303,
+              "toNextPaintMs": 50.19999998807907
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.5,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.5,
+              "toNextPaintMs": 32.400000005960464
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5,
+              "toNextPaintMs": 33.599999994039536
+            }
+          ],
+          "handlerMedianMs": 5.200000002980232,
+          "handlerP95Ms": 7.899999991059303,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34.29999999701977,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 2,
+          "changes": [
+            {
+              "label": "水印色相",
+              "jsMs": 9.600000008940697,
+              "toNextPaintMs": 24.900000005960464
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 6.699999988079071,
+              "toNextPaintMs": 33.19999998807907
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 32.29999999701977
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 34.099999994039536
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 33.1000000089407
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 32.5
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.100000008940697,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 6.700000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 6.4000000059604645,
+              "toNextPaintMs": 33.6000000089407
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 4.9000000059604645,
+              "toNextPaintMs": 32.80000001192093
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.5999999940395355,
+              "toNextPaintMs": 34.29999999701977
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.699999988079071,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.899999991059303,
+              "toNextPaintMs": 33.79999999701977
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.299999997019768,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.5,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.600000008940697,
+              "toNextPaintMs": 33.20000000298023
+            }
+          ],
+          "handlerMedianMs": 5.299999997019768,
+          "handlerP95Ms": 6.700000002980232,
+          "paintMedianMs": 33.19999998807907,
+          "paintP95Ms": 34.099999994039536,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        },
+        {
+          "run": 3,
+          "changes": [
+            {
+              "label": "水印色相",
+              "jsMs": 8.100000008940697,
+              "toNextPaintMs": 25.200000002980232
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 6.799999997019768,
+              "toNextPaintMs": 33.3999999910593
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.599999994039536
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 6.100000008940697,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5,
+              "toNextPaintMs": 33.8999999910593
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 6,
+              "toNextPaintMs": 32.3999999910593
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.4000000059604645,
+              "toNextPaintMs": 32.80000001192093
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 34
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 4.700000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.5,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.5,
+              "toNextPaintMs": 31.700000002980232
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.399999991059303,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.800000011920929,
+              "toNextPaintMs": 33.30000001192093
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.799999997019768,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.199999988079071,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 6.0999999940395355,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 33.900000005960464
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.0999999940395355,
+              "toNextPaintMs": 32.599999994039536
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.199999988079071,
+              "toNextPaintMs": 34.19999998807907
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 33
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5,
+              "toNextPaintMs": 32.70000000298023
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.799999997019768,
+              "toNextPaintMs": 33.5
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 5.700000002980232,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5,
+              "toNextPaintMs": 33.20000000298023
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 4.5,
+              "toNextPaintMs": 33.400000005960464
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 6.200000002980232,
+              "toNextPaintMs": 32.900000005960464
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 4.399999991059303,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.200000002980232,
+              "toNextPaintMs": 33.099999994039536
+            },
+            {
+              "label": "水印色相",
+              "jsMs": 4.899999991059303,
+              "toNextPaintMs": 32.79999999701977
+            },
+            {
+              "label": "水印饱和度",
+              "jsMs": 5.9000000059604645,
+              "toNextPaintMs": 33.29999999701977
+            },
+            {
+              "label": "水印明亮度",
+              "jsMs": 5.300000011920929,
+              "toNextPaintMs": 33.20000000298023
+            }
+          ],
+          "handlerMedianMs": 5.399999991059303,
+          "handlerP95Ms": 6.799999997019768,
+          "paintMedianMs": 33.20000000298023,
+          "paintP95Ms": 34,
+          "sliderStates": [
+            {
+              "value": "19",
+              "opacity": "0.19",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "29",
+              "opacity": "0.29",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "39",
+              "opacity": "0.39",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "49",
+              "opacity": "0.49",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "59",
+              "opacity": "0.59",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "68",
+              "opacity": "0.68",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "78",
+              "opacity": "0.78",
+              "sameControl": true,
+              "sameImage": true
+            },
+            {
+              "value": "88",
+              "opacity": "0.88",
+              "sameControl": true,
+              "sameImage": true
+            }
+          ],
+          "mutation": {
+            "removed": 0,
+            "images": 0,
+            "controls": 0,
+            "longTasks": []
+          },
+          "errors": []
+        }
+      ],
+      "note": "Isolated drafts; CPU throttle is laboratory stress, not physical hardware. Repeated native DOM change dispatch and double-RAF observation; pointer slider is actual held mouse."
+    }
+  },
+  "summary": {
+    "before": {
+      "handlerMedianMs": 5,
+      "handlerP95Ms": 6.799999997019768,
+      "paintMedianMs": 33.1000000089407,
+      "paintP95Ms": 34
+    },
+    "after": {
+      "handlerMedianMs": 4.600000008940697,
+      "handlerP95Ms": 6.200000002980232,
+      "paintMedianMs": 33.3999999910593,
+      "paintP95Ms": 34.30000001192093
+    },
+    "effects": {
+      "handlerMedianMs": 5.299999997019768,
+      "handlerP95Ms": 6.799999997019768,
+      "paintMedianMs": 33.20000000298023,
+      "paintP95Ms": 34.099999994039536
+    }
+  },
+  "production": {
+    "baseline": "3dcf925",
+    "flow": "editor -> real variant selection / mirror / color -> saved draft -> preview / PNG / room handoff",
+    "browserPath": "Browser plugin not available; existing Playwright / system Chrome",
+    "pages": [
+      {
+        "name": "author, isolated production draft",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "requests": [
+          "http://127.0.0.1:4174/editor.html",
+          "http://127.0.0.1:4174/assets/editor-Bs_PUiCW.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/published-CbSvN2FD.js",
+          "http://127.0.0.1:4174/assets/document-DmxTQP4C.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/storage-CgH7sdB0.js",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/editor-L35a9eRs.css",
+          "http://127.0.0.1:4174/favicon.svg",
+          "http://127.0.0.1:4174/assets/samples-DkZWCa_s.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/paw-DRK3otlj.webp",
+          "http://127.0.0.1:4174/assets/blossom-B2T7713E.webp",
+          "http://127.0.0.1:4174/assets/blue-flower-Bd820UZr.webp",
+          "http://127.0.0.1:4174/assets/lilac-shell-C1M7aqkI.webp",
+          "http://127.0.0.1:4174/assets/soft-star-oDs_CMS0.webp",
+          "http://127.0.0.1:4174/assets/paired-leaves-DJ5GqTmu.webp",
+          "http://127.0.0.1:4174/assets/leaf-C5XnhWOu.webp",
+          "http://127.0.0.1:4174/assets/peach-flower-DEK5Lk4G.webp",
+          "http://127.0.0.1:4174/assets/small-heart-DiiN6Teq.webp",
+          "http://127.0.0.1:4174/assets/pink-bow-CdNzCRG9.webp",
+          "http://127.0.0.1:4174/assets/stitched-star-D6znvpYB.webp",
+          "http://127.0.0.1:4174/assets/gold-star-DfKrLY-4.webp",
+          "http://127.0.0.1:4174/assets/stitched-paw-uSAu8kdq.webp",
+          "http://127.0.0.1:4174/assets/purple-flower-DFO6DOZ6.webp",
+          "http://127.0.0.1:4174/assets/round-flower-CYLc2O5k.webp",
+          "http://127.0.0.1:4174/assets/pink-flower-BGtkk-Ll.webp",
+          "http://127.0.0.1:4174/assets/wide-leaves-B3UrxOqI.webp",
+          "http://127.0.0.1:4174/assets/twig-DQ3_psFA.webp",
+          "http://127.0.0.1:4174/assets/pink-shell-DYava6m2.webp",
+          "http://127.0.0.1:4174/assets/blue-bow-C2lkUQbi.webp",
+          "http://127.0.0.1:4174/assets/blue-shell-BkkmpiLD.webp",
+          "http://127.0.0.1:4174/assets/blue-heart-ChxiHS7w.webp",
+          "http://127.0.0.1:4174/assets/cat-CJkbGHZP.webp",
+          "http://127.0.0.1:4174/assets/large-heart-B9sqKh_1.webp",
+          "http://127.0.0.1:4174/assets/tall-leaf-D1WtV7HU.webp",
+          "http://127.0.0.1:4174/assets/sprout-rXskQ4hG.webp",
+          "http://127.0.0.1:4174/assets/little-star-Cp7bSjAg.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-look-0mkhPCNE.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-sleep-Da1LMME4.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tuxedo-look-DzcO0uCO.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-yawn-CY2aJS_M.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-smile-CW-2OVtJ.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-white-peek-Ng_bcldL.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-look-CQEK38sP.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-sleep-CCsWW-b8.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-calico-back-ClFELSdh.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-wave-Co-Beqgz.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-white-CmrLhYq3.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-calico-C5n-LSfi.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-tabby-CIhvgh7b.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-ink-B4-UPIxT.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-orange-BwhytFgE.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-fluffy-Btfjthu7.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-black-BnJ-LHYc.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-bow-DBzEbLVw.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-blue-round-Dy3x_7GX.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-pink-five-06UHqGnk.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-purple-five-Cv5lCrmC.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-check-DlIilW1N.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-yellow-loose-DqyC5bAa.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-coral-check-D68zKHd1.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-coral-BqkEUCJd.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-blue-small-BEV9x0Ww.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-purple-round-rQwH6nc_.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-pink-small-4Bg9i0a_.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-yellow-round-CmgZH6Eh.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-side-tno596DV.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-pink-fan-vlhKGyxx.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-peach-spiral-C2DNKeZy.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-blue-round-CNn110Gw.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-gold-spike-B-04EPIQ.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-starfish-IjBHy75L.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-speckled-QUuWWKT1.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-lilac-fan-BkYgKirg.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-aqua-spiral-D0oVEQWP.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-cream-fan-DECbueTa.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-pearl-CZs49-ad.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-aqua-fan-CcyMCMs8.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-purple-spiral-DMNAnw-f.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-smile-Br1IuO3G.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-wink-CMa57BaZ.webp",
+          "http://127.0.0.1:4174/assets/variant-star-purple-smile-BmkGKC5X.webp",
+          "http://127.0.0.1:4174/assets/variant-star-pink-blush-BD-sDjt9.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-cutout-rTrZEvAw.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-dots-DXnL1gRn.webp",
+          "http://127.0.0.1:4174/assets/variant-star-green-smile-BQITfct8.webp",
+          "http://127.0.0.1:4174/assets/variant-star-purple-sleep-ABnz6lkU.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-shy-2iV2qQX9.webp",
+          "http://127.0.0.1:4174/assets/variant-star-pink-stitch-DJH5vr21.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-orbit-BIv8vQ8P.webp",
+          "http://127.0.0.1:4174/assets/variant-star-cream-bow-BdiQquh5.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-dark-DxPJgF71.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-sprig-olive-CHzrk6AE.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-monstera-dark-Z2xUYEEh.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-eucalyptus-CiV6gw0S.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-light-DIOGQxRo.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-sprig-wide-A55gQ9BF.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-curly-vine-CxPKGB5m.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-branch-long-CAC2Yatg.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-yellow-buds-rahYYZxH.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-bright-C4EgVALN.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-single-CCGVLx6w.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-small-sprig-DIMfWCr2.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-gingham-C2TO-W_E.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-cream-heart-CKfUbpTU.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-soft-CyiPPLF8.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-blue-lace-B0s4LKWD.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-satin-CneBDp-t.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-blue-ribbon-Bn-g3FqD.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-dots-CxOaVotf.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-cream-small-BV0wcLjI.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-floral-D-tJMrS8.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-dots-B3ebiK5-.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-lace-bow-B3PW3G_b.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-soft-BzPZjyfg.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-blue-gingham-V8lgWB02.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-gingham-Bs4yxb2-.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-stitch-DRDk1o4o.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-wings-BXc9e_C3.webp",
+          "blob:http://127.0.0.1:4174/db008cdb-f65a-47d5-838f-5f7473332119",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-yawn-CY2aJS_M.webp",
+          "blob:http://127.0.0.1:4174/2f2624e7-7894-41b5-9057-0769fe669e9b",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-yawn-CY2aJS_M.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-check-DlIilW1N.webp",
+          "blob:http://127.0.0.1:4174/7acfee0b-9b90-4775-b2f4-759ac7ed5481",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-check-DlIilW1N.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-pearl-CZs49-ad.webp",
+          "blob:http://127.0.0.1:4174/002854b8-4fb7-45b1-8bb6-bdd5df5b6dea",
+          "http://127.0.0.1:4174/assets/variant-shell-pearl-CZs49-ad.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-orbit-BIv8vQ8P.webp",
+          "blob:http://127.0.0.1:4174/6edb2b8e-9c90-47e1-8ab4-c943ca69de06",
+          "http://127.0.0.1:4174/assets/variant-star-blue-orbit-BIv8vQ8P.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-monstera-dark-Z2xUYEEh.webp",
+          "blob:http://127.0.0.1:4174/8706155f-3b58-40e2-954d-abdc9146262d",
+          "http://127.0.0.1:4174/assets/variant-leaf-monstera-dark-Z2xUYEEh.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-blue-lace-B0s4LKWD.webp",
+          "blob:http://127.0.0.1:4174/4229fbe0-74d9-45e2-a27b-89b8f540f411",
+          "http://127.0.0.1:4174/assets/variant-bow-blue-lace-B0s4LKWD.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-look-CQEK38sP.webp",
+          "blob:http://127.0.0.1:4174/e682849a-8f8c-431a-b288-d7b9f1aafece",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-look-CQEK38sP.webp",
+          "http://127.0.0.1:4174/assets/page-image-BCbSzGOd.js",
+          "http://127.0.0.1:4174/assets/page-raster-DwBSMYVH.js",
+          "http://127.0.0.1:4174/assets/font-raster-CxjQ0MEe.js",
+          "http://127.0.0.1:4174/editor.html",
+          "http://127.0.0.1:4174/assets/editor-Bs_PUiCW.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/published-CbSvN2FD.js",
+          "http://127.0.0.1:4174/assets/document-DmxTQP4C.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/storage-CgH7sdB0.js",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/editor-L35a9eRs.css",
+          "http://127.0.0.1:4174/favicon.svg",
+          "http://127.0.0.1:4174/assets/paw-DRK3otlj.webp",
+          "http://127.0.0.1:4174/assets/blossom-B2T7713E.webp",
+          "http://127.0.0.1:4174/assets/blue-flower-Bd820UZr.webp",
+          "http://127.0.0.1:4174/assets/lilac-shell-C1M7aqkI.webp",
+          "http://127.0.0.1:4174/assets/soft-star-oDs_CMS0.webp",
+          "http://127.0.0.1:4174/assets/paired-leaves-DJ5GqTmu.webp",
+          "http://127.0.0.1:4174/assets/leaf-C5XnhWOu.webp",
+          "http://127.0.0.1:4174/assets/peach-flower-DEK5Lk4G.webp",
+          "http://127.0.0.1:4174/assets/small-heart-DiiN6Teq.webp",
+          "http://127.0.0.1:4174/assets/pink-bow-CdNzCRG9.webp",
+          "http://127.0.0.1:4174/assets/stitched-star-D6znvpYB.webp",
+          "http://127.0.0.1:4174/assets/gold-star-DfKrLY-4.webp",
+          "http://127.0.0.1:4174/assets/stitched-paw-uSAu8kdq.webp",
+          "http://127.0.0.1:4174/assets/purple-flower-DFO6DOZ6.webp",
+          "http://127.0.0.1:4174/assets/round-flower-CYLc2O5k.webp",
+          "http://127.0.0.1:4174/assets/pink-flower-BGtkk-Ll.webp",
+          "http://127.0.0.1:4174/assets/wide-leaves-B3UrxOqI.webp",
+          "http://127.0.0.1:4174/assets/twig-DQ3_psFA.webp",
+          "http://127.0.0.1:4174/assets/pink-shell-DYava6m2.webp",
+          "http://127.0.0.1:4174/assets/blue-bow-C2lkUQbi.webp",
+          "http://127.0.0.1:4174/assets/blue-shell-BkkmpiLD.webp",
+          "http://127.0.0.1:4174/assets/blue-heart-ChxiHS7w.webp",
+          "http://127.0.0.1:4174/assets/cat-CJkbGHZP.webp",
+          "http://127.0.0.1:4174/assets/large-heart-B9sqKh_1.webp",
+          "http://127.0.0.1:4174/assets/tall-leaf-D1WtV7HU.webp",
+          "http://127.0.0.1:4174/assets/sprout-rXskQ4hG.webp",
+          "http://127.0.0.1:4174/assets/little-star-Cp7bSjAg.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-look-0mkhPCNE.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-sleep-Da1LMME4.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tuxedo-look-DzcO0uCO.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-yawn-CY2aJS_M.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-smile-CW-2OVtJ.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-white-peek-Ng_bcldL.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-ginger-look-CQEK38sP.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-sleep-CCsWW-b8.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-calico-back-ClFELSdh.webp",
+          "http://127.0.0.1:4174/assets/variant-cat-tabby-wave-Co-Beqgz.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-white-CmrLhYq3.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-calico-C5n-LSfi.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-tabby-CIhvgh7b.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-ink-B4-UPIxT.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-orange-BwhytFgE.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-fluffy-Btfjthu7.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-black-BnJ-LHYc.webp",
+          "http://127.0.0.1:4174/assets/variant-paw-bow-DBzEbLVw.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-blue-round-Dy3x_7GX.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-pink-five-06UHqGnk.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-purple-five-Cv5lCrmC.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-check-DlIilW1N.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-yellow-loose-DqyC5bAa.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-coral-check-D68zKHd1.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-coral-BqkEUCJd.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-blue-small-BEV9x0Ww.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-purple-round-rQwH6nc_.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-pink-small-4Bg9i0a_.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-yellow-round-CmgZH6Eh.webp",
+          "http://127.0.0.1:4174/assets/variant-flower-tulip-side-tno596DV.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-pink-fan-vlhKGyxx.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-peach-spiral-C2DNKeZy.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-blue-round-CNn110Gw.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-gold-spike-B-04EPIQ.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-starfish-IjBHy75L.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-speckled-QUuWWKT1.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-lilac-fan-BkYgKirg.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-aqua-spiral-D0oVEQWP.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-cream-fan-DECbueTa.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-pearl-CZs49-ad.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-aqua-fan-CcyMCMs8.webp",
+          "http://127.0.0.1:4174/assets/variant-shell-purple-spiral-DMNAnw-f.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-smile-Br1IuO3G.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-wink-CMa57BaZ.webp",
+          "http://127.0.0.1:4174/assets/variant-star-purple-smile-BmkGKC5X.webp",
+          "http://127.0.0.1:4174/assets/variant-star-pink-blush-BD-sDjt9.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-cutout-rTrZEvAw.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-dots-DXnL1gRn.webp",
+          "http://127.0.0.1:4174/assets/variant-star-green-smile-BQITfct8.webp",
+          "http://127.0.0.1:4174/assets/variant-star-purple-sleep-ABnz6lkU.webp",
+          "http://127.0.0.1:4174/assets/variant-star-gold-shy-2iV2qQX9.webp",
+          "http://127.0.0.1:4174/assets/variant-star-pink-stitch-DJH5vr21.webp",
+          "http://127.0.0.1:4174/assets/variant-star-blue-orbit-BIv8vQ8P.webp",
+          "http://127.0.0.1:4174/assets/variant-star-cream-bow-BdiQquh5.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-dark-DxPJgF71.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-sprig-olive-CHzrk6AE.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-monstera-dark-Z2xUYEEh.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-eucalyptus-CiV6gw0S.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-light-DIOGQxRo.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-sprig-wide-A55gQ9BF.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-curly-vine-CxPKGB5m.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-branch-long-CAC2Yatg.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-yellow-buds-rahYYZxH.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-heart-bright-C4EgVALN.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-single-CCGVLx6w.webp",
+          "http://127.0.0.1:4174/assets/variant-leaf-small-sprig-DIMfWCr2.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-gingham-C2TO-W_E.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-cream-heart-CKfUbpTU.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-soft-CyiPPLF8.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-blue-lace-B0s4LKWD.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-satin-CneBDp-t.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-blue-ribbon-Bn-g3FqD.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-pink-dots-CxOaVotf.webp",
+          "http://127.0.0.1:4174/assets/variant-bow-cream-small-BV0wcLjI.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-floral-D-tJMrS8.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-dots-B3ebiK5-.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-lace-bow-B3PW3G_b.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-soft-BzPZjyfg.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-blue-gingham-V8lgWB02.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-gingham-Bs4yxb2-.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-pink-stitch-DRDk1o4o.webp",
+          "http://127.0.0.1:4174/assets/variant-heart-wings-BXc9e_C3.webp",
+          "blob:http://127.0.0.1:4174/c8ff55f9-83f6-4c7a-8bd2-152da3adc00d",
+          "blob:http://127.0.0.1:4174/67e5472a-0752-49de-a672-e6763fd8c37e",
+          "http://127.0.0.1:4174/album-preview.html?albumPreview=fcd566fa-4225-42f5-bc0c-025f5cdeb1f7",
+          "http://127.0.0.1:4174/assets/preview-LmNKLplI.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/document-DmxTQP4C.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/runtime-DYBapDSy.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-CgH7sdB0.js",
+          "blob:http://127.0.0.1:4174/7c137ac4-d568-4221-9aed-4fb9cfcc3e81",
+          "blob:http://127.0.0.1:4174/88742afe-53d8-4183-8a15-660fe4aaf1bd"
+        ]
+      },
+      {
+        "name": "custom reading, four sizes",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "requests": [
+          "http://127.0.0.1:4174/album-preview.html?albumPreview=fcd566fa-4225-42f5-bc0c-025f5cdeb1f7",
+          "http://127.0.0.1:4174/assets/preview-LmNKLplI.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/document-DmxTQP4C.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/runtime-DYBapDSy.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-CgH7sdB0.js",
+          "http://127.0.0.1:4174/favicon.svg",
+          "blob:http://127.0.0.1:4174/10c76323-8e79-4372-89be-2b6e687a15df",
+          "blob:http://127.0.0.1:4174/bda9dc24-dfd0-425b-abb9-bf47ed653347",
+          "blob:http://127.0.0.1:4174/eb392b79-41fa-48d5-8bcf-2a72fb8a96fd",
+          "http://127.0.0.1:4174/album-preview.html?albumPreview=fcd566fa-4225-42f5-bc0c-025f5cdeb1f7",
+          "http://127.0.0.1:4174/assets/preview-LmNKLplI.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/document-DmxTQP4C.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/runtime-DYBapDSy.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-CgH7sdB0.js",
+          "http://127.0.0.1:4174/favicon.svg",
+          "blob:http://127.0.0.1:4174/61f1d1f3-c464-4cfa-9fa2-f1ae1f7a4004",
+          "blob:http://127.0.0.1:4174/c1051c79-95c3-4215-803d-6025c024ebb0",
+          "blob:http://127.0.0.1:4174/6b2891bd-7161-4765-9ed4-5dbdc6784d8b",
+          "http://127.0.0.1:4174/album-preview.html?albumPreview=fcd566fa-4225-42f5-bc0c-025f5cdeb1f7",
+          "http://127.0.0.1:4174/assets/preview-LmNKLplI.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/document-DmxTQP4C.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/runtime-DYBapDSy.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-CgH7sdB0.js",
+          "http://127.0.0.1:4174/favicon.svg",
+          "blob:http://127.0.0.1:4174/309b3e3d-894f-479f-9373-663ad1920ad8",
+          "blob:http://127.0.0.1:4174/a9c2e536-e422-4373-99fb-9a7584ef7a08",
+          "blob:http://127.0.0.1:4174/6ab3474b-1d51-42bf-afda-d29d312be6ad",
+          "http://127.0.0.1:4174/album-preview.html?albumPreview=fcd566fa-4225-42f5-bc0c-025f5cdeb1f7",
+          "http://127.0.0.1:4174/assets/preview-LmNKLplI.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/document-DmxTQP4C.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/runtime-DYBapDSy.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-CgH7sdB0.js",
+          "http://127.0.0.1:4174/favicon.svg",
+          "blob:http://127.0.0.1:4174/b2bd81b0-78b6-4b13-b8ff-8aa7d4a69257",
+          "blob:http://127.0.0.1:4174/de53dff0-7e12-44c8-8b67-221206ee680e",
+          "blob:http://127.0.0.1:4174/72972c86-e062-40d0-a959-77ea748ef6b0"
+        ]
+      },
+      {
+        "name": "custom room / physical-page handoff",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [
+          "[.WebGL-0x10c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x10c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x10c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x10c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x10c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x10c00509000] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions."
+        ],
+        "failedRequests": [],
+        "requests": [
+          "http://127.0.0.1:4174/assets/main-DWB-Qy4b.js",
+          "http://127.0.0.1:4174/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:4174/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4174/assets/content-CgcxY2N9.js",
+          "http://127.0.0.1:4174/assets/reader-controller-CUm6qT8C.js",
+          "http://127.0.0.1:4174/assets/three-D38cRHR9.js",
+          "http://127.0.0.1:4174/assets/page-raster-DwBSMYVH.js",
+          "http://127.0.0.1:4174/assets/published-CbSvN2FD.js",
+          "http://127.0.0.1:4174/assets/reader-controller-ZzCjXHDc.css",
+          "http://127.0.0.1:4174/assets/main-Cun-_viW.css",
+          "http://127.0.0.1:4174/assets/runtime-DYBapDSy.js",
+          "http://127.0.0.1:4174/assets/document-DmxTQP4C.js",
+          "http://127.0.0.1:4174/assets/renderer-CnkzWLtC.js",
+          "http://127.0.0.1:4174/assets/renderer-BPpBEBYd.css",
+          "http://127.0.0.1:4174/assets/storage-CgH7sdB0.js",
+          "http://127.0.0.1:4174/favicon.svg",
+          "http://127.0.0.1:4174/assets/sleeping-tabby-CyUHHslq.glb",
+          "http://127.0.0.1:4174/assets/cat-purr-B57CHUyJ.mp3",
+          "http://127.0.0.1:4174/assets/cat-curious-CBhrcmiB.mp3",
+          "http://127.0.0.1:4174/assets/cat-affectionate-CUlDS4g6.mp3",
+          "http://127.0.0.1:4174/assets/cat-sleepy-CjL28w9V.mp3",
+          "http://127.0.0.1:4174/assets/cat-playful-DkXWt-oC.mp3",
+          "http://127.0.0.1:4174/assets/cat-stretch-CP9kLb2u.mp3",
+          "http://127.0.0.1:4174/materials/quiet-oak.webp",
+          "http://127.0.0.1:4174/assets/beanbag-cotton-albedo-DYEVnpPX.webp",
+          "http://127.0.0.1:4174/assets/beanbag-cotton-normal-BU7Z5WMP.webp",
+          "http://127.0.0.1:4174/assets/beanbag-cotton-roughness-v2pw-Xko.webp",
+          "http://127.0.0.1:4174/art/classical-myth-oil.webp",
+          "blob:http://127.0.0.1:4174/77f809e7-9e0d-4306-8186-d274f3cf4224",
+          "http://127.0.0.1:4174/assets/default-record-CroFQKMH.mp3",
+          "http://127.0.0.1:4174/favicon.svg",
+          "blob:http://127.0.0.1:4174/e72eb01f-d9d3-4b5a-b88a-151d3d5b005c",
+          "blob:http://127.0.0.1:4174/b339b403-f8cf-4f12-aa6f-e13fe872b0de",
+          "http://127.0.0.1:4174/assets/font-raster-CxjQ0MEe.js"
+        ]
+      },
+      {
+        "name": "default visitor, no private gallery",
+        "errors": [],
+        "consoleErrors": [],
+        "warnings": [
+          "[.WebGL-0x10c00574e00] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions.",
+          "[.WebGL-0x10c00574e00] GL_INVALID_VALUE: glCopySubTextureCHROMIUM: Offset overflows texture dimensions."
+        ],
+        "failedRequests": [],
+        "requests": [
+          "http://127.0.0.1:4173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envDensity=0&envBirdDensity=0",
+          "http://127.0.0.1:4173/assets/index-BgSi-As0.js",
+          "http://127.0.0.1:4173/assets/preload-helper-PPVm8Dsz.js",
+          "http://127.0.0.1:4173/assets/three-D38cRHR9.js",
+          "http://127.0.0.1:4173/assets/index-C7AOOR3A.css",
+          "http://127.0.0.1:4173/assets/sleeping-tabby-CyUHHslq.glb",
+          "http://127.0.0.1:4173/assets/cat-purr-B57CHUyJ.mp3",
+          "http://127.0.0.1:4173/assets/cat-curious-CBhrcmiB.mp3",
+          "http://127.0.0.1:4173/assets/cat-affectionate-CUlDS4g6.mp3",
+          "http://127.0.0.1:4173/assets/cat-sleepy-CjL28w9V.mp3",
+          "http://127.0.0.1:4173/assets/cat-playful-DkXWt-oC.mp3",
+          "http://127.0.0.1:4173/assets/cat-stretch-CP9kLb2u.mp3",
+          "http://127.0.0.1:4173/materials/quiet-oak.webp",
+          "http://127.0.0.1:4173/assets/beanbag-cotton-albedo-DYEVnpPX.webp",
+          "http://127.0.0.1:4173/assets/beanbag-cotton-normal-BU7Z5WMP.webp",
+          "http://127.0.0.1:4173/assets/beanbag-cotton-roughness-v2pw-Xko.webp",
+          "http://127.0.0.1:4173/art/classical-myth-oil.webp",
+          "blob:http://127.0.0.1:4173/312f7665-428a-4b8b-86b0-bebd286457d8",
+          "http://127.0.0.1:4173/favicon.svg",
+          "http://127.0.0.1:4173/assets/default-record-CroFQKMH.mp3",
+          "http://127.0.0.1:4173/favicon.svg"
+        ]
+      }
+    ],
+    "screenshots": [
+      "production-editor.png",
+      "production-gallery-cats.png",
+      "production-page-cats.png",
+      "production-gallery-flowers.png",
+      "production-page-flowers.png",
+      "production-gallery-seaside.png",
+      "production-page-seaside.png",
+      "production-gallery-stars.png",
+      "production-page-stars.png",
+      "production-gallery-leaves.png",
+      "production-page-leaves.png",
+      "production-gallery-sentiments.png",
+      "production-page-sentiments.png",
+      "production-combined-filters.png",
+      "production-original-variant.png",
+      "production-adjusted-variant.png",
+      "production-adjustment-controls.png",
+      "production-adjusted-export.png",
+      "production-controls-320x568.png",
+      "production-controls-390x844.png",
+      "production-controls-844x390.png",
+      "production-preview-dialog.png",
+      "production-reading-320x568.png",
+      "production-reading-390x844.png",
+      "production-reading-844x390.png",
+      "production-reading-1440x1000.png",
+      "production-room-reading.png",
+      "production-room-return.png",
+      "production-default-reading.png"
+    ],
+    "checks": {
+      "identity": {
+        "url": "http://127.0.0.1:4174/editor.html",
+        "title": "纪念手帐工作台 · 潮汐之间",
+        "nonblank": true,
+        "frameworkOverlay": 0
+      },
+      "responsive": [
+        {
+          "size": {
+            "width": 320,
+            "height": 568
+          },
+          "overflow": false
+        },
+        {
+          "size": {
+            "width": 390,
+            "height": 844
+          },
+          "overflow": false
+        },
+        {
+          "size": {
+            "width": 844,
+            "height": 390
+          },
+          "overflow": false
+        }
+      ],
+      "idle": {
+        "seconds": 5,
+        "raf": 0,
+        "webgl": 0
+      },
+      "reload": true,
+      "roomReopen": true,
+      "defaultNoAuthorAssets": true,
+      "console": true
+    },
+    "passed": true
+  },
+  "validation": {
+    "specFiles": 11,
+    "tests": 82,
+    "singleFinalRun": true,
+    "typecheck": true,
+    "build": true,
+    "buildEditor": true,
+    "testLogSha256": "ebddc5679890f94aca02c8d406b0145b6cf795a0ecf2ec4a1a575bf714d4ddbf"
+  },
+  "limits": [
+    "Browser plugin not available; shared Playwright with system Chrome",
+    "CPU throttle and mobile viewport are not physical hardware; no FPS, cold-network or battery claims",
+    "No Safari, physical phones, prolonged thermal or full historical test suite validation",
+    "Known Chrome texture-copy warnings: 2 default, 6 custom handoff; original chunk-size warnings preserved",
+    "All drafts isolated; author tabs never read, changed or reloaded; no publication"
+  ],
+  "diskKiB": {
+    "startRepository": 200216,
+    "startPnpmStore": 1445180,
+    "preCommitRepository": 208120,
+    "pnpmStore": 1445180,
+    "afterImplementationCommitRepository": 218916,
+    "deltaAfterImplementationCommit": 18700,
+    "afterImplementationCommitPnpmStore": 1445180,
+    "note": "Includes Git objects and regenerated test/build output; excludes final receipt commit objects. No new environment or dependency installation."
+  },
+  "delivery": {
+    "implementationCommit": "86920f34f402399c76d132c0477d2686f8c80653",
+    "verifiedRemoteBranch": "codex/watermark-variants",
+    "verifiedRemoteMain": "d9a4d3c998488467cfc65cd0c814a955425b5dd2",
+    "published": false
+  }
+}
