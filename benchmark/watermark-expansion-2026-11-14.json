@@ -4064,7 +4064,11 @@
     "startRepo": 219076,
     "startStore": 1445180,
     "afterValidationRepo": 218300,
-    "afterValidationStore": 1445180
+    "afterValidationStore": 1445180,
+    "afterImplementationCommitRepo": 219920,
+    "afterImplementationCommitStore": 1445180,
+    "implementationDeltaRepo": 844,
+    "note": "Includes Git objects and regenerated build/test artifacts; before final receipt objects. Not image-only or environment growth."
   },
   "evidenceDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/11/14/watermark-expansion",
   "notes": [
@@ -4072,5 +4076,13 @@
     "CPU4x lab samples are interaction timings, not physical device FPS or cold-network proof",
     "Both matching before and serial after use same old paw, 12spreads, fixed photo and preloaded font",
     "Source images were already generated; new60 are independent source motifs, not recolor or mirror copies"
-  ]
+  ],
+  "delivery": {
+    "implementationCommit": "e3e8a27b4daf335ca738fe25b45f750cd1b48fc1",
+    "branch": "codex/watermark-variants",
+    "main": "d9a4d3c998488467cfc65cd0c814a955425b5dd2",
+    "pushed": true,
+    "verifiedRemote": true,
+    "published": false
+  }
 }
