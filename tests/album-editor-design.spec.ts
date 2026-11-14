@@ -50,18 +50,19 @@ test('gallery categories and search filter real images without changing the draf
   await page.locator('#open-watermarks').click(); const initial = await draft(page);
   await page.evaluate(() => { (window as any).__galleryNodes = Array.from(document.querySelectorAll('.editor-watermark-choice, .editor-watermark-choice img, [aria-label="搜索水印"], [aria-label="水印透明度"]')); });
   const category = page.getByLabel('水印分类', { exact: true }), search = page.getByLabel('搜索水印', { exact: true });
-  for (const [name, count] of [['cats', 3], ['flowers', 6], ['seaside', 3], ['stars', 4], ['leaves', 6], ['sentiments', 5], ['all', 27]] as const) {
+  for (const [name, count] of [['cats', 21], ['flowers', 18], ['seaside', 15], ['stars', 16], ['leaves', 18], ['sentiments', 21], ['all', 109]] as const) {
     await category.selectOption(name); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(count);
   }
-  await search.fill('贝壳'); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(3);
+  await search.fill('贝壳'); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(14);
   await category.selectOption('cats'); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(0); await expect(page.locator('.editor-gallery-result')).toContainText('没有找到图案');
-  await search.fill(''); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(3);
+  await search.fill(''); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(21);
   expect(await page.evaluate(() => (window as any).__galleryNodes.every((node: Element) => node.isConnected))).toBe(true);
   expect(await draft(page)).toEqual(initial); await expect(page.locator('#undo')).toBeDisabled();
 });
 
 test('gallery filters survive image loading, side selection and inspector rebuilding', async ({ page }) => {
   await page.locator('#open-watermarks').click(); await page.getByLabel('水印分类').selectOption('seaside'); await page.getByLabel('搜索水印').fill('蓝');
+  await page.getByLabel('水印种类').selectOption('扇贝'); await page.getByLabel('水印原色').selectOption('蓝');
   const choice = page.locator('.editor-watermark-choice:visible'); await expect(choice).toHaveCount(1); await choice.click();
   await expect(left(page).locator('.album-watermark img')).toHaveCount(2); await expect(choice).toHaveAttribute('aria-pressed', 'true');
   await page.locator('#other-page').click(); await expect(page.getByLabel('水印分类')).toHaveValue('seaside'); await expect(page.getByLabel('搜索水印')).toHaveValue('蓝');
@@ -127,6 +128,6 @@ for (const size of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const sizes = await page.locator('.editor-property-nav button').evaluateAll(buttons => buttons.map(button => { const r = button.getBoundingClientRect(); return { width: r.width, height: r.height, font: parseFloat(getComputedStyle(button).fontSize) }; }));
   for (const s of sizes) { expect(s.width).toBeGreaterThanOrEqual(44); expect(s.height).toBeGreaterThanOrEqual(44); expect(s.font).toBeGreaterThanOrEqual(13); }
-  await page.getByLabel('水印分类').selectOption('cats'); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(3);
+  await page.getByLabel('水印分类').selectOption('cats'); await expect(page.locator('.editor-watermark-choice:visible')).toHaveCount(21);
   await nav(page, '纸张').click(); await page.getByLabel('纸张', { exact: true }).selectOption('kraft'); await expect(left(page)).toHaveAttribute('data-paper', 'kraft');
 });

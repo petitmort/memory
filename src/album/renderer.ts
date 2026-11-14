@@ -1,5 +1,6 @@
 import './page.css';
 import type { AlbumPage, AlbumElement, Motif, PhotoElement } from './document';
+import { watermarkAppearance } from './watermark-appearance';
 
 export type AssetResolver = (id: string) => string | undefined;
 export type PageRenderOptions = { resolveAsset: AssetResolver; editable?: boolean; number?: number };
@@ -21,6 +22,8 @@ export function motifSvg(motif: Motif, color: string): SVGSVGElement {
 const watermarkContents = new WeakMap<HTMLElement, string>();
 function watermarks(page: AlbumPage, resolve: AssetResolver, layer: HTMLElement = document.createElement('div')) {
   const w = page.watermark; layer.className = 'album-watermark'; layer.setAttribute('aria-hidden', 'true');
+  const appearance = watermarkAppearance(w);
+  layer.style.filter = appearance.filter;
   layer.style.opacity = String(w.opacity);
   if (!w.opacity) { layer.replaceChildren(); return layer; }
   const positions: [number, number][] = [];
@@ -33,7 +36,7 @@ function watermarks(page: AlbumPage, resolve: AssetResolver, layer: HTMLElement 
   positions.forEach(([x, y], i) => {
     let tile = layer.children[i] as HTMLElement | undefined;
     if (!tile) { tile = document.createElement('div'); tile.className = 'album-watermark-tile'; layer.append(tile); }
-    const styles = { width: `${w.size}px`, height: `${w.size}px`, left: `${x}%`, top: `${y}%`, transform: `translate(-50%,-50%) rotate(${w.rotation}deg)` };
+    const styles = { width: `${w.size}px`, height: `${w.size}px`, left: `${x}%`, top: `${y}%`, transform: `translate(-50%,-50%) rotate(${w.rotation}deg)${appearance.mirror}` };
     for (const [key, value] of Object.entries(styles)) if (tile.style.getPropertyValue(key) !== value) tile.style.setProperty(key, value);
     if (!sameContent || !tile.firstElementChild) {
       if (src) { const img = new Image(); img.src = src; img.alt = ''; tile.replaceChildren(img); }

@@ -12,7 +12,7 @@ export type AlbumElement = TextElement | PhotoElement | StickerElement;
 export type PageStyle = {
   paper: { kind: keyof typeof PAPER_NAMES; tint: string; texture: number };
   grid: { kind: 'none' | 'ruled' | 'square' | 'dotted'; spacing: number; weight: number; color: string; opacity: number; offset: number };
-  watermark: { motif: Motif; assetId: string; mode: 'single' | 'corner' | 'border' | 'repeat'; color: string; size: number; rotation: number; opacity: number; density: number; x: number; y: number };
+  watermark: { motif: Motif; assetId: string; mode: 'single' | 'corner' | 'border' | 'repeat'; color: string; size: number; rotation: number; opacity: number; density: number; x: number; y: number; flipX?: boolean; flipY?: boolean; hue?: number; saturation?: number; brightness?: number };
   layout: { template: keyof typeof TEMPLATE_NAMES; margin: number; columns: number; gap: number };
 };
 export type AlbumPage = PageStyle & { id: string; elements: AlbumElement[] };
@@ -94,6 +94,9 @@ export function validateDocument(input: unknown): AlbumDocument {
         const p = object(page.paper, '纸张'); choice(p.kind, Object.keys(PAPER_NAMES), '纸张'); color(p.tint); num(p.texture, 0, 1, '纸纹');
         const g = object(page.grid, '格线'); choice(g.kind, ['none', 'ruled', 'square', 'dotted'], '格线'); color(g.color); num(g.opacity, 0, 1, '格线透明度'); num(g.spacing, 12, 64, '格距'); num(g.weight, .25, 3, '格线粗细'); num(g.offset, 0, 64, '格线偏移');
         const w = object(page.watermark, '图案'); choice(w.motif, Object.keys(MOTIF_NAMES), '图案'); ref(w.assetId); choice(w.mode, ['single', 'corner', 'border', 'repeat'], '图案排布'); color(w.color); num(w.opacity, 0, 1, '图案透明度'); num(w.size, 8, 120, '图案大小'); num(w.rotation, -180, 180, '图案旋转'); num(w.density, 1, 8, '图案密度'); num(w.x, 0, 100, '图案X'); num(w.y, 0, 100, '图案Y');
+        for (const field of ['flipX', 'flipY']) if (w[field] !== undefined && typeof w[field] !== 'boolean') fail('图案镜像');
+        if (w.hue !== undefined) num(w.hue, -180, 180, '图案色相');
+        for (const field of ['saturation', 'brightness']) if (w[field] !== undefined) num(w[field], 0, 2, '图案调色');
         const l = object(page.layout, '布局'); choice(l.template, Object.keys(TEMPLATE_NAMES), '模板'); num(l.margin, 12, 60, '边距'); num(l.columns, 1, 2, '列数'); if (![1, 2].includes(l.columns)) fail('列数'); num(l.gap, 8, 40, '列距');
         for (const value of array(page.elements, 0, 80, '元素数量')) {
           const e = object(value, '元素'); checkId(e.id);

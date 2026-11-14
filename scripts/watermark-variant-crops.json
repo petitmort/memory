@@ -1,0 +1,1768 @@
+{
+  "sources": {
+    "cats": {
+      "file": "output/imagegen/watermark-variants-cats.png",
+      "sha256": "6a04163937fe3219466adb8f7f5d0cb522a4fdfecf0c6cb5d3f9cc18086dfed1"
+    },
+    "paws": {
+      "file": "output/imagegen/watermark-variants-paws.png",
+      "sha256": "562b760d8d461ef94e5c52a69984385ae97c6ed615b83fc9096548a6fa8ca8eb"
+    },
+    "flowers": {
+      "file": "output/imagegen/watermark-variants-flowers.png",
+      "sha256": "32e998738ec649b2d8ff2bfd8dd0ed985aebeff7d2705e4ed3fa30b21d2afcdc"
+    },
+    "seaside": {
+      "file": "output/imagegen/watermark-variants-seaside.png",
+      "sha256": "2b907b9327ae86f6f0bbc161c7595e9a997aca8d46f21d083fb238f02922f2aa"
+    },
+    "stars": {
+      "file": "output/imagegen/watermark-variants-stars.png",
+      "sha256": "cb9fb5dd982f1fdd935137ada2424f0ded6c71e1e6e7cab43bbb8aef94f2e7bb"
+    },
+    "leaves": {
+      "file": "output/imagegen/watermark-variants-leaves.png",
+      "sha256": "3ac9eb87c717502b379cf04e32480f3ee610b7ff8dc9b51068d914300a75351a"
+    },
+    "sentiments": {
+      "file": "output/imagegen/watermark-variants-sentiments.png",
+      "sha256": "d2d6c5e0b249a71f76a0174f17576960c6477d4a30283f243eb21b0213f50010"
+    }
+  },
+  "crops": [
+    {
+      "sheet": "cats",
+      "key": "variant-cat-tabby-look",
+      "name": "虎斑猫·仰望",
+      "bounds": [
+        5,
+        32,
+        267,
+        319
+      ],
+      "category": "cats",
+      "kind": "虎斑猫",
+      "color": "灰白",
+      "details": [
+        "坐姿",
+        "仰望",
+        "好奇",
+        "朝右",
+        "蓝领结"
+      ]
+    },
+    {
+      "sheet": "cats",
+      "key": "variant-cat-ginger-sleep",
+      "name": "橘猫·蜷睡",
+      "bounds": [
+        372,
+        15,
+        661,
+        204
+      ],
+      "category": "cats",
+      "kind": "橘猫",
+      "color": "橘白",
+      "details": [
+        "蜷睡",
+        "闭眼",
+        "朝左"
+      ]
+    },
+    {
+      "sheet": "cats",
+      "key": "variant-cat-tuxedo-look",
+      "name": "黑白猫·仰望",
+      "bounds": [
+        795,
+        28,
+        1024,
+        336
+      ],
+      "category": "cats",
+      "kind": "黑白猫",
+      "color": "黑白",
+      "details": [
+        "坐姿",
+        "仰望",
+        "好奇",
+        "朝左",
+        "红项圈"
+      ]
+    },
+    {
+      "sheet": "cats",
+      "key": "variant-cat-tabby-yawn",
+      "name": "虎斑猫·打哈欠",
+      "bounds": [
+        40,
+        344,
+        409,
+        598
+      ],
+      "category": "cats",
+      "kind": "虎斑猫",
+      "color": "灰白",
+      "details": [
+        "仰躺",
+        "打哈欠",
+        "肉垫",
+        "朝左"
+      ]
+    },
+    {
+      "sheet": "cats",
+      "key": "variant-cat-tabby-smile",
+      "name": "虎斑猫·眯眼笑",
+      "bounds": [
+        398,
+        233,
+        665,
+        540
+      ],
+      "category": "cats",
+      "kind": "虎斑猫",
+      "color": "灰白",
+      "details": [
+        "坐姿",
+        "眯眼笑",
+        "正面",
+        "蓝领结"
+      ]
+    },
+    {
+      "sheet": "cats",
+      "key": "variant-cat-white-peek",
+      "name": "白长毛猫·趴看",
+      "bounds": [
+        723,
+        410,
+        958,
+        590
+      ],
+      "category": "cats",
+      "kind": "白长毛猫",
+      "color": "白",
+      "details": [
+        "趴着",
+        "好奇",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "cats",
+      "key": "variant-cat-ginger-look",
+      "name": "橘猫·抬头",
+      "bounds": [
+        3,
+        585,
+        259,
+        918
+      ],
+      "category": "cats",
+      "kind": "橘猫",
+      "color": "橘白",
+      "details": [
+        "坐姿",
+        "仰望",
+        "朝右",
+        "红项圈"
+      ]
+    },
+    {
+      "sheet": "cats",
+      "key": "variant-cat-tabby-sleep",
+      "name": "虎斑猫·蜷睡",
+      "bounds": [
+        381,
+        616,
+        654,
+        809
+      ],
+      "category": "cats",
+      "kind": "虎斑猫",
+      "color": "灰白",
+      "details": [
+        "蜷睡",
+        "闭眼",
+        "朝左"
+      ]
+    },
+    {
+      "sheet": "cats",
+      "key": "variant-cat-calico-back",
+      "name": "三花猫·回头背影",
+      "bounds": [
+        558,
+        738,
+        779,
+        1012
+      ],
+      "category": "cats",
+      "kind": "三花猫",
+      "color": "三花",
+      "details": [
+        "坐姿",
+        "背影",
+        "回头",
+        "朝右"
+      ]
+    },
+    {
+      "sheet": "cats",
+      "key": "variant-cat-tabby-wave",
+      "name": "虎斑猫·招爪眨眼",
+      "bounds": [
+        771,
+        622,
+        1024,
+        957
+      ],
+      "category": "cats",
+      "kind": "虎斑猫",
+      "color": "棕白",
+      "details": [
+        "站姿",
+        "抬爪",
+        "眨眼",
+        "正面",
+        "绿领结"
+      ]
+    },
+    {
+      "sheet": "paws",
+      "key": "variant-paw-white",
+      "name": "白猫爪·粉肉垫",
+      "bounds": [
+        20,
+        25,
+        251,
+        248
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "白",
+      "details": [
+        "肉垫",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "paws",
+      "key": "variant-paw-calico",
+      "name": "三花猫爪",
+      "bounds": [
+        276,
+        25,
+        507,
+        248
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "三花",
+      "details": [
+        "肉垫",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "paws",
+      "key": "variant-paw-tabby",
+      "name": "灰虎斑猫爪",
+      "bounds": [
+        532,
+        25,
+        763,
+        248
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "灰",
+      "details": [
+        "虎斑纹",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "paws",
+      "key": "variant-paw-ink",
+      "name": "白猫爪·墨肉垫",
+      "bounds": [
+        788,
+        25,
+        1019,
+        248
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "黑白",
+      "details": [
+        "墨色肉垫",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "paws",
+      "key": "variant-paw-orange",
+      "name": "橘虎斑猫爪",
+      "bounds": [
+        20,
+        281,
+        251,
+        504
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "橘",
+      "details": [
+        "虎斑纹",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "paws",
+      "key": "variant-paw-fluffy",
+      "name": "蓬松白猫爪",
+      "bounds": [
+        276,
+        281,
+        507,
+        504
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "白",
+      "details": [
+        "蓬松",
+        "粉肉垫"
+      ]
+    },
+    {
+      "sheet": "paws",
+      "key": "variant-paw-black",
+      "name": "黑猫爪·粉肉垫",
+      "bounds": [
+        532,
+        281,
+        763,
+        504
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "黑",
+      "details": [
+        "粉肉垫",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "paws",
+      "key": "variant-paw-bow",
+      "name": "白猫爪·粉领结",
+      "bounds": [
+        788,
+        537,
+        1019,
+        760
+      ],
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "白",
+      "details": [
+        "粉领结",
+        "肉垫"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-blue-round",
+      "name": "蓝色花·圆瓣",
+      "bounds": [
+        31,
+        119,
+        161,
+        248
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "蓝",
+      "details": [
+        "白花心",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-pink-five",
+      "name": "粉色花·五瓣",
+      "bounds": [
+        313,
+        28,
+        499,
+        203
+      ],
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "粉",
+      "details": [
+        "黄花心",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-purple-five",
+      "name": "紫色花·五瓣",
+      "bounds": [
+        563,
+        75,
+        727,
+        222
+      ],
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "紫",
+      "details": [
+        "黄花心",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-tulip-check",
+      "name": "粉格郁金香",
+      "bounds": [
+        797,
+        24,
+        942,
+        194
+      ],
+      "category": "flowers",
+      "kind": "郁金香",
+      "color": "粉",
+      "details": [
+        "格纹",
+        "带叶",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-yellow-loose",
+      "name": "黄色花·舒展",
+      "bounds": [
+        260,
+        239,
+        417,
+        386
+      ],
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "黄",
+      "details": [
+        "白花心",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-coral-check",
+      "name": "珊瑚格纹花",
+      "bounds": [
+        12,
+        273,
+        153,
+        443
+      ],
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "珊瑚粉",
+      "details": [
+        "格纹",
+        "带叶"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-tulip-coral",
+      "name": "珊瑚郁金香",
+      "bounds": [
+        510,
+        274,
+        676,
+        501
+      ],
+      "category": "flowers",
+      "kind": "郁金香",
+      "color": "珊瑚粉",
+      "details": [
+        "水彩",
+        "带叶",
+        "朝右"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-blue-small",
+      "name": "蓝色花·小圆瓣",
+      "bounds": [
+        734,
+        299,
+        852,
+        412
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "蓝",
+      "details": [
+        "蓝花心",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-purple-round",
+      "name": "紫色花·宽圆瓣",
+      "bounds": [
+        243,
+        411,
+        433,
+        591
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "紫",
+      "details": [
+        "宽花瓣",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-pink-small",
+      "name": "粉色花·细花瓣",
+      "bounds": [
+        26,
+        517,
+        174,
+        664
+      ],
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "粉",
+      "details": [
+        "细花瓣",
+        "黄花心"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-yellow-round",
+      "name": "黄色花·宽圆瓣",
+      "bounds": [
+        556,
+        544,
+        741,
+        729
+      ],
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "黄",
+      "details": [
+        "宽花瓣",
+        "白花心"
+      ]
+    },
+    {
+      "sheet": "flowers",
+      "key": "variant-flower-tulip-side",
+      "name": "粉色郁金香·侧开",
+      "bounds": [
+        68,
+        720,
+        238,
+        926
+      ],
+      "category": "flowers",
+      "kind": "郁金香",
+      "color": "粉",
+      "details": [
+        "格纹",
+        "带叶",
+        "朝右"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-pink-fan",
+      "name": "粉色扇贝",
+      "bounds": [
+        16,
+        20,
+        270,
+        248
+      ],
+      "category": "seaside",
+      "kind": "扇贝",
+      "color": "粉",
+      "details": [
+        "竖纹",
+        "正面",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-peach-spiral",
+      "name": "蜜桃螺贝",
+      "bounds": [
+        287,
+        13,
+        470,
+        254
+      ],
+      "category": "seaside",
+      "kind": "螺贝",
+      "color": "蜜桃",
+      "details": [
+        "旋纹",
+        "朝左",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-blue-round",
+      "name": "蓝色圆螺",
+      "bounds": [
+        508,
+        50,
+        748,
+        239
+      ],
+      "category": "seaside",
+      "kind": "螺贝",
+      "color": "蓝",
+      "details": [
+        "旋纹",
+        "朝左",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-gold-spike",
+      "name": "金色骨螺",
+      "bounds": [
+        770,
+        20,
+        1005,
+        251
+      ],
+      "category": "seaside",
+      "kind": "螺贝",
+      "color": "金黄",
+      "details": [
+        "尖刺",
+        "朝左",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-starfish",
+      "name": "橘色海星",
+      "bounds": [
+        10,
+        261,
+        258,
+        488
+      ],
+      "category": "seaside",
+      "kind": "海星",
+      "color": "橘",
+      "details": [
+        "点纹",
+        "五角"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-speckled",
+      "name": "斑点宝螺",
+      "bounds": [
+        286,
+        291,
+        482,
+        490
+      ],
+      "category": "seaside",
+      "kind": "宝螺",
+      "color": "米棕",
+      "details": [
+        "斑点",
+        "斜向",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-lilac-fan",
+      "name": "淡紫扇贝",
+      "bounds": [
+        523,
+        271,
+        770,
+        493
+      ],
+      "category": "seaside",
+      "kind": "扇贝",
+      "color": "紫",
+      "details": [
+        "竖纹",
+        "正面",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-aqua-spiral",
+      "name": "青蓝塔螺",
+      "bounds": [
+        783,
+        261,
+        980,
+        499
+      ],
+      "category": "seaside",
+      "kind": "螺贝",
+      "color": "青蓝",
+      "details": [
+        "条纹",
+        "朝左",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-cream-fan",
+      "name": "奶油扇贝",
+      "bounds": [
+        15,
+        514,
+        261,
+        736
+      ],
+      "category": "seaside",
+      "kind": "扇贝",
+      "color": "奶油",
+      "details": [
+        "竖纹",
+        "正面",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-pearl",
+      "name": "粉贝与珍珠",
+      "bounds": [
+        279,
+        537,
+        517,
+        754
+      ],
+      "category": "seaside",
+      "kind": "珍珠贝",
+      "color": "粉",
+      "details": [
+        "开口",
+        "珍珠",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-aqua-fan",
+      "name": "青蓝扇贝",
+      "bounds": [
+        531,
+        525,
+        783,
+        739
+      ],
+      "category": "seaside",
+      "kind": "扇贝",
+      "color": "青蓝",
+      "details": [
+        "竖纹",
+        "正面",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "seaside",
+      "key": "variant-shell-purple-spiral",
+      "name": "紫色塔螺",
+      "bounds": [
+        14,
+        757,
+        242,
+        1005
+      ],
+      "category": "seaside",
+      "kind": "螺贝",
+      "color": "紫",
+      "details": [
+        "条纹",
+        "朝左",
+        "贝壳"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-gold-smile",
+      "name": "金星·微笑",
+      "bounds": [
+        15,
+        8,
+        250,
+        199
+      ],
+      "category": "stars",
+      "kind": "表情星",
+      "color": "金黄",
+      "details": [
+        "微笑",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-blue-wink",
+      "name": "蓝星·眨眼",
+      "bounds": [
+        271,
+        8,
+        506,
+        199
+      ],
+      "category": "stars",
+      "kind": "表情星",
+      "color": "蓝",
+      "details": [
+        "眨眼",
+        "朝左"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-purple-smile",
+      "name": "紫星·开心",
+      "bounds": [
+        527,
+        8,
+        762,
+        199
+      ],
+      "category": "stars",
+      "kind": "表情星",
+      "color": "紫",
+      "details": [
+        "开心",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-pink-blush",
+      "name": "粉星·眯眼",
+      "bounds": [
+        15,
+        213,
+        250,
+        404
+      ],
+      "category": "stars",
+      "kind": "表情星",
+      "color": "粉",
+      "details": [
+        "眯眼",
+        "脸红"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-gold-cutout",
+      "name": "金星·镂空",
+      "bounds": [
+        271,
+        213,
+        506,
+        404
+      ],
+      "category": "stars",
+      "kind": "装饰星",
+      "color": "金黄",
+      "details": [
+        "镂空",
+        "白心"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-blue-dots",
+      "name": "蓝星·点点",
+      "bounds": [
+        527,
+        213,
+        762,
+        404
+      ],
+      "category": "stars",
+      "kind": "装饰星",
+      "color": "蓝",
+      "details": [
+        "点纹",
+        "白点"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-green-smile",
+      "name": "绿星·微笑",
+      "bounds": [
+        783,
+        213,
+        1018,
+        404
+      ],
+      "category": "stars",
+      "kind": "表情星",
+      "color": "绿",
+      "details": [
+        "微笑",
+        "正面"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-purple-sleep",
+      "name": "紫星·睡着",
+      "bounds": [
+        15,
+        418,
+        250,
+        609
+      ],
+      "category": "stars",
+      "kind": "表情星",
+      "color": "紫",
+      "details": [
+        "睡着",
+        "闭眼"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-gold-shy",
+      "name": "金星·害羞",
+      "bounds": [
+        271,
+        418,
+        506,
+        609
+      ],
+      "category": "stars",
+      "kind": "表情星",
+      "color": "金黄",
+      "details": [
+        "脸红",
+        "害羞"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-pink-stitch",
+      "name": "粉星·缝线心",
+      "bounds": [
+        527,
+        418,
+        762,
+        609
+      ],
+      "category": "stars",
+      "kind": "装饰星",
+      "color": "粉",
+      "details": [
+        "缝线",
+        "爱心"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-blue-orbit",
+      "name": "蓝星·星环",
+      "bounds": [
+        783,
+        418,
+        1018,
+        609
+      ],
+      "category": "stars",
+      "kind": "星环",
+      "color": "蓝",
+      "details": [
+        "星环",
+        "高光"
+      ]
+    },
+    {
+      "sheet": "stars",
+      "key": "variant-star-cream-bow",
+      "name": "奶油星·蓝领结",
+      "bounds": [
+        783,
+        623,
+        1018,
+        814
+      ],
+      "category": "stars",
+      "kind": "装饰星",
+      "color": "奶油",
+      "details": [
+        "蓝领结",
+        "留白"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-heart-dark",
+      "name": "深绿心形叶",
+      "bounds": [
+        70,
+        102,
+        246,
+        282
+      ],
+      "category": "leaves",
+      "kind": "心形叶",
+      "color": "深绿",
+      "details": [
+        "叶脉",
+        "朝上"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-sprig-olive",
+      "name": "橄榄绿枝叶",
+      "bounds": [
+        373,
+        16,
+        526,
+        166
+      ],
+      "category": "leaves",
+      "kind": "尖叶枝",
+      "color": "橄榄绿",
+      "details": [
+        "交错",
+        "朝右"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-monstera-dark",
+      "name": "深绿龟背叶",
+      "bounds": [
+        471,
+        129,
+        763,
+        377
+      ],
+      "category": "leaves",
+      "kind": "龟背叶",
+      "color": "深绿",
+      "details": [
+        "开孔",
+        "朝右"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-eucalyptus",
+      "name": "圆叶小枝",
+      "bounds": [
+        509,
+        381,
+        682,
+        599
+      ],
+      "category": "leaves",
+      "kind": "圆叶枝",
+      "color": "灰绿",
+      "details": [
+        "圆叶",
+        "朝右"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-heart-light",
+      "name": "浅绿长心叶",
+      "bounds": [
+        230,
+        306,
+        458,
+        549
+      ],
+      "category": "leaves",
+      "kind": "心形叶",
+      "color": "浅绿",
+      "details": [
+        "叶脉",
+        "朝上"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-sprig-wide",
+      "name": "舒展绿枝",
+      "bounds": [
+        706,
+        359,
+        962,
+        613
+      ],
+      "category": "leaves",
+      "kind": "尖叶枝",
+      "color": "绿",
+      "details": [
+        "交错",
+        "朝右"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-curly-vine",
+      "name": "弯弯藤蔓",
+      "bounds": [
+        321,
+        524,
+        582,
+        702
+      ],
+      "category": "leaves",
+      "kind": "藤蔓",
+      "color": "浅绿",
+      "details": [
+        "弯曲",
+        "横向"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-branch-long",
+      "name": "长枝小叶",
+      "bounds": [
+        267,
+        653,
+        490,
+        925
+      ],
+      "category": "leaves",
+      "kind": "尖叶枝",
+      "color": "灰绿",
+      "details": [
+        "长枝",
+        "朝左"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-yellow-buds",
+      "name": "金色小花苞",
+      "bounds": [
+        562,
+        692,
+        684,
+        835
+      ],
+      "category": "leaves",
+      "kind": "花苞枝",
+      "color": "金黄",
+      "details": [
+        "花苞",
+        "朝上"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-heart-bright",
+      "name": "嫩绿心形叶",
+      "bounds": [
+        694,
+        620,
+        876,
+        812
+      ],
+      "category": "leaves",
+      "kind": "心形叶",
+      "color": "嫩绿",
+      "details": [
+        "叶脉",
+        "朝上"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-single",
+      "name": "一片浅绿",
+      "bounds": [
+        490,
+        745,
+        628,
+        905
+      ],
+      "category": "leaves",
+      "kind": "单叶",
+      "color": "浅绿",
+      "details": [
+        "叶脉",
+        "朝左"
+      ]
+    },
+    {
+      "sheet": "leaves",
+      "key": "variant-leaf-small-sprig",
+      "name": "嫩绿小枝",
+      "bounds": [
+        871,
+        568,
+        988,
+        714
+      ],
+      "category": "leaves",
+      "kind": "圆叶枝",
+      "color": "嫩绿",
+      "details": [
+        "圆叶",
+        "朝上"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-bow-pink-gingham",
+      "name": "粉格大领结",
+      "bounds": [
+        8,
+        8,
+        285,
+        232
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉",
+      "details": [
+        "格纹",
+        "长尾"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-bow-cream-heart",
+      "name": "奶油心扣领结",
+      "bounds": [
+        290,
+        10,
+        532,
+        234
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "奶油",
+      "details": [
+        "心扣",
+        "长尾"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-bow-pink-soft",
+      "name": "粉色柔带领结",
+      "bounds": [
+        540,
+        8,
+        791,
+        241
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉",
+      "details": [
+        "水彩",
+        "长尾"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-bow-blue-lace",
+      "name": "蓝蕾丝心扣领结",
+      "bounds": [
+        789,
+        8,
+        1018,
+        232
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "蓝",
+      "details": [
+        "蕾丝",
+        "心扣"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-bow-pink-satin",
+      "name": "粉色丝带结",
+      "bounds": [
+        9,
+        387,
+        266,
+        593
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉",
+      "details": [
+        "素色",
+        "长尾"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-bow-blue-ribbon",
+      "name": "蓝色细丝带",
+      "bounds": [
+        252,
+        386,
+        446,
+        590
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "蓝",
+      "details": [
+        "细带",
+        "长尾"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-bow-pink-dots",
+      "name": "粉色点点领结",
+      "bounds": [
+        446,
+        386,
+        661,
+        582
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉",
+      "details": [
+        "点纹",
+        "长尾"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-bow-cream-small",
+      "name": "奶油小领结",
+      "bounds": [
+        651,
+        380,
+        855,
+        585
+      ],
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "奶油",
+      "details": [
+        "素色",
+        "长尾"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-heart-floral",
+      "name": "花朵刺绣心",
+      "bounds": [
+        10,
+        235,
+        230,
+        373
+      ],
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉",
+      "details": [
+        "刺绣",
+        "花朵"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-heart-pink-dots",
+      "name": "粉色点点心",
+      "bounds": [
+        228,
+        240,
+        357,
+        369
+      ],
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉",
+      "details": [
+        "点纹",
+        "圆润"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-heart-lace-bow",
+      "name": "蕾丝领结心",
+      "bounds": [
+        357,
+        235,
+        556,
+        371
+      ],
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉",
+      "details": [
+        "蕾丝",
+        "领结"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-heart-pink-soft",
+      "name": "粉色水彩心",
+      "bounds": [
+        558,
+        241,
+        717,
+        369
+      ],
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉",
+      "details": [
+        "水彩",
+        "圆润"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-heart-blue-gingham",
+      "name": "蓝色格纹心",
+      "bounds": [
+        716,
+        236,
+        879,
+        373
+      ],
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "蓝",
+      "details": [
+        "格纹",
+        "缝线"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-heart-pink-gingham",
+      "name": "粉色格纹心",
+      "bounds": [
+        48,
+        585,
+        190,
+        701
+      ],
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉",
+      "details": [
+        "格纹",
+        "圆润"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-heart-pink-stitch",
+      "name": "粉色涂鸦心",
+      "bounds": [
+        228,
+        589,
+        338,
+        688
+      ],
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉",
+      "details": [
+        "涂鸦",
+        "圆润"
+      ]
+    },
+    {
+      "sheet": "sentiments",
+      "key": "variant-heart-wings",
+      "name": "有翅膀的爱心",
+      "bounds": [
+        377,
+        583,
+        555,
+        680
+      ],
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉",
+      "details": [
+        "翅膀",
+        "心扣"
+      ]
+    }
+  ],
+  "legacy": {
+    "paw": {
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "粉",
+      "details": [
+        "肉垫",
+        "正面"
+      ]
+    },
+    "stitched-paw": {
+      "category": "cats",
+      "kind": "猫爪",
+      "color": "棕",
+      "details": [
+        "虚线",
+        "正面"
+      ]
+    },
+    "cat": {
+      "category": "cats",
+      "kind": "虎斑猫",
+      "color": "灰白",
+      "details": [
+        "微笑",
+        "正面"
+      ]
+    },
+    "blossom": {
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "粉",
+      "details": [
+        "黄花心"
+      ]
+    },
+    "blue-flower": {
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "蓝",
+      "details": [
+        "白花心"
+      ]
+    },
+    "peach-flower": {
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "蜜桃",
+      "details": [
+        "黄花心"
+      ]
+    },
+    "purple-flower": {
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "紫",
+      "details": [
+        "黄花心"
+      ]
+    },
+    "round-flower": {
+      "category": "flowers",
+      "kind": "圆瓣花",
+      "color": "奶油",
+      "details": [
+        "黄花心"
+      ]
+    },
+    "pink-flower": {
+      "category": "flowers",
+      "kind": "五瓣花",
+      "color": "粉",
+      "details": [
+        "圆瓣"
+      ]
+    },
+    "lilac-shell": {
+      "category": "seaside",
+      "kind": "扇贝",
+      "color": "紫",
+      "details": [
+        "竖纹",
+        "贝壳"
+      ]
+    },
+    "pink-shell": {
+      "category": "seaside",
+      "kind": "扇贝",
+      "color": "粉",
+      "details": [
+        "竖纹",
+        "贝壳"
+      ]
+    },
+    "blue-shell": {
+      "category": "seaside",
+      "kind": "扇贝",
+      "color": "蓝",
+      "details": [
+        "竖纹",
+        "贝壳"
+      ]
+    },
+    "soft-star": {
+      "category": "stars",
+      "kind": "装饰星",
+      "color": "奶油",
+      "details": [
+        "水彩"
+      ]
+    },
+    "stitched-star": {
+      "category": "stars",
+      "kind": "装饰星",
+      "color": "粉",
+      "details": [
+        "缝线"
+      ]
+    },
+    "gold-star": {
+      "category": "stars",
+      "kind": "装饰星",
+      "color": "金黄",
+      "details": [
+        "水彩"
+      ]
+    },
+    "little-star": {
+      "category": "stars",
+      "kind": "装饰星",
+      "color": "金黄",
+      "details": [
+        "小巧"
+      ]
+    },
+    "paired-leaves": {
+      "category": "leaves",
+      "kind": "双叶",
+      "color": "绿",
+      "details": [
+        "对生"
+      ]
+    },
+    "leaf": {
+      "category": "leaves",
+      "kind": "单叶",
+      "color": "绿",
+      "details": [
+        "叶脉"
+      ]
+    },
+    "wide-leaves": {
+      "category": "leaves",
+      "kind": "双叶",
+      "color": "嫩绿",
+      "details": [
+        "圆润"
+      ]
+    },
+    "twig": {
+      "category": "leaves",
+      "kind": "尖叶枝",
+      "color": "灰绿",
+      "details": [
+        "交错"
+      ]
+    },
+    "tall-leaf": {
+      "category": "leaves",
+      "kind": "单叶",
+      "color": "绿",
+      "details": [
+        "修长"
+      ]
+    },
+    "sprout": {
+      "category": "leaves",
+      "kind": "嫩芽",
+      "color": "嫩绿",
+      "details": [
+        "对生"
+      ]
+    },
+    "pink-bow": {
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "粉",
+      "details": [
+        "素色"
+      ]
+    },
+    "blue-bow": {
+      "category": "sentiments",
+      "kind": "蝴蝶结",
+      "color": "蓝",
+      "details": [
+        "格纹"
+      ]
+    },
+    "small-heart": {
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉",
+      "details": [
+        "小巧"
+      ]
+    },
+    "blue-heart": {
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "蓝",
+      "details": [
+        "素色"
+      ]
+    },
+    "large-heart": {
+      "category": "sentiments",
+      "kind": "爱心",
+      "color": "粉",
+      "details": [
+        "圆润"
+      ]
+    }
+  }
+}
