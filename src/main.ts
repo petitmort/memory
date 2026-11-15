@@ -192,6 +192,10 @@ function syncControls() {
   scene?.setInteractionEnabled?.(interactive);
   if (!interactive) scene?.clearInteractionFeedback?.();
   if (!inRoom) exploration.hide();
+  // Keep one visual profile through reading and room loss. Older browsers
+  // without registered custom properties retain the unchanged entry gradient.
+  if (inRoom && sceneAvailable && typeof CSSPropertyRule !== "undefined")
+    document.body.dataset.roomVignette = "ready";
   document.body.dataset.stage = flow.getState();
   el("enter").setAttribute("aria-busy", String(["clearing", "entering"].includes(flow.getState())));
   const status = changingView ? "视线正缓缓移向另一处…" : ({

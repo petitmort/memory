@@ -28,7 +28,8 @@ async function observe(page: Page) {
 const snapshot=(page:Page)=>page.evaluate(()=>(window as any).__overall.snapshot());
 
 for(const [width,height] of [[1280,800],[1920,1080]])test(`coherent room framing keeps the cat clickable and returns continuously to the same pose ${width}`,async({browser})=>{
-  test.setTimeout(120000);
+  // Keep full-resolution rendering and all assertions on software WebGL.
+  test.setTimeout(300000);
   const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'}),page=await context.newPage(),errors=await observe(page);
   try{
     await page.goto('/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envDensity=0&envBirds=0');
@@ -43,8 +44,8 @@ for(const [width,height] of [[1280,800],[1920,1080]])test(`coherent room framing
     expect(initial.fov).toBe(50);expect(initial.p[1]).toBe(1.65);
     expect(initial.catHit).toBe('cat');expect(initial.bouquetHit).toBe('bouquet');
     expect(await page.evaluate(p=>document.elementFromPoint(p.x,p.y)?.tagName,initial.catPoint)).toBe('CANVAS');
-    await page.mouse.click(initial.catPoint.x,initial.catPoint.y);await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','true');
-    await expect(page.locator('#pet-cat')).toBeVisible();await page.locator('#cozy-view').click();await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','false');
+    await page.mouse.click(initial.catPoint.x,initial.catPoint.y);await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','true',{timeout:45000});
+    await expect(page.locator('#pet-cat')).toBeVisible();await page.locator('#cozy-view').click();await expect(page.locator('#cozy-view')).toHaveAttribute('aria-pressed','false',{timeout:45000});
     for(const key of ['p','t'])for(let axis=0;axis<3;axis++)expect((await snapshot(page))[key][axis]).toBeCloseTo(initial[key][axis],8);
     const flower=(await snapshot(page)).bouquetPoint;
     await page.mouse.click(flower.x,flower.y);await expect(page.locator('#reader')).toHaveAttribute('data-phase','ready',{timeout:45000});
