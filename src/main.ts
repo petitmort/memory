@@ -300,6 +300,8 @@ async function enter() {
   el("door-caption").classList.add("hidden");
   el<HTMLButtonElement>("enter").disabled = true;
   sound.onRoomEntry();
+  // Enter the sea mix even when the record is muted, loading or unavailable.
+  sound.updateContext();
   try {
     await scene?.enterRoom();
   } catch (error) {

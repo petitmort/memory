@@ -2,6 +2,7 @@ import type { WeatherState } from "./weather-controller";
 import type { StormFrame } from "./storm-controller";
 
 export type EnvironmentSoundFrame = { timestamp: number; weather: WeatherState; storm: StormFrame; active: boolean };
+export type EnvironmentSoundSpace = "courtyard" | "interior";
 const clamp = (n: number) => Math.max(0, Math.min(1, n));
 
 /** A strike must actually be observed; resume/seek/unmute never replays missed thunder. */
@@ -34,7 +35,8 @@ export function createWeatherSoundscape(context: BaseAudioContext, buffer: Audio
   };
   const gate = createThunderGate();
   let disposed = false, audible = false, playingMusic = false, inRoom = false, updates = 0, thunders = 0;
-  let targetRain = 0, targetWind = 0, lastMix = -Infinity;
+  let space: EnvironmentSoundSpace = "interior";
+  let rainLevel = 0, targetRain = 0, targetWind = 0, lastMix = -Infinity;
   const loop = (filters: readonly [BiquadFilterType, number][], offset: number) => {
     // Track every allocation before a property assignment or connection can fail.
     const source = own(context.createBufferSource()); sources.push(source); offsets.push(offset);
@@ -66,12 +68,20 @@ export function createWeatherSoundscape(context: BaseAudioContext, buffer: Audio
     parameter.cancelScheduledValues(context.currentTime); parameter.setTargetAtTime(value, context.currentTime, seconds);
   };
   function quietThunder() { target(thunder.gain, 0, .035); gate.reset(); }
+  function mixRain() {
+    targetRain = space === "courtyard" ? 0 : rainLevel;
+    target(rain.gain, targetRain, .65);
+  }
   return {
-    setContext(enabled: boolean, music: boolean, room: boolean) {
+    setContext(enabled: boolean, music: boolean, room: boolean, nextSpace: EnvironmentSoundSpace = "interior") {
       if (disposed) return;
-      const changed = enabled !== audible || music !== playingMusic || room !== inRoom;
-      audible = enabled; playingMusic = music; inRoom = room;
-      if (changed) target(master.gain, enabled ? (music ? .075 : room ? .16 : .09) : 0, enabled ? .7 : .045);
+      const spaceChanged = nextSpace !== space;
+      const changed = enabled !== audible || music !== playingMusic || room !== inRoom || spaceChanged;
+      audible = enabled; playingMusic = music; inRoom = room; space = nextSpace;
+      // Reuse the distant wind loop outside; keep the established interior mix.
+      const level = space === "courtyard" ? (music ? .015 : .03) : (music ? .075 : room ? .16 : .09);
+      if (changed) target(master.gain, enabled ? level : 0, enabled ? .7 : .045);
+      if (spaceChanged) mixRain();
       if (!enabled || !room) quietThunder();
     },
     update(frame: EnvironmentSoundFrame) {
@@ -82,9 +92,9 @@ export function createWeatherSoundscape(context: BaseAudioContext, buffer: Audio
         lastMix = frame.timestamp;
         const wet = frame.weather.precipitation * (1 - frame.weather.snow);
         const gust = .88 + .08 * Math.sin(frame.timestamp / 4300) + .04 * Math.sin(frame.timestamp / 1700);
-        targetRain = Math.pow(clamp(wet), .8) * .85;
+        rainLevel = Math.pow(clamp(wet), .8) * .85;
         targetWind = Math.pow(clamp((frame.weather.windSpeed - 1.5) / 12), 1.3) * .6 * gust;
-        target(rain.gain, targetRain, .65); target(wind.gain, targetWind, 1.1);
+        mixRain(); target(wind.gain, targetWind, 1.1);
       }
       if (gate.update(frame, audible && inRoom && context.state === "running")) {
         thunders++;
@@ -99,7 +109,7 @@ export function createWeatherSoundscape(context: BaseAudioContext, buffer: Audio
         thunder.gain.linearRampToValueAtTime(0, now + 7);
       }
     },
-    snapshot() { return { audible, inRoom, playingMusic, targetRain, targetWind, updates, thunders, sources: sources.length, disposed }; },
+    snapshot() { return { audible, inRoom, playingMusic, space, targetRain, targetWind, updates, thunders, sources: sources.length, disposed }; },
     dispose() {
       if (disposed) return;
       disposed = true; gate.reset();
