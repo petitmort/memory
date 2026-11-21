@@ -24,10 +24,10 @@ function contact(amount: number, side: PierSide) {
     tangentX: p.tangentX, tangentZ: p.tangentZ, normalX: nx, normalZ: nz };
 }
 
-function crossing(point: ReturnType<typeof contact>, before: number, after: number, weather: PierSurfWeather): PierImpact | null {
+function crossing(point: ReturnType<typeof contact>, before: number, after: number, weather: PierSurfWeather,
+  h0 = sampleWaterHeight(point.x, point.z, before, weather) * weather.waveScale,
+  h1 = sampleWaterHeight(point.x, point.z, after, weather) * weather.waveScale): PierImpact | null {
   const threshold = .04 + weather.waveScale * .055;
-  const h0 = sampleWaterHeight(point.x, point.z, before, weather) * weather.waveScale;
-  const h1 = sampleWaterHeight(point.x, point.z, after, weather) * weather.waveScale;
   const velocity = (h1 - h0) / (after - before);
   if (h0 >= threshold || h1 < threshold || velocity < .035) return null;
   const crossingTime = before + (after - before) * (threshold - h0) / (h1 - h0);
@@ -51,13 +51,23 @@ function crossing(point: ReturnType<typeof contact>, before: number, after: numb
  * Fixed buckets make initialization, frame-rate changes and resumed views agree.
  */
 export function samplePierImpact(amount: number, side: PierSide, time: number, weather: PierSurfWeather): PierImpact | null {
-  const point = contact(amount, side), bucket = Math.floor(time / STEP);
-  let result: PierImpact | null = null;
-  for (let i = bucket - Math.ceil(HISTORY / STEP); i <= bucket; i++) {
-    const found = crossing(point, (i - 1) * STEP, i * STEP, weather);
-    if (found && found.crossingTime <= time) result = found;
+  return latestImpact(contact(amount, side), time, weather);
+}
+
+function latestImpact(point: ReturnType<typeof contact>, time: number, weather: PierSurfWeather): PierImpact | null {
+  const bucket = Math.floor(time / STEP);
+  let afterHeight = sampleWaterHeight(point.x, point.z, bucket * STEP, weather) * weather.waveScale;
+  // Only the latest completed crossing survives the original forward scan.
+  // Search newest first, reusing the identical endpoint shared by each pair.
+  for (let i = bucket; i >= bucket - Math.ceil(HISTORY / STEP); i--) {
+    const before = (i - 1) * STEP;
+    const beforeHeight = sampleWaterHeight(point.x, point.z, before, weather) * weather.waveScale;
+    const found = crossing(point, before, i * STEP, weather, beforeHeight, afterHeight);
+    if (found && found.crossingTime <= time)
+      return time - found.crossingTime < LIFETIME ? found : null;
+    afterHeight = beforeHeight;
   }
-  return result && time - result.crossingTime < LIFETIME ? result : null;
+  return null;
 }
 
 export function samplePierImpactShape(impact: PierImpact, time: number, reduced = false) {
@@ -184,7 +194,7 @@ export function createPierSurf() {
   const points = Array.from({ length: CAPACITY }, (_, i) => contact(.1 + .76 * (i % CONTACTS_PER_SIDE) / (CONTACTS_PER_SIDE - 1), i < CONTACTS_PER_SIDE ? 1 : -1));
   const impacts: (PierImpact | null)[] = points.map(() => null), matrix = new THREE.Matrix4();
   let lastBucket = -Infinity, lastTime = -Infinity, lastLow = false, lastReduced = false;
-  let disposed = false, activeSheets = 0, activeFoam = 0, activeDrops = 0;
+  let disposed = false, activeSheets = 0, activeFoam = 0, activeDrops = 0, stylesInitialized = false;
   const pose = (index: number, point: typeof points[number]) => {
     matrix.set(point.tangentX, 0, point.normalX, point.x, 0, 1, 0, 0, point.tangentZ, 0, point.normalZ, point.z, 0, 0, 0, 1);
     sheets.setMatrixAt(index, matrix); foam.setMatrixAt(index, matrix);
@@ -197,10 +207,11 @@ export function createPierSurf() {
       if (disposed) return;
       const bucket = Math.floor(time / STEP), reset = !Number.isFinite(lastBucket) || time < lastTime || time - lastTime > .65;
       activeSheets = activeFoam = activeDrops = 0;
-      let packed = 0;
+      let packed = 0, stylesChanged = false;
+      const layoutChanged = !stylesInitialized || low !== lastLow;
       for (let i = 0; i < points.length; i++) {
         const point = points[i];
-        if (reset) impacts[i] = samplePierImpact(point.amount, point.side, time, weather);
+        if (reset) impacts[i] = latestImpact(point, time, weather);
         else if (bucket > lastBucket) for (let step = lastBucket + 1; step <= bucket; step++) {
           const hit = crossing(point, (step - 1) * STEP, step * STEP, weather);
           if (hit) impacts[i] = hit;
@@ -211,9 +222,18 @@ export function createPierSurf() {
         let shape: ReturnType<typeof samplePierImpactShape> | undefined;
         if (impact) shape = samplePierImpactShape(impact, time, reduced);
         const alpha = shape?.sheetAlpha ?? 0, foamAlpha = shape?.foamAlpha ?? 0;
-        sheetStates.set([currentHeight, shape?.runup ?? 0, shape?.curl ?? 0, alpha], packed * 4);
-        sheetStyles.set([impact?.width ?? 2, i * 1.713, 0, 0], packed * 4);
-        foamStates.set([(impact?.width ?? 2) * 1.13, currentHeight + .035, foamAlpha, shape?.foamSpread ?? 0], packed * 4);
+        const offset = packed * 4, previousWidth = sheetStyles[offset];
+        sheetStates[offset] = currentHeight; sheetStates[offset + 1] = shape?.runup ?? 0;
+        sheetStates[offset + 2] = shape?.curl ?? 0; sheetStates[offset + 3] = alpha;
+        sheetStyles[offset] = impact?.width ?? 2;
+        if (sheetStyles[offset] !== previousWidth) stylesChanged = true;
+        if (layoutChanged) {
+          const previousPhase = sheetStyles[offset + 1];
+          sheetStyles[offset + 1] = i * 1.713;
+          if (sheetStyles[offset + 1] !== previousPhase) stylesChanged = true;
+        }
+        foamStates[offset] = (impact?.width ?? 2) * 1.13; foamStates[offset + 1] = currentHeight + .035;
+        foamStates[offset + 2] = foamAlpha; foamStates[offset + 3] = shape?.foamSpread ?? 0;
         if (alpha > .015) activeSheets++; if (foamAlpha > .015) activeFoam++;
         for (let j = 0; j < DROPS_PER_CONTACT; j++) {
           const index = packed * DROPS_PER_CONTACT + j;
@@ -226,9 +246,10 @@ export function createPierSurf() {
       }
       sheets.count = foam.count = packed; dropGeometry.setDrawRange(0, packed * DROPS_PER_CONTACT);
       if (low !== lastLow) sheets.instanceMatrix.needsUpdate = foam.instanceMatrix.needsUpdate = true;
-      stateAttribute.needsUpdate = styleAttribute.needsUpdate = foamAttribute.needsUpdate = positionAttribute.needsUpdate = dropAttribute.needsUpdate = true;
+      stateAttribute.needsUpdate = foamAttribute.needsUpdate = positionAttribute.needsUpdate = dropAttribute.needsUpdate = true;
+      if (stylesChanged) styleAttribute.needsUpdate = true;
       for (const material of [sheetMaterial, foamMaterial, dropMaterial]) { material.uniforms.time.value = time; material.uniforms.daylight.value = clamp(daylight, 0, 1); }
-      lastBucket = bucket; lastTime = time; lastLow = low; lastReduced = reduced;
+      lastBucket = bucket; lastTime = time; lastLow = low; lastReduced = reduced; stylesInitialized = true;
     },
     snapshot() { return { sheets: activeSheets, foam: activeFoam, droplets: activeDrops, time: lastTime,
       contacts: impacts.filter((impact): impact is PierImpact => !!impact && lastTime - impact.crossingTime < LIFETIME).map(impact => ({ ...impact, ...samplePierImpactShape(impact, lastTime, lastReduced) })) }; },
