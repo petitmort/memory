@@ -1,16 +1,26 @@
 import { test, expect } from '@playwright/test';
+import { createHash } from 'node:crypto';
+import { transformWithEsbuild } from 'vite';
+import { interactionRaycastReference } from './fixtures/interaction-raycast-reference';
 
-test('visible room objects share immediate feedback and cancelled gestures never replay after interruption', async ({ browser }) => {
-  test.setTimeout(240000);
+test('visible room objects share immediate feedback and cancelled gestures never replay after interruption', async ({ browser }, testInfo) => {
+  // Full native-WebGL journey needs a larger total budget on software-rendered CI.
+  test.setTimeout(480000);
   const context = await browser.newContext({ viewport: { width: 1100, height: 800 }, hasTouch: true, reducedMotion: 'reduce' });
   const page = await context.newPage(), errors: string[] = [];
   page.setDefaultTimeout(15000);
   page.on('pageerror', error => errors.push(error.message));
+  expect(createHash('sha256').update(interactionRaycastReference).digest('hex')).toBe('7d3afe7919ac8dbb91b201405f4e8f5483e4ec2351e29e236d6858092fb852af');
+  const { code: previousInteraction } = await transformWithEsbuild(interactionRaycastReference
+    .replaceAll('visibleMesh(', 'visibleMeshBefore(')
+    .replaceAll('within(', 'withinBefore(')
+    .replaceAll('resolveInteraction(', 'resolveInteractionBefore('), 'interaction-before.ts', { loader: 'ts', target: 'es2022' });
   await page.route(/\/src\/scene\.ts(?:\?.*)?$/, async route => {
     const response = await route.fetch(); let body = await response.text();
     const marker = 'const ray = new THREE.Raycaster();';
     expect(body).toContain(marker);
     body = body.replace(marker, `
+      ${previousInteraction}
       const hotspotStats = { records: 0, interactions: 0, catRequests: 0, pets: 0, pointerId: 0 };
       const originalInteract = onInteract;
       onInteract = () => { hotspotStats.interactions++; originalInteract(); };
@@ -32,6 +42,37 @@ test('visible room objects share immediate feedback and cancelled gestures never
         return local.applyMatrix4(objects[kind].matrixWorld);
       };
       window.__hotspots = {
+        benchmark() {
+          if (!canInteract() || current !== 'room') throw new Error('Measure only the ready room');
+          scene.updateMatrixWorld(true); camera.updateMatrixWorld(true);
+          const points = [];
+          for (const kind of ['record', 'cat', 'bouquet', 'book']) {
+            const p = anchor(kind).project(camera), x = (p.x + 1) * innerWidth / 2, y = (1 - p.y) * innerHeight / 2;
+            for (const dx of [-6, 0, 6]) points.push({ clientX: x + dx, clientY: y });
+          }
+          points.push({clientX:12,clientY:100},{clientX:innerWidth-12,clientY:100},{clientX:innerWidth/2,clientY:innerHeight/3});
+          const variants = { before:resolveInteractionBefore, after:resolveInteraction }, originals = [], samples = [];
+          let calls = 0, meshes = 0, visibleMeshes = 0;
+          scene.traverse(object => {
+            if (object instanceof THREE.Mesh) { meshes++; if (visibleMeshBefore(object)) visibleMeshes++; }
+            const native = object.raycast; originals.push([object, native]);
+            object.raycast = function(...args) { calls++; return native.apply(this, args); };
+          });
+          try {
+            for (const variant of ['before','after']) for (const point of points) variants[variant](point);
+            for (let repeat = 0; repeat < 3; repeat++) {
+              for (const variant of (repeat % 2 ? ['after','before'] : ['before','after'])) {
+                const values = []; calls = 0; const at = performance.now();
+                for (let round = 0; round < 2; round++) for (const point of points) values.push(variants[variant](point) ?? null);
+                samples.push({ variant, repeat:repeat+1, queries:points.length*2, elapsedMs:performance.now()-at, raycastCalls:calls, values });
+              }
+            }
+          } finally { for (const [object, native] of originals) object.raycast = native; }
+          const median = variant => samples.filter(sample=>sample.variant===variant).map(sample=>sample.elapsedMs).sort((a,b)=>a-b)[1];
+          return { viewport:[innerWidth,innerHeight], stage:current, nookFocused, bouquetParked, meshes, visibleMeshes, points, samples,
+            medianMs:{before:median('before'),after:median('after')},
+            method:'Same real room geometry and camera in one synchronous task; native rays, one warm-up per version,3alternatingrepeats,30queries per batch. Both versions have identical raycast counter wrappers, restored in finally. CPU interaction diagnosis only; no FPS or GPU claim.' };
+        },
         point(kind) {
           const projected = anchor(kind).project(camera);
           return { x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2 };
@@ -81,6 +122,10 @@ test('visible room objects share immediate feedback and cancelled gestures never
     await page.locator('#enter').click();
     await expect(page.locator('#room-ui')).toBeVisible({ timeout: 30000 });
     await expect(feedback).toBeHidden();
+    const interactionBenchmark = await page.evaluate(() => (window as any).__hotspots.benchmark());
+    for (const sample of interactionBenchmark.samples) expect(sample.values).toEqual(interactionBenchmark.samples[0].values);
+    expect(interactionBenchmark.samples).toHaveLength(6);
+    await testInfo.attach('room-interaction-benchmark', { body:JSON.stringify(interactionBenchmark), contentType:'application/json' });
 
     await press('record'); await page.mouse.up();
     await expect(feedback).toHaveAttribute('data-phase', 'activate');
