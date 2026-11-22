@@ -94,17 +94,20 @@ export function createSoundController(options: SoundOptions) {
   function updateContext() {
     if (disposed) return;
     const state = options.getState(), available = options.getSceneAvailable();
-    weatherAudio?.setContext(soundEnabled && available && !document.hidden && ["room", "opening", "reading", "closing"].includes(state), recordState.status === "playing", state === "room");
-    catVoice?.setEnabled(soundEnabled && available && state === "room" && !document.hidden);
+    const courtyard = ["fog", "clearing", "door"].includes(state);
+    const interior = ["entering", "room", "opening", "reading", "closing"].includes(state);
+    const audible = soundEnabled && audioUnlocked && available && !document.hidden;
+    weatherAudio?.setContext(audible && (courtyard || interior), recordState.status === "playing", state === "room", courtyard ? "courtyard" : "interior");
+    catVoice?.setEnabled(audible && state === "room");
     recordMusic.setMuted(!soundEnabled);
     if (!available && (recordState.status === "playing" || recordState.status === "loading")) recordMusic.pause();
     if (state !== "room") panel.classList.add("hidden");
     if (!audio || !gain || audio.state === "closed") return;
     gain.gain.cancelScheduledValues(audio.currentTime);
     gain.gain.setTargetAtTime(
-      soundEnabled && available && ["room", "opening", "reading", "closing"].includes(state)
+      audible && interior
         ? (recordState.status === "playing" ? .032 : .065) : 0,
-      audio.currentTime, 1.2,
+      audio.currentTime, audible && interior ? 1.2 : .045,
     );
   }
   function onRecordState(next: RecordMusicState) {
@@ -283,6 +286,7 @@ export function createSoundController(options: SoundOptions) {
       toast("此浏览器暂时无法播放环境声");
       audioUnlocked = false;
       catVoice?.setEnabled(false);
+      updateContext();
     }
   }
   function stopCat() {
@@ -316,8 +320,8 @@ export function createSoundController(options: SoundOptions) {
     if (!soundEnabled) { toast("声音已关闭，音乐保留当前播放进度。"); return; }
     await unlock();
     if (disposed || !soundEnabled || !audioUnlocked) return;
-    toast(["fog", "clearing", "door", "entering"].includes(options.getState())
-      ? "海浪声将在进入房间后响起" : "声音已开启");
+    toast(["fog", "clearing", "door"].includes(options.getState())
+      ? "声音已开启，远处的风正轻轻吹来" : "声音已开启");
   }
   function visibilityChanged() {
     if (disposed) return;
@@ -330,6 +334,7 @@ export function createSoundController(options: SoundOptions) {
       if (soundEnabled && audioUnlocked) void audio?.resume().catch(() => {
         audioUnlocked = false;
         catVoice?.setEnabled(false);
+        updateContext();
       });
     }
   }

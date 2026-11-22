@@ -54,7 +54,7 @@ export function createDeskClock() {
   blocks("clock-colon", markings, [[0, .13, .0428, .0035, .005, .001], [0, .094, .0428, .0035, .005, .001]]);
 
   const canvas = document.createElement("canvas"); canvas.width = ATLAS_WIDTH; canvas.height = ATLAS_HEIGHT;
-  const context = canvas.getContext("2d");
+  const context = canvas.getContext("2d", { willReadFrequently: true });
   if (!context) {
     group.traverse(object => { if (object instanceof THREE.InstancedMesh) object.dispose(); });
     for (const geometry of geometries) geometry.dispose();
@@ -66,32 +66,79 @@ export function createDeskClock() {
   atlas.colorSpace = THREE.SRGBColorSpace; atlas.anisotropy = 4;
   atlas.minFilter = THREE.LinearMipmapLinearFilter; atlas.magFilter = THREE.LinearFilter;
   let atlasUpdates = 0;
-  function drawRow(reading: Reading, row: number) {
-    const values = [reading.hour, reading.minute, reading.date];
-    for (let index = 0; index < tiles.length; index++) {
-      const tile = tiles[index], top = row * ROW_HEIGHT;
-      context!.save(); context!.beginPath(); context!.rect(tile.x, top, tile.width, ROW_HEIGHT); context!.clip();
-      const background = context!.createLinearGradient(0, top, 0, top + ROW_HEIGHT);
-      background.addColorStop(0, "#171c1a"); background.addColorStop(.49, "#111614"); background.addColorStop(1, "#1c211e");
-      context!.fillStyle = background; context!.fillRect(tile.x, top, tile.width, ROW_HEIGHT);
-      context!.fillStyle = "#efeee5"; context!.textAlign = "center"; context!.textBaseline = "middle";
-      context!.translate(tile.x + tile.width / 2, top + ROW_HEIGHT / 2 + (index < 2 ? 14 : 2));
-      if (index < 2) {
-        context!.scale(.78, 1);
-        context!.font = '200 444px "Helvetica Neue", "Arial Narrow", Arial, sans-serif';
-        context!.fillText(values[index], 0, 0, 590);
-      } else {
-        // This wide physical strip shares a square atlas row. Compensate its
-        // aspect ratio so Chinese glyphs stay upright instead of flattening.
-        context!.scale(.027 * tile.width / (.306 * ROW_HEIGHT), 1);
-        context!.font = '400 400px "PingFang SC", "Microsoft YaHei", sans-serif';
-        context!.fillText(values[index], 0, 0);
+  const printed = new Array<string | undefined>(tiles.length * 2);
+  const dirtyTiles = new Uint8Array(tiles.length * 2);
+  let dirtyCount = 0;
+  const destinations = Array.from({ length: 2 }, (_, row) => tiles.map(tile =>
+    new THREE.Vector2(tile.x, ATLAS_HEIGHT - (row + 1) * ROW_HEIGHT))).flat();
+  type StagingTile = { canvas: HTMLCanvasElement; context: CanvasRenderingContext2D; texture: THREE.CanvasTexture };
+  const stagingTiles = new Map<number, StagingTile>();
+  // A newly initialized or restored GPU texture receives the canonical full
+  // canvas once. Its pending subregions are already included in that upload.
+  atlas.onUpdate = () => { dirtyTiles.fill(0); dirtyCount = 0; };
+  function stagingTile(width: number) {
+    let stage = stagingTiles.get(width);
+    if (!stage) {
+      const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = ROW_HEIGHT;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) { canvas.width = canvas.height = 1; return; }
+      const texture = new THREE.CanvasTexture(canvas); texture.colorSpace = THREE.SRGBColorSpace;
+      stage = { canvas, context, texture }; stagingTiles.set(width, stage);
+    }
+    return stage;
+  }
+  function flushAtlas(renderer: THREE.WebGLRenderer) {
+    if (disposed || !dirtyCount) return;
+    renderer.initTexture(atlas);
+    for (let slot = 0; slot < dirtyTiles.length; slot++) {
+      if (!dirtyTiles[slot]) continue;
+      const index = slot % tiles.length, row = Math.floor(slot / tiles.length), tile = tiles[index];
+      const stage = stagingTile(tile.width);
+      if (!stage) {
+        // A staging canvas is optional. Keep the canonical print available if
+        // the browser cannot allocate this smaller transfer surface.
+        atlas.needsUpdate = true; renderer.initTexture(atlas); return;
       }
-      context!.restore();
+      stage.context.drawImage(canvas, tile.x, row * ROW_HEIGHT, tile.width, ROW_HEIGHT, 0, 0, tile.width, ROW_HEIGHT);
+      // Staging textures are CPU image carriers only: never initialize them or
+      // attach them to materials. Only the single existing atlas is allocated.
+      renderer.copyTextureToTexture(stage.texture, atlas, null, destinations[slot]);
+      dirtyTiles[slot] = 0; dirtyCount--;
     }
   }
+  function drawTile(value: string, index: number, row: number) {
+    const tile = tiles[index], top = row * ROW_HEIGHT;
+    context!.save(); context!.beginPath(); context!.rect(tile.x, top, tile.width, ROW_HEIGHT); context!.clip();
+    const background = context!.createLinearGradient(0, top, 0, top + ROW_HEIGHT);
+    background.addColorStop(0, "#171c1a"); background.addColorStop(.49, "#111614"); background.addColorStop(1, "#1c211e");
+    context!.fillStyle = background; context!.fillRect(tile.x, top, tile.width, ROW_HEIGHT);
+    context!.fillStyle = "#efeee5"; context!.textAlign = "center"; context!.textBaseline = "middle";
+    context!.translate(tile.x + tile.width / 2, top + ROW_HEIGHT / 2 + (index < 2 ? 14 : 2));
+    if (index < 2) {
+      context!.scale(.78, 1);
+      context!.font = '200 444px "Helvetica Neue", "Arial Narrow", Arial, sans-serif';
+      context!.fillText(value, 0, 0, 590);
+    } else {
+      // This wide physical strip shares a square atlas row. Compensate its
+      // aspect ratio so Chinese glyphs stay upright instead of flattening.
+      context!.scale(.027 * tile.width / (.306 * ROW_HEIGHT), 1);
+      context!.font = '400 400px "PingFang SC", "Microsoft YaHei", sans-serif';
+      context!.fillText(value, 0, 0);
+    }
+    context!.restore();
+  }
   function paint(previous: Reading, current: Reading) {
-    drawRow(previous, 0); drawRow(current, 1); atlas.needsUpdate = true; atlasUpdates++;
+    for (const [row, reading] of [previous, current].entries()) {
+      const values = [reading.hour, reading.minute, reading.date];
+      for (let index = 0; index < tiles.length; index++) {
+        const slot = row * tiles.length + index;
+        if (printed[slot] === values[index]) continue;
+        drawTile(values[index], index, row); printed[slot] = values[index];
+        if (!dirtyTiles[slot]) { dirtyTiles[slot] = 1; dirtyCount++; }
+      }
+    }
+    if (!atlasUpdates) atlas.needsUpdate = true;
+    atlasUpdates++;
   }
   // Canvas rows run downwards, while the texture's v axis runs upwards.
   const rectangle = (index: number, row: number, upper: boolean, reverseV = false) => {
@@ -138,6 +185,7 @@ export function createDeskClock() {
     const pivot = new THREE.Group(); pivot.name = `clock-${layout.name}-hinge`; pivot.position.set(layout.x, layout.y, .043);
     const leaf = new THREE.Mesh(halfPage, turning.material); leaf.name = `clock-${layout.name}-turning-leaf`;
     leaf.position.y = gap / 2; leaf.scale.set(layout.width, height, 1); pivot.add(leaf); pivot.visible = false;
+    top.onBeforeRender = bottom.onBeforeRender = leaf.onBeforeRender = flushAtlas;
     group.add(top, bottom, pivot); warmObjects.push(top, bottom, pivot, leaf);
     return { index, name: layout.name, upper, lower, turning, pivot, active: false };
   });
@@ -213,6 +261,10 @@ export function createDeskClock() {
       group.traverse(object => { if (object instanceof THREE.InstancedMesh) object.dispose(); });
       for (const geometry of geometries) geometry.dispose();
       for (const material of materials) material.dispose();
+      for (const stage of stagingTiles.values()) {
+        stage.texture.dispose(); stage.canvas.width = stage.canvas.height = 1;
+      }
+      stagingTiles.clear(); dirtyTiles.fill(0); dirtyCount = 0;
       atlas.dispose(); group.removeFromParent(); group.clear();
     },
   };

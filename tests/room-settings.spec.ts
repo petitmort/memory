@@ -36,7 +36,9 @@ for (const [width,height] of [[320,568],[390,844],[844,390],[1280,800],[1920,108
     await openRoomSettings(page); await page.locator('#time-flow').click(); await page.locator('#time-flow-free').check();
     await page.locator('#cozy-view').click(); await finishSceneStep(page,'view');
     await expect(menu).toBeHidden(); await expect(page.locator('#time-flow-panel')).toBeHidden();
-    await expect(page.locator('#room-ui')).toHaveJSProperty('offsetHeight',compact!.height);
+    // Compare the same fractional geometry at both ends; offsetHeight rounds
+    // to an integer and can differ even when the compact layout is unchanged.
+    await expect.poll(()=>page.locator('#room-ui').evaluate(element=>element.getBoundingClientRect().height)).toBe(compact!.height);
   });
 }
 

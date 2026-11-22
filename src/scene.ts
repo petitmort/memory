@@ -28,6 +28,7 @@ import { warmSceneResources } from "./scene-warmup";
 import { readingBlend } from "./reading-timeline";
 import { advanceReadingClock, createReadingPath, readingRetargetDuration, retargetReadingPath, type ReadingPath } from "./reading-motion";
 import { createInteractionFeedback, type InteractionKind } from "./interaction-feedback";
+import { createInteractionRaycast } from "./interaction-raycast";
 import { createQualityPolicy } from "./quality-policy";
 import { createEntryPath } from "./entry-motion";
 import { createEnvironmentController } from "./environment-controller";
@@ -1205,6 +1206,7 @@ export function createScene(
     else scheduleFrame();
   }
   const ray = new THREE.Raycaster();
+  const interactionRaycast = createInteractionRaycast(ray);
   const pointer = new THREE.Vector2();
   const canvas = renderer.domElement;
   let interactionEnabled = true;
@@ -1264,17 +1266,6 @@ export function createScene(
     ray.far = Infinity;
     ray.setFromCamera(pointer, camera);
   }
-  function visibleMesh(object: THREE.Object3D) {
-    if (!(object instanceof THREE.Mesh)) return false;
-    for (let ancestor: THREE.Object3D | null = object; ancestor; ancestor = ancestor.parent)
-      if (!ancestor.visible) return false;
-    return true;
-  }
-  function within(object: THREE.Object3D, root: THREE.Object3D) {
-    for (let ancestor: THREE.Object3D | null = object; ancestor; ancestor = ancestor.parent)
-      if (ancestor === root) return true;
-    return false;
-  }
   function resolveInteraction(e: Pick<PointerEvent, "clientX" | "clientY">): InteractionKind | undefined {
     if (!canInteract()) return;
     const roots: [InteractionKind, THREE.Object3D][] = current === "entry"
@@ -1285,8 +1276,8 @@ export function createScene(
     // Hover, press, release and cat strokes share the same nearest visible
     // mesh rule. A candidate hidden behind furniture remains unreachable.
     const candidates = roots.flatMap(([kind, root]) => {
-      const hit = ray.intersectObject(root, true).find(hit => visibleMesh(hit.object));
-      return hit ? [{ kind, root, distance: hit.distance }] : [];
+      const distance = interactionRaycast.nearestVisible(root);
+      return distance !== undefined ? [{ kind, root, distance }] : [];
     }).sort((a, b) => a.distance - b.distance);
     const candidate = candidates[0];
     if (!candidate) return;
@@ -1294,7 +1285,7 @@ export function createScene(
     // courtyard fog. Furniture occlusion applies once the room is entered.
     if (current === "entry") return candidate.kind;
     ray.far = Math.max(0, candidate.distance - .001);
-    const blocked = ray.intersectObjects(scene.children, true).some(hit => visibleMesh(hit.object) && !within(hit.object, candidate.root));
+    const blocked = interactionRaycast.isBlocked(scene.children, candidate.root);
     ray.far = Infinity;
     return blocked ? undefined : candidate.kind;
   }

@@ -82,7 +82,8 @@ async function enter(page:Page,date='2026-10-31T22:00'){
 }
 
 test('real overhead light changes room pixels and colour, remembers settings and survives reading and quality switches without shader churn',async({browser})=>{
-  test.setTimeout(90000);await mkdir(evidence,{recursive:true});
+  // Full-size GPU readbacks can stall software WebGL well beyond 90 seconds.
+  test.setTimeout(360000);await mkdir(evidence,{recursive:true});
   const context=await browser.newContext({viewport:{width:1280,height:800},reducedMotion:'reduce'}),page=await context.newPage();
   const errors=await instrument(page);
   try{

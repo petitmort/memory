@@ -168,6 +168,19 @@ button:focus-visible, a:focus-visible { outline-offset: 3px; }
   .toast { top: 68px; bottom: auto; }
 }
 
+/* A desktop room camera is used above 759px. Keep this narrow action column
+   on the empty upper wall, away from the visible sleeping cat below it. */
+@media (max-height: 500px) and (min-width: 760px) {
+  .room-ui {
+    --landscape-actions-left: max(16px, env(safe-area-inset-left));
+    --landscape-actions-top: max(80px, calc(env(safe-area-inset-top) + 64px));
+    top: var(--landscape-actions-top);
+    bottom: auto;
+    left: var(--landscape-actions-left);
+    width: 210px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   #enter.door-ready { animation: none; }
   .room-arriving, #explore-guide:not(.hidden) { animation: none; }

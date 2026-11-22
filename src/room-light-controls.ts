@@ -105,7 +105,8 @@ export function createRoomLightControls(
       panel.style.maxHeight = ""; return;
     }
     const top = parseFloat(getComputedStyle(panel).top);
-    panel.style.maxHeight = `${Math.max(132, roomBounds.top - top - 12)}px`;
+    // Budget the scrolling container, preserving the controls' 44px targets.
+    panel.style.maxHeight = `${Math.max(0, roomBounds.top - top - 12)}px`;
   }
   button.addEventListener("click", () => {
     if (disposed || !available || button.disabled) return;

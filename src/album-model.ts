@@ -97,13 +97,19 @@ export function createAlbum() {
   let pageSourceVersion = 0;
   let invalidate: (() => void) | undefined;
 
+  function sizePageCanvas(side: number, width: number, height: number) {
+    const canvas = canvases[side];
+    if (canvas.width === width && canvas.height === height) return;
+    // WebGL2 texture storage is immutable. Keep the shared Texture / Source
+    // identities, but release their old GPU storage before changing its size.
+    maps[side].dispose();
+    canvas.width = width; canvas.height = height;
+  }
+
   function paintChapter(index: number, photo?: HTMLImageElement) {
     const chapter = chapters[index];
     // Chapter artwork is the safe fallback until a matching DOM raster is ready.
-    for (const canvas of canvases) {
-      if (canvas.width !== 768) canvas.width = 768;
-      if (canvas.height !== 640) canvas.height = 640;
-    }
+    for (let side = 0; side < 2; side++) sizePageCanvas(side, 768, 640);
     const left = canvases[0].getContext("2d")!, right = canvases[1].getContext("2d")!;
     for (const context of [left, right]) {
       context.fillStyle = "#eee7d5"; context.fillRect(0, 0, 768, 640);
@@ -160,9 +166,12 @@ export function createAlbum() {
     // Keep the texture identities: the leaf's reverse-face uniform uses these too.
     ++pageSourceVersion;
     for (let side = 0; side < 2; side++) {
-      canvases[side].width = Math.max(1, pages[side].width);
-      canvases[side].height = Math.max(1, pages[side].height);
-      canvases[side].getContext('2d')!.drawImage(pages[side], 0, 0);
+      sizePageCanvas(side, Math.max(1, pages[side].width), Math.max(1, pages[side].height));
+      const context = canvases[side].getContext('2d')!;
+      // Same-size uploads reuse their GPU storage, but transparent replacement
+      // pages must still clear the previous print, as a canvas resize did.
+      context.clearRect(0, 0, canvases[side].width, canvases[side].height);
+      context.drawImage(pages[side], 0, 0);
       maps[side].needsUpdate = true;
     }
     invalidate?.();

@@ -54,7 +54,8 @@ export function createTimeFlowControls(button: HTMLButtonElement, onChange: (pat
     const top = parseFloat(getComputedStyle(panel).top);
     // Keep the room's album and action row reachable while this non-modal
     // panel is open. Short screens scroll the settings, not the whole room.
-    panel.style.maxHeight = `${Math.max(132, roomBounds.top - top - 12)}px`;
+    // Budget the scrolling container, preserving the controls' 44px targets.
+    panel.style.maxHeight = `${Math.max(0, roomBounds.top - top - 12)}px`;
   }
   function render() {
     const isFree = settings.mode === "free";

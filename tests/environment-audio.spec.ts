@@ -258,9 +258,9 @@ test('unsupported optional stereo panning preserves the original native ocean, L
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.evaluate(async () => {
-    document.body.innerHTML = `<button id="unlock-audio">Unlock native audio</button><button id="sound"></button>
+    document.body.innerHTML = `<button id="unlock-audio">Unlock native audio</button><div id="room-ui"><button id="sound"></button>
       <button id="record-toggle"></button><button id="choose-record"></button><input id="record-file" type="file">
-      <span id="record-track"></span><span id="record-status"></span><button id="pet-cat"></button><span id="pet-hint"></span>`;
+      <span id="record-track"></span><span id="record-status"></span><button id="pet-cat"></button><span id="pet-hint"></span></div>`;
     const host = window as any;
     const stats = host.__optionalAudioFailure = {
       contexts: 0, bufferSources: 0, sourceStarts: 0, oscillatorStarts: 0, decodes: 0,

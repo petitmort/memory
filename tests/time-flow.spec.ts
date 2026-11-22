@@ -89,7 +89,8 @@ async function enter(page: Page, query = '') {
   await page.goto('/' + query); await expect(page).toHaveTitle(/潮汐之间/);
   await expect(page.locator('#loading')).toBeHidden({ timeout: 90000 });
   await page.locator('#enter').click(); await expect(page.locator('#enter')).toBeEnabled({ timeout: 45000 });
-  await page.locator('#enter').click(); await expect(page.locator('#time-flow')).toBeEnabled({ timeout: 45000 });
+  // Native-motion entry is intentionally kept; software WebGL needs more wall time.
+  await page.locator('#enter').click(); await expect(page.locator('#time-flow')).toBeEnabled({ timeout: 180000 });
 }
 
 for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) test(`real room hides the clock, advances and pauses the free calendar and restores realtime without resource churn ${viewport.width}`, async ({ browser }) => {
@@ -146,7 +147,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 
 });
 
 test('normal visitor preferences survive refresh, debug sessions remain isolated, and renderer failure closes the time panel', async ({ page }) => {
-  test.setTimeout(120000); await instrument(page); await enter(page);
+  test.setTimeout(600000); await instrument(page); await enter(page);
   await openRoomSettings(page); await page.locator('#time-flow').click(); await page.locator('#time-flow-free').check();
   await page.locator('#time-flow-custom').fill('12.5'); await page.locator('#time-flow-custom').press('Tab');
   const saved = await page.evaluate(key => localStorage.getItem(key), TIME_FLOW_STORAGE_KEY);
