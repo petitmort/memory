@@ -162,3 +162,5 @@ O10反证与回退：三轮交错前后普通Chrome有头 / 1728×1011 DPR2实�
 共享环境继续复用 `~/.nvm/versions/node/v24.14.0`、`~/.local/bin/project-node`、`~/.local/bin/project-pnpm`（11.7.0）、`~/Library/pnpm/store/v11`与原node_modules；截图复看使用 `~/.local/bin/document-python` / `~/.local/share/project-envs/document-tools`。无安装、新环境或隔离例外，例外0。实际命令：`project-node --version`、`project-pnpm --version`、`project-node <外部证据>/capture-selftest.mjs`、`project-node <外部证据>/capture-safari-selftest.mjs`、`project-node --input-type=module`（HTTP逐字节 / SHA及现有Playwright正常流程）、`project-pnpm exec vite preview --outDir dist --host 127.0.0.1 --port 4173 --strictPort`、`git diff --check`。采集器与比较脚本仅在外部证据目录，相关服务已停止，不注入当前预览。
 
 本轮提交前磁盘与静态核对：仓库283,716KiB（开始299,824，净-16,108KiB，包含Git / 测试与可再生产物）；共享store1,648,256KiB（变化0）；外部证据144,052KiB（新目录，含失败 / 被拒候选 / 原始计时与成片）。重复生成目录单独净清理13,444KiB，不能把仓库净变化全归因于此。三文档240个本地链接通过、基准源码哈希匹配，src / tests / public / docs / 依赖配置及原47项与基线逐字保持，diff检查通过；最终只提交本任务四文件，Git提交带来的少量占用不计入该提交前快照。
+
+2026-11-24后续发布：作者明确授权上线后，已接受版本经main普通整合、源码cada1af构建，产物1decf12及Pages / Actions部署成功。线上404文件全等及一次简短主要入口确认通过；原本地4174编辑器和作者草稿保留。实际经过、共享环境 / 磁盘和未测边界见[发布回执](PUBLISH-2026-11-24.md)，不把发布验收当作新的性能改善。

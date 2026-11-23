@@ -5,7 +5,7 @@
   "sourceCommit": "cada1afea906f59a6d03b03cbbf0b86219975190",
   "baselineMain": "05837f8d786dcc6a0eaae7f01548e568cb94a4b5",
   "scope": "Publish the author-accepted existing version, then continue memoir creation locally; no product redesign or author content uploaded.",
-  "status": "Local preflight complete; ordinary main push and online confirmation pending.",
+  "status": "Published and online-confirmed; final documentation receipt only.",
   "manifest": {
     "files": 404,
     "bytes": 22772080,
@@ -152,7 +152,32 @@
       "nojekyllPreserved": true,
       "allBytesSha256Equal": true
     },
-    "online": "pending; author requested no repetitive suites, use one brief primary-flow confirmation and actual deployed file equality"
+    "online": {
+      "files": {
+        "passed": true,
+        "checked": 404,
+        "failures": 0,
+        "retries": 0,
+        "raw": "/Users/jiangyuhan/.codex/visualizations/2026/11/24/publish/online-files.json"
+      },
+      "briefFlow": {
+        "at": "2026-11-23T19:25:28.329Z",
+        "commit": "1decf12f4b9622eb5a0cc74f761c322e5ec86056",
+        "steps": [
+          "actual online visitor enters room through separate fog and door gestures",
+          "online album opens and renders the published default chapter",
+          "closing returns to room",
+          "online editor entry loads an isolated blank draft and two editable pages"
+        ],
+        "errors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "httpErrors": [],
+        "note": "One brief online confirmation after full local validation; isolated contexts and native motion. No author storage read and no repeated broad suite.",
+        "passed": true
+      },
+      "screenshotsReviewed": 2
+    }
   },
   "environment": {
     "node": "~/.nvm/versions/node/v24.14.0",
@@ -170,7 +195,17 @@
     "browser": "Browser plugin not available; existing Playwright and system Chrome, Apple Metal M1 Pro",
     "canonicalLocalRoom": "http://127.0.0.1:4173/",
     "authorLocalEditor": "http://127.0.0.1:4174/editor.html",
-    "temporary5173": "started automatically by Playwright; stopped after tests"
+    "temporary5173": "started automatically by Playwright; stopped after tests",
+    "diskKiB": {
+      "snapshot": "Before final documentation receipt commit; includes Git and test/build outputs, not runtime memory",
+      "repoAfter": 287256,
+      "repoDelta": 3348,
+      "pnpmStoreAfter": 1648256,
+      "pnpmStoreDelta": 0,
+      "externalEvidenceInitial": 52,
+      "externalEvidenceAfter": 49584,
+      "externalEvidenceDelta": 49532
+    }
   },
   "authorDrafts": {
     "read": false,
@@ -190,7 +225,19 @@
     "buildType": "legacy",
     "configurationChanged": false,
     "sourceBefore": "05837f8d786dcc6a0eaae7f01548e568cb94a4b5",
-    "status": "pending"
+    "status": "built",
+    "artifactCommit": "1decf12f4b9622eb5a0cc74f761c322e5ec86056",
+    "docsTree": "1fdef1c190e3bf1b4ead38559b113d31d65b7e57",
+    "pagesCommit": "1decf12f4b9622eb5a0cc74f761c322e5ec86056",
+    "actions": {
+      "id": 45248505833,
+      "head": "1decf12f4b9622eb5a0cc74f761c322e5ec86056",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/petitmort/memory/actions/runs/45248505833"
+    },
+    "website": "https://petitmort.github.io/memory/?v=1decf12",
+    "receipt": "Final documentation commit tracked in Git history. No runtime rebuild or repeated application suite; final Pages/three HTML checks saved externally."
   },
   "evidenceRoot": "/Users/jiangyuhan/.codex/visualizations/2026/11/24/publish"
 }
