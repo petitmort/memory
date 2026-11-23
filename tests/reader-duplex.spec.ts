@@ -177,10 +177,17 @@ for (const mode of [
   { name: 'desktop reduced motion', reduced: true, width: 1440, height: 1000 },
 ]) test(`${mode.name} updates the paired spread without leaving a hidden leaf`, async ({ page }) => {
   await fixture(page, 0, mode.reduced);
+  const before = page.viewportSize()!;
+  const changesViewport = before.width !== mode.width || before.height !== mode.height;
+  if (changesViewport) await page.evaluate(() => {
+    (window as any).__duplexResizeSeen = false;
+    window.addEventListener('resize', () => { (window as any).__duplexResizeSeen = true; }, { once:true });
+  });
   await page.setViewportSize({ width: mode.width, height: mode.height });
   // Deliver the queued resize before starting a turn: resizing an active
   // sheet intentionally cancels it, and this fixture's clock is paused.
   await page.clock.runFor(32);
+  if (changesViewport) await expect.poll(() => page.evaluate(() => (window as any).__duplexResizeSeen)).toBe(true);
   await page.evaluate(() => (document.getElementById('next') as HTMLButtonElement).click());
   await page.clock.runFor(2000);
   await expect(page.locator('#chapter-title')).toHaveText('把日子过成夏天');

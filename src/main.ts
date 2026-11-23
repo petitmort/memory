@@ -8,6 +8,7 @@ import { createExplorationGuide } from "./exploration-guide";
 import { createScene, SceneUnavailableError } from "./scene";
 import { createReaderJourney, transitionReader } from "./reader-transition";
 import { captureBookPages } from "./page-raster";
+import { createPageRasterCache } from "./page-raster-cache";
 import { createRoomLightControls } from "./room-light-controls";
 import { loadRoomLightSettings } from "./room-light";
 import { createTimeFlowControls } from "./time-flow-controls";
@@ -102,6 +103,7 @@ function showFallback() {
 }
 function onSceneUnavailable(error?: unknown) {
   if (!flow.invalidateScene()) return;
+  paperCache.clear();
   cancelRoomObservation();
   sceneAvailable = false;
   sound.updateContext();
@@ -121,7 +123,7 @@ async function prepareScenePaper(reader: HTMLElement, activeScene: NonNullable<t
   // Loss must release this wait even when an optional photograph is still loading.
   // The decode may finish later, but can no longer write into a newer journey.
   const pages = await Promise.race([
-    captureBookPages(reader).catch(() => undefined),
+    paperCache.capture(paperKey(), () => captureBookPages(reader)).catch(() => undefined),
     flow.sceneUnavailable.then(() => undefined),
   ]);
   const valid = sceneAvailable && !flow.sceneInvalidated && generation === flow.sceneVersion && operation === flow.transitionVersion;
@@ -163,6 +165,37 @@ const readerController = createReaderController({
   onClose: () => void closeBook(),
   content: customAlbum,
 });
+const paperCache = createPageRasterCache();
+// The read-only content source is fixed for this controller's lifetime. Its
+// chapter and responsive viewport determine the exact original raster layout.
+function paperKey() {
+  return JSON.stringify([readerController.getChapter(), innerWidth, innerHeight, devicePixelRatio]);
+}
+async function warmInitialPaper() {
+  const reader = el("reader");
+  readerController.render();
+  reader.classList.add("is-preparing");
+  reader.classList.remove("hidden");
+  reader.inert = true;
+  reader.setAttribute("aria-hidden", "true");
+  let timeout: number | undefined;
+  try {
+    await Promise.race([
+      paperCache.capture(paperKey(), () => captureBookPages(reader)).catch(() => undefined),
+      flow.sceneUnavailable,
+      // An optional remote photograph or font must not hold the room hostage.
+      new Promise<void>(resolve => {
+        timeout = window.setTimeout(() => { paperCache.clear(); resolve(); }, 1500);
+      }),
+    ]);
+  } finally {
+    window.clearTimeout(timeout);
+    reader.classList.add("hidden");
+    reader.classList.remove("is-preparing");
+    reader.inert = false;
+    reader.removeAttribute("aria-hidden");
+  }
+}
 const exploration = createExplorationGuide();
 const roomLightControls = createRoomLightControls(el<HTMLButtonElement>("room-light"), loadRoomLightSettings(), settings => {
   scene?.setRoomLight?.(settings);
@@ -209,6 +242,7 @@ flow.subscribe(syncControls);
 syncControls();
 flow.own(() => exploration.dispose());
 flow.own(() => readerController.dispose());
+flow.own(() => paperCache.dispose());
 flow.own(() => sound.dispose());
 flow.own(() => roomLightControls.dispose());
 flow.own(() => timeFlowControls.dispose());
@@ -520,10 +554,13 @@ try {
     sound.updateEnvironment,
     frame => timeFlowControls.update(frame),
   );
+  // Begin after synchronous scene construction so its cost cannot consume the
+  // optional-image timeout. Capture runs beside the remaining asset warmup.
+  const initialPaper = warmInitialPaper();
   // Prepare alongside GPU loading, before continuous scene drawing starts.
   // Browsers requiring gesture-time construction retain the lazy fallback.
   sound.prepare();
-  scene.ready
+  Promise.all([scene.ready, initialPaper])
     .then(() => {
       if (flow.sceneInvalidated || generation !== flow.sceneVersion) return;
       sceneAvailable = true;

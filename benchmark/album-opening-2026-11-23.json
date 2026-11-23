@@ -1,0 +1,1434 @@
+{
+  "schema": 1,
+  "baseline": "05837f8d786dcc6a0eaae7f01548e568cb94a4b5",
+  "branch": "codex/album-opening-performance",
+  "recordedAt": "2026-11-23T09:53:28.290Z",
+  "sourceSha256": {
+    "src/main.ts": "535fd9025c68e8b8f612e9d47e8f538b8b0532bb544ed296e53c44b6d24cc05f",
+    "src/page-raster-cache.ts": "f0c577b0c37e6bfbfe8ad43278e6aab89daee0174a6a677051ac22d3167c0913",
+    "src/page-raster.ts": "88b689faf84bf73d673d29f342f6551dbf2d458f1979e2a447956885e3b14461"
+  },
+  "evidenceDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening",
+  "scope": "Room button -> printed camera/cover journey -> retained reader; no quality reduction, author draft access or publication",
+  "notes": [
+    "CPU4 is a lab stress setting on native Apple M1 Pro Metal, not a physical phone. Frame intervals are measured around actual WebGL draw submissions, not GPU completion.",
+    "Three sequential baseline and final samples per desktop/mobile-sized viewport; normal motion, identical DPR1 and forced normal quality, fixed simulated noon/clear weather. P95 remains about 17.6ms; no overall FPS or battery claim.",
+    "Initial paper is prepared under existing loading alongside assets; optional image wait is bounded at 1500ms after synchronous scene construction. Initial loading was not a paired performance endpoint.",
+    "Cache retains one pair of CPU canvases, measured extra raw pixels 2.3-6.4MB across pixel fixtures, no new GPU textures; very long content can exceed these fixture sizes.",
+    "Resizing/DPR/chapter changes or a prewarm timeout still use original on-demand capture and can retain a one-time capture stall.",
+    "Native Safari, physical phones and long-duration thermal behavior were not tested."
+  ],
+  "comparisons": [
+    {
+      "file": "before-desktop-cpu4.json",
+      "environment": {
+        "url": "http://127.0.0.1:5173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envQuality=normal",
+        "cpu": 4,
+        "mobile": false,
+        "normalMotion": true,
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "dpr": 1,
+        "browser": "158.0.8127.36",
+        "gpu": {
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "hardwareConcurrency": 10
+        }
+      },
+      "runs": [
+        {
+          "round": 0,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3785.1890000000003,
+              "drawnFrames": 210,
+              "maxFrameGapMs": 279.90000000596046,
+              "p95FrameGapMs": 17.600000023841858,
+              "tickCpuP95Ms": 9.900000005960464,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 14841.399999976158,
+                  "ms": 283.30000001192093
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 14804.899999976158,
+                  "ms": 252
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2598.244917,
+              "drawnFrames": 149,
+              "maxFrameGapMs": 18.19999998807907,
+              "p95FrameGapMs": 17.599999994039536,
+              "tickCpuP95Ms": 8.799999982118607,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 19715.59999999404,
+                  "ms": 193.7999999821186
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 19712.09999999404,
+                  "ms": 179
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 430539,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2247.189166,
+              "drawnFrames": 125,
+              "maxFrameGapMs": 188.5,
+              "p95FrameGapMs": 17.700000017881393,
+              "tickCpuP95Ms": 10.299999982118607,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 23561.399999976158,
+                  "ms": 195
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 23552.79999998212,
+                  "ms": 169
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            }
+          ]
+        },
+        {
+          "round": 1,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3797.144042,
+              "drawnFrames": 211,
+              "maxFrameGapMs": 277.7000000178814,
+              "p95FrameGapMs": 17.700000017881393,
+              "tickCpuP95Ms": 9.5,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 14255.799999982119,
+                  "ms": 279.59999999403954
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 14216.799999982119,
+                  "ms": 252
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2603.6347499999974,
+              "drawnFrames": 149,
+              "maxFrameGapMs": 25.099999994039536,
+              "p95FrameGapMs": 17.799999982118607,
+              "tickCpuP95Ms": 9.800000011920929,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 18963.899999976158,
+                  "ms": 188.5
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 18960.69999998808,
+                  "ms": 173
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 430539,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2264.733791999999,
+              "drawnFrames": 126,
+              "maxFrameGapMs": 193.5,
+              "p95FrameGapMs": 17.899999976158142,
+              "tickCpuP95Ms": 8.800000011920929,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 22507.899999976158,
+                  "ms": 198.2000000178814
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 22499.5,
+                  "ms": 174
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3782.059958999991,
+              "drawnFrames": 210,
+              "maxFrameGapMs": 277.19999998807907,
+              "p95FrameGapMs": 17.69999998807907,
+              "tickCpuP95Ms": 9.900000005960464,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 14278,
+                  "ms": 283
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 14239.90000000596,
+                  "ms": 252
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2622.809208000006,
+              "drawnFrames": 150,
+              "maxFrameGapMs": 18.400000005960464,
+              "p95FrameGapMs": 17.80000001192093,
+              "tickCpuP95Ms": 9.5,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 18970.69999998808,
+                  "ms": 196.40000000596046
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 18967,
+                  "ms": 181
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 430539,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2246.9915000000037,
+              "drawnFrames": 126,
+              "maxFrameGapMs": 179.5,
+              "p95FrameGapMs": 17.700000017881393,
+              "tickCpuP95Ms": 9.800000011920929,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 22548.19999998808,
+                  "ms": 186.09999999403954
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 22540.09999999404,
+                  "ms": 161
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "after-fixed-desktop-cpu4.json",
+      "environment": {
+        "url": "http://127.0.0.1:5173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envQuality=normal",
+        "cpu": 4,
+        "mobile": false,
+        "normalMotion": true,
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "dpr": 1,
+        "browser": "158.0.8127.36",
+        "gpu": {
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "hardwareConcurrency": 10
+        }
+      },
+      "runs": [
+        {
+          "round": 0,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3795.021041000002,
+              "drawnFrames": 227,
+              "maxFrameGapMs": 40.599999994039536,
+              "p95FrameGapMs": 17.69999998807907,
+              "tickCpuP95Ms": 9.5,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2403.644250000001,
+              "drawnFrames": 148,
+              "maxFrameGapMs": 19.299999982118607,
+              "p95FrameGapMs": 17.80000001192093,
+              "tickCpuP95Ms": 9.199999988079071,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 430539,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2079.8352919999998,
+              "drawnFrames": 125,
+              "maxFrameGapMs": 25.900000005960464,
+              "p95FrameGapMs": 17.600000023841858,
+              "tickCpuP95Ms": 9.300000011920929,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            }
+          ]
+        },
+        {
+          "round": 1,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3784.3594159999993,
+              "drawnFrames": 226,
+              "maxFrameGapMs": 38.80000001192093,
+              "p95FrameGapMs": 17.599999994039536,
+              "tickCpuP95Ms": 9.800000011920929,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2386.8354580000014,
+              "drawnFrames": 147,
+              "maxFrameGapMs": 18,
+              "p95FrameGapMs": 17.599999994039536,
+              "tickCpuP95Ms": 9.400000005960464,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 430539,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2079.3045409999977,
+              "drawnFrames": 125,
+              "maxFrameGapMs": 26.900000005960464,
+              "p95FrameGapMs": 17.5,
+              "tickCpuP95Ms": 9.200000017881393,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3800.4977079999953,
+              "drawnFrames": 227,
+              "maxFrameGapMs": 40.400000005960464,
+              "p95FrameGapMs": 17.599999994039536,
+              "tickCpuP95Ms": 9.5,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2393.684415999989,
+              "drawnFrames": 147,
+              "maxFrameGapMs": 21.69999998807907,
+              "p95FrameGapMs": 17.5,
+              "tickCpuP95Ms": 9.100000023841858,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 430539,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2077.112500000003,
+              "drawnFrames": 125,
+              "maxFrameGapMs": 29.19999998807907,
+              "p95FrameGapMs": 17.599999994039536,
+              "tickCpuP95Ms": 9.300000011920929,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 262480,
+                "calls": 69
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "before-mobile-cpu4.json",
+      "environment": {
+        "url": "http://127.0.0.1:5173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envQuality=normal",
+        "cpu": 4,
+        "mobile": true,
+        "normalMotion": true,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "dpr": 1,
+        "browser": "158.0.8127.36",
+        "gpu": {
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "hardwareConcurrency": 10
+        }
+      },
+      "runs": [
+        {
+          "round": 0,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3920.5775830000002,
+              "drawnFrames": 200,
+              "maxFrameGapMs": 274.2999999821186,
+              "p95FrameGapMs": 17.30000001192093,
+              "tickCpuP95Ms": 9.300000011920929,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 14501.699999988079,
+                  "ms": 284.59999999403954
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 14464.799999982119,
+                  "ms": 251
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2600.285040999999,
+              "drawnFrames": 148,
+              "maxFrameGapMs": 19,
+              "p95FrameGapMs": 17.299999982118607,
+              "tickCpuP95Ms": 8.5,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 19480.09999999404,
+                  "ms": 189
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 19476.29999998212,
+                  "ms": 176
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 312242,
+                "calls": 116
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2250.1919579999994,
+              "drawnFrames": 125,
+              "maxFrameGapMs": 174.59999999403954,
+              "p95FrameGapMs": 17.5,
+              "tickCpuP95Ms": 9.199999988079071,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 23138.09999999404,
+                  "ms": 180
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 23130.5,
+                  "ms": 158
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            }
+          ]
+        },
+        {
+          "round": 1,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3771.7884580000027,
+              "drawnFrames": 208,
+              "maxFrameGapMs": 299.5,
+              "p95FrameGapMs": 17.5,
+              "tickCpuP95Ms": 9,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 14256.699999988079,
+                  "ms": 299.40000000596046
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 14211.40000000596,
+                  "ms": 269
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2591.0552919999973,
+              "drawnFrames": 149,
+              "maxFrameGapMs": 18,
+              "p95FrameGapMs": 17.599999994039536,
+              "tickCpuP95Ms": 9.099999994039536,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 18942.19999998808,
+                  "ms": 192.5
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 18938.19999998808,
+                  "ms": 179
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 312242,
+                "calls": 116
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2255.6048749999973,
+              "drawnFrames": 126,
+              "maxFrameGapMs": 178.90000000596046,
+              "p95FrameGapMs": 17.799999982118607,
+              "tickCpuP95Ms": 9,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 22483.69999998808,
+                  "ms": 184.2000000178814
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 22476.09999999404,
+                  "ms": 161
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3800.8476250000094,
+              "drawnFrames": 211,
+              "maxFrameGapMs": 277.09999999403954,
+              "p95FrameGapMs": 17.700000017881393,
+              "tickCpuP95Ms": 9.600000023841858,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 14311.90000000596,
+                  "ms": 280.80000001192093
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 14272.200000017881,
+                  "ms": 253
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2596.9459170000046,
+              "drawnFrames": 149,
+              "maxFrameGapMs": 17.80000001192093,
+              "p95FrameGapMs": 17.5,
+              "tickCpuP95Ms": 9.599999994039536,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 19004.600000023842,
+                  "ms": 189.7999999821186
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 19000.40000000596,
+                  "ms": 174
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 312242,
+                "calls": 116
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2249.837459000002,
+              "drawnFrames": 126,
+              "maxFrameGapMs": 179.2000000178814,
+              "p95FrameGapMs": 17.80000001192093,
+              "tickCpuP95Ms": 9.900000005960464,
+              "captureSpans": [
+                {
+                  "name": "capture",
+                  "start": 22546.70000001788,
+                  "ms": 184.5
+                }
+              ],
+              "longTasks": [
+                {
+                  "start": 22538.90000000596,
+                  "ms": 161
+                }
+              ],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "after-fixed-mobile-cpu4.json",
+      "environment": {
+        "url": "http://127.0.0.1:5173/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envQuality=normal",
+        "cpu": 4,
+        "mobile": true,
+        "normalMotion": true,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "dpr": 1,
+        "browser": "158.0.8127.36",
+        "gpu": {
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "vendor": "Google Inc. (Apple)",
+          "hardwareConcurrency": 10
+        }
+      },
+      "runs": [
+        {
+          "round": 0,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3785.769166,
+              "drawnFrames": 225,
+              "maxFrameGapMs": 37.10000002384186,
+              "p95FrameGapMs": 17.700000017881393,
+              "tickCpuP95Ms": 9.400000005960464,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2412.180457999999,
+              "drawnFrames": 148,
+              "maxFrameGapMs": 18.899999976158142,
+              "p95FrameGapMs": 17.700000017881393,
+              "tickCpuP95Ms": 8.800000011920929,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 312242,
+                "calls": 116
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2083.639167000001,
+              "drawnFrames": 125,
+              "maxFrameGapMs": 26,
+              "p95FrameGapMs": 17.599999994039536,
+              "tickCpuP95Ms": 9.399999976158142,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            }
+          ]
+        },
+        {
+          "round": 1,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3788.0070419999975,
+              "drawnFrames": 227,
+              "maxFrameGapMs": 32.79999998211861,
+              "p95FrameGapMs": 17.599999994039536,
+              "tickCpuP95Ms": 9.099999994039536,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2428.9170840000006,
+              "drawnFrames": 149,
+              "maxFrameGapMs": 18.80000001192093,
+              "p95FrameGapMs": 17.69999998807907,
+              "tickCpuP95Ms": 9.5,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 312242,
+                "calls": 116
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2081.4091249999983,
+              "drawnFrames": 125,
+              "maxFrameGapMs": 26.099999994039536,
+              "p95FrameGapMs": 17.5,
+              "tickCpuP95Ms": 9.400000005960464,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "wallMs": 3786.356958000004,
+              "drawnFrames": 227,
+              "maxFrameGapMs": 35.099999994039536,
+              "p95FrameGapMs": 17.30000001192093,
+              "tickCpuP95Ms": 9.900000005960464,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            },
+            {
+              "action": "close",
+              "wallMs": 2397.491292000006,
+              "drawnFrames": 148,
+              "maxFrameGapMs": 23.19999998807907,
+              "p95FrameGapMs": 17.5,
+              "tickCpuP95Ms": 8.599999994039536,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 312242,
+                "calls": 116
+              }
+            },
+            {
+              "action": "reopen",
+              "wallMs": 2050.1584589999984,
+              "drawnFrames": 122,
+              "maxFrameGapMs": 32.69999998807907,
+              "p95FrameGapMs": 17.19999998807907,
+              "tickCpuP95Ms": 9.299999982118607,
+              "captureSpans": [],
+              "longTasks": [],
+              "render": {
+                "low": false,
+                "pixelRatio": 1,
+                "textures": 42,
+                "geometries": 270,
+                "programs": 63,
+                "triangles": 182242,
+                "calls": 88
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "medianOfPerRunMaxGap": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "action": "first-open",
+      "beforeMedianMaxGapMs": 277.7000000178814,
+      "afterMedianMaxGapMs": 40.400000005960464
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "action": "reopen",
+      "beforeMedianMaxGapMs": 188.5,
+      "afterMedianMaxGapMs": 26.900000005960464
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "action": "first-open",
+      "beforeMedianMaxGapMs": 277.09999999403954,
+      "afterMedianMaxGapMs": 35.099999994039536
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "action": "reopen",
+      "beforeMedianMaxGapMs": 178.90000000596046,
+      "afterMedianMaxGapMs": 26.099999994039536
+    }
+  ],
+  "rejectedCandidates": [
+    "candidate1-desktop-cpu4.json",
+    "candidate2-desktop-cpu4.json",
+    "after-desktop-cpu4.json"
+  ],
+  "rejectedCandidateNotes": [
+    "Async encoding and cooperative clone attempts left visible stalls and made full capture slower; src/page-raster.ts restored byte-for-byte.",
+    "The first timeout placement expired during synchronous scene construction. Two completed diagnostic runs and an intentionally interrupted third remain in after-desktop-cpu4.json; not used as final."
+  ],
+  "pixelComparison": [
+    {
+      "kind": "sample",
+      "width": 1280,
+      "height": 800,
+      "dpr": 1,
+      "comparison": [
+        {
+          "side": 0,
+          "width": 550,
+          "height": 642,
+          "fresh": [
+            550,
+            642
+          ],
+          "changed": 0,
+          "max": 0,
+          "bytes": 1412400
+        },
+        {
+          "side": 1,
+          "width": 550,
+          "height": 642,
+          "fresh": [
+            550,
+            642
+          ],
+          "changed": 0,
+          "max": 0,
+          "bytes": 1412400
+        }
+      ],
+      "errors": []
+    },
+    {
+      "kind": "sample",
+      "width": 390,
+      "height": 844,
+      "dpr": 1.5,
+      "comparison": [
+        {
+          "side": 0,
+          "width": 527,
+          "height": 521,
+          "fresh": [
+            527,
+            521
+          ],
+          "changed": 0,
+          "max": 0,
+          "bytes": 1098268
+        },
+        {
+          "side": 1,
+          "width": 527,
+          "height": 660,
+          "fresh": [
+            527,
+            660
+          ],
+          "changed": 0,
+          "max": 0,
+          "bytes": 1391280
+        }
+      ],
+      "errors": []
+    },
+    {
+      "kind": "hand-custom",
+      "width": 1280,
+      "height": 800,
+      "dpr": 1.5,
+      "comparison": [
+        {
+          "side": 0,
+          "width": 825,
+          "height": 963,
+          "fresh": [
+            825,
+            963
+          ],
+          "changed": 0,
+          "max": 0,
+          "bytes": 3177900
+        },
+        {
+          "side": 1,
+          "width": 825,
+          "height": 963,
+          "fresh": [
+            825,
+            963
+          ],
+          "changed": 0,
+          "max": 0,
+          "bytes": 3177900
+        }
+      ],
+      "errors": []
+    },
+    {
+      "kind": "hand-custom",
+      "width": 390,
+      "height": 844,
+      "dpr": 1.5,
+      "comparison": [
+        {
+          "side": 0,
+          "width": 527,
+          "height": 450,
+          "fresh": [
+            527,
+            450
+          ],
+          "changed": 0,
+          "max": 0,
+          "bytes": 948600
+        },
+        {
+          "side": 1,
+          "width": 527,
+          "height": 660,
+          "fresh": [
+            527,
+            660
+          ],
+          "changed": 0,
+          "max": 0,
+          "bytes": 1391280
+        }
+      ],
+      "errors": []
+    },
+    {
+      "kind": "hand-custom",
+      "width": 844,
+      "height": 390,
+      "dpr": 1.5,
+      "comparison": [
+        {
+          "side": 0,
+          "width": 545,
+          "height": 690,
+          "fresh": [
+            545,
+            690
+          ],
+          "changed": 0,
+          "max": 0,
+          "bytes": 1504200
+        },
+        {
+          "side": 1,
+          "width": 545,
+          "height": 690,
+          "fresh": [
+            545,
+            690
+          ],
+          "changed": 0,
+          "max": 0,
+          "bytes": 1504200
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "tests": {
+    "initialTargeted": {
+      "passed": 21,
+      "total": 21
+    },
+    "expanded": {
+      "passed": 51,
+      "total": 52,
+      "failed": "reader-duplex small-screen paused-clock fixture"
+    },
+    "unchangedTargetedRetry": {
+      "passed": 1,
+      "total": 1
+    },
+    "fixtureCorrection": "Wait for native resize acknowledgment before starting a turn; paused clock alone cannot guarantee delivery.",
+    "correctedFixtureRepeats": {
+      "passed": 10,
+      "total": 10,
+      "uniqueCases": 2
+    },
+    "finalUniqueCasesPassedAcrossRuns": 52,
+    "newCases": 5,
+    "commands": [
+      "project-pnpm typecheck",
+      "project-pnpm build",
+      "project-pnpm build:editor",
+      "project-pnpm exec playwright test <13 related spec files>",
+      "project-pnpm exec playwright test tests/reader-duplex.spec.ts --grep \"updates the paired spread\" --repeat-each=5"
+    ]
+  },
+  "production": {
+    "scenes": [
+      {
+        "name": "desktop-day",
+        "width": 1280,
+        "height": 800,
+        "dpr": 1.5,
+        "quality": "normal",
+        "hour": "12:00",
+        "steps": [
+          "nonblank app, title and canvas verified",
+          "fog and door remain separate gestures; entered room",
+          "normal opening retains printed pages and usable reader",
+          "chapter switch, close and retained reopening",
+          "cat approach, touch and return"
+        ],
+        "errors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "screenshots": [
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening/qa-desktop-day-room.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening/qa-desktop-day-opening.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening/qa-desktop-day-reading.png"
+        ],
+        "loadingMs": 1795.694709,
+        "url": "http://127.0.0.1:4175/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envQuality=normal",
+        "title": "潮汐之间 · Between the tides",
+        "device": {
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "canvasPixels": [
+            1920,
+            1200
+          ],
+          "devicePixelRatio": 1.5
+        }
+      },
+      {
+        "name": "desktop-night",
+        "width": 1280,
+        "height": 800,
+        "dpr": 1.5,
+        "quality": "normal",
+        "hour": "22:00",
+        "steps": [
+          "nonblank app, title and canvas verified",
+          "fog and door remain separate gestures; entered room",
+          "normal opening retains printed pages and usable reader",
+          "chapter switch, close and retained reopening",
+          "cat approach, touch and return"
+        ],
+        "errors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "screenshots": [
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening/qa-desktop-night-room.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening/qa-desktop-night-opening.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening/qa-desktop-night-reading.png"
+        ],
+        "loadingMs": 1318.492291999999,
+        "url": "http://127.0.0.1:4175/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00&envWeather=clear&envQuality=normal",
+        "title": "潮汐之间 · Between the tides",
+        "device": {
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "canvasPixels": [
+            1920,
+            1200
+          ],
+          "devicePixelRatio": 1.5
+        }
+      },
+      {
+        "name": "mobile-low",
+        "width": 390,
+        "height": 844,
+        "dpr": 2,
+        "quality": "low",
+        "hour": "12:00",
+        "steps": [
+          "nonblank app, title and canvas verified",
+          "fog and door remain separate gestures; entered room",
+          "normal opening retains printed pages and usable reader",
+          "chapter switch, close and retained reopening",
+          "cat approach, touch and return",
+          "landscape resize, cache miss and correct retained reading"
+        ],
+        "errors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "screenshots": [
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening/qa-mobile-low-room.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening/qa-mobile-low-opening.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening/qa-mobile-low-reading.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening/qa-mobile-low-landscape.png"
+        ],
+        "loadingMs": 2517.1701659999962,
+        "url": "http://127.0.0.1:4175/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envQuality=low",
+        "title": "潮汐之间 · Between the tides",
+        "device": {
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "canvasPixels": [
+            390,
+            844
+          ],
+          "devicePixelRatio": 2
+        }
+      }
+    ],
+    "screenshotsReviewed": 10,
+    "pageErrors": 0,
+    "consoleWarnings": 0,
+    "failedRequests": 0,
+    "previewUrl": "http://127.0.0.1:4175/"
+  }
+}

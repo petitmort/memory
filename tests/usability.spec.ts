@@ -123,7 +123,7 @@ async function mockRenderer(page: Page, delayedCapture=false) {
   await page.route(/\/src\/scene\.ts(?:\?.*)?$/,route=>route.fulfill({contentType:'application/javascript',
     body:'export class SceneUnavailableError extends Error {};export const createScene='+mockScene.toString()+';'}));
   if(delayedCapture) await page.route(/\/src\/page-raster\.ts(?:\?.*)?$/,route=>route.fulfill({contentType:'application/javascript',body:
-    'export function captureBookPages(){return new Promise(resolve=>{window.__releaseCapture=()=>resolve([document.createElement("canvas"),document.createElement("canvas")]);});}'}));
+    'let captures=0;export function captureBookPages(){const pages=[document.createElement("canvas"),document.createElement("canvas")];if(++captures===1)return Promise.resolve(pages);return new Promise(resolve=>{window.__releaseCapture=()=>resolve(pages);});}'}));
 }
 
 async function enterMockRoom(page: Page) {
@@ -181,6 +181,9 @@ test('a late paper capture cannot restart a failed 3D transition',async ({browse
   const context=await browser.newContext({reducedMotion:'reduce'});const page=await context.newPage();
   try {
     await mockRenderer(page,true);await page.goto('/');await enterMockRoom(page);
+    // Initial preparation now runs under the loader. Resize to exercise a real
+    // uncached opening, then lose the scene while that new capture is pending.
+    await page.setViewportSize({width:1024,height:700});
     await page.locator('#open-book').click();await page.waitForFunction(()=>Boolean((window as any).__releaseCapture));
     await page.evaluate(()=>(window as any).__sceneProbe.fail());await ready(page);
     await page.evaluate(()=>(window as any).__releaseCapture());await page.waitForTimeout(100);
