@@ -1,0 +1,196 @@
+{
+  "date": "2026-11-24",
+  "timezone": "Asia/Shanghai",
+  "acceptedSource": "4434daa4e444e46ac0be81f29e1d9562b7c5b25d",
+  "sourceCommit": "cada1afea906f59a6d03b03cbbf0b86219975190",
+  "baselineMain": "05837f8d786dcc6a0eaae7f01548e568cb94a4b5",
+  "scope": "Publish the author-accepted existing version, then continue memoir creation locally; no product redesign or author content uploaded.",
+  "status": "Local preflight complete; ordinary main push and online confirmation pending.",
+  "manifest": {
+    "files": 404,
+    "bytes": 22772080,
+    "sha256": "779b5a110d7423a63cc14d970057d62de5cbe15819a67940b42c890fc652b53d",
+    "raw": "/Users/jiangyuhan/.codex/visualizations/2026/11/24/publish/manifest.json",
+    "nojekyll": "existing empty file preserved; 403 site files plus .nojekyll = 404"
+  },
+  "validation": {
+    "typecheck": "passed",
+    "regression": {
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "duration": "2.0m",
+      "specs": [
+        "album-motion-pacing",
+        "book-transition",
+        "page-raster-cache",
+        "performance",
+        "quality-policy",
+        "reader-reopening",
+        "record-interaction",
+        "room-controller",
+        "usability"
+      ],
+      "log": "/Users/jiangyuhan/.codex/visualizations/2026/11/24/publish/regression.log"
+    },
+    "productionBuild": {
+      "command": "project-pnpm build:editor --outDir <external evidence>/artifact",
+      "passed": true,
+      "entries": [
+        "index.html",
+        "editor.html",
+        "album-preview.html"
+      ],
+      "sourceBaselineEmbedded": "cada1afea906f59a6d03b03cbbf0b86219975190",
+      "warning": "Existing Three chunk over 500kB; threshold/config unchanged"
+    },
+    "localFiles": {
+      "passed": true,
+      "checked": 404,
+      "failed": 0,
+      "raw": "/Users/jiangyuhan/.codex/visualizations/2026/11/24/publish/local-files.json"
+    },
+    "localFlow": {
+      "passed": true,
+      "room": [
+        {
+          "name": "desktop-day",
+          "device": {
+            "width": 1280,
+            "height": 800,
+            "dpr": 2,
+            "renderDpr": 1.5,
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)"
+          },
+          "steps": [
+            "meaningful initial screen, title, canvas, ordinary/economy DPR verified",
+            "separate fog and door gestures enter room",
+            "native-motion first opening retains flower, camera and paper transition",
+            "chapter switch, close and reopen retain current chapter",
+            "cat approach, touch and return remain usable"
+          ],
+          "errors": [],
+          "warnings": [],
+          "failedRequests": [],
+          "httpErrors": []
+        },
+        {
+          "name": "desktop-night",
+          "device": {
+            "width": 1280,
+            "height": 800,
+            "dpr": 2,
+            "renderDpr": 1.5,
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)"
+          },
+          "steps": [
+            "meaningful initial screen, title, canvas, ordinary/economy DPR verified",
+            "separate fog and door gestures enter room",
+            "native-motion first opening retains flower, camera and paper transition",
+            "chapter switch, close and reopen retain current chapter",
+            "cat approach, touch and return remain usable"
+          ],
+          "errors": [],
+          "warnings": [],
+          "failedRequests": [],
+          "httpErrors": []
+        },
+        {
+          "name": "mobile-low",
+          "device": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2,
+            "renderDpr": 1,
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)"
+          },
+          "steps": [
+            "meaningful initial screen, title, canvas, ordinary/economy DPR verified",
+            "separate fog and door gestures enter room",
+            "native-motion first opening retains flower, camera and paper transition",
+            "chapter switch, close and reopen retain current chapter",
+            "cat approach, touch and return remain usable",
+            "landscape resize and retained reading work through cache miss"
+          ],
+          "errors": [],
+          "warnings": [],
+          "failedRequests": [],
+          "httpErrors": []
+        }
+      ],
+      "editor": {
+        "steps": [
+          "editor loads a blank isolated draft with two editable pages and no WebGL",
+          "text editing, paper selection and autosave respond",
+          "editable backup has test title and exact release source commit",
+          "editor snapshot opens a readable 390px mobile iframe preview",
+          "reload restores only this isolated test draft"
+        ],
+        "baseCommit": "cada1afea906f59a6d03b03cbbf0b86219975190",
+        "errors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "httpErrors": []
+      },
+      "screenshotsReviewed": 12,
+      "raw": "/Users/jiangyuhan/.codex/visualizations/2026/11/24/publish/local/report.json"
+    },
+    "docsSync": {
+      "at": "2026-11-23T19:22:16.999Z",
+      "source": "cada1afea906f59a6d03b03cbbf0b86219975190",
+      "files": 404,
+      "bytes": 22772080,
+      "removed": [
+        "assets/document-Ba8fqfeZ.js",
+        "assets/editor-Br5g80fT.js",
+        "assets/main-DiomPXIu.js",
+        "assets/preview-B96JHhzF.js",
+        "assets/runtime-BNnStvt1.js",
+        "assets/samples-CdsoblAC.js",
+        "assets/storage-CoZC1K_j.js"
+      ],
+      "nojekyllPreserved": true,
+      "allBytesSha256Equal": true
+    },
+    "online": "pending; author requested no repetitive suites, use one brief primary-flow confirmation and actual deployed file equality"
+  },
+  "environment": {
+    "node": "~/.nvm/versions/node/v24.14.0",
+    "nodeEntry": "~/.local/bin/project-node",
+    "pnpmEntry": "~/.local/bin/project-pnpm",
+    "pnpmVersion": "11.7.0",
+    "pnpmStore": "~/Library/pnpm/store/v11",
+    "pythonEntry": "~/.local/bin/document-python",
+    "pythonEnvironment": "~/.local/share/project-envs/document-tools",
+    "newInstalls": 0,
+    "newEnvironments": 0,
+    "isolationExceptions": 0,
+    "repoBeforeKiB": 283908,
+    "pnpmStoreBeforeKiB": 1648256,
+    "browser": "Browser plugin not available; existing Playwright and system Chrome, Apple Metal M1 Pro",
+    "canonicalLocalRoom": "http://127.0.0.1:4173/",
+    "authorLocalEditor": "http://127.0.0.1:4174/editor.html",
+    "temporary5173": "started automatically by Playwright; stopped after tests"
+  },
+  "authorDrafts": {
+    "read": false,
+    "reloaded": false,
+    "exported": false,
+    "uploaded": false,
+    "publishedJson": null,
+    "isolatedTestBackupOnly": true
+  },
+  "limitations": [
+    "Chrome desktop and desktop mobile-sized contexts; no new physical phone, Safari, long-duration or thermal acceptance.",
+    "Publication smoke is not a new performance improvement measurement.",
+    "Known uncached viewport/DPR/chapter raster capture may still cause one pause."
+  ],
+  "deployment": {
+    "pagesSource": "main:/docs",
+    "buildType": "legacy",
+    "configurationChanged": false,
+    "sourceBefore": "05837f8d786dcc6a0eaae7f01548e568cb94a4b5",
+    "status": "pending"
+  },
+  "evidenceRoot": "/Users/jiangyuhan/.codex/visualizations/2026/11/24/publish"
+}
