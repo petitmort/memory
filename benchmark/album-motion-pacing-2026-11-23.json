@@ -1,0 +1,902 @@
+{
+  "date": "2026-11-23",
+  "baseline": "a7379971a7f0da9d9f13bb0eb75124ce4e59a997",
+  "scope": "Only remove the economy 30Hz cap while bouquetMotion or readingMotion is active. Preserve quality, content, choreography, idle economy, reader suspension and author drafts. No publication.",
+  "sources": [
+    {
+      "file": "src/scene.ts",
+      "sha256": "f957faa68f096e0c32f0919c4953c25508ddab32252fee2374415f70c224143e"
+    },
+    {
+      "file": "tests/album-motion-pacing.spec.ts",
+      "sha256": "196cbb16e8e62223b6b1897b20338f06031b7361a7919d817531d9b9190ee463"
+    }
+  ],
+  "sharedEnvironment": {
+    "node": "24.14.0",
+    "nodePath": "~/.nvm/versions/node/v24.14.0",
+    "nodeEntry": "~/.local/bin/project-node",
+    "pnpm": "11.7.0",
+    "pnpmEntry": "~/.local/bin/project-pnpm",
+    "store": "~/Library/pnpm/store/v11",
+    "dependenciesInstalled": false,
+    "isolatedEnvironments": 0,
+    "lockfile": "package-lock.json",
+    "pythonEntry": "~/.local/bin/document-python",
+    "pythonEnvironment": "~/.local/share/project-envs/document-tools",
+    "diskSnapshotKiB": {
+      "phase": "pre-implementation-commit",
+      "repository": {
+        "before": 300380,
+        "after": 299420,
+        "delta": -960
+      },
+      "pnpmStore": {
+        "before": 1648256,
+        "after": 1648256,
+        "delta": 0
+      },
+      "externalEvidence": {
+        "before": 0,
+        "after": 231244,
+        "delta": 231244
+      },
+      "note": "du -sk snapshots include regenerated test results, documentation and build evidence; not source size or runtime memory. No dependency installation or user-file cleanup."
+    }
+  },
+  "inApp": [
+    {
+      "name": "in-app-low-before",
+      "device": {
+        "width": 359,
+        "height": 746,
+        "dpr": 2,
+        "canvas": [
+          359,
+          746
+        ],
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+        "hidden": false
+      },
+      "errors": [],
+      "actions": [
+        {
+          "action": "first-open",
+          "elapsed": 3753.300000011921,
+          "rafCount": 450,
+          "drawFrames": {
+            "count": 113,
+            "gapP95": 35.20000001788139,
+            "gapMax": 38.29999998211861
+          },
+          "hidden": false
+        },
+        {
+          "action": "close",
+          "elapsed": 2044,
+          "rafCount": 246,
+          "drawFrames": {
+            "count": 62,
+            "gapP95": 34.79999998211861,
+            "gapMax": 36.89999997615814
+          },
+          "hidden": false
+        },
+        {
+          "action": "reopen",
+          "elapsed": 2061.4000000059605,
+          "rafCount": 247,
+          "drawFrames": {
+            "count": 62,
+            "gapP95": 34.900000005960464,
+            "gapMax": 36.099999994039536
+          },
+          "hidden": false
+        }
+      ]
+    },
+    {
+      "name": "in-app-low-after",
+      "device": {
+        "width": 359,
+        "height": 746,
+        "dpr": 2,
+        "canvas": [
+          359,
+          746
+        ],
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+        "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+        "hidden": false
+      },
+      "errors": [],
+      "actions": [
+        {
+          "action": "first-open",
+          "elapsed": 3738.7000000178814,
+          "rafCount": 448,
+          "drawFrames": {
+            "count": 443,
+            "gapP95": 9.099999994039536,
+            "gapMax": 14.099999994039536
+          },
+          "hidden": false
+        },
+        {
+          "action": "close",
+          "elapsed": 2037,
+          "rafCount": 245,
+          "drawFrames": {
+            "count": 242,
+            "gapP95": 9,
+            "gapMax": 33.400000005960464
+          },
+          "hidden": false
+        },
+        {
+          "action": "reopen",
+          "elapsed": 2030.4000000059605,
+          "rafCount": 244,
+          "drawFrames": {
+            "count": 241,
+            "gapP95": 8.699999988079071,
+            "gapMax": 9.400000005960464
+          },
+          "hidden": false
+        }
+      ]
+    }
+  ],
+  "chrome": [
+    {
+      "name": "accepted-low-before",
+      "viewport": {
+        "width": 1728,
+        "height": 1000
+      },
+      "dpr": 2,
+      "cpu": 4,
+      "runs": [
+        {
+          "round": 0,
+          "device": {
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "hardwareConcurrency": 10
+          },
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "elapsed": 3828.1134169999987,
+              "frames": {
+                "count": 115,
+                "gapP95": 34.80000001192093,
+                "gapMax": 48
+              },
+              "active": {
+                "count": 112,
+                "gapP95": 34.80000001192093,
+                "gapMax": 66.59999999403954
+              },
+              "tickP95": 7.5999999940395355,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            },
+            {
+              "action": "close",
+              "elapsed": 2393.777249999999,
+              "frames": {
+                "count": 74,
+                "gapP95": 35.099999994039536,
+                "gapMax": 35.5
+              },
+              "active": {
+                "count": 61,
+                "gapP95": 35,
+                "gapMax": 35.400000005960464
+              },
+              "tickP95": 7.399999976158142,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 428023,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "elapsed": 2059.636917,
+              "frames": {
+                "count": 62,
+                "gapP95": 35,
+                "gapMax": 35.400000005960464
+              },
+              "active": {
+                "count": 60,
+                "gapP95": 35.099999994039536,
+                "gapMax": 35.400000005960464
+              },
+              "tickP95": 7.0999999940395355,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            }
+          ]
+        },
+        {
+          "round": 1,
+          "device": {
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "hardwareConcurrency": 10
+          },
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "elapsed": 3832.0741659999985,
+              "frames": {
+                "count": 115,
+                "gapP95": 34.599999994039536,
+                "gapMax": 44.400000005960464
+              },
+              "active": {
+                "count": 112,
+                "gapP95": 34.599999994039536,
+                "gapMax": 66.30000001192093
+              },
+              "tickP95": 7.5999999940395355,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            },
+            {
+              "action": "close",
+              "elapsed": 2384.942750000002,
+              "frames": {
+                "count": 74,
+                "gapP95": 34.10000002384186,
+                "gapMax": 35.5
+              },
+              "active": {
+                "count": 60,
+                "gapP95": 34.10000002384186,
+                "gapMax": 35.5
+              },
+              "tickP95": 7.5999999940395355,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 428023,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "elapsed": 2059.7449999999953,
+              "frames": {
+                "count": 63,
+                "gapP95": 34.900000005960464,
+                "gapMax": 35.5
+              },
+              "active": {
+                "count": 60,
+                "gapP95": 35,
+                "gapMax": 35.5
+              },
+              "tickP95": 6.9000000059604645,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "device": {
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "hardwareConcurrency": 10
+          },
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "elapsed": 3830.1845420000027,
+              "frames": {
+                "count": 115,
+                "gapP95": 34.89999997615814,
+                "gapMax": 46.900000005960464
+              },
+              "active": {
+                "count": 112,
+                "gapP95": 34.89999997615814,
+                "gapMax": 66.5
+              },
+              "tickP95": 8.200000017881393,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            },
+            {
+              "action": "close",
+              "elapsed": 2386.1477500000037,
+              "frames": {
+                "count": 74,
+                "gapP95": 34.900000005960464,
+                "gapMax": 35.30000001192093
+              },
+              "active": {
+                "count": 61,
+                "gapP95": 34.5,
+                "gapMax": 35.19999998807907
+              },
+              "tickP95": 7.0999999940395355,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 428023,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "elapsed": 2083.0858330000046,
+              "frames": {
+                "count": 63,
+                "gapP95": 34.400000005960464,
+                "gapMax": 35.10000002384186
+              },
+              "active": {
+                "count": 61,
+                "gapP95": 34.400000005960464,
+                "gapMax": 35.10000002384186
+              },
+              "tickP95": 7.199999988079071,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "accepted-low-after",
+      "viewport": {
+        "width": 1728,
+        "height": 1000
+      },
+      "dpr": 2,
+      "cpu": 4,
+      "runs": [
+        {
+          "round": 0,
+          "device": {
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "hardwareConcurrency": 10
+          },
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "elapsed": 3783.8331670000007,
+              "frames": {
+                "count": 225,
+                "gapP95": 18.299999982118607,
+                "gapMax": 42.79999998211861
+              },
+              "active": {
+                "count": 222,
+                "gapP95": 18.299999982118607,
+                "gapMax": 34.900000005960464
+              },
+              "tickP95": 7.5,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            },
+            {
+              "action": "close",
+              "elapsed": 2388.0505410000005,
+              "frames": {
+                "count": 135,
+                "gapP95": 33.099999994039536,
+                "gapMax": 34.70000001788139
+              },
+              "active": {
+                "count": 121,
+                "gapP95": 17.799999982118607,
+                "gapMax": 19.900000005960464
+              },
+              "tickP95": 6.9000000059604645,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 428023,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "elapsed": 2051.717916999998,
+              "frames": {
+                "count": 122,
+                "gapP95": 17.900000005960464,
+                "gapMax": 30.19999998807907
+              },
+              "active": {
+                "count": 120,
+                "gapP95": 17.900000005960464,
+                "gapMax": 30.19999998807907
+              },
+              "tickP95": 7.199999988079071,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            }
+          ]
+        },
+        {
+          "round": 1,
+          "device": {
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "hardwareConcurrency": 10
+          },
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "elapsed": 3764.528999999995,
+              "frames": {
+                "count": 224,
+                "gapP95": 18.30000001192093,
+                "gapMax": 46.5
+              },
+              "active": {
+                "count": 221,
+                "gapP95": 18.30000001192093,
+                "gapMax": 33.599999994039536
+              },
+              "tickP95": 8,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            },
+            {
+              "action": "close",
+              "elapsed": 2400.361499999999,
+              "frames": {
+                "count": 134,
+                "gapP95": 33.099999994039536,
+                "gapMax": 35.900000005960464
+              },
+              "active": {
+                "count": 121,
+                "gapP95": 18.30000001192093,
+                "gapMax": 18.900000005960464
+              },
+              "tickP95": 7.299999982118607,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 428023,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "elapsed": 2079.786583000001,
+              "frames": {
+                "count": 124,
+                "gapP95": 18.400000005960464,
+                "gapMax": 33.400000005960464
+              },
+              "active": {
+                "count": 121,
+                "gapP95": 18.19999998807907,
+                "gapMax": 18.69999998807907
+              },
+              "tickP95": 7.199999988079071,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "device": {
+            "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+            "vendor": "Google Inc. (Apple)",
+            "hardwareConcurrency": 10
+          },
+          "errors": [],
+          "warnings": [],
+          "actions": [
+            {
+              "action": "first-open",
+              "elapsed": 3753.940708000009,
+              "frames": {
+                "count": 224,
+                "gapP95": 18.299999982118607,
+                "gapMax": 50.400000005960464
+              },
+              "active": {
+                "count": 221,
+                "gapP95": 18.19999998807907,
+                "gapMax": 34.80000001192093
+              },
+              "tickP95": 8.399999976158142,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            },
+            {
+              "action": "close",
+              "elapsed": 2399.6391250000015,
+              "frames": {
+                "count": 134,
+                "gapP95": 33.80000001192093,
+                "gapMax": 34.900000005960464
+              },
+              "active": {
+                "count": 120,
+                "gapP95": 18.099999994039536,
+                "gapMax": 18.900000005960464
+              },
+              "tickP95": 7,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 428023,
+                "calls": 171
+              }
+            },
+            {
+              "action": "reopen",
+              "elapsed": 2057.0931249999994,
+              "frames": {
+                "count": 122,
+                "gapP95": 18.30000001192093,
+                "gapMax": 34.5
+              },
+              "active": {
+                "count": 120,
+                "gapP95": 18.30000001192093,
+                "gapMax": 19.099999994039536
+              },
+              "tickP95": 7.299999982118607,
+              "longtasks": [],
+              "captures": [],
+              "scene": {
+                "low": true,
+                "pixelRatio": 1,
+                "textures": 41,
+                "geometries": 270,
+                "programs": 56,
+                "triangles": 260008,
+                "calls": 70
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tests": {
+    "newMotionPacing": "2/2 passed; deterministic real-scene 60Hz scheduling; quality/idle/pause assertions",
+    "related": {
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "singleRun": true,
+      "newTestsIncluded": 2,
+      "specs": [
+        "album-motion-pacing",
+        "book-transition",
+        "page-raster-cache",
+        "performance",
+        "quality-policy",
+        "reader-reopening",
+        "record-interaction",
+        "room-controller",
+        "usability"
+      ],
+      "log": "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/related.log",
+      "note": "The original command also contained a non-existent cat-interaction matching pattern; it produced no tests and is not claimed as coverage."
+    }
+  },
+  "builds": {
+    "typecheck": "passed",
+    "default": "passed; original build script with external outDir",
+    "editor": "passed; original build:editor script with external outDir"
+  },
+  "diagnostics": {
+    "safari": "Native Safari27.3 / Apple GPU / viewport1280x794 DPR2, normal render DPR1.5; initial gap49-83ms but P95 about20ms. Did not reproduce sustained low frame rate.",
+    "normalInApp": "WebView157, width359 height746 DPR2 renderDPR1.5, native120Hz, old first-open max9.3ms. Not evidence of the authors exact original tab or a broad normal-quality performance improvement.",
+    "resize": "Chrome1728x1000 DPR2 CPU4, resize width-40, capture210.6ms / max frame gap200.1ms. Known uncached-path limitation retained, not the selected continuous-motion fix.",
+    "rejected": [
+      "zero-filter / trim-dom: no stable first-open improvement in Safari or high-DPR Chrome",
+      "compact CSS raster: capture233.7ms / max200.4ms, rejected",
+      "asynchronous raster: capture1199.4ms / max110.8ms, rejected",
+      "static transform matrices: no stable frame CPU gain, rejected",
+      "shadow disabling: diagnostic only, not shipped"
+    ],
+    "invalidSamples": [
+      "low-before URL was truncated by the external argument parser, actual low=false; excluded",
+      "low-baseline-valid and shadow-ablation may overlap in wall time; excluded from final matched results"
+    ],
+    "rawDirectory": "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup",
+    "safariFollowup": {
+      "completed": false,
+      "reason": "Mac IOConsoleLocked=Yes; native WebDriver window request timed out after 60s. Before/after low-quality production pair was not collected.",
+      "raw": "safari-low-before.json"
+    }
+  },
+  "limitations": [
+    "Native rendering timestamps and CPU calls are not GPU completion or display presentation timings",
+    "One real Codex WebView before/after pair and repeated Chrome CPU4 lab comparisons; not physical phone or thermal testing",
+    "Ordinary quality already used available frames and its sustained stutter was not reproduced in the isolated runs",
+    "Viewport, DPR and chapter cache misses retain the original synchronous raster capture; may still stall once",
+    "Opening can use more instantaneous CPU/GPU and battery than the former 30Hz economy animation; idle room still retains its original cap"
+  ],
+  "productionQa": {
+    "scenes": [
+      {
+        "name": "desktop-day",
+        "width": 1280,
+        "height": 800,
+        "dpr": 1.5,
+        "quality": "normal",
+        "hour": "12:00",
+        "steps": [
+          "nonblank app, title and canvas verified",
+          "fog and door remain separate gestures; entered room",
+          "normal opening retains printed pages and usable reader",
+          "chapter switch, close and retained reopening",
+          "cat approach, touch and return"
+        ],
+        "errors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "screenshots": [
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-desktop-day-room.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-desktop-day-opening.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-desktop-day-reading.png"
+        ],
+        "loadingMs": 1820.3153750000001,
+        "url": "http://127.0.0.1:4177/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envQuality=normal",
+        "title": "潮汐之间 · Between the tides",
+        "device": {
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "canvasPixels": [
+            1920,
+            1200
+          ],
+          "devicePixelRatio": 1.5
+        }
+      },
+      {
+        "name": "desktop-night",
+        "width": 1280,
+        "height": 800,
+        "dpr": 1.5,
+        "quality": "normal",
+        "hour": "22:00",
+        "steps": [
+          "nonblank app, title and canvas verified",
+          "fog and door remain separate gestures; entered room",
+          "normal opening retains printed pages and usable reader",
+          "chapter switch, close and retained reopening",
+          "cat approach, touch and return"
+        ],
+        "errors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "screenshots": [
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-desktop-night-room.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-desktop-night-opening.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-desktop-night-reading.png"
+        ],
+        "loadingMs": 1481.1223329999993,
+        "url": "http://127.0.0.1:4177/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T22:00&envWeather=clear&envQuality=normal",
+        "title": "潮汐之间 · Between the tides",
+        "device": {
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "canvasPixels": [
+            1920,
+            1200
+          ],
+          "devicePixelRatio": 1.5
+        }
+      },
+      {
+        "name": "mobile-low",
+        "width": 390,
+        "height": 844,
+        "dpr": 2,
+        "quality": "low",
+        "hour": "12:00",
+        "steps": [
+          "nonblank app, title and canvas verified",
+          "fog and door remain separate gestures; entered room",
+          "normal opening retains printed pages and usable reader",
+          "chapter switch, close and retained reopening",
+          "cat approach, touch and return",
+          "landscape resize, cache miss and correct retained reading"
+        ],
+        "errors": [],
+        "warnings": [],
+        "failedRequests": [],
+        "screenshots": [
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-mobile-low-room.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-mobile-low-opening.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-mobile-low-reading.png",
+          "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-mobile-low-landscape.png"
+        ],
+        "loadingMs": 1347.315708000002,
+        "url": "http://127.0.0.1:4177/?debugEnv=1&envTimeMode=scene&envDate=2026-10-31T12:00&envWeather=clear&envQuality=low",
+        "title": "潮汐之间 · Between the tides",
+        "device": {
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "canvasPixels": [
+            390,
+            844
+          ],
+          "devicePixelRatio": 2
+        }
+      }
+    ],
+    "totalSteps": 16,
+    "screenshotsReviewed": 10,
+    "contactSheet": "/Users/jiangyuhan/.codex/visualizations/2026/11/23/album-opening-followup/qa-contact.png",
+    "errors": 0,
+    "warnings": 0,
+    "failedRequests": 0,
+    "note": "Normal-motion desktop daytime/night ordinary quality, mobile economy portrait/landscape. Actual cat approach, touch and return included."
+  },
+  "delivery": {
+    "status": "Local validation complete; ordinary feature-branch commit and push pending",
+    "branch": "codex/album-opening-performance",
+    "preview": "http://127.0.0.1:4177/",
+    "published": false,
+    "main": "05837f8d786dcc6a0eaae7f01548e568cb94a4b5"
+  },
+  "staticValidation": {
+    "sourceHashesVerified": true,
+    "taskFiles": 6,
+    "localLinks": 234,
+    "diffCheck": "passed",
+    "protectedFilesUnchanged": true,
+    "buildArtifactCheck": "passed after correcting helper to album-preview.html per vite.config.ts; initial helper assumed preview.html"
+  }
+}

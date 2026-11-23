@@ -1011,7 +1011,11 @@ export function createScene(
     frame = 0;
     if (disposed || unavailableError) return;
     if (document.hidden || (readerBackdropFrozen && !singleRenderRequested)) return;
-    const interval = low || (current === "entry" && !animating) ? 1000 / 30 : 0;
+    // The economy setting still saves work while the room is idle. Its 30 Hz
+    // cap must not quantize the flower, camera and paper of an active journey;
+    // keep the existing pixel ratio, shadows, models and motion clock intact.
+    const bookMoving = bouquetMotion !== null || readingMotion !== null;
+    const interval = (low && !bookMoving) || (current === "entry" && !animating) ? 1000 / 30 : 0;
     if (lastDraw !== null && now - lastDraw < interval - 1 && !singleRenderRequested) {
       scheduleFrame();
       return;

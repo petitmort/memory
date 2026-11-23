@@ -8,6 +8,8 @@
 
 ## 协作与更新记录
 
+**开册流畅度续轮（2026-11-23，本机验收完成）**：修正省电模式把移花 / 镜头靠近 / 展开锁在30Hz的问题，静止房间仍省电、阅读仍停绘；原画质、内容、路径和时长保持。真实Codex内置预览生产对照首开113→443实绘帧、帧间隔P95 35.2→9.1ms（120Hz窗口）；Chrome CPU4三轮活动帧P95中位34.8→18.3ms，非普通画质 / 全站提速或屏幕呈现结论。25 / 25、类型 / 双构建和生产三场景16步 / 10图通过；Safari补验因锁屏超时，普通画质持续低帧未复现，尺寸失配原捕获仍可能单次停顿。见[逐步记录](ALBUM-OPENING-PERFORMANCE-PLAN.md)与[本轮基准](benchmark/album-motion-pacing-2026-11-23.json)。[新本地预览4177](http://127.0.0.1:4177/)，待开发分支普通交付，不发布。
+
 **房间打开纪念册卡顿专项（2026-11-23，本机已完成）**：当前跨页在初始加载期间准备、开 / 关 / 重开复用，按章节 / 窗口 / DPR失配更新；保留原画质、捕获像素与开册仪式。CPU4三轮首开最大帧间隔中位桌面277.7→40.4ms、手机尺寸277.1→35.1ms，P95约17.6ms保持；52项唯一相关用例跨轮次通过、类型 / 双构建与生产三场景 / 10图通过，非实体手机 / 全站FPS结论。状态、缓存成本、一次性失配捕获与首轮夹具失败实录见[专项记录](ALBUM-OPENING-PERFORMANCE-PLAN.md)及[基准](benchmark/album-opening-2026-11-23.json)；本地4175预览，实现 / 验收`0964969`已普通推送并核对`codex/album-opening-performance`，main / 线上保持，不发布。
 
 **当前完整版本已上线并完成本次发布验收（2026-11-23）**：产物`258ea04`已普通推送main，Pages明确commit且built、[部署45044151760](https://github.com/petitmort/memory/actions/runs/45044151760)成功。[网站](https://petitmort.github.io/memory/?v=258ea04) / [在线编辑器](https://petitmort.github.io/memory/editor.html?v=258ea04)可用；本地与线上各403文件完整字节 / SHA一致，房间正常动态各9步、隔离编辑器 / 手机预览通过，12张图已复看。当前已接受成果完整保留，原47项仍32 / 47、作者稿不上传。经过与未测范围见[发布回执](PUBLISH-2026-11-23.md)和[完整证据](benchmark/publish-2026-11-23.json)；本次发布不是整体帧率或性能尾峰改善的新证明。
@@ -467,6 +469,10 @@ node scripts/smoke-visual-round2.mjs --help
 截图工具与性能工具分开：前者固定Date并在真实绘制后暂停用于比较，后者保留原生Date / RAF，完成入室后才启用CPU4×；每例至少30个实际绘制帧，不能从受控截图时钟推出帧率。源码稳定后串行运行，复现参数、实际命令与限制见第二轮记录。
 
 ## 更新日志
+
+### 2026-11-23 · 开册持续动作续轮（本地 Codex，本机验收完成）
+
+基线`a737997`，沿用`codex/album-opening-performance`。仅解除移花 / 开合册活动的省电30Hz限制，保留原画质、内容 / 时长、静止省电和阅读停绘；新增真实场景60Hz调度回归。`project-pnpm typecheck`、`project-pnpm build --outDir <外部candidate>`、`project-pnpm build:editor --outDir <外部candidate-editor>`、9spec单次25 / 25及生产三场景16步骤 / 10图通过，错误 / 警告 / 失败请求0。Codex WebView生产对照113→443实绘帧，Chrome CPU4三轮活动帧P95中位首开34.8→18.3ms、合册34.5→18.1ms、重开35.0→18.2ms；资源与对应绘制量相同，整段最大尾峰未稳定改善。普通画质持续低帧未复现；Safari最终补验因锁屏超时，不能算通过；窗口 / DPR / 章节失配仍可能有一次原捕获停顿。未采用无稳定收益的模糊 / 静态矩阵 / 编码候选，完整失败 / 取舍与共享环境 / 磁盘见[记录](ALBUM-OPENING-PERFORMANCE-PLAN.md)及[原始基准](benchmark/album-motion-pacing-2026-11-23.json)。不合入main / 修改docs或发布，不访问作者稿；待开发分支普通提交推送。
 
 ### 2026-11-23 · 当前完整版本上线，发布验收完成
 
