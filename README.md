@@ -8,7 +8,7 @@
 
 ## 协作与更新记录
 
-**开册流畅度续轮（2026-11-23，本机验收完成）**：修正省电模式把移花 / 镜头靠近 / 展开锁在30Hz的问题，静止房间仍省电、阅读仍停绘；原画质、内容、路径和时长保持。真实Codex内置预览生产对照首开113→443实绘帧、帧间隔P95 35.2→9.1ms（120Hz窗口）；Chrome CPU4三轮活动帧P95中位34.8→18.3ms，非普通画质 / 全站提速或屏幕呈现结论。25 / 25、类型 / 双构建和生产三场景16步 / 10图通过；Safari补验因锁屏超时，普通画质持续低帧未复现，尺寸失配原捕获仍可能单次停顿。见[逐步记录](ALBUM-OPENING-PERFORMANCE-PLAN.md)与[本轮基准](benchmark/album-motion-pacing-2026-11-23.json)。[新本地预览4177](http://127.0.0.1:4177/)，待开发分支普通交付，不发布。
+**开册流畅度续轮（2026-11-23，本机验收与开发分支交付完成）**：修正省电模式把移花 / 镜头靠近 / 展开锁在30Hz的问题，静止房间仍省电、阅读仍停绘；原画质、内容、路径和时长保持。真实Codex内置预览生产对照首开113→443实绘帧、帧间隔P95 35.2→9.1ms（120Hz窗口）；Chrome CPU4三轮活动帧P95中位34.8→18.3ms，非普通画质 / 全站提速或屏幕呈现结论。25 / 25、类型 / 双构建和生产三场景16步 / 10图通过；Safari补验因锁屏超时，普通画质持续低帧未复现，尺寸失配原捕获仍可能单次停顿。见[逐步记录](ALBUM-OPENING-PERFORMANCE-PLAN.md)与[本轮基准](benchmark/album-motion-pacing-2026-11-23.json)。[新本地预览4177](http://127.0.0.1:4177/?v=f3bc7a8)，实现 / 验收`f3bc7a8`已普通推送并核对开发分支同SHA，main / 线上保持，不发布。
 
 **房间打开纪念册卡顿专项（2026-11-23，本机已完成）**：当前跨页在初始加载期间准备、开 / 关 / 重开复用，按章节 / 窗口 / DPR失配更新；保留原画质、捕获像素与开册仪式。CPU4三轮首开最大帧间隔中位桌面277.7→40.4ms、手机尺寸277.1→35.1ms，P95约17.6ms保持；52项唯一相关用例跨轮次通过、类型 / 双构建与生产三场景 / 10图通过，非实体手机 / 全站FPS结论。状态、缓存成本、一次性失配捕获与首轮夹具失败实录见[专项记录](ALBUM-OPENING-PERFORMANCE-PLAN.md)及[基准](benchmark/album-opening-2026-11-23.json)；本地4175预览，实现 / 验收`0964969`已普通推送并核对`codex/album-opening-performance`，main / 线上保持，不发布。
 
@@ -470,9 +470,9 @@ node scripts/smoke-visual-round2.mjs --help
 
 ## 更新日志
 
-### 2026-11-23 · 开册持续动作续轮（本地 Codex，本机验收完成）
+### 2026-11-23 · 开册持续动作续轮（本地 Codex，本机验收与开发分支交付完成）
 
-基线`a737997`，沿用`codex/album-opening-performance`。仅解除移花 / 开合册活动的省电30Hz限制，保留原画质、内容 / 时长、静止省电和阅读停绘；新增真实场景60Hz调度回归。`project-pnpm typecheck`、`project-pnpm build --outDir <外部candidate>`、`project-pnpm build:editor --outDir <外部candidate-editor>`、9spec单次25 / 25及生产三场景16步骤 / 10图通过，错误 / 警告 / 失败请求0。Codex WebView生产对照113→443实绘帧，Chrome CPU4三轮活动帧P95中位首开34.8→18.3ms、合册34.5→18.1ms、重开35.0→18.2ms；资源与对应绘制量相同，整段最大尾峰未稳定改善。普通画质持续低帧未复现；Safari最终补验因锁屏超时，不能算通过；窗口 / DPR / 章节失配仍可能有一次原捕获停顿。未采用无稳定收益的模糊 / 静态矩阵 / 编码候选，完整失败 / 取舍与共享环境 / 磁盘见[记录](ALBUM-OPENING-PERFORMANCE-PLAN.md)及[原始基准](benchmark/album-motion-pacing-2026-11-23.json)。不合入main / 修改docs或发布，不访问作者稿；待开发分支普通提交推送。
+基线`a737997`，沿用`codex/album-opening-performance`。仅解除移花 / 开合册活动的省电30Hz限制，保留原画质、内容 / 时长、静止省电和阅读停绘；新增真实场景60Hz调度回归。`project-pnpm typecheck`、`project-pnpm build --outDir <外部candidate>`、`project-pnpm build:editor --outDir <外部candidate-editor>`、9spec单次25 / 25及生产三场景16步骤 / 10图通过，错误 / 警告 / 失败请求0。Codex WebView生产对照113→443实绘帧，Chrome CPU4三轮活动帧P95中位首开34.8→18.3ms、合册34.5→18.1ms、重开35.0→18.2ms；资源与对应绘制量相同，整段最大尾峰未稳定改善。普通画质持续低帧未复现；Safari最终补验因锁屏超时，不能算通过；窗口 / DPR / 章节失配仍可能有一次原捕获停顿。未采用无稳定收益的模糊 / 静态矩阵 / 编码候选，完整失败 / 取舍与共享环境 / 磁盘见[记录](ALBUM-OPENING-PERFORMANCE-PLAN.md)及[原始基准](benchmark/album-motion-pacing-2026-11-23.json)。实现 / 验收`f3bc7a8`已普通推送`codex/album-opening-performance`并核对远端同SHA，main仍`05837f8`，不合入main / 修改docs或发布，不访问作者稿。本次回执以`f3bc7a8`为基线，仅更新四份记录；静态核对、不重跑应用，回执自身提交由Git历史追踪。
 
 ### 2026-11-23 · 当前完整版本上线，发布验收完成
 

@@ -42,6 +42,15 @@
         "delta": 231244
       },
       "note": "du -sk snapshots include regenerated test results, documentation and build evidence; not source size or runtime memory. No dependency installation or user-file cleanup."
+    },
+    "postImplementationCommitDiskKiB": {
+      "repository": 299636,
+      "repositoryDeltaFromStart": -744,
+      "pnpmStore": 1648256,
+      "storeDelta": 0,
+      "externalEvidence": 231244,
+      "externalEvidenceDelta": 231244,
+      "note": "du -sk after implementation commit; includes Git and regenerated test/build artifacts. Not a runtime memory measurement."
     }
   },
   "inApp": [
@@ -885,11 +894,17 @@
     "note": "Normal-motion desktop daytime/night ordinary quality, mobile economy portrait/landscape. Actual cat approach, touch and return included."
   },
   "delivery": {
-    "status": "Local validation complete; ordinary feature-branch commit and push pending",
+    "status": "Local validation and ordinary feature-branch delivery complete within the documented browser/device boundaries",
     "branch": "codex/album-opening-performance",
-    "preview": "http://127.0.0.1:4177/",
+    "implementationCommit": "f3bc7a80d3e96309461d663f4ccc8c54223a014a",
+    "remoteFeatureAtVerification": "f3bc7a80d3e96309461d663f4ccc8c54223a014a",
+    "main": "05837f8d786dcc6a0eaae7f01548e568cb94a4b5",
+    "remoteVerifiedBy": "git ls-remote --heads origin refs/heads/main refs/heads/codex/album-opening-performance",
+    "preview": "http://127.0.0.1:4177/?v=f3bc7a8",
+    "previewHttpStatus": 200,
+    "codexOpenStatus": "queued",
     "published": false,
-    "main": "05837f8d786dcc6a0eaae7f01548e568cb94a4b5"
+    "receipt": "Only README, AGENTS, ALBUM-OPENING-PERFORMANCE-PLAN and this benchmark metadata updated after implementation delivery; no source/test/build changes or repeated app validation. Receipt SHA tracked by Git history."
   },
   "staticValidation": {
     "sourceHashesVerified": true,
