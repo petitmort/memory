@@ -1,0 +1,478 @@
+{
+  "date": "2026-11-24",
+  "timezone": "Asia/Shanghai",
+  "baseline": "6bc63111c9940d13040c180ef3f11948666cdac1",
+  "branch": "codex/album-opening-performance",
+  "status": "Author accepted the previously tested version after local preview consolidation; no new runtime changes retained.",
+  "authorConfirmation": {
+    "exact": "流畅很多了可以接受",
+    "context": "Chrome new tab at http://127.0.0.1:4173/?v=f3bc7a8; ordinary quality question; no author-page telemetry collected"
+  },
+  "sources": [
+    {
+      "path": "src/main.ts",
+      "sha256": "535fd9025c68e8b8f612e9d47e8f538b8b0532bb544ed296e53c44b6d24cc05f"
+    },
+    {
+      "path": "src/scene.ts",
+      "sha256": "f957faa68f096e0c32f0919c4953c25508ddab32252fee2374415f70c224143e"
+    },
+    {
+      "path": "src/ocean.ts",
+      "sha256": "0dddfc45e2c18bf81c24e2518dc82573243a088aa9df53f75562b0b773469aaf"
+    },
+    {
+      "path": "src/seascape.ts",
+      "sha256": "4654a138abb933355d5d035bae39eb5579dc58d4153ec3524d50e5080609b358"
+    },
+    {
+      "path": "src/environment-sky.ts",
+      "sha256": "a8b8274903cc716c1afa61fb119fb6558dbead9b699f511ffcbb020f3dcbdca9"
+    },
+    {
+      "path": "src/page-raster.ts",
+      "sha256": "88b689faf84bf73d673d29f342f6551dbf2d458f1979e2a447956885e3b14461"
+    },
+    {
+      "path": "src/page-raster-cache.ts",
+      "sha256": "f0c577b0c37e6bfbfe8ad43278e6aab89daee0174a6a677051ac22d3167c0913"
+    }
+  ],
+  "normalQualityInvestigation": {
+    "ordinaryQuality": true,
+    "economy": false,
+    "device": "Apple M1 Pro 16 GPU cores, Chrome158 and Safari27.3, 1728x1011 DPR2 / renderDPR1.5, native motion",
+    "rejectedCandidate": {
+      "changes": "opaque depth ordering only; three files restored byte-for-byte after rejection",
+      "strictPixelTests": {
+        "passed": 4,
+        "sceneStatesCompared": 12,
+        "rgbaDifference": 0,
+        "scope": "Rejected candidate validation only; not a new accepted product test"
+      },
+      "interleaved": {
+        "before": [
+          {
+            "file": "accepted-before-1-desktop-cpu1.json",
+            "firstOpenDrawFrames": 408,
+            "drawGapP95Ms": 12.099999994039536,
+            "gpuP95Ms": 7.333208,
+            "pageErrors": []
+          },
+          {
+            "file": "accepted-before-2-desktop-cpu1.json",
+            "firstOpenDrawFrames": 322,
+            "drawGapP95Ms": 16,
+            "gpuP95Ms": 10.37725,
+            "pageErrors": []
+          },
+          {
+            "file": "accepted-before-3-desktop-cpu1.json",
+            "firstOpenDrawFrames": 328,
+            "drawGapP95Ms": 15.800000011920929,
+            "gpuP95Ms": 10.320333,
+            "pageErrors": []
+          }
+        ],
+        "after": [
+          {
+            "file": "accepted-after-1-desktop-cpu1.json",
+            "firstOpenDrawFrames": 278,
+            "drawGapP95Ms": 18.200000017881393,
+            "gpuP95Ms": 12.687749,
+            "pageErrors": []
+          },
+          {
+            "file": "accepted-after-2-desktop-cpu1.json",
+            "firstOpenDrawFrames": 315,
+            "drawGapP95Ms": 16.400000005960464,
+            "gpuP95Ms": 10.673249,
+            "pageErrors": []
+          },
+          {
+            "file": "accepted-after-3-desktop-cpu1.json",
+            "firstOpenDrawFrames": 324,
+            "drawGapP95Ms": 16,
+            "gpuP95Ms": 10.743374,
+            "pageErrors": []
+          }
+        ],
+        "medians": {
+          "drawGapP95Ms": [
+            15.800000011920929,
+            16.400000005960464
+          ],
+          "gpuP95Ms": [
+            10.320333,
+            10.743374
+          ]
+        }
+      },
+      "paired": [
+        {
+          "file": "paired-day-desktop-cpu1.json",
+          "diagnosticOnly": true,
+          "actions": [
+            {
+              "action": "first-open",
+              "completePairs": 241,
+              "candidateMinusLegacyMedianMs": 0.04345899999999947
+            },
+            {
+              "action": "close",
+              "completePairs": 196,
+              "candidateMinusLegacyMedianMs": -0.5098119999999999
+            },
+            {
+              "action": "reopen",
+              "completePairs": 101,
+              "candidateMinusLegacyMedianMs": -1.4014999999999986
+            }
+          ]
+        },
+        {
+          "file": "paired-sky-night-desktop-cpu1.json",
+          "diagnosticOnly": true,
+          "actions": [
+            {
+              "action": "first-open",
+              "completePairs": 275,
+              "candidateMinusLegacyMedianMs": -0.05849999999999955
+            },
+            {
+              "action": "close",
+              "completePairs": 246,
+              "candidateMinusLegacyMedianMs": -0.6015204999999999
+            },
+            {
+              "action": "reopen",
+              "completePairs": 160,
+              "candidateMinusLegacyMedianMs": 0.02489600000000003
+            }
+          ]
+        }
+      ],
+      "decision": "Rejected: no stable first-open performance gain. Initial favorable unpaired sample superseded.",
+      "failedAndInterruptedLogs": [
+        "depth-equivalence.log",
+        "depth-equivalence-final.log",
+        "depth-diagnostic*.log"
+      ],
+      "artifactsRoot": "/Users/jiangyuhan/.codex/visualizations/2026/11/24/album-normal-performance"
+    }
+  },
+  "diagnosticSelfTests": {
+    "injection": "external localhost only, retired after author requested one preview; never committed to product or served by canonical preview",
+    "chrome": [
+      {
+        "action": "open",
+        "automation": true,
+        "reason": "reader-ready",
+        "summary": {
+          "actualDrawFrames": 318,
+          "drawGapP95": 15.899999976158142,
+          "drawGapMax": 24.799999982118607,
+          "nativeRafGapP95": 17,
+          "callbackCpuP95": 2.9000000059604645,
+          "callbackCpuMax": 3.5999999940395355,
+          "longTaskCount": 0,
+          "longTasksSupported": true
+        },
+        "metadata": {
+          "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+          "width": 1728,
+          "height": 1011,
+          "devicePixelRatio": 2,
+          "canvas": [
+            2592,
+            1516
+          ],
+          "renderPixelRatio": 1.5,
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "economyPressed": "false",
+          "reducedMotion": false,
+          "visibility": "visible"
+        }
+      },
+      {
+        "action": "close",
+        "automation": true,
+        "reason": "room-ready",
+        "summary": {
+          "actualDrawFrames": 167,
+          "drawGapP95": 16.400000005960464,
+          "drawGapMax": 19.099999994039536,
+          "nativeRafGapP95": 17.400000000001455,
+          "callbackCpuP95": 2.5999999940395355,
+          "callbackCpuMax": 2.800000011920929,
+          "longTaskCount": 0,
+          "longTasksSupported": true
+        },
+        "metadata": {
+          "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+          "width": 1728,
+          "height": 1011,
+          "devicePixelRatio": 2,
+          "canvas": [
+            2592,
+            1516
+          ],
+          "renderPixelRatio": 1.5,
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "economyPressed": "false",
+          "reducedMotion": false,
+          "visibility": "visible"
+        }
+      },
+      {
+        "action": "reopen",
+        "automation": true,
+        "reason": "reader-ready",
+        "summary": {
+          "actualDrawFrames": 169,
+          "drawGapP95": 16.19999998807907,
+          "drawGapMax": 18,
+          "nativeRafGapP95": 17.200000000000728,
+          "callbackCpuP95": 2.699999988079071,
+          "callbackCpuMax": 3,
+          "longTaskCount": 0,
+          "longTasksSupported": true
+        },
+        "metadata": {
+          "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+          "width": 1728,
+          "height": 1011,
+          "devicePixelRatio": 2,
+          "canvas": [
+            2592,
+            1516
+          ],
+          "renderPixelRatio": 1.5,
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+          "economyPressed": "false",
+          "reducedMotion": false,
+          "visibility": "visible"
+        }
+      }
+    ],
+    "chromeErrors": [],
+    "chromeWarnings": [],
+    "chromeFailedRequests": [],
+    "safari": [
+      {
+        "action": "open",
+        "automation": true,
+        "reason": "reader-ready",
+        "summary": {
+          "nativeRafGapP95": 23,
+          "longTaskCount": 0,
+          "actualDrawFrames": 219,
+          "drawGapP95": 23,
+          "callbackCpuP95": 7,
+          "longTasksSupported": false,
+          "drawGapMax": 105,
+          "callbackCpuMax": 16
+        },
+        "metadata": {
+          "height": 1011,
+          "canvas": [
+            2592,
+            1516
+          ],
+          "renderPixelRatio": 1.5,
+          "width": 1728,
+          "renderer": "Apple GPU",
+          "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.3 Safari/605.1.15",
+          "devicePixelRatio": 2,
+          "economyPressed": "false",
+          "reducedMotion": false,
+          "visibility": "visible"
+        },
+        "errorCount": 0
+      },
+      {
+        "action": "close",
+        "automation": true,
+        "reason": "room-ready",
+        "summary": {
+          "nativeRafGapP95": 23,
+          "longTaskCount": 0,
+          "actualDrawFrames": 123,
+          "drawGapP95": 24,
+          "callbackCpuP95": 3,
+          "longTasksSupported": false,
+          "drawGapMax": 81,
+          "callbackCpuMax": 13
+        },
+        "metadata": {
+          "height": 1011,
+          "canvas": [
+            2592,
+            1516
+          ],
+          "renderPixelRatio": 1.5,
+          "width": 1728,
+          "renderer": "Apple GPU",
+          "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.3 Safari/605.1.15",
+          "devicePixelRatio": 2,
+          "economyPressed": "false",
+          "reducedMotion": false,
+          "visibility": "visible"
+        },
+        "errorCount": 0
+      },
+      {
+        "action": "reopen",
+        "automation": true,
+        "reason": "reader-ready",
+        "summary": {
+          "nativeRafGapP95": 25,
+          "longTaskCount": 0,
+          "actualDrawFrames": 115,
+          "drawGapP95": 25,
+          "callbackCpuP95": 3,
+          "longTasksSupported": false,
+          "drawGapMax": 163,
+          "callbackCpuMax": 20
+        },
+        "metadata": {
+          "height": 1011,
+          "canvas": [
+            2592,
+            1516
+          ],
+          "renderPixelRatio": 1.5,
+          "width": 1728,
+          "renderer": "Apple GPU",
+          "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.3 Safari/605.1.15",
+          "devicePixelRatio": 2,
+          "economyPressed": "false",
+          "reducedMotion": false,
+          "visibility": "visible"
+        },
+        "errorCount": 0
+      }
+    ],
+    "safariFailure": null,
+    "safariInput": "DOM scripted clicks; native RAF. No GPU timer and no longtask observer support; zero reported long tasks is not a Safari absence claim.",
+    "measurementLimit": "Wrappers add overhead; these six automated records are not author captures and do not prove a performance improvement."
+  },
+  "previewConsolidation": {
+    "selectedImplementation": "f3bc7a80d3e96309461d663f4ccc8c54223a014a",
+    "source": "Previously accepted full main/editor/album-preview build",
+    "url": "http://127.0.0.1:4173/",
+    "authorEditorOriginPreserved": "http://127.0.0.1:4174/",
+    "stoppedPorts": [
+      4175,
+      4176,
+      4177,
+      4178,
+      5173,
+      5174
+    ],
+    "stoppedOld4173": true,
+    "startedNew4173": true,
+    "activeProjectPreviewPorts": [
+      4173,
+      4174
+    ],
+    "fullAssetCheck": {
+      "at": "2026-11-23T18:57:25.522Z",
+      "checked": 403,
+      "expected": 403,
+      "failed": [],
+      "rejected": [],
+      "allBytesSha256Equal": true
+    },
+    "generatedCleanup": {
+      "oldDistKiB": 13444,
+      "oldDistEditorKiB": 23048,
+      "newDistKiB": 23048,
+      "freedKiB": 13444,
+      "sourceAssetsDraftsHistoryAndPublishedDocsPreserved": true
+    },
+    "manifest": "/Users/jiangyuhan/.codex/visualizations/2026/11/24/album-normal-performance/preview-consolidation.json"
+  },
+  "canonicalPreviewSmoke": {
+    "at": "2026-11-23T18:58:03.144Z",
+    "url": "http://127.0.0.1:4173/",
+    "errors": [],
+    "failedRequests": [],
+    "warnings": [],
+    "steps": [
+      "two distinct fog and door gestures reach room",
+      "normal-motion first opening reaches readable album",
+      "chapter change, close and reopen retain chapter",
+      "editor entry loads blank isolated draft with two editable pages",
+      "album preview entry renders"
+    ],
+    "note": "Selected previously accepted full build. Isolated fresh context; author editor and browser tabs untouched. Not a new performance fix.",
+    "device": {
+      "width": 1728,
+      "height": 1011,
+      "dpr": 2,
+      "renderDpr": 1.5,
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+      "quality": "false"
+    },
+    "passed": true
+  },
+  "validation": {
+    "newTypecheckOrBuild": "Not rerun; no retained product, test, dependency or build-config changes. Reused exact previously accepted artifact.",
+    "currentChecks": "403 file HTTP byte-count/SHA-256 comparisons; actual normal-motion main flow, chapter retention, fresh isolated editor and reader preview; docs links, protected source and git diff checks.",
+    "testCountsNotCarriedForward": "Prior 25/25 and 52 unique cases are historical. Rejected candidate 4/4 and current smoke/collector checks are separately labeled.",
+    "static": {
+      "localDocLinks": 240,
+      "broken": 0,
+      "protectedSourcesEqualBaseline": true,
+      "docsTreeUnchanged": true,
+      "original47ItemPlanUnchanged": true,
+      "diffCheck": "passed",
+      "authorDraftOrExistingTabReadOrReloaded": false
+    }
+  },
+  "sharedEnvironment": {
+    "node": "~/.nvm/versions/node/v24.14.0",
+    "nodeEntry": "~/.local/bin/project-node",
+    "pnpmEntry": "~/.local/bin/project-pnpm",
+    "pnpmVersion": "11.7.0",
+    "pnpmStore": "~/Library/pnpm/store/v11",
+    "python": "~/.local/bin/document-python",
+    "pythonEnvironment": "~/.local/share/project-envs/document-tools",
+    "existingProjectNodeModules": true,
+    "installs": 0,
+    "newEnvironments": 0,
+    "isolationExceptions": 0,
+    "commands": [
+      "project-node --version",
+      "project-pnpm --version",
+      "project-node <external evidence>/capture-selftest.mjs",
+      "project-node <external evidence>/capture-safari-selftest.mjs",
+      "project-node --input-type=module (HTTP byte/SHA verification and canonical preview smoke via existing Playwright/system Chrome)",
+      "project-pnpm exec vite preview --outDir dist --host 127.0.0.1 --port 4173 --strictPort",
+      "git diff --check"
+    ],
+    "diskKiB": {
+      "snapshot": "Before documentation commit; includes Git/test/build artifacts, not runtime memory",
+      "repoBefore": 299824,
+      "repoAfter": 283716,
+      "repoDelta": -16108,
+      "pnpmStoreBefore": 1648256,
+      "pnpmStoreAfter": 1648256,
+      "pnpmStoreDelta": 0,
+      "externalEvidenceBefore": 0,
+      "externalEvidenceAfter": 144052,
+      "externalEvidenceDelta": 144052
+    }
+  },
+  "limitations": [
+    "The original stuttering URL was not collected; version confusion or process count was not established as the sole root cause. Author accepted the consolidated selected version.",
+    "No new causal ordinary-quality speedup claim. DPR, shadows, models, content and opening paths/durations unchanged.",
+    "Safari collector check uses scripted DOM clicks; no Safari physical mouse or physical mobile acceptance claimed.",
+    "Known uncached chapter/viewport/DPR capture can still pause once.",
+    "No publish, main/docs/deployment change, author draft/storage read, or author-tab reload."
+  ],
+  "delivery": {
+    "scope": "README, AGENTS, performance plan, this benchmark only; ordinary feature-branch push. Final commit tracked in Git history."
+  }
+}
